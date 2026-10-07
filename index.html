@@ -3,7 +3,7 @@
   It inlines index.html plus every css/*.css and js/**/*.js it references
   into one self-contained file. Regenerate with: node tools/bundle.js
   Comments are stripped from the inlined files and index.html, the indentation of JS code lines too, and the CSS is squeezed (tools/perf/strip.js).
-  Generated: 2026-10-06T21:50:38.488Z
+  Generated: 2026-10-07T06:02:16.333Z
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -5921,6 +5921,79 @@ body.bf #app #screen-run-summary>.p36h-runstats:has(.p42-laurels){gap:3px}
 body.bf #app #screen-run-summary .p36h-runlines:has(>.p42-laurels){row-gap:2px}
 @media (min-width: 601px) and (min-height: 501px) and (max-height: 860px){body.bf[data-screen=run-summary] #screen-run-summary:has(.p42-laurels){gap:4px}body.bf #screen-run-summary:has(.p42-laurels)>.chrome-scene{height:60px}}
 @media (min-width: 601px) and (min-height: 501px) and (max-height: 760px){body.bf #app #screen-run-summary:has(.p42-laurels)>.run-actions{padding-top:6px;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px))}body.bf #app:not(#p36-anchor) #screen-run-summary:has(.p42-laurels)>.run-actions button:not(.p36h-runseed-btn){min-height:44px}}
+
+</style>
+  <style>
+.ord-list{display:flex;flex-direction:column;gap:2px;margin:0}
+.ord-row{display:block;box-sizing:border-box;width:100%;margin:0;padding:4px 6px;border:0;border-radius:6px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.ord-row:hover,.ord-row[aria-pressed=true]{background:rgba(201,161,58,.16)}
+.ord-row[aria-pressed=true]{box-shadow:inset 0 0 0 1.5px rgba(201,161,58,.85)}
+.ord-head{display:flex;align-items:center;gap:6px;min-width:0}
+.ord-name{flex:1 1 auto;min-width:0;font-weight:700}
+.ord-prog{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;font-variant-numeric:tabular-nums}
+.ord-pips{display:inline-flex;gap:3px}
+.ord-pips>i{width:7px;height:7px;border-radius:50%;box-sizing:border-box;border:1.5px solid currentColor;opacity:.45}
+.ord-pips>i[data-on=true]{opacity:1;background:currentColor}
+.ord-count{font-size:.9em}
+.ord-share{font-size:.85em;opacity:.7}
+.ord-tick{display:inline-flex;width:16px;height:16px;color:#3f6b3a}
+.ord-tick>svg{width:100%;height:100%}
+.ord-row[data-state=done] .ord-share{opacity:1;font-weight:700}
+.ord-void{font-size:.85em;font-style:italic;opacity:.75}
+.ord-row[data-state=void] .ord-name{text-decoration:line-through;opacity:.7}
+.ord-ask{display:block;font-size:.86em;line-height:1.3;opacity:.8}
+.ord-foot{margin:6px 0 0;font-size:.86em;line-height:1.35;opacity:.85}
+body.bf #app #inspector .insp-orders{padding:0 0 2px}
+body.bf #app #inspector .insp-orders-title{display:flex;align-items:baseline;justify-content:center;gap:8px;margin:0 0 4px;font-family:var(--font-display);font-variant:small-caps;font-weight:700;font-size:15px;letter-spacing:.06em;color:var(--ink)}
+body.bf #app #inspector .insp-orders-count{font:600 var(--fs-12)/1 var(--face-num);font-variant:normal;letter-spacing:0;color:var(--ink-dim)}
+body.bf #app #inspector .ord-row{padding:3px 6px 4px;border:0;border-bottom:1px solid var(--insp-rule,rgba(120,84,40,.24));border-radius:4px 4px 0 0;background:transparent;color:var(--ink-parch,#241a0f)}
+body.bf #app #inspector .ord-row:hover{background:rgba(201,161,58,.14)}
+body.bf #app #inspector .ord-row[aria-pressed=true]{background:rgba(201,161,58,.2);box-shadow:inset 0 0 0 1.5px rgba(160,118,34,.8)}
+body.bf #app #inspector .ord-row:last-child{border-bottom:0}
+body.bf #app #inspector .ord-name{font:600 var(--fs-14)/1.25 var(--face-name)}
+body.bf #app #inspector .ord-prog{font:600 var(--fs-12)/1 var(--face-num);color:var(--ink-parch-dim,#5c4a30)}
+body.bf #app #inspector .ord-pips>i{color:#8a6418}
+body.bf #app #inspector .ord-row[data-state=done] .ord-share{padding:2px 6px;border-radius:var(--r-pill,999px);background:var(--brass-coin,#e8bd58);box-shadow:0 0 0 1px var(--coin-edge,#7e5612);color:var(--engrave,#2a1a06)}
+body.bf #app #inspector .ord-ask{font:400 var(--fs-12)/1.3 var(--face-num);color:var(--ink-parch-dim,#5c4a30);opacity:1}
+body.bf #app #inspector .ord-foot{font:400 var(--fs-12)/1.35 var(--face-num);color:var(--ink-parch-dim,#5c4a30);opacity:1}
+body.bf[data-inspector-mode=docked] #inspector[data-state=empty][data-orders]{justify-content:flex-start;gap:10px;padding:14px 14px 12px}
+body.bf[data-inspector-mode=docked] #inspector[data-state=empty][data-orders] .insp-empty{padding-top:0;font-size:14px}
+body.bf[data-inspector-mode=docked] #inspector[data-state=empty][data-orders] .insp-empty::before{display:none}
+body.bf[data-inspector-mode=docked] #inspector[data-state=empty][data-orders] .insp-legend{padding-top:8px}
+body.bf[data-inspector-mode=docked] #inspector[data-state=empty][data-orders] .insp-legend-title{margin-bottom:4px;font-size:14px}
+body.bf[data-inspector-mode=docked] #inspector[data-state=empty][data-orders] .insp-legend-list{gap:4px 8px}
+body.bf[data-inspector-mode=docked] #inspector[data-state=empty][data-orders] .insp-legend-plaque{width:44px;height:20px}
+body.bf[data-inspector-mode=docked] #inspector[data-state=empty][data-orders] .insp-legend-name{font-size:13px}
+body.bf[data-inspector-mode=docked] #inspector[data-state=empty][data-orders] .insp-legend-note{margin-top:6px;font-size:12px;line-height:1.3}
+.insp-orders[data-compact]{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 4px;margin-top:auto}
+.insp-orders[data-compact] .ord-list{display:contents}
+.insp-orders[data-compact] .insp-orders-title{margin:0 4px 0 0}
+.insp-orders[data-compact] .ord-row{display:inline-flex;width:auto;max-width:100%;padding:1px 5px}
+.insp-orders[data-compact] .ord-head{gap:4px}
+body.bf[data-inspector-mode=docked] #app #inspector[data-state=open] .insp-orders[data-compact]{row-gap:0;padding:4px 0 0;border-top:1px solid var(--insp-rule,rgba(120,84,40,.24))}
+body.bf[data-inspector-mode=docked] #app #inspector[data-state=open] .insp-orders[data-compact] .insp-orders-title{justify-content:flex-start;gap:6px;margin:0 4px 0 0;font-size:13px;line-height:14px}
+body.bf[data-inspector-mode=docked] #app #inspector[data-state=open] .insp-orders[data-compact] .ord-row,body.bf[data-inspector-mode=docked] #app #inspector[data-state=open] .insp-orders[data-compact] .ord-row:last-child{padding:1px 4px;border:0;border-radius:4px}
+body.bf[data-inspector-mode=docked] #app #inspector[data-state=open] .insp-orders[data-compact] .ord-head{gap:3px}
+body.bf[data-inspector-mode=docked] #app #inspector[data-state=open] .insp-orders[data-compact] .ord-name{font-size:12px;line-height:14px}
+body.bf[data-inspector-mode=docked] #app #inspector[data-state=open] .insp-orders[data-compact] .ord-row[data-state=done] .ord-share{padding:1px 5px}
+body.bf[data-inspector-mode=popover] #app #inspector[data-kind=field]:has(.insp-header + .insp-section[data-section=battleOrders]) .insp-field-header>.insp-sub{display:none}
+body.bf[data-inspector-mode=popover] #app #inspector[data-kind=field]:has(.insp-header + .insp-section[data-section=battleOrders]) .insp-field-header{min-height:0;padding-bottom:6px}
+body.bf[data-inspector-mode=popover] #app #inspector .ord-row{padding:2px 4px 3px}
+body.bf[data-inspector-mode=popover] #app #inspector .ord-name{font-size:var(--fs-13)}
+body.bf[data-inspector-mode=popover] #app #inspector .ord-ask{line-height:1.25}
+body.bf[data-inspector-mode=popover] #app #inspector .ord-pips>i{width:6px;height:6px}
+@container insp-band (min-width: 480px){body[data-theme="battlefield"][data-inspector-mode="popover"][data-pop-side="below"] #app #inspector > .insp-body > .insp-section[data-section="battleOrders"]{column-span:all}}
+.hud-orders .hud-orders-near{flex:0 0 auto}
+body.bf[data-screen=battle] #app #hud .hud-orders .hud-orders-near{padding-left:6px;border-left:1px solid rgba(226,191,106,.4);opacity:.85}
+.slot[data-order-lit=true]{outline:2.5px solid rgba(232,189,88,.95);outline-offset:-3px}
+body.bf #battlefield .slot[data-order-lit=true]{outline:2.5px solid #e8bd58;box-shadow:inset 0 0 0 4px rgba(255,214,120,.28)}
+.slot>.order-edge{position:absolute;inset:3px;border:1.5px solid rgba(201,161,58,.55);border-radius:6px;pointer-events:none;z-index:1}
+body.bf #battlefield .slot>.order-edge{border-color:rgba(226,191,106,.6);box-shadow:inset 0 0 0 1px rgba(74,48,10,.35);transform:translateZ(.4px)}
+.slot-tooltip .tt-line.tt-order{font-weight:700}
+body.bf .slot-tooltip .tt-line.tt-order{color:var(--gilt-on-dark,#e2bf6a)}
+#app .p36h-fb-rows{margin:4px 0 0;padding:0 0 0 18px;font-size:13px;line-height:1.35}
+#app .p36h-fb-rows>li{margin:1px 0}
+body.bf #app .p36h-fb-rows{font:var(--fs-13)/1.35 var(--face-num);color:var(--ink-parch-dim)}
 
 </style>
 </head>
@@ -16956,8 +17029,8 @@ text: 'An officer takes your turn to join one company and makes it much stronger
 text: 'Some heroes reward how your companies stand: the Pike Captain makes the infantry beside him stronger for every other infantry next to them.' },
 { id: 'line', group: 'army', name: 'Line of battle', met: ['line'], requires: ['lineOfBattle'], unlessOn: 'experiments.battleOrders', example: { row: 'line' },
 text: 'Infantry fight better in the row nearest the enemy, archers with infantry directly in front of them and cavalry in either edge column.' },
-{ id: 'orders', group: 'army', name: 'Battle Orders', met: ['line'], requires: ['lineOfBattle'], when: 'experiments.battleOrders', example: { row: 'line', alt: true },
-text: 'Five orders lift your whole total when the field matches them: Shieldwall, Screened Volley, Hammer and Anvil, Wedge and Rallied Ring.' },
+{ id: 'orders', group: 'army', name: 'Battle Orders', met: ['line'], requires: ['lineOfBattle'], when: 'experiments.battleOrders', example: { row: 'line', alt: true }, list: 'battleOrders',
+text: 'Five orders lift your whole total when the field matches them, each by its own share, and the battle bar\'s Orders button lists them at any time.' },
 { id: 'general', group: 'army', name: 'General', met: ['gift', 'generalDraft'],
 text: 'Your general leads from off the field and strengthens one kind of company for the whole battle; later you choose which of the offered generals leads.' },
 { id: 'ability', group: 'army', name: 'Ability', met: ['gift'], requires: ['relics'],
@@ -18639,7 +18712,7 @@ const REGISTRY = [
 { key: 'modules.roadHonours', label: 'Honours on road battles', group: 'honours', type: 'bool', default: true, applies: 'restart', hint: 'Road battles from the second region on offer an honour for a fine victory too, paid like a side battle\'s.' },
 { key: 'modules.fieldGrowth', label: 'Grows on the field', group: 'growth', type: 'bool', default: true, applies: 'restart', hint: 'Some officers and abilities give more the longer their company has stood on the field, such as Old Campaigner and Rolling Volleys.' },
 { key: 'modules.terrainFormations', label: 'Terrain formations', group: 'line', type: 'bool', default: true, applies: 'restart', hint: 'Formation cards that read the ground: the Ranger, the Outrider and the Ford Warden.' },
-{ key: 'ui.heroReach', label: 'Show a hero\'s reach', group: 'ui', type: 'bool', default: true, applies: 'live', hint: 'With a hero still to come and no card picked, pointing at an empty slot rings the slots a hero there would lead.' },
+{ key: 'ui.heroReach', label: 'Show a hero\'s reach', group: 'ui', type: 'bool', default: true, applies: 'live', hint: 'With a hero picked, pointing at (or holding) an empty slot rings the slots that hero would lead from there.' },
 { key: 'modules.reserveEarly', label: 'Reserve twice early on', group: 'reserve', type: 'bool', default: true, applies: 'restart', hint: 'In the first two regions a battle lets you use the reserve twice, one card at a time.' },
 { key: 'reserve.usesEarly', label: 'Reserves per battle early on', group: 'reserve', type: 'int', min: 0, max: 3, step: 1, default: 2, applies: 'restart', hint: 'How many times a battle in the first regions lets you put a draft card in reserve.' },
 { key: 'reserve.earlyRegions', label: 'Regions with the extra reserve', group: 'reserve', type: 'int', min: 0, max: 4, step: 1, default: 2, applies: 'restart', hint: 'How many regions, from the first, let you use the reserve more often.' },
@@ -24203,53 +24276,25 @@ for (let i = 0; i < kinds.length && i < sh.length; i++) out.push({ kind: kinds[i
 return out;
 }
 
-function heroReachFor(state, slotId) {
+function heroReachFor(state, slotId, card) {
 if (!state || state.status !== 'playing' || !state.board || slotId == null) return null;
+if (!card || card.kind !== 'officer') return null;
 const slots = state.board.slots || [];
 let from = null;
 for (let i = 0; i < slots.length; i++) if (slots[i].id === slotId) { from = slots[i]; break; }
 if (!from || from.side !== 'player' || from.blocked) return null;
 if ((state.placements || {})[slotId] || (state.attached || {})[slotId]) return null;
 const t = state.tunables;
-let reach = 0;
 const cards = (t && Array.isArray(t.cards)) ? t.cards : (Array.isArray(TTF.Cards) ? TTF.Cards : []);
-const defOf = function (id) {
-for (let c = 0; c < cards.length; c++) if (cards[c] && cards[c].id === id) return cards[c];
-return null;
-};
-const reachOf = function (card) {
-let r = 0;
-const src = (card && Array.isArray(card.effects)) ? card : (card && card.defId != null ? defOf(card.defId) : null);
+let src = Array.isArray(card.effects) ? card : null;
+for (let c = 0; !src && c < cards.length; c++) if (cards[c] && cards[c].id === card.defId) src = cards[c];
 const effs = (src && Array.isArray(src.effects)) ? src.effects : [];
+let reach = 0;
 for (let i = 0; i < effs.length; i++) {
 const w = effs[i] && effs[i].target && effs[i].target.within;
-if (typeof w === 'number' && w > r) r = w;
+if (typeof w === 'number' && w > reach) reach = w;
 }
-return r || 1;
-};
-const held = state.reserve;
-if (held && held.kind === 'officer') reach = Math.max(reach, reachOf(held));
-const ds = state.draftState || {};
-if (ds.mode === 'deck' && Array.isArray(ds.deck)) {
-const shown = Array.isArray(state.draft) ? state.draft.length : 0;
-for (let i = (ds.pos | 0) + shown; i < ds.deck.length; i++) {
-if (ds.deck[i] && ds.deck[i].kind === 'officer') reach = Math.max(reach, reachOf(ds.deck[i]));
-}
-} else {
-const m = Draft.muster(ds, t, Array.isArray(state.draft) ? state.draft.length : undefined);
-const offered = Object.create(null);
-const offer = Array.isArray(state.draft) ? state.draft : [];
-for (let i = 0; i < offer.length; i++) if (offer[i] && offer[i].defId != null) offered[offer[i].defId] = (offered[offer[i].defId] | 0) + 1;
-for (let i = 0; i < m.groups.length; i++) {
-if (m.groups[i].key !== 'heroes') continue;
-for (let k = 0; k < m.groups[i].cards.length; k++) {
-const id = m.groups[i].cards[k].defId;
-if (!((m.groups[i].cards[k].copies | 0) > (offered[id] | 0))) continue;
-reach = Math.max(reach, reachOf(defOf(id)));
-}
-}
-}
-if (!reach) return null;
+reach = reach || 1;
 const metric = Effects.metricFor ? Effects.metricFor(state, 'player', t) : (t && t.adjacency && t.adjacency.metric);
 const near = [];
 const far = [];
@@ -25711,8 +25756,8 @@ return { kind: m.kind, slotId: m.slotId, name: Effects.ROLL_MARK_NAMES[m.kind] |
 });
 },
 
-heroReach(state, slotId) {
-return heroReachFor(state, slotId);
+heroReach(state, slotId, card) {
+return heroReachFor(state, slotId, card);
 },
 
 canScout(state) {
@@ -46930,20 +46975,30 @@ function varietyShown(state, total) { return varietyCall('shownTotal', [state, t
 function varietySlotAttrs(state, slot) { return varietyCall('slotAttrs', [state, slot], ''); }
 
 
+function heroPickOf(app) {
+const ui = (app && app.ui) || {};
+const state = app && app.state;
+if (!state) return null;
+let card = null;
+if (ui.selectedReserve) card = state.reserve || null;
+else if (ui.selectedMerc != null) card = null;
+else if (ui.selected != null && Array.isArray(state.draft)) card = state.draft[ui.selected] || null;
+return card && card.kind === 'officer' ? card : null;
+}
+
 function heroReachAllowed(app) {
 const ui = (app && app.ui) || {};
 const state = app && app.state;
 const t = (app && app.tunables) || (state && state.tunables) || {};
 if (!(t.ui && t.ui.heroReach) || !state || state.status !== 'playing') return false;
 if (ui.swap || ui.build || ui.scout) return false;
-if (ui.selectedReserve || ui.selectedMerc != null || ui.selected != null) return false;
-return true;
+return !!heroPickOf(app);
 }
 
 function heroReachMap(app, slotId) {
 if (slotId == null || !heroReachAllowed(app) || !Battle || typeof Battle.heroReach !== 'function') return null;
 let r = null;
-try { r = Battle.heroReach(app.state, slotId); } catch (e) { r = null; }
+try { r = Battle.heroReach(app.state, slotId, heroPickOf(app)); } catch (e) { r = null; }
 if (!r) return null;
 const map = Object.create(null);
 map[slotId] = 'from';
@@ -46997,7 +47052,7 @@ if (!svg) return '';
 return '<span class="retry-ghost" data-def="' + esc(e.defId) + '" aria-hidden="true"><span class="retry-ghost-fig">' + svg + '</span></span>';
 }
 
-const HERO_REACH_CAPTION = 'A hero here would lead these companies';
+const HERO_REACH_CAPTION = 'This hero would lead the ringed companies';
 function varietySlotMarksHtml(state, slot) { return varietyCall('slotMarksHtml', [state, slot], ''); }
 function varietyRetryHtml(app) { return varietyCall('retryPressHtml', [app], ''); }
 
@@ -57247,32 +57302,135 @@ return safe(function () { return S.battleOrders(state); }, []);
 
 function pctWord(x) { return '+' + Math.round(x * 100) + '%'; }
 
+function ordersShare(list) {
+const S = TTF.Scoring;
+const cap = (S && S.ORDER_LIMITS) ? S.ORDER_LIMITS.cap : 0.6;
+let done = 0;
+let sum = 0;
+for (let i = 0; i < list.length; i++) if (list[i].done) { done++; sum += list[i].bonus; }
+return { done: done, sum: Math.min(cap, Math.round(sum * 100) / 100), cap: cap };
+}
+
 function battleOrdersChipHtml(state) {
 const list = battleOrdersOf(state);
 if (!list.length) return '';
-let done = 0;
-let sum = 0;
 let near = null;
 for (let i = 0; i < list.length; i++) {
 const o = list[i];
-if (o.done) { done++; sum += o.bonus; continue; }
-if (o.void) continue;
+if (o.done || o.void) continue;
 if (!near || o.have / o.need > near.have / near.need) near = o;
 }
-const S = TTF.Scoring;
-const cap = (S && S.ORDER_LIMITS) ? S.ORDER_LIMITS.cap : 0.6;
-sum = Math.min(cap, Math.round(sum * 100) / 100);
+const done = ordersShare(list).done;
 const words = 'Battle Orders, scored at the tally: ' + list.map(function (o) {
 return o.name + ' ' + (o.void ? 'void (Pike Wall)' : (o.done ? 'done ' + pctWord(o.bonus) : o.have + '/' + o.need));
 }).join('; ');
 const SHORT = { shieldwall: 'Shieldwall', screened_volley: 'Volley', hammer_anvil: 'Hammer', wedge: 'Wedge', rallied_ring: 'Ring' };
-const prog = near ? (SHORT[near.id] || near.name) + ' ' + near.have + '/' + near.need : (done ? 'Orders' : 'Orders 0');
+const nearWords = near ? (SHORT[near.id] || near.name) + ' ' + near.have + '/' + near.need : '';
 return '<button type="button" class="hud-badge hud-orders" data-testid="hud-orders" data-done="' + done + '"'
 + ' data-action="inspect" data-target="field:battleOrders" title="' + esc(words) + '" aria-label="' + esc(words) + '">'
 + '<span class="hud-w4-mark" aria-hidden="true"></span>'
-+ '<span class="hud-orders-name">' + esc(prog) + '</span>'
-+ (done ? '<span class="hud-orders-prog">' + esc(pctWord(sum)) + '</span>' : '')
++ '<span class="hud-orders-name">Orders</span>'
++ '<span class="hud-orders-prog">' + done + '/' + list.length + '</span>'
++ (nearWords ? '<span class="hud-orders-near">' + esc(nearWords) + '</span>' : '')
 + '</button>';
+}
+
+
+const TICK_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 8.6 L6.6 12 L13 4.4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+function orderRowHtml(o, lit, compact) {
+const st = o.void ? 'void' : (o.done ? 'done' : 'open');
+const ask = o.text.charAt(0).toUpperCase() + o.text.slice(1);
+let prog;
+if (o.void) {
+prog = '<span class="ord-void">' + (compact ? 'void' : 'void: Pike Wall') + '</span>';
+} else if (o.done) {
+prog = '<span class="ord-tick">' + TICK_SVG + '</span><span class="ord-share">' + esc(pctWord(o.bonus)) + '</span>';
+} else if (compact) {
+prog = '<span class="ord-count">' + o.have + '/' + o.need + '</span>';
+} else {
+let pips = '';
+for (let i = 0; i < o.need; i++) pips += '<i' + (i < o.have ? ' data-on="true"' : '') + '></i>';
+prog = '<span class="ord-pips" aria-hidden="true">' + pips + '</span><span class="ord-count">' + o.have + '/' + o.need + '</span>'
++ '<span class="ord-share">' + esc(pctWord(o.bonus)) + '</span>';
+}
+const said = o.name + ': ' + (o.void ? 'void under Pike Wall' : (o.done ? 'done, ' + pctWord(o.bonus) : o.have + ' of ' + o.need + ', worth ' + pctWord(o.bonus))) + '. ' + ask + '.';
+const drilled = o.level ? 'Drilled ' + o.level + (o.level === 1 ? ' time' : ' times') + ': +5% each' : '';
+const tip = compact ? ask + (drilled ? '. ' + drilled : '') : drilled;
+return '<button type="button" class="ord-row" data-testid="ord-row" data-order="' + esc(o.id) + '" data-state="' + st + '"'
++ ' data-slots="' + esc((o.slotIds || []).join(' ')) + '" data-action="orders-light" aria-pressed="' + (lit === o.id ? 'true' : 'false') + '"'
++ ' aria-label="' + esc(said) + '"' + (tip ? ' title="' + esc(tip) + '"' : '') + '>'
++ '<span class="ord-head"><span class="ord-name">' + esc(o.name) + '</span><span class="ord-prog">' + prog + '</span></span>'
++ (compact ? '' : '<span class="ord-ask">' + esc(ask) + '</span>')
++ '</button>';
+}
+
+function ordersListHtml(list, lit) {
+const sh = ordersShare(list);
+let rows = '';
+for (let i = 0; i < list.length; i++) rows += orderRowHtml(list[i], lit);
+const foot = sh.done
+? 'Done orders add <b>' + esc(pctWord(sh.sum)) + '</b> to your whole total at the tally (at most ' + esc(pctWord(sh.cap)) + ').'
+: 'Each order done adds its share to your whole total at the tally (at most ' + esc(pctWord(sh.cap)) + ').';
+return '<div class="ord-list" data-testid="ord-list">' + rows + '</div>'
++ '<p class="ord-foot" data-testid="ord-foot" data-share="' + Math.round(sh.sum * 100) + '"'
++ ' title="One done in a won battle adds 5% next time, up to three times.">' + foot + '</p>';
+}
+
+function ordersChecklistHtml(state, lit, opts) {
+const list = battleOrdersOf(state);
+if (!list.length) return '';
+const sh = ordersShare(list);
+const compact = !!(opts && opts.compact);
+let body;
+if (compact) {
+body = '';
+for (let i = 0; i < list.length; i++) body += orderRowHtml(list[i], lit, true);
+body = '<div class="ord-list" data-testid="ord-list">' + body + '</div>';
+} else body = ordersListHtml(list, lit);
+const count = sh.done + '/' + list.length + ' done' + (compact && sh.done ? ', ' + pctWord(sh.sum) : '');
+return '<div class="insp-orders" data-testid="insp-orders" data-done="' + sh.done + '"' + (compact ? ' data-compact="true"' : '') + '>'
++ '<div class="insp-orders-title">Battle Orders<span class="insp-orders-count">' + esc(count) + '</span></div>'
++ body + '</div>';
+}
+
+function orderDeltaLines(before, after) {
+const out = [];
+const was = Object.create(null);
+for (let i = 0; i < (before || []).length; i++) was[before[i].id] = before[i];
+for (let i = 0; i < (after || []).length; i++) {
+const a = after[i];
+const b = was[a.id];
+if (!b || a.void || b.void || (a.have === b.have && a.done === b.done)) continue;
+let line = a.name + ' ' + b.have + '→' + a.have;
+if (a.done && !b.done) line += ' — done, ' + pctWord(a.bonus);
+else if (!a.done && b.done) line += ' — no longer done';
+out.push(line);
+}
+return out;
+}
+
+function orderPreviewLines(state, hypo) {
+if (!state || !state.battleOrders || !hypo) return [];
+return orderDeltaLines(battleOrdersOf(state), battleOrdersOf(hypo));
+}
+
+let doneMemo = { key: null, map: null };
+function doneOrdersBySlot(state) {
+const key = state ? [state, state.placements, state.battleOrders, state.status, state.gambits] : null;
+const k0 = doneMemo.key;
+if (k0 && key && k0.length === key.length && k0.every(function (v, i) { return v === key[i]; })) return doneMemo.map;
+const map = Object.create(null);
+if (state && state.status === 'playing') {
+const list = battleOrdersOf(state);
+for (let i = 0; i < list.length; i++) {
+const o = list[i];
+if (!o.done || o.void) continue;
+for (let k = 0; k < (o.slotIds || []).length; k++) (map[o.slotIds[k]] = map[o.slotIds[k]] || []).push(o.name);
+}
+}
+doneMemo = { key: key, map: map };
+return map;
 }
 
 function pledgeOfState(state) {
@@ -57373,6 +57531,8 @@ if (slot.burnt) a += ' data-burnt="true"';
 else if (!slot.fogged && !slot.blocked && willBurn(state, slot.id)) a += ' data-will-burn="true"';
 const om = (!slot.blocked && !slot.fogged) ? orderMarksOn(state, slot.id) : null;
 if (om && om.warn.length) a += ' data-order-warn="' + esc(om.warn.join(' ')) + '"';
+const done = doneOrdersBySlot(state)[slot.id];
+if (done) a += ' data-order-done="true" title="' + esc('Counts toward ' + done.join(' and ') + ', done') + '"';
 return a;
 }
 
@@ -57404,6 +57564,7 @@ if (m.indexOf('lane') !== -1) h += '<span class="disp-lane" aria-hidden="true"><
 if (m.indexOf('weak') !== -1) h += '<span class="disp-weak-ring" aria-hidden="true"></span>';
 if (m.indexOf('nest') !== -1) h += '<span class="disp-nest-ring" aria-hidden="true"></span>';
 if (!slot.burnt && !slot.fogged && !slot.blocked && willBurn(state, slot.id)) h += '<span class="slot-ember" aria-hidden="true"></span>';
+if (doneOrdersBySlot(state)[slot.id]) h += '<span class="order-edge" aria-hidden="true"></span>';
 if (m.length) {
 h += '<span class="disp-marks" aria-hidden="true" data-action="inspect" data-target="field:dispositions">';
 for (let i = 0; i < m.length; i++) {
@@ -57485,15 +57646,7 @@ return { name: m.name + '.', text: m.text.replace(/ here$/, ' on it') + ' (marke
 }).concat(['Only the power the company rolled counts, before any bonus']));
 }
 const bo = battleOrdersOf(state);
-if (bo.length) {
-const S = TTF.Scoring;
-const cap = (S && S.ORDER_LIMITS) ? S.ORDER_LIMITS.cap : 0.6;
-out.battleOrders = sectionHtml('battleOrders', 'Battle Orders', bo.map(function (o) {
-const lv = o.level ? ', drilled ' + o.level + (o.level === 1 ? ' time' : ' times') : '';
-const st = o.void ? 'void (Pike Wall)' : (o.done ? 'done' : o.have + '/' + o.need);
-return { kind: o.void ? 'failed' : (o.done ? 'met' : 'open'), name: o.name + ' ' + pctWord(o.bonus) + '.', text: st, title: o.text.charAt(0).toUpperCase() + o.text.slice(1) + lv };
-}).concat([{ text: 'Done orders add their share at the tally (at most ' + pctWord(cap) + ')', title: 'Each order done adds its share to your whole total at the tally. One done in a won battle adds 5% next time, up to three times.' }]));
-}
+if (bo.length) out.battleOrders = sectionHtml('battleOrders', 'Battle Orders', [], ordersListHtml(bo, app && app.ui ? app.ui.orderLit : null));
 const pg = pledgeOfState(state);
 if (pg) {
 const pays = pg.tier === 'rout' ? 'triple the crowns, a company and a pick of three' : 'double the crowns and a company';
@@ -57904,7 +58057,11 @@ retryPressHtml: retryPressHtml,
 applyRetryPress: applyRetryPress,
 holdBeforeMarch: holdBeforeMarch,
 dispatch: dispatch,
-pressedWords: pressedWords
+pressedWords: pressedWords,
+ordersChecklistHtml: ordersChecklistHtml,
+orderDeltaLines: orderDeltaLines,
+orderPreviewLines: orderPreviewLines,
+doneOrdersBySlot: doneOrdersBySlot
 };
 
 TTF.VarietyUI = VarietyUI;
@@ -61501,6 +61658,12 @@ if (!S || typeof S.met !== 'function') return [];
 try { return S.met() || []; } catch (e) { return []; }
 }
 
+function listOf(e) {
+const S = TTF.Scoring;
+if (!e || e.list !== 'battleOrders' || !S || !Array.isArray(S.ORDER_ROWS)) return [];
+return S.ORDER_ROWS.map(function (o) { return { name: o.name + ' (+' + Math.round(o.bonus * 100) + '%)', text: o.text }; });
+}
+
 function view(app) {
 const t = tun(app);
 const all = showAll(app);
@@ -61515,7 +61678,7 @@ for (let i = 0; i < B.entries.length; i++) {
 const e = B.entries[i];
 if (!e || e.group !== grp.id || !shows(e, t)) continue;
 const on = all || (Array.isArray(e.met) && e.met.some(function (id) { return ids.indexOf(id) !== -1; }));
-entries.push({ id: e.id, name: e.name, text: sentenceOf(e, t), met: on, example: exampleOf(e, t) });
+entries.push({ id: e.id, name: e.name, text: sentenceOf(e, t), met: on, example: exampleOf(e, t), list: listOf(e) });
 count++;
 if (on) met++;
 }
@@ -61558,6 +61721,13 @@ const U = TTF.IntroUI;
 if (!ex || !U || typeof U.exampleHtml !== 'function') return '';
 try { return U.exampleHtml(ex, app) || ''; } catch (e) { return ''; }
 }
+function listHtml(e) {
+const l = Array.isArray(e.list) ? e.list : [];
+if (!l.length) return '';
+return '<ul class="p36h-fb-rows" data-testid="fieldbook-list">' + l.map(function (r) {
+return '<li><b>' + esc(r.name) + ':</b> ' + esc(r.text) + '</li>';
+}).join('') + '</ul>';
+}
 function entryHtml(app, e) {
 if (!e.met) {
 return '<li class="p36h-fb-entry" data-id="' + esc(e.id) + '" data-met="false" data-testid="fieldbook-entry">'
@@ -61565,7 +61735,7 @@ return '<li class="p36h-fb-entry" data-id="' + esc(e.id) + '" data-met="false" d
 }
 const ex = e.example ? exampleHtml(e.example, app) : '';
 return '<li class="p36h-fb-entry" data-id="' + esc(e.id) + '" data-met="true"' + (ex ? ' data-example="true"' : '') + ' data-testid="fieldbook-entry">'
-+ '<b class="p36h-fb-name">' + esc(e.name) + '</b><p class="p36h-fb-text">' + esc(e.text) + '</p>' + ex + '</li>';
++ '<b class="p36h-fb-name">' + esc(e.name) + '</b><p class="p36h-fb-text">' + esc(e.text) + '</p>' + listHtml(e) + ex + '</li>';
 }
 function bodyHtml(app, v) {
 return v.groups.map(function (g) {
@@ -66511,19 +66681,28 @@ const i = pick;
 return (Array.isArray(state.draft) && i != null && i >= 0 && i < state.draft.length) ? state.draft[i] : null;
 }
 
-function hypoPlayer(state, pick, slotId) {
+function hypoState(state, pick, slotId) {
 const chosen = chosenOf(state, pick);
-if (!chosen) return Battle.resolve(state, { side: 'player' });
+if (!chosen) return state;
 const placed = Object.assign({}, chosen, { placedOnTurn: state.turn });
 if (chosen.kind === 'aide') {
 const attached = Object.assign({}, state.attached || {});
 attached[slotId] = placed;
-return Battle.resolve(Object.assign({}, state, { attached: attached }), { side: 'player' });
+return Object.assign({}, state, { attached: attached });
 }
 const placements = Object.assign({}, state.placements);
 placements[slotId] = placed;
-const hypo = Object.assign({}, state, { placements: placements });
-return Battle.resolve(hypo, { side: 'player' });
+return Object.assign({}, state, { placements: placements });
+}
+
+function hypoPlayer(state, pick, slotId) {
+return Battle.resolve(hypoState(state, pick, slotId), { side: 'player' });
+}
+
+function orderLines(state, pick, slotId) {
+const V = TTF.VarietyUI;
+if (!state || !state.battleOrders || !V || typeof V.orderPreviewLines !== 'function' || !chosenOf(state, pick)) return [];
+try { return V.orderPreviewLines(state, hypoState(state, pick, slotId)) || []; } catch (e) { return []; }
 }
 function findRow(bd, slotId) {
 for (let i = 0; i < bd.cards.length; i++) if (bd.cards[i].slotId === slotId) return bd.cards[i];
@@ -66815,6 +66994,11 @@ const lines = tooltipLines(state, pick, slotId, fogged, full);
 if (!lines.length) { tt.hidden = true; return; }
 const scout = scoutLine(state, pick, slotId);
 if (scout) lines.push(scout);
+const orderAt = lines.length;
+const orders = fogged ? [] : orderLines(state, pick, slotId);
+for (let i = 0; i < orders.length; i++) lines.push(orders[i]);
+const R = TTF.Render;
+if (!fogged && app && app.ui && app.ui.heroReachSlot === slotId && R && R.HERO_REACH_CAPTION) lines.push(R.HERO_REACH_CAPTION);
 if (!fogged && !nightHides(state)) {
 let pred = null;
 try { pred = Battle.predict(state, pick, slotId); } catch (e) { pred = null; }
@@ -66823,9 +67007,10 @@ if (clinchFrom(state, pred)) lines.push(CLINCH_WORDS);
 let html = '';
 for (let i = 0; i < lines.length; i++) {
 const more = held && !full && /^\d+ more modifiers?$/.test(lines[i]);
+const order = i >= orderAt && i < orderAt + orders.length;
 html += more
 ? '<div class="tt-line tt-more" data-action="tt-expand" role="button" tabindex="0" data-testid="tt-expand">' + esc(lines[i]) + '</div>'
-: '<div class="tt-line">' + esc(lines[i]) + '</div>';
+: '<div class="tt-line' + (order ? ' tt-order' : '') + '"' + (order ? ' data-testid="tt-order"' : '') + '>' + esc(lines[i]) + '</div>';
 }
 tt.innerHTML = html;
 tt.hidden = false;
@@ -66922,6 +67107,7 @@ return previewChip(state, pick, chosen, slotId, findBoardSlot(state, slotId));
 sapperChipTitle: sapperChipTitle,
 buildOptionsOf: buildOptionsOf,
 tooltipLinesOf(state, pick, slotId, full) { return tooltipLines(state, pick, slotId, false, !!full); },
+orderLinesOf(state, pick, slotId) { return orderLines(state, pick, slotId); },
 heldPlaceOf: heldPlace,
 scoutLineOf(state, pick, slotId) { return scoutLine(state, pick, slotId); },
 
@@ -67032,6 +67218,7 @@ const tt = tooltipEl();
 const svg = linksEl();
 
 const invalid = slotId == null || !state || !state.status || chosenOf(state, pick) == null;
+if (app.ui && (invalid || app.ui.heroReachSlot !== slotId) && app.ui.heroReachSlot != null) Preview.heroReach(app, null);
 if (invalid) {
 if (tt) tt.hidden = true;
 clearSvg(svg);
@@ -67057,6 +67244,7 @@ resetGhost();
 return;
 }
 
+Preview.heroReach(app, slotId);
 if (nightHides(state)) {
 resetGhost();
 clearSvg(svg);
@@ -67225,33 +67413,26 @@ if (card) s.insertBefore(ring, card); else s.appendChild(ring);
 }
 }
 }
-const tt = tooltipEl();
-if (tt) {
-if (map && grid) {
-const slotEl = grid.querySelector('.slot[data-slot-id="' + slotId + '"]');
-tt.innerHTML = '<div class="tt-line">' + esc((R && R.HERO_REACH_CAPTION) || 'A hero here would lead these companies') + '</div>';
-tt.hidden = false;
-tt.setAttribute('data-hero-reach', 'true');
-tt.setAttribute('data-held', 'true');
-if (slotEl) {
-const rect = slotEl.getBoundingClientRect();
-const ttw = tt.offsetWidth;
-const vw = document.documentElement.clientWidth;
-let left = rect.right + window.scrollX + 8;
-if (left - window.scrollX + ttw > vw) {
-const leftAlt = rect.left + window.scrollX - ttw - 8;
-left = (leftAlt - window.scrollX < 4) ? (rect.left + window.scrollX) : leftAlt;
-}
-tt.style.left = left + 'px';
-tt.style.top = (rect.top + window.scrollY) + 'px';
-}
-} else if (tt.getAttribute('data-hero-reach') === 'true') {
-tt.hidden = true;
-tt.removeAttribute('data-hero-reach');
-tt.removeAttribute('data-held');
-}
-}
 return !!map;
+},
+
+lightOrder(app) {
+const grid = bf();
+if (!grid) return [];
+const old = grid.querySelectorAll('.slot[data-order-lit]');
+for (let i = 0; i < old.length; i++) old[i].removeAttribute('data-order-lit');
+const id = app && app.ui ? app.ui.orderLit : null;
+const S = TTF.Scoring;
+if (id == null || !app.state || !app.state.battleOrders || !S || typeof S.battleOrders !== 'function') return [];
+let list = [];
+try { list = S.battleOrders(app.state) || []; } catch (e) { list = []; }
+let ids = [];
+for (let i = 0; i < list.length; i++) if (list[i].id === id) ids = list[i].slotIds || [];
+for (let i = 0; i < ids.length; i++) {
+const s = grid.querySelector('.slot[data-slot-id="' + ids[i] + '"]');
+if (s) s.setAttribute('data-order-lit', 'true');
+}
+return ids.slice();
 },
 
 clearPreview(app) {
@@ -67299,6 +67480,7 @@ for (let i = 0; i < rings.length; i++) rings[i].classList.remove('slot-legal-aid
 
 clearSvg(linksEl());
 }
+if (app.ui && app.ui.heroReachSlot != null) Preview.heroReach(app, null);
 const tt = tooltipEl();
 if (tt) tt.hidden = true;
 resetGhost();
@@ -68334,10 +68516,22 @@ return '<div class="insp-header insp-tile-header" data-testid="insp-tile" data-s
 + '</div>' + body;
 }
 
-function renderEmpty(insp) {
+function ordersIdleHtml(app, opts) {
+const V = TTF.VarietyUI;
+if (!app || app.screen !== 'battle' || !app.state || !V || typeof V.ordersChecklistHtml !== 'function') return '';
+try { return V.ordersChecklistHtml(app.state, app.ui ? app.ui.orderLit : null, opts) || ''; } catch (e) { return ''; }
+}
+function ordersFootHtml(app, mode) {
+return mode === 'docked' ? ordersIdleHtml(app, { compact: true }) : '';
+}
+
+function renderEmpty(insp, app) {
 insp.setAttribute('data-state', 'empty');
 insp.removeAttribute('data-kind');
-insp.innerHTML = '<div class="insp-empty">' + HINT + '</div>' + legendHtml();
+const orders = ordersIdleHtml(app);
+if (orders) insp.setAttribute('data-orders', 'true');
+else insp.removeAttribute('data-orders');
+insp.innerHTML = '<div class="insp-empty">' + HINT + '</div>' + orders + legendHtml();
 }
 
 
@@ -68449,7 +68643,7 @@ if (!insp) return null;
 const ci = app.ui && app.ui.companyInfo;
 if (app.screen !== 'battle') {
 const ch = (ci && ci.screen === app.screen) ? companyHtml(app, ci) : '';
-if (!ch) { renderEmpty(insp); return null; }
+if (!ch) { renderEmpty(insp, app); return null; }
 insp.setAttribute('data-state', 'open');
 insp.setAttribute('data-kind', 'company');
 insp.setAttribute('role', 'dialog');
@@ -68467,13 +68661,13 @@ const target = app.ui && app.ui.inspect;
 const closedOverlay = (mode === 'popover' || mode === 'sheet') && !(app.ui && app.ui.popoverOpen && target);
 
 if (!target || mode === 'off' || closedOverlay) {
-renderEmpty(insp);
+renderEmpty(insp, app);
 return null;
 }
 
 if (target.kind === 'muster') {
 const mh = musterHtml(app.state);
-if (!mh) { renderEmpty(insp); return null; }
+if (!mh) { renderEmpty(insp, app); return null; }
 insp.setAttribute('data-state', 'open');
 insp.setAttribute('data-kind', 'muster');
 insp.innerHTML = (mode === 'sheet' ? sheetTopHtml() : closeButtonHtml(mode)) + (warTable() ? ledgerBody(withMarks(mh)) : mh);
@@ -68484,7 +68678,7 @@ if (target.kind === 'field') {
 const V = TTF.VarietyUI;
 let fh = '';
 try { fh = (V && typeof V.fieldEntryHtml === 'function') ? V.fieldEntryHtml(app, target) : ''; } catch (e) { fh = ''; }
-if (!fh) { renderEmpty(insp); return null; }
+if (!fh) { renderEmpty(insp, app); return null; }
 insp.setAttribute('data-state', 'open');
 insp.setAttribute('data-kind', 'field');
 insp.innerHTML = (mode === 'sheet' ? sheetTopHtml() : closeButtonHtml(mode)) + (warTable() ? ledgerBody(withMarks(fh)) : fh);
@@ -68493,7 +68687,7 @@ return null;
 
 if (target.kind === 'resolve') {
 const rh = resolveEntryHtml(app);
-if (!rh) { renderEmpty(insp); return null; }
+if (!rh) { renderEmpty(insp, app); return null; }
 insp.setAttribute('data-state', 'open');
 insp.setAttribute('data-kind', 'resolve');
 insp.innerHTML = (mode === 'sheet' ? sheetTopHtml() : closeButtonHtml(mode)) + (warTable() ? ledgerBody(withMarks(rh)) : rh);
@@ -68502,7 +68696,7 @@ return null;
 
 if (target.kind === 'tile') {
 const th = tileHtml(app, target.slotId);
-if (!th) { renderEmpty(insp); return null; }
+if (!th) { renderEmpty(insp, app); return null; }
 insp.setAttribute('data-state', 'open');
 insp.setAttribute('data-kind', 'tile');
 insp.innerHTML = (mode === 'sheet' ? sheetTopHtml() : closeButtonHtml(mode)) + (warTable() ? ledgerBody(withMarks(th)) : th);
@@ -68521,7 +68715,7 @@ includeInactive: true
 if (!warned && target.kind !== 'merc' && target.kind !== 'reserve') { console.warn('Inspector: Inspect.describe failed —', e && e.message); warned = true; }
 model = null;
 }
-if (!model) { renderEmpty(insp); return null; }
+if (!model) { renderEmpty(insp, app); return null; }
 
 const wt = warTable(); // PLAN 37: the War Table ledger under Battlefield
 const header = wt ? ledgerHeaderHtml(model, app) :
@@ -68571,7 +68765,8 @@ terrainPref[document.body.getAttribute('data-inspector-mode') || 'off'] = !!el.o
 insp.setAttribute('data-state', 'open');
 insp.setAttribute('data-kind', model.kind);
 const topHtml = mode === 'sheet' ? sheetTopHtml() : closeButtonHtml(mode);
-insp.innerHTML = topHtml + (wt ? ledgerBody(header + withMarks(body)) : header + body);
+const orders = ordersFootHtml(app, mode); // Battle Orders aid (2026-10-07)
+insp.innerHTML = topHtml + (wt ? ledgerBody(header + withMarks(body) + orders) : header + body + orders);
 return model;
 }
 };
@@ -68708,6 +68903,7 @@ selectedReserve: false,
 hoverSlot: null,           // hovered LEGAL slot (placement preview) — unchanged
 hoverAny: null,            // any hovered slot id (for the 'i' key), §15.4
 heroReachSlot: null,       // PLAN 40 item 40.6.6: the empty slot whose hero-hole outline shows
+orderLit: null,            // Battle Orders aid (2026-10-07): the order whose companies are lit
 inspect: null,             // InspectTarget | null — what the inspector shows
 popoverOpen: false,        // popover mode: whether the panel is open (also the sheet)
 inspectorMode: 'off',      // resolved docked|popover|off|sheet (applyLayout writes it)
@@ -69012,7 +69208,8 @@ return (r.width > 2 && r.right > x0 && r.left < x1) ? r : null;
 };
 const rival = cross(document.querySelector('.board-frame .general-card[data-side="enemy"], .generals .general-card'));
 const ours = cross(document.querySelector('#player-banner .general-card'));
-let top = rival ? Math.round(rival.bottom + 8) : null;
+const ordersList = !!(t && t.kind === 'field' && t.part === 'battleOrders');
+let top = (rival && !ordersList) ? Math.round(rival.bottom + 8) : null;
 let bottom = ours ? Math.round(vh - ours.top + 8) : null;
 if (top != null && bottom != null && vh - top - bottom < 220) bottom = null;
 if (top != null && (bottom != null ? vh - top - bottom : vh - top - 120) < 220) top = null;
@@ -69047,6 +69244,7 @@ if (TTF.Preview.highlightSlots) TTF.Preview.highlightSlots(app, model.applies ||
 TTF.Preview.clearHighlight(app);
 }
 updateInspectorVisibility();
+syncOrderLight(); // Battle Orders aid (2026-10-07): the light goes with its row
 return model;
 }
 
@@ -69103,10 +69301,9 @@ app.ui.selected = null;
 TTF.Preview.showPreview(app, app.ui.selected);
 if (app.ui.hoverSlot) TTF.Preview.hoverSlot(app, app.ui.hoverSlot);
 }
-} else if (app.ui.heroReachSlot != null && TTF.Preview.heroReach) {
-TTF.Preview.heroReach(app, app.ui.heroReachSlot);
 }
 }
+syncOrderLight();
 focusIntroIfOpen();
 if (TTF.DispatchUI && TTF.MetaUI && typeof TTF.MetaUI.dailyIntroSpec === 'function' && app.screen === 'world'
 && app.daily && app.ui && app.ui.dailyIntro && !app.ui.dispatch) {
@@ -71638,6 +71835,46 @@ app.ui.scout = null;
 draw();
 }
 
+let orderHoverId = null;
+
+function syncOrderLight() {
+if (!TTF.Preview || typeof TTF.Preview.lightOrder !== 'function' || typeof document === 'undefined') return;
+if (app.ui.orderLit != null) {
+const row = app.screen === 'battle' ? document.querySelector('#inspector:not([hidden]) .ord-row[data-order="' + String(app.ui.orderLit).replace(/[^a-z_]/g, '') + '"]') : null;
+if (!row) app.ui.orderLit = null;
+}
+TTF.Preview.lightOrder(app);
+}
+function setOrderLit(id) {
+app.ui.orderLit = id || null;
+const rows = document.querySelectorAll('#inspector .ord-row[data-order]');
+for (let i = 0; i < rows.length; i++) rows[i].setAttribute('aria-pressed', rows[i].getAttribute('data-order') === app.ui.orderLit ? 'true' : 'false');
+syncOrderLight();
+}
+function ordersLight(el) {
+const id = el && el.getAttribute ? el.getAttribute('data-order') : null;
+if (!id) return;
+if (orderHoverId === id) { setOrderLit(id); return; }
+setOrderLit(app.ui.orderLit === id ? null : id);
+}
+function onOrderRowOver(e) {
+if (app.ui.touch || app.screen !== 'battle') return;
+const row = (e.target && e.target.closest) ? e.target.closest('#inspector .ord-row[data-order]') : null;
+if (!row) return;
+const id = row.getAttribute('data-order');
+if (orderHoverId === id) return;
+orderHoverId = id;
+setOrderLit(id);
+}
+function onOrderRowOut(e) {
+if (orderHoverId == null) return;
+const from = (e.target && e.target.closest) ? e.target.closest('.ord-row') : null;
+const to = (e.relatedTarget && e.relatedTarget.closest) ? e.relatedTarget.closest('.ord-row') : null;
+if (!from || (to && to === from)) return; // still inside the row
+orderHoverId = null;
+if (!to) setOrderLit(null); // onto another row: its own mouseover lights it
+}
+
 function activePick() {
 if (app.ui.selectedReserve) return { reserve: true }; // PLAN §33.5 (wave 1)
 if (app.ui.selectedMerc != null) return { merc: app.ui.selectedMerc };
@@ -72541,6 +72778,7 @@ replaySeed(s || app.seed);
 break;
 }
 case 'inspect': { const tgt = parseInspectTarget(el.getAttribute('data-target')); if (tgt) inspect(tgt, el); break; }
+case 'orders-light': ordersLight(el); break; // Battle Orders aid (2026-10-07)
 case 'close-inspector': closeInspector(); break;
 case 'inspector-close': closeInspector(); break;
 case 'company-info': openCompanyInfo(TTF.Inspector && TTF.Inspector.companySubject ? TTF.Inspector.companySubject(app, el.getAttribute('data-uid'), el.getAttribute('data-def')) : null, el); break;
@@ -72623,10 +72861,6 @@ const badge = (target && target.closest) ? target.closest('.aide-badge[data-aide
 if (badge && app.state.attached && app.state.attached[slotId]) { inspect({ kind: 'aide', slotId: slotId }); return; }
 if (app.state.placements[slotId]) { inspect({ kind: 'slot', slotId: slotId }); return; }
 if (app.state.attached && app.state.attached[slotId] && livePick == null) { inspect({ kind: 'slot', slotId: slotId }); return; }
-if (livePick == null && TTF.Preview && TTF.Preview.heroReach) {
-heroHoverSid = slotId;
-TTF.Preview.heroReach(app, slotId);
-}
 if (livePick == null) { inspect({ kind: 'tile', slotId: slotId }, slotEl); return; }
 if (app.state.status !== 'playing') return;
 const pick = activePick();
@@ -72838,10 +73072,6 @@ if (sid && sid !== app.ui.swap.a) { TTF.Preview.showSwapDelta(app, sid); return;
 TTF.Preview.clearSwapDelta(app);
 return;
 }
-if (activePick() == null && TTF.Preview && TTF.Preview.heroReach) {
-const hsid = slotEl ? slotEl.getAttribute('data-slot-id') : null;
-if (hsid !== heroHoverSid) { heroHoverSid = hsid; TTF.Preview.heroReach(app, hsid); }
-}
 if (activePick() == null || !app.state || app.state.status !== 'playing') return;
 if (!slotEl) return;
 const hostLegal = slotEl.getAttribute('data-state') === 'filled' && slotEl.getAttribute('data-legal') === 'true';
@@ -72855,18 +73085,12 @@ app.ui.hoverSlot = slotId;
 TTF.Preview.hoverSlot(app, slotId);
 }
 
-let heroHoverSid = null;
-
 function onMouseOut(e) {
 if (app.screen !== 'battle') return;
 const grid = document.getElementById('battlefield');
 const related = e.relatedTarget;
 if (grid && related && grid.contains(related)) return; // moved to another slot
 if (app.ui.hoverAny != null) app.ui.hoverAny = null;
-if (heroHoverSid != null && !app.ui.touch) {
-heroHoverSid = null;
-if (app.ui.heroReachSlot != null && TTF.Preview && TTF.Preview.heroReach) TTF.Preview.heroReach(app, null);
-}
 if (app.ui.hoverSlot != null) { app.ui.hoverSlot = null; TTF.Preview.hoverSlot(app, null); }
 if (app.ui.swap && TTF.Preview.clearSwapDelta) TTF.Preview.clearSwapDelta(app);
 }
@@ -72943,6 +73167,8 @@ stage.addEventListener('mouseover', onMouseOver);
 stage.addEventListener('mouseout', onMouseOut);
 stage.addEventListener('focusin', onFocusIn);
 }
+document.addEventListener('mouseover', onOrderRowOver);
+document.addEventListener('mouseout', onOrderRowOut);
 
 if (typeof window !== 'undefined') {
 const onViewportChange = function () {
