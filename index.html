@@ -469,6 +469,21 @@ body[data-mode="port"] #side.pick .gen .txt { display: flex; }
 .armytag span { display: flex; flex-direction: column; align-items: center; font-weight: 800; font-size: 15px; color: var(--parchment-lit); }
 .armytag .ico { width: 28px; height: 28px; color: var(--parchment-lit); --c-infantry: #b7cdec; --c-cavalry: #f0b79a; --c-archer: #b5e0bd; --accent-2: #f3cf6f; }
 .armytag span.main { color: var(--brass-hi); }
+.armytag { flex-wrap: wrap; }
+/* §7.10 leaders: a light parchment plate inside the banner; type-coloured flags, crowns with formation pips */
+.lead, .armylead { --lf: clamp(24px, calc(var(--tray) * 0.1), 34px); min-width: 0; display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 10px; align-self: stretch; margin: 3px 4px 0; padding: 3px 6px; border-radius: 9px; color: #3a2508;
+  background: var(--noise), linear-gradient(180deg, var(--parchment-lit), var(--parchment)); box-shadow: inset 0 0 0 1.5px rgba(155, 112, 32, 0.75), inset 0 2px 3px rgba(90, 60, 10, 0.25); }
+.lead .ofs, .lead .hfs, .armylead .ofs, .armylead .hfs { display: flex; flex-direction: row; align-items: center; }
+.lead .ofs, .armylead .ofs { gap: 0; }
+.lead .hfs, .armylead .hfs { gap: 6px; }
+.lead .of, .armylead .of { display: flex; }
+.lead .of .ico, .armylead .of .ico { width: var(--lf); height: var(--lf); color: inherit; margin-left: calc(var(--lf) * -0.12); filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff) drop-shadow(0 0 0.5px #fff); }
+.lead .of:first-child .ico, .armylead .of:first-child .ico { margin-left: 0; }
+.lead .hf, .armylead .hf { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.lead .hf .ico, .armylead .hf .ico { width: calc(var(--lf) * 0.95); height: calc(var(--lf) * 0.95); color: #5e3f0b; --hero-crown: #e7bf5c; }
+.lead .hf em, .armylead .hf em { display: flex; flex-direction: row; gap: 1px; font-style: normal; }
+.lead .hf em i, .armylead .hf em i { display: block; width: clamp(8px, calc(var(--lf) * 0.36), 11px); height: clamp(8px, calc(var(--lf) * 0.36), 11px); border-radius: 50%; box-shadow: 0 0 0 1px rgba(20, 10, 2, 0.85); }
+.armylead { --lf: 22px; margin: 0; flex: 1 0 100%; }
 
 /* formation key: the board game's printed reference strip (a line of three, a triad),
    each with its bonus; lit with xN while it stands, pulsing while the held card completes one */
@@ -540,10 +555,11 @@ body[data-mode="port"] .fkey { --kp: clamp(14px, calc((var(--side) - 20px) / 5.2
 body[data-mode="port"] .ke { padding: 3px 4px; }
 
 /* ---------------------------------------------------------- tray: setup */
-.armies { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
-body[data-mode="port"] .armies { grid-template-columns: repeat(4, 1fr); }
+.armies { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap); }
+body[data-mode="port"] .armies { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+body[data-mode="port"] .lead { --lf: clamp(20px, calc(var(--tray) * 0.062), 26px); margin: 2px 2px 0; padding: 2px 3px; }
 .banner {
-  position: relative; border: 0; padding: 10px 4px 22px; min-height: 0;
+  position: relative; border: 0; padding: 10px 4px 22px; min-height: 0; min-width: 0;
   display: flex; flex-direction: column; align-items: center; gap: 2px;
   clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 88%, 0 100%);
   background: var(--noise), linear-gradient(180deg, var(--bg1), var(--bg2));
@@ -633,6 +649,14 @@ body[data-mode="port"] .plate { padding: 12px; gap: 8px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
 }
+
+
+body[data-mode="port"] #side.chosen .armytag .armylead .ico { width: var(--lf); height: var(--lf); }
+body[data-mode="port"] #side.chosen .armytag .armylead .hf .ico { width: calc(var(--lf) * 0.95); height: calc(var(--lf) * 0.95); }
+body[data-mode="port"] #side.chosen .armytag .armylead { --lf: 20px; }
+body[data-mode="port"] .banner .row .ico { width: 26px; height: 26px; }
+body[data-mode="port"] .banner { padding-bottom: 14px; gap: 0; }
+body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
 </style>
 </head>
 <body data-mode="land" data-phase="setup">
@@ -1806,9 +1830,9 @@ body[data-mode="port"] .plate { padding: 12px; gap: 8px; }
     offerSize: 3,
     // Rev 1 retune (docs/P44-CORE.md §7.6): easy is won by a casual player (about 95%),
     // normal by greedy play (casual about 40%), hard needs near-optimal play. 1 star is the win.
-    target: { easy: 18, normal: 26, hard: 42 },
+    target: { easy: 18, normal: 26, hard: 44 },
     // Star ratios (x target) per tier (§7.7); a plain array still works and applies to every
-    // tier. Totals needed: easy 18/27/38, normal 26/39/46, hard 42/47/49. Easy 3 stars needs
+    // tier. Totals needed: easy 18/27/38, normal 26/39/46, hard 44/49/52 (hard 42 -> 44 in §7.10). Easy 3 stars needs
     // greedy-level play, normal 3 stars lookahead-level, hard 2-3 stars stretch lookahead.
     stars: { easy: [1, 1.5, 2.1], normal: [1, 1.5, 1.76], hard: [1, 1.1, 1.16] }
   };
@@ -1882,8 +1906,8 @@ body[data-mode="port"] .plate { padding: 12px; gap: 8px; }
 <script>
 /*
  * core/js/generals.js - data for the Core Battle: generals (side-wide rule
- * flags read by rules.js), the hero pool and the army deck mixes
- * (docs/P44-CORE.md §1). A tunables object may carry `heroPool` / `armies`
+ * flags read by rules.js), the hero pool and the army deck mixes with their
+ * leaders (docs/P44-CORE.md §1, §7.10). A tunables object may carry `heroPool` / `armies`
  * overrides; rules.js prefers those over these defaults.
  */
 (function () {
@@ -1904,17 +1928,30 @@ body[data-mode="port"] .plate { padding: 12px; gap: 8px; }
     { id: 'warden', name: 'Warden', short: 'Hero ring 2' }
   ];
 
+  // §7.10: Marshal plus one hero {T:2, U:1} for every ordered pair of different
+  // types. Names never reach the UI (every hero card reads "Formation").
   C.HEROES = [
+    { id: 'marshal', name: 'Marshal', cond: { inf: 1, arc: 1, cav: 1 } },
     { id: 'vanguard', name: 'Vanguard', cond: { inf: 2, arc: 1 } },
+    { id: 'bulwark', name: 'Bulwark', cond: { inf: 2, cav: 1 } },
+    { id: 'longbow', name: 'Longbow', cond: { arc: 2, inf: 1 } },
+    { id: 'skirmisher', name: 'Skirmisher', cond: { arc: 2, cav: 1 } },
     { id: 'outrider', name: 'Outrider', cond: { cav: 2, inf: 1 } },
-    { id: 'marshal', name: 'Marshal', cond: { inf: 1, arc: 1, cav: 1 } }
+    { id: 'lancer', name: 'Lancer', cond: { cav: 2, arc: 1 } }
   ];
 
+  // §7.10 tailored leaders. officers: one officer card per entry; a list entry is
+  // one of those types, chosen by the board's seed. heroes: `always` ids, then
+  // `random` more drawn by the seed from the rest of the hero pool.
   C.ARMIES = [
-    { id: 'balanced', name: 'Balanced', mix: { inf: 6, arc: 6, cav: 6 } },
-    { id: 'inf_heavy', name: 'Infantry host', mix: { inf: 10, arc: 4, cav: 4 } },
-    { id: 'arc_heavy', name: 'Archer host', mix: { inf: 4, arc: 10, cav: 4 } },
-    { id: 'cav_heavy', name: 'Cavalry host', mix: { inf: 4, arc: 4, cav: 10 } }
+    { id: 'balanced', name: 'Balanced', mix: { inf: 6, arc: 6, cav: 6 },
+      officers: ['inf', 'arc', 'cav'], heroes: { always: ['marshal'], random: 1 } },
+    { id: 'inf_heavy', name: 'Infantry host', mix: { inf: 10, arc: 4, cav: 4 },
+      officers: ['inf', 'inf', ['arc', 'cav']], heroes: { always: ['vanguard', 'bulwark'] } },
+    { id: 'arc_heavy', name: 'Archer host', mix: { inf: 4, arc: 10, cav: 4 },
+      officers: ['arc', 'arc', ['inf', 'cav']], heroes: { always: ['longbow', 'skirmisher'] } },
+    { id: 'cav_heavy', name: 'Cavalry host', mix: { inf: 4, arc: 4, cav: 10 },
+      officers: ['cav', 'cav', ['inf', 'arc']], heroes: { always: ['outrider', 'lancer'] } }
   ];
 })();
 </script>
@@ -2227,23 +2264,44 @@ body[data-mode="port"] .plate { padding: 12px; gap: 8px; }
   }
 
   // ---- public API ---------------------------------------------------------
+  /**
+   * §7.10 tailored leaders: the officers {type, shape} and heroes {id, cond} the army
+   * `army` brings on the board of `seed`. army.officers lists one type per officer (a
+   * list entry is one of those types, picked by the seed); shapes are drawn by the seed
+   * from officerShapes with no repeat (a pool shorter than the officer list wraps).
+   * army.heroes = {always: [ids], random: n}: those ids, then n more drawn by the seed
+   * from the rest of the pool. An army without either falls back to deck.officers /
+   * deck.heroes random heroes.
+   */
+  function leadersFor(seed, T, army) {
+    let pool = (T.officerShapes || ['cross']).filter((x) => SHAPES[x]);
+    if (!pool.length) pool = ['cross'];
+    const shapes = C.RNG.shuffle(C.RNG.seedFrom(seed, 'officerShapes'), pool).value;
+    const offs = (army.officers || T.deck.officers).map((e, k) => {
+      const type = Array.isArray(e) ? e[C.RNG.int(C.RNG.seedFrom(seed, 'officerPick', army.id, k), 0, e.length - 1).value] : e;
+      return { type, shape: shapes[k % shapes.length] };
+    });
+    const hp = heroPool(T), rule = army.heroes || { random: T.deck.heroes };
+    const always = (rule.always || []).map((id) => hp.find((h) => h.id === id)).filter(Boolean);
+    const rest = hp.filter((h) => always.indexOf(h) < 0);
+    const extra = C.RNG.shuffle(C.RNG.seedFrom(seed, 'heroes', army.id), rest).value.slice(0, rule.random || 0);
+    return { officers: offs, heroes: always.concat(extra).map((h) => ({ id: h.id, cond: Object.assign({}, h.cond) })) };
+  }
+
   function createBattle(opts) {
     const o = opts || {};
     const T = o.tun || C.TUN_DEFAULT;
     const seed = o.seed === undefined || o.seed === null || o.seed === '' ? (Math.random() * 4294967296) >>> 0 : o.seed;
     const gens = C.RNG.shuffle(C.RNG.seedFrom(seed, 'generals'), C.GENERALS.map((g) => g.id)).value;
-    const heroes = C.RNG.shuffle(C.RNG.seedFrom(seed, 'heroes'), heroPool(T)).value.slice(0, T.deck.heroes);
-    // §7.2: one officer per entry of deck.officers; shapes drawn by the seed from
-    // officerShapes with no repeat (a pool shorter than the officer list wraps).
-    let pool = (T.officerShapes || ['cross']).filter((x) => SHAPES[x]);
-    if (!pool.length) pool = ['cross'];
-    const shapes = C.RNG.shuffle(C.RNG.seedFrom(seed, 'officerShapes'), pool).value;
+    // Every army's leaders are known at setup (the banners show them); chooseSetup
+    // copies the chosen army's into officers / heroes.
+    const leaders = {};
+    for (const a of armies(T)) leaders[a.id] = leadersFor(seed, T, a);
     return {
       phase: 'setup', seed, tier: o.tier || 'normal', tun: T,
       board: C.generateBoard(seed, T),
       generalOffer: gens.slice(0, T.generalOffer),
-      heroes: heroes.map((h) => ({ id: h.id, cond: Object.assign({}, h.cond) })),
-      officers: T.deck.officers.map((type, k) => ({ type, shape: shapes[k % shapes.length] })),
+      leaders, heroes: [], officers: [],
       general: null, army: null, deck: [], offer: [], pieces: {}, turn: 0, prev: null
     };
   }
@@ -2252,11 +2310,11 @@ body[data-mode="port"] .plate { padding: 12px; gap: 8px; }
   function cardsFor(st, armyId) {
     const T = tunOf(st), army = armies(T).find((a) => a.id === armyId);
     if (!army) throw new Error('unknown army ' + armyId);
+    const lead = (st.leaders && st.leaders[armyId]) || leadersFor(st.seed, T, army);
     const cards = [];
     for (const t of TYPES) for (let k = 0; k < (army.mix[t] || 0); k++) cards.push({ kind: 'unit', type: t });
-    const offs = st.officers || T.deck.officers.map((type) => ({ type, shape: 'cross' }));
-    for (const o of offs) cards.push({ kind: 'officer', type: o.type, shape: o.shape });
-    for (const h of st.heroes) cards.push({ kind: 'hero', id: h.id, cond: Object.assign({}, h.cond) });
+    for (const o of lead.officers) cards.push({ kind: 'officer', type: o.type, shape: o.shape });
+    for (const h of lead.heroes) cards.push({ kind: 'hero', id: h.id, cond: Object.assign({}, h.cond) });
     return cards.map((c, uid) => Object.assign({ uid }, c));
   }
 
@@ -2267,7 +2325,8 @@ body[data-mode="port"] .plate { padding: 12px; gap: 8px; }
     const T = tunOf(st);
     const deck = C.RNG.shuffle(C.RNG.seedFrom(st.seed, 'deck', army), cardsFor(st, army)).value;
     const d = drawOffer(deck, T.offerSize);
-    return Object.assign({}, st, { phase: 'draft', general, army, deck: d.deck, offer: d.offer, pieces: {}, turn: 0, prev: null });
+    const lead = (st.leaders && st.leaders[army]) || leadersFor(st.seed, T, armies(T).find((a) => a.id === army));
+    return Object.assign({}, st, { phase: 'draft', general, army, officers: lead.officers, heroes: lead.heroes, deck: d.deck, offer: d.offer, pieces: {}, turn: 0, prev: null });
   }
 
   /** Sim helper: the same draft state with its deck replaced by `cards` (top first) and the offer redrawn. */
@@ -2420,7 +2479,7 @@ body[data-mode="port"] .plate { padding: 12px; gap: 8px; }
   Object.assign(C, {
     PARTS, SHAPE_IDS, createBattle, chooseSetup, legalSlots, canPick, place, valueMap, total, combosOf,
     partialCombos, predict, heroArea, officerArea, formationStatus, shapeCells, officerOf, stars, starRatios, starThresholds, target, undo,
-    totalAfter, redeal, cardsFor, terrainMods, orthOf: (i) => ORTH[i].slice(), diagOf: (i) => DIAG[i].slice()
+    totalAfter, redeal, cardsFor, leadersFor, terrainMods, orthOf: (i) => ORTH[i].slice(), diagOf: (i) => DIAG[i].slice()
   });
   if (typeof module !== 'undefined') module.exports = C;
 })();
@@ -3104,6 +3163,19 @@ body[data-mode="port"] .plate { padding: 12px; gap: 8px; }
     return '<button class="gen ' + (cls || '') + '" data-gen="' + g.id + '"><div class="coin">' + Art.emblem(g.id) + '</div>' +
       '<div class="txt"><div class="nm">' + g.name + '</div>' + Art.glyph(g.id, T) + '<div class="cap">' + g.short + '</div></div></button>';
   }
+  /**
+   * §7.10 the army's leaders: one flag per officer in its type's colour, then one crown
+   * per hero with its formation as coloured pips (inf, arc, cav order).
+   */
+  function leadHTML(lead, cls) {
+    const offs = lead.officers.map((o) => '<span class="of" title="' + C.TYPE_NAMES[o.type] + ' officer" style="color:' + Art.TYPE_LIT[o.type] + '">' + Art.officerIcon() + '</span>').join('');
+    const hers = lead.heroes.map((h) => {
+      let pips = '';
+      C.TYPES.forEach((t) => { for (let k = 0; k < ((h.cond || {})[t] || 0); k++) pips += '<i style="background:' + Art.TYPE_LIT[t] + '"></i>'; });
+      return '<span class="hf" title="Hero">' + Art.heroIcon() + '<em>' + pips + '</em></span>';
+    }).join('');
+    return '<div class="' + cls + '"><span class="ofs">' + offs + '</span><span class="hfs">' + hers + '</span></div>';
+  }
   H.side = function side(st, sel) {
     const el = $('side');
     if (st.phase === 'setup') {
@@ -3115,7 +3187,7 @@ body[data-mode="port"] .plate { padding: 12px; gap: 8px; }
     const army = (tunOf(st).armies || C.ARMIES).find((a) => a.id === st.army);
     const mx = Math.max(army.mix.inf, army.mix.arc, army.mix.cav), even = army.mix.inf === army.mix.arc && army.mix.arc === army.mix.cav;
     el.innerHTML = genCard(genById(st.general), 'chosen', tunOf(st)) +
-      '<div class="armytag" title="' + army.name + '">' + ['inf', 'arc', 'cav'].map((t) => '<span class="' + (!even && army.mix[t] === mx ? 'main' : '') + '">' + Art.icon(t) + army.mix[t] + '</span>').join('') + '</div>' +
+      '<div class="armytag" title="' + army.name + '">' + ['inf', 'arc', 'cav'].map((t) => '<span class="' + (!even && army.mix[t] === mx ? 'main' : '') + '">' + Art.icon(t) + army.mix[t] + '</span>').join('') + leadHTML(st, 'armylead') + '</div>' +
       '<div class="fkey" id="fkey"></div>';
     keyShown = null;
     H.key(st);
@@ -3226,7 +3298,7 @@ body[data-mode="port"] .plate { padding: 12px; gap: 8px; }
       armies.forEach((ar) => {
         const mx = Math.max(ar.mix.inf, ar.mix.arc, ar.mix.cav), even = ar.mix.inf === ar.mix.arc && ar.mix.arc === ar.mix.cav;
         a += '<button class="banner ' + ar.id + (ui.sel.army === ar.id ? ' sel' : '') + '" data-army="' + ar.id + '"><span class="nm">' + ar.name + '</span>' +
-          ['inf', 'arc', 'cav'].map((t) => '<span class="row' + (!even && ar.mix[t] === mx ? ' main' : '') + '">' + Art.icon(t) + ar.mix[t] + '</span>').join('') + '</button>';
+          ['inf', 'arc', 'cav'].map((t) => '<span class="row' + (!even && ar.mix[t] === mx ? ' main' : '') + '">' + Art.icon(t) + ar.mix[t] + '</span>').join('') + leadHTML((st.leaders && st.leaders[ar.id]) || C.leadersFor(st.seed, T, ar), 'lead') + '</button>';
       });
       a += '</div>';
       const tiers = '<div class="tiers">' + ['easy', 'normal', 'hard'].map((t) => '<button data-tier="' + t + '" class="' + (st.tier === t ? 'sel' : '') + '"><span>' + t[0].toUpperCase() + t.slice(1) + '</span><b>' + T.target[t] + '</b></button>').join('') + '</div>';
