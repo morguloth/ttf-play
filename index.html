@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="1e99a6d24a";try{fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="4116f9714e";try{fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="icon" href="data:,">
@@ -240,6 +240,7 @@ body[data-mode="port"] #tray.cards { flex-direction: row; }
 .band { stroke-linecap: round; fill: none; opacity: 0.9; }
 .band-h { stroke: rgba(255, 255, 255, 0.28); stroke-linecap: round; fill: none; }
 .tri { fill: rgba(231, 191, 92, 0.18); stroke: var(--brass-1); stroke-width: 5; stroke-linejoin: round; }
+.tri-s { fill: rgba(231, 191, 92, 0.2); stroke-width: 6; }
 .combos .pulse .tri { fill: rgba(255, 226, 140, 0.3); stroke: #fff1b8; stroke-dasharray: 14 8; }
 .combos .new { animation: comboIn 600ms var(--ease-back); transform-box: fill-box; transform-origin: center; }
 @keyframes comboIn { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: scale(1); } }
@@ -527,6 +528,10 @@ body[data-mode="port"] #side.pick .gen .txt { display: flex; }
 .kband.inf { background: #6f97cc; } .kband.arc { background: #5fa572; } .kband.cav { background: #c66a45; }
 .ktri { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .ktri polygon { fill: rgba(231, 191, 92, 0.22); stroke: var(--brass-1); stroke-width: 0.12; stroke-linejoin: round; }
+/* §8.10: the triad entry shows both shapes, the 2x2 cluster over the straight mixed row */
+.kt2 { display: flex; flex-direction: column; align-items: center; gap: calc(var(--kp) * 0.3); flex: 0 0 auto; }
+.kd.ks { grid-template-columns: repeat(3, var(--kp)); gap: calc(var(--kp) * 0.22); }
+.kcap { position: absolute; left: -3px; right: -3px; top: 50%; height: calc(var(--kp) + 6px); transform: translateY(-50%); border-radius: 999px; background: rgba(231, 191, 92, 0.22); box-shadow: inset 0 0 0 2px var(--brass-1); }
 
 /* hints: one large parchment plate over the board's centre, never blocking (pointer-events:
    none); it steps back to a ghost while a card is held so the drop under it stays readable */
@@ -2377,18 +2382,22 @@ body[data-phone="port"] #top .total .of { display: none; }
       // greedy 2000 seeds, lookahead 200): run completion easy casual 96.4%, normal casual
       // 45.8% / greedy 100%, hard greedy 20.5% / lookahead 99.5%. No battle is above the
       // single-battle target (18 / 26 / 44); easy b4 equals it.
-      target: { easy: [14, 15, 17, 18], normal: [19, 21, 23, 25], hard: [35, 37, 41, 43] },
+      // §8.11 retune after straight triads (+0.5-1.1 per battle): normal b4 25 -> 26, hard b1
+      // 35 -> 36, hard b4 43 -> 44 (normal b4 / hard b4 now equal the single-battle targets;
+      // harmless, a run state always carries its battle or a run target).
+      target: { easy: [14, 15, 17, 18], normal: [19, 21, 23, 26], hard: [36, 37, 41, 44] },
       // Star ratios (x that battle's target) per tier, one [1, 2-star, 3-star] row per battle
       // (§8.8 star retune; overrides the top-level `stars` in run battles, rules.starRatios).
       // Run totals barely rise across the run while targets do, so each battle has its own
-      // row. 2-star ratios lowered 10% after playtest (2026-10-13). Totals needed (b1 / b2 / b3 / b4):
-      // easy 14-35-47, 15-35-47, 17-36-48, 18-35-49; normal 19-40-50, 21-40-50, 23-41-51, 25-42-52;
-      // hard 35-45-54, 37-44-54, 41-45-56, 43-46-55. Aim: easy 3 stars about half of lookahead play, normal 3 stars about a
+      // row. 2-star ratios lowered 10% after playtest (2026-10-13), then refitted after straight
+      // triads (§8.11) to keep every policy's per-battle rates. Totals needed (b1 / b2 / b3 / b4):
+      // easy 14-36-48, 15-35-48, 17-36-49, 18-36-50; normal 19-41-51, 21-40-51, 23-41-51, 26-43-52;
+      // hard 36-46-54, 37-45-54, 41-45-56, 44-47-55. Aim: easy 3 stars about half of lookahead play, normal 3 stars about a
       // third of lookahead, hard 3 stars about one lookahead battle in ten.
       stars: {
-        easy: [[1, 2.439, 3.35], [1, 2.277, 3.13], [1, 2.061, 2.82], [1, 1.899, 2.72]],
-        normal: [[1, 2.079, 2.63], [1, 1.881, 2.38], [1, 1.755, 2.21], [1, 1.656, 2.08]],
-        hard: [[1, 1.278, 1.54], [1, 1.188, 1.45], [1, 1.089, 1.36], [1, 1.062, 1.27]]
+        easy: [[1, 2.571, 3.428], [1, 2.333, 3.2], [1, 2.117, 2.882], [1, 2, 2.777]],
+        normal: [[1, 2.157, 2.684], [1, 1.904, 2.428], [1, 1.782, 2.217], [1, 1.653, 2]],
+        hard: [[1, 1.277, 1.5], [1, 1.216, 1.459], [1, 1.097, 1.365], [1, 1.068, 1.25]]
       },
       // Spoils after winning battle k (k is in one list; none -> straight to the next battle).
       addAfter: [1], levelUpAfter: [2], upgradeAfter: [3],
@@ -2609,7 +2618,7 @@ body[data-phone="port"] #top .total .of { display: none; }
  * Pieces: state.pieces[slot] = {uid, kind:'unit', type, officer?} | {uid, kind:'hero', id, cond}
  *                            | {uid, kind:'post', officer}   (an officer on an empty slot, §7.1)
  *   officer = {uid?, type, shape}; a legacy bare type string still reads as {type, shape:'cross'}.
- *   A post counts as empty for lines, triads and hero rings, adds 0 and has no valueMap
+ *   A post counts as empty for lines, triads (2x2 or straight, §8.10) and hero rings, adds 0 and has no valueMap
  *   entry, but its officer's shape works at once. A unit dropped on a post becomes
  *   {kind:'unit', type, officer} (the post's officer, now hosted).
  *
@@ -2766,7 +2775,8 @@ body[data-phone="port"] #top .total .of { display: none; }
         a = b;
       }
     }
-    // Triads: one of each type inside a 2x2 square (pairwise 8-adjacent).
+    // Triads: one of each type inside a 2x2 square (pairwise 8-adjacent), or in a
+    // straight row / column of three (below).
     const triV = g === 'tactician' ? T.general.tactician : T.combo.triad;
     const seen = {};
     for (const sq of SQUARES) {
@@ -2780,6 +2790,17 @@ body[data-phone="port"] #top .total .of { display: none; }
       for (const a of by[0]) for (const b of by[1]) for (const c of by[2]) {
         const slots = [a, b, c].sort((u, v) => u - v), key = slots.join(',');
         if (!seen[key]) { seen[key] = 1; combos.push({ kind: 'triad', slots }); }
+      }
+    }
+    // Straight triads (§8.10): one of each type in three consecutive slots of a row or
+    // column (orthogonal, never diagonal; heroes, posts and empty slots break them).
+    // Never the same slots as a 2x2 triad, and the bonus is still once per unit.
+    for (const L of LINES) {
+      for (let a = 0; a + 3 <= N; a++) {
+        const t0 = ty[L[a]], t1 = ty[L[a + 1]], t2 = ty[L[a + 2]];
+        if (t0 < 0 || t1 < 0 || t2 < 0 || ((1 << t0) | (1 << t1) | (1 << t2)) !== 7) continue;
+        pt[3 * S + L[a]] = pt[3 * S + L[a + 1]] = pt[3 * S + L[a + 2]] = triV;
+        if (combos) combos.push({ kind: 'triad', slots: L.slice(a, a + 3) });
       }
     }
     // Officers (on a host or on a post): a host gets +host; every unit of the
@@ -3878,7 +3899,7 @@ body[data-phone="port"] #top .total .of { display: none; }
 /*
  * core/js/board.js - the 4x4 board: painted tiles (terrain art only), unit
  * tokens with live value medallions, the combo overlay (bands, triad
- * triangles, in-progress ghosts), hero rings at rest and the drop preview
+ * triangles and straight-triad capsules (§8.10), in-progress ghosts), hero rings at rest and the drop preview
  * (docs/P44-CORE.md §3), plus officer posts, at-rest officer areas, hero
  * formation badges and the hover / long-press area focus (§7); run tokens
  * wear a rank-2 chevron and a trait pip (§8.3, Art.tokDeco). Reads state
@@ -4004,9 +4025,14 @@ body[data-phone="port"] #top .total .of { display: none; }
     return e;
   }
   const LIT = { inf: '#6f97cc', arc: '#5fa572', cav: '#c66a45' };
+  /** §8.10: a straight triad (three in a row or a column) rather than a 2x2 cluster. */
+  const isStraight = (c) => c.kind === 'triad' && (c.slots.every((q) => ((q / N) | 0) === ((c.slots[0] / N) | 0)) || c.slots.every((q) => q % N === c.slots[0] % N));
   function triadEmblem(c) {
     const xs = c.slots.map((q) => q % N), ys = c.slots.map((q) => (q / N) | 0);
-    const mx = (Math.min.apply(null, xs) + Math.max.apply(null, xs) + 1) / 2 * U, my = (Math.min.apply(null, ys) + Math.max.apply(null, ys) + 1) / 2 * U;
+    let mx = (Math.min.apply(null, xs) + Math.max.apply(null, xs) + 1) / 2 * U, my = (Math.min.apply(null, ys) + Math.max.apply(null, ys) + 1) / 2 * U;
+    // a straight triad's emblem sits in the gap between its first two tokens, a column's nudged
+    // left off the medallion (a 2x2's at the shared corner)
+    if (isStraight(c)) { const col = xs[0] === xs[1]; mx = (cx(c.slots[0]) + cx(c.slots[1])) / 2 - (col ? 8 : 0); my = (cy(c.slots[0]) + cy(c.slots[1])) / 2 - (col ? 0 : 3); }
     const g = el$('g', {}, 'temb'), r = 13, pt = (k) => [mx + r * Math.cos(-Math.PI / 2 + k * 2 * Math.PI / 3), my + 2 + r * Math.sin(-Math.PI / 2 + k * 2 * Math.PI / 3)];
     const P = [pt(0), pt(1), pt(2)];
     g.appendChild(el$('polygon', { points: P.map((p) => p.join(',')).join(' '), fill: '#f0e2bd', stroke: '#5e3f0b', 'stroke-width': 3, 'stroke-linejoin': 'round' }));
@@ -4021,6 +4047,14 @@ body[data-phone="port"] #top .total .of { display: none; }
       g.appendChild(el$('line', Object.assign({ 'stroke-width': 30 }, L), 'band-o'));
       g.appendChild(el$('line', Object.assign({ 'stroke-width': 24, stroke: LIT[c.type] }, L), 'band'));
       g.appendChild(el$('line', Object.assign({ 'stroke-width': 5 }, L), 'band-h'));
+    } else if (isStraight(c)) {
+      // §8.10: a brass-rimmed capsule through the three (the triad's look, not a line's solid band)
+      const a = c.slots[0], b = c.slots[2], h = 37, e = 41;
+      const x0 = Math.min(cx(a), cx(b)) - e, y0 = Math.min(cy(a), cy(b)) - e;
+      const R = cx(a) === cx(b) ? { x: cx(a) - h, y: y0, width: 2 * h, height: Math.abs(cy(b) - cy(a)) + 2 * e }
+        : { x: x0, y: cy(a) - h, width: Math.abs(cx(b) - cx(a)) + 2 * e, height: 2 * h };
+      g.appendChild(el$('rect', Object.assign({ rx: h, ry: h }, R), 'tri tri-s'));
+      if (emblem !== false) g.appendChild(triadEmblem(c));
     } else {
       const pts = c.slots.map((s) => cx(s) + ',' + cy(s)).join(' ');
       g.appendChild(el$('polygon', { points: pts }, 'tri'));
@@ -4384,14 +4418,14 @@ body[data-phone="port"] #top .total .of { display: none; }
 
   // ---- formation key ------------------------------------------------------------
   // The reference strip printed on the board's edge: a line of three of a kind and a
-  // triad, each with its bonus (general-aware). An entry lights up with xN while that
+  // triad (both shapes: 2x2 and a straight mixed row, §8.10), each with its bonus (general-aware). An entry lights up with xN while that
   // formation stands on the board, and pulses while the held card would complete one.
   let keyShown = null; // {el, html}: skip identical rewrites so the pulse runs smoothly
   const bboxKey = (slots) => {
     const xs = slots.map((s) => s % 4), ys = slots.map((s) => (s / 4) | 0);
     return Math.min.apply(null, xs) + ',' + Math.min.apply(null, ys) + ',' + Math.max.apply(null, xs) + ',' + Math.max.apply(null, ys);
   };
-  /** Lines on the board, and triads counted once per 2x2 square (as the board draws them). */
+  /** Lines on the board, and triads counted once per 2x2 square or straight run of three (as the board draws them). */
   function comboCount(cs) {
     const n = { line: 0, triad: 0 }, sq = {};
     for (const c of cs) {
@@ -4422,8 +4456,10 @@ body[data-phone="port"] #top .total .of { display: none; }
       '<div class="ke ' + kind + (on ? ' on' : '') + (pl ? ' pulse' : '') + '">' + diagram +
       '<span class="kv"><b>+' + val[kind] + '</b>' + (cnt[kind] ? '<i class="kn">×' + cnt[kind] + '</i>' : '') + '</span></div>';
     const lineD = '<div class="kd kl"><i class="kband ' + lt + '"></i>' + kpip(lt) + kpip(lt) + kpip(lt) + '</div>';
-    const triD = '<div class="kd kt"><svg class="ktri" viewBox="0 0 2 2" aria-hidden="true"><polygon points=".5,.5 1.5,.5 .5,1.5"/></svg>' +
-      kpip('inf') + kpip('arc') + kpip('cav') + '<span class="kp none"></span></div>';
+    // §8.10: both triad shapes share one bonus - the 2x2 cluster and the straight row of three
+    const triD = '<div class="kt2"><div class="kd kt"><svg class="ktri" viewBox="0 0 2 2" aria-hidden="true"><polygon points=".5,.5 1.5,.5 .5,1.5"/></svg>' +
+      kpip('inf') + kpip('arc') + kpip('cav') + '<span class="kp none"></span></div>' +
+      '<div class="kd ks"><i class="kcap"></i>' + kpip('arc') + kpip('cav') + kpip('inf') + '</div></div>';
     const html = entry('line', lineD, cnt.line > 0, !!pulse.line) + entry('triad', triD, cnt.triad > 0, pulse.triad);
     if (keyShown && keyShown.el === el && keyShown.html === html) return;
     el.innerHTML = html;
