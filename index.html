@@ -527,18 +527,21 @@ body[data-mode="port"] #side.pick .gen .txt { display: flex; }
 .ktri { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .ktri polygon { fill: rgba(231, 191, 92, 0.22); stroke: var(--brass-1); stroke-width: 0.12; stroke-linejoin: round; }
 
-/* hints: one parchment line on the board's top edge, never blocking */
+/* hints: one large parchment plate over the board's centre, never blocking (pointer-events:
+   none); it steps back to a ghost while a card is held so the drop under it stays readable */
 #hint {
-  position: absolute; left: 50%; top: 0; z-index: 7; pointer-events: none;
-  transform: translate(-50%, -42%) scale(0.96); opacity: 0;
-  padding: 4px 16px; border-radius: 10px; white-space: nowrap;
-  font-family: var(--face-name); font-weight: 700; font-size: clamp(14px, calc(var(--bs) * 0.024), 17px); line-height: 1.2; color: var(--ink);
+  position: absolute; left: 50%; top: 50%; z-index: 7; pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.92); opacity: 0;
+  width: max-content; max-width: calc(var(--bs) * 0.86);
+  padding: 0.5em 1.1em 0.55em; border-radius: 16px; text-align: center; white-space: normal; overflow-wrap: break-word;
+  font-family: var(--face-name); font-weight: 700; font-size: clamp(20px, calc(var(--bs) * 0.052), 34px); line-height: 1.22; color: var(--ink);
   background: var(--noise), linear-gradient(180deg, var(--parchment-lit), var(--parchment) 70%, var(--parchment-shade));
-  box-shadow: var(--shadow-lift), inset 0 0 0 1.5px rgba(155, 112, 32, 0.75), inset 0 0 0 4px rgba(251, 242, 216, 0.6);
+  box-shadow: 0 22px 44px -10px rgba(6, 3, 0, 0.85), 0 6px 14px rgba(6, 3, 0, 0.5), inset 0 0 0 2.5px var(--brass), inset 0 0 0 6px rgba(251, 242, 216, 0.7), inset 0 0 0 7px rgba(155, 112, 32, 0.5);
   transition: opacity 700ms ease, transform 700ms var(--ease-out);
 }
 #hint:empty { display: none; }
-#hint.show { opacity: 1; transform: translate(-50%, -42%) scale(1); transition: opacity 350ms ease, transform 350ms var(--ease-back); }
+#hint.show { opacity: 1; transform: translate(-50%, -50%) scale(1); transition: opacity 400ms ease, transform 450ms var(--ease-back); }
+body.holding #hint.show { opacity: 0.25; transition: opacity 200ms ease; }
 
 /* portrait: the chosen general sits in a row (coin beside its rule) so the key fits under it */
 body[data-mode="port"] #side.chosen { gap: 8px; justify-content: flex-start; }
@@ -657,6 +660,501 @@ body[data-mode="port"] #side.chosen .armytag .armylead { --lf: 20px; }
 body[data-mode="port"] .banner .row .ico { width: 26px; height: 26px; }
 body[data-mode="port"] .banner { padding-bottom: 14px; gap: 0; }
 body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
+
+/* =========================================================================
+   PLAN 45 (§8.3): the 4-battle run
+   ========================================================================= */
+/* "Battle k / n" beside the target, inside the enemy banner */
+.enemy .bnum { display: flex; flex-direction: column; align-items: center; line-height: 1; margin-top: -6px; padding-left: 9px; border-left: 1.5px solid rgba(231, 191, 92, 0.45); }
+.enemy .bnum b { font-size: calc(var(--top) * 0.36); }
+.enemy .bnum b i { font-style: normal; font-size: 0.62em; color: #f3d9a0; opacity: 0.9; }
+
+/* tokens: the rank-2 chevron (top right) and the trait pip (top left) */
+.tok .rk, .tok .tp { position: absolute; z-index: 1; pointer-events: none; }
+.tok .rk { right: -12%; top: -14%; width: 44%; height: 34%; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6)); }
+.tok .rk .chev { display: block; width: 100%; height: 100%; }
+.tok .tp {
+  left: -12%; top: -12%; width: 40%; height: 40%; border-radius: 50%; display: grid; place-items: center;
+  background: var(--brass-coin); box-shadow: 0 0 0 1.5px #3a2508, 0 2px 3px rgba(0, 0, 0, 0.55); color: #3a2508; --trait-bg: #e7bf5c;
+}
+.tok .tp .ico { width: 74%; height: 74%; margin: 0; filter: none; }
+.card .nm.vet { color: #8a5f14; font-weight: 800; }
+/* the "+N" power badge by a veteran's (or Heavy unit's) name */
+.pw, .fc b.pw, .fc.b b.pw { display: inline-block; margin-left: 4px; padding: 0 5px; border-radius: 8px; background: var(--brass-coin); color: #3a2508; box-shadow: 0 0 0 1px #5e3f0b; font-family: inherit; font-size: 0.86em; font-weight: 900; line-height: 1.35; vertical-align: 0.06em; }
+
+/* the run deck under the general: per type count, veterans, trait pips; then the leaders */
+.armytag.deck { gap: 4px 6px; }
+.armytag.deck .dt { position: relative; min-width: 30px; gap: 1px; }
+.armytag.deck .dt b { font-size: 15px; line-height: 1; font-variant-numeric: tabular-nums; }
+.armytag.deck .dt.main b { color: var(--brass-hi); }
+.armytag.deck .vt { display: flex; align-items: center; gap: 1px; font-style: normal; font-size: 12px; font-weight: 900; color: #f3cf6f; line-height: 1; }
+.armytag.deck .vt .chev { width: 13px; height: 10px; }
+.armytag.deck .trs { display: flex; gap: 1px; font-style: normal; }
+.armytag.deck .tpi { display: grid; place-items: center; width: 15px; height: 15px; border-radius: 50%; background: var(--brass-coin); color: #3a2508; box-shadow: 0 0 0 1px #3a2508; --trait-bg: #e7bf5c; }
+.armytag.deck .tpi .ico { width: 78%; height: 78%; color: #3a2508; }
+.armytag.deck .bump { animation: deckBump 900ms var(--ease-back); }
+@keyframes deckBump { 0% { transform: scale(1); filter: none; } 35% { transform: scale(1.45); filter: drop-shadow(0 0 8px rgba(255, 220, 130, 0.95)); } 100% { transform: scale(1); filter: none; } }
+body[data-mode="port"] #side.chosen .armytag.deck .dt { flex-wrap: wrap; justify-content: center; }
+body[data-mode="port"] #side.chosen .armytag.deck .dt b { font-size: 13px; }
+
+/* the hint's inline trait icon ("Choose who gets <icon>") */
+#hint .hti { display: inline-grid; place-items: center; width: 1.5em; height: 1.5em; margin: -0.3em 0 -0.3em 0.15em; vertical-align: middle; border-radius: 50%; background: var(--brass-coin); color: #3a2508; box-shadow: 0 0 0 1.5px #3a2508; --trait-bg: #e7bf5c; }
+#hint .hti .ico { width: 76%; height: 76%; }
+
+/* ------------------------------------------------------------ tray: spoils */
+#tray.spoils { gap: var(--gap); }
+.sprow { display: flex; flex-direction: column; gap: var(--gap); align-items: center; }
+body[data-mode="port"] .sprow { flex-direction: row; justify-content: center; }
+.card.pick { cursor: pointer; }
+.card.pick::after { content: ""; position: absolute; inset: 0; border-radius: 14px; pointer-events: none; animation: pickGlow 1.3s ease-in-out infinite alternate; }
+@keyframes pickGlow { from { box-shadow: inset 0 0 0 0 rgba(255, 214, 120, 0); } to { box-shadow: inset 0 0 0 3px rgba(255, 214, 120, 0.75), inset 0 0 18px rgba(255, 214, 120, 0.35); } }
+@media (hover: hover) { .card.pick:hover { transform: translateY(-4px) scale(1.02); box-shadow: var(--shadow-deep), 0 0 0 3px var(--brass-hi), 0 0 18px rgba(255, 214, 120, 0.6); } }
+.card.gone { opacity: 0; transform: scale(0.9); pointer-events: none; transition: opacity 260ms, transform 260ms; }
+.card.chosen { transform: scale(1.04); box-shadow: var(--shadow-deep), 0 0 0 3px var(--brass-hi), 0 0 24px rgba(255, 214, 120, 0.85); }
+.card.chosen::after { animation: none; }
+.card.blessed .tok .tp { animation: pop 520ms var(--ease-back) both; }
+.card.flying { cursor: default; }
+.spoils.upgrade .card { height: calc(var(--ch) * 0.8); --cs: min(var(--cw), calc(var(--ch) * 0.8)); }
+body[data-mode="port"] .spoils.upgrade .card { height: calc(var(--trayh) - 62px - var(--gap)); --cs: min(var(--cw), calc(var(--trayh) - 62px - var(--gap))); }
+/* the upgrade's trait: icon + name + its <=3-word caption */
+.trplaque {
+  display: flex; align-items: center; gap: 10px; align-self: center; padding: 7px 14px 7px 8px; border-radius: 999px; max-width: 100%;
+  background: var(--noise), linear-gradient(180deg, var(--parchment-lit), var(--parchment) 70%, var(--parchment-shade)); color: var(--ink);
+  box-shadow: var(--shadow-lift), inset 0 0 0 2px var(--brass), inset 0 0 0 4px rgba(251, 242, 216, 0.7);
+  animation: deal 420ms var(--ease-back) both;
+}
+.trplaque .tpc { flex: 0 0 auto; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; background: var(--brass-coin); color: #3a2508; box-shadow: 0 0 0 2px #5e3f0b, 0 3px 5px rgba(0, 0, 0, 0.4); --trait-bg: #e7bf5c; }
+.trplaque .tpc .ico { width: 74%; height: 74%; }
+.trplaque .tw { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; }
+.trplaque .tw b { font-family: var(--face-name); font-size: 17px; font-weight: 700; }
+.trplaque .tw i { font-style: normal; font-size: 13px; font-weight: 700; color: var(--ink-dim); white-space: nowrap; }
+body[data-mode="land"] .trplaque { align-self: stretch; border-radius: 16px; }
+body[data-mode="land"] .trplaque .tw i { white-space: normal; }
+
+/* level-up: every promoted card flips from the old rank name to the new one */
+#tray.spoils.levelup { --vavail: calc(var(--bs) - 64px - 2 * var(--gap)); --vt: min(96px, calc(var(--tray) / var(--vcols) * 0.4), calc(var(--vavail) / var(--vrows) * 0.5)); }
+body[data-mode="port"] #tray.spoils.levelup { --vavail: calc(var(--trayh) - 64px - var(--gap)); --vt: min(80px, calc(var(--tray) / var(--vcols) * 0.42), calc(var(--vavail) / var(--vrows) * 0.52)); }
+.vets { display: grid; grid-template-columns: repeat(var(--vcols), minmax(0, 1fr)); gap: var(--gap); }
+.vet { position: relative; height: calc(var(--vt) * 1.62); perspective: 700px; }
+.flip { position: absolute; inset: 0; transform-style: preserve-3d; }
+.flip.go { animation: vflip 760ms var(--ease-back) both; }
+.flip.done { transform: rotateY(180deg); }
+@keyframes vflip { 0% { transform: rotateY(0); } 100% { transform: rotateY(180deg); } }
+.fc {
+  position: absolute; inset: 0; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(var(--vt) * 0.08);
+  -webkit-backface-visibility: hidden; backface-visibility: hidden;
+  background: var(--noise), linear-gradient(180deg, var(--parchment-lit), var(--parchment) 70%, var(--parchment-shade)); color: var(--ink);
+  box-shadow: var(--shadow-lift), inset 0 0 0 2px rgba(180, 141, 85, 0.85);
+}
+.fc.b { transform: rotateY(180deg); box-shadow: var(--shadow-lift), inset 0 0 0 2px var(--brass), 0 0 16px rgba(255, 214, 120, 0.55); }
+.fc .tok { position: relative; left: auto; top: auto; width: var(--vt); height: var(--vt); flex: 0 0 auto; border-width: 3px; }
+.fc b { font-family: var(--face-name); font-weight: 700; font-size: clamp(12px, calc(var(--vt) * 0.2), 17px); color: var(--ink-dim); white-space: nowrap; }
+.fc.b b { color: #8a5f14; }
+.plate.novet { padding: 18px 12px; gap: 8px; }
+.plate.novet .nvi { width: 44px; height: 34px; opacity: 0.45; filter: grayscale(1); }
+.plate.novet .nvi .chev { width: 100%; height: 100%; }
+.plate.novet b { font-family: var(--face-name); font-size: 18px; color: var(--ink-dim); }
+#tray.spoils > .go { align-self: stretch; }
+body[data-mode="port"] #tray.spoils > .go { align-self: center; min-width: 50%; }
+
+/* --------------------------------------------- result plates: tag, victory */
+.plate .tierTag { font-family: var(--face-name); font-size: 14px; font-weight: 700; letter-spacing: 0.06em; color: var(--ink-dim); }
+.plate.victory { gap: calc(var(--gap) * 0.7); }
+.plate .vcrown { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--brass-coin); color: #3a2508; --hero-crown: #fff6cf; box-shadow: 0 0 0 2px #5e3f0b, 0 0 22px rgba(255, 210, 110, 0.8); animation: stamp 620ms var(--ease-back) both; }
+.plate .vcrown .ico { width: 80%; height: 80%; }
+.runres { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+.rr { display: grid; grid-template-columns: 1.6em auto 1fr auto; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 9px; background: rgba(120, 90, 40, 0.12); box-shadow: inset 0 0 0 1px rgba(120, 90, 40, 0.28); font-variant-numeric: tabular-nums; animation: deal 420ms var(--ease-back) both; }
+.rr .bn { display: grid; place-items: center; width: 1.6em; height: 1.6em; border-radius: 50%; background: var(--crimson); color: var(--brass-hi); font-weight: 900; font-size: 13px; }
+.rr .rs { display: flex; gap: 1px; }
+.plate .rr .star { width: 20px; height: 20px; margin: 0; animation: none; }
+.rr b { justify-self: end; font-size: 20px; font-weight: 900; color: var(--gain); line-height: 1; }
+.rr i { font-style: normal; font-size: 13px; font-weight: 700; color: var(--ink-quiet); }
+body[data-mode="port"] .plate.victory .vcrown { display: none; }
+body[data-mode="port"] .plate.victory .runres { display: grid; grid-template-columns: 1fr 1fr; }
+/* portrait: the run deck stays one row (type icon, count, veterans, trait pips) so the
+   formation key still fits under it; the turn pips shrink to make room for "Battle k/n" */
+body[data-mode="port"] #side.chosen .armytag.deck { gap: 3px 4px; }
+body[data-mode="port"] #side.chosen .armytag.deck .dt { flex-wrap: nowrap; gap: 1px; min-width: 0; align-items: center; }
+body[data-mode="port"] #side.chosen .armytag.deck .dt > .ico { width: 16px; height: 16px; }
+body[data-mode="port"] #side.chosen .armytag.deck .dt b { font-size: 12px; }
+body[data-mode="port"] #side.chosen .armytag.deck .vt { font-size: 10px; }
+body[data-mode="port"] #side.chosen .armytag.deck .vt .chev { width: 9px; height: 7px; }
+body[data-mode="port"] #side.chosen .armytag.deck .tpi { width: 12px; height: 12px; }
+body[data-mode="port"] #side.chosen .armytag.deck .tpi .ico { width: 78%; height: 78%; }
+body[data-mode="port"] #top .pips { gap: 5px; }
+body[data-mode="port"] #top .pip8 { width: 12px; height: 12px; }
+/* review fixes: run headlines on the result plates, "from battle 1" under Try again,
+   the leader count in the deck summary */
+.plate .phead { font-family: var(--face-name); font-size: clamp(20px, calc(var(--tray) * 0.1), 28px); font-weight: 800; line-height: 1.05; color: var(--loss); text-align: center; }
+.plate .phead.win { color: #8a5f14; text-shadow: 0 0 10px rgba(255, 214, 120, 0.7); }
+.go .gl { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.05; }
+.go .gl small { font-size: 0.6em; font-weight: 700; opacity: 0.8; letter-spacing: 0.02em; }
+.armylead .lc { font-size: 13px; font-weight: 900; color: #3a2508; font-variant-numeric: tabular-nums; }
+/* on a level-up tile the "+N" sits on the token's lower right, clear of the long names */
+.fc .tok b.pw.tokpw { position: absolute; right: -16%; bottom: -4%; z-index: 2; margin: 0; font-family: var(--face-name); font-size: clamp(11px, calc(var(--vt) * 0.2), 16px); }
+/* portrait: the run headline needs room, so the plate's stars shrink a little */
+body[data-mode="port"] .plate .star { width: 40px; height: 40px; }
+body[data-mode="port"] .plate .star.mid { width: 48px; height: 48px; margin-bottom: 6px; }
+body[data-mode="port"] .plate .phead { font-size: 22px; }
+
+/* ---- PLAN 45 UI pass (§8.6) ------------------------------------------------------------ */
+/* the guaranteed draw: the card just recruited / upgraded wears a brass tag and a soft glow
+   in the offer, tying it to the spoils pick that made it */
+.card.fresh { box-shadow: var(--shadow-lift), 0 0 0 2px rgba(251, 231, 166, 0.9), 0 0 16px rgba(255, 214, 120, 0.55), inset 0 0 0 2px rgba(180, 141, 85, 0.85), inset 0 0 0 5px rgba(251, 242, 216, 0.6), inset 0 0 0 6px rgba(180, 141, 85, 0.45); animation: freshGlow 1.6s ease-in-out infinite alternate; }
+.card.fresh.deal { animation: deal 380ms var(--ease-back) backwards, freshGlow 1.6s ease-in-out 400ms infinite alternate; }
+.card.fresh.sel { box-shadow: var(--shadow-deep), 0 0 0 3px var(--brass-hi), 0 0 22px rgba(255, 214, 120, 0.75), inset 0 0 0 2px rgba(180, 141, 85, 0.85); }
+@keyframes freshGlow { from { filter: drop-shadow(0 0 0 rgba(255, 214, 120, 0)); } to { filter: drop-shadow(0 0 7px rgba(255, 214, 120, 0.75)); } }
+.card .newtag {
+  position: absolute; left: 7px; top: 12px; z-index: 2; pointer-events: none;
+  padding: 2px 7px 2px 6px; border-radius: 3px 999px 999px 3px;
+  background: var(--brass-plate); color: #3a2508; box-shadow: 0 0 0 1px #5e3f0b, 0 2px 3px rgba(0, 0, 0, 0.35);
+  font-family: var(--face-name); font-style: normal; font-weight: 800; font-size: clamp(10px, calc(var(--cs) * 0.075), 13px);
+  letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.2;
+}
+#float .card .newtag { display: none; }
+
+/* the run deck: veterans and trait pips sit in their type's column (landscape: inline) */
+.armytag.deck .dx { display: contents; font-style: normal; }
+
+/* portrait (deferred review issue): the run deck reads at 12px+. Each type is a column of
+   icon + count over its veterans / trait pips; the formation key's xN sits beside its bonus */
+body[data-mode="port"] #side.chosen .armytag.deck { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px 4px; padding: 6px 6px 6px; }
+body[data-mode="port"] #side.chosen .armytag.deck .dt { display: grid; grid-template-columns: auto auto; justify-content: center; align-items: center; column-gap: 3px; row-gap: 3px; min-width: 0; }
+body[data-mode="port"] #side.chosen .armytag.deck .dt > .ico { width: 20px; height: 20px; }
+body[data-mode="port"] #side.chosen .armytag.deck .dt b { font-size: 15px; }
+body[data-mode="port"] #side.chosen .armytag.deck .dx { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 3px; min-height: 14px; }
+body[data-mode="port"] #side.chosen .armytag.deck .vt { font-size: 13px; gap: 1px; }
+body[data-mode="port"] #side.chosen .armytag.deck .vt .chev { width: 12px; height: 9px; }
+body[data-mode="port"] #side.chosen .armytag.deck .tpi { width: 15px; height: 15px; }
+body[data-mode="port"] #side.chosen .armytag.deck .armylead { grid-column: 1 / -1; }
+body[data-mode="port"] .kv { flex-direction: row; gap: 4px; }
+/* ...and the general's plate slims to a coin beside its name and rule (one line when it fits) */
+body[data-mode="port"] #side.chosen { gap: 8px; }
+body[data-mode="port"] .gen.chosen { flex: 0 0 auto; padding: 5px 8px; gap: 8px; }
+body[data-mode="port"] .gen.chosen .coin { width: 36px; }
+body[data-mode="port"] .gen.chosen .txt { flex-direction: row; flex-wrap: wrap; align-items: center; column-gap: 6px; row-gap: 0; }
+body[data-mode="port"] .gen.chosen .glyph { width: 52px; }
+/* the leaders' plate: heroes stack crown over formation pips so flags and crowns share a line */
+body[data-mode="port"] #side.chosen .armytag.deck .armylead { --lf: 18px; gap: 2px 8px; padding: 3px 6px 5px; }
+body[data-mode="port"] #side.chosen .armytag.deck .armylead .hf { flex-direction: column; gap: 1px; }
+body[data-mode="port"] #side.chosen .armytag.deck .armylead .hfs { gap: 5px; }
+body[data-mode="port"] #side.chosen .armytag.deck .armylead .hf em i { width: 8px; height: 8px; }
+
+/* portrait (deferred review issue): the turn pips get their own row under the score bar AND
+   the star row (13px diamonds, clear gaps) instead of squeezing under the bar alone */
+body[data-mode="port"] #top { grid-template-columns: auto minmax(0, 1fr) auto auto auto; grid-template-rows: calc(var(--top) - 26px) 24px; row-gap: 0; align-content: start; align-items: center; }
+body[data-mode="port"] #top .enemy { align-self: start; }
+body[data-mode="port"] #top .score { grid-column: 2; grid-row: 1; height: auto; align-self: stretch; }
+body[data-mode="port"] #top .starrow { grid-column: 3; grid-row: 1; align-self: center; }
+body[data-mode="port"] #top .pips { grid-column: 2 / 4; grid-row: 2; justify-content: center; align-self: center; gap: 12px; padding: 0; height: 18px; }
+body[data-mode="port"] #top .pip8 { width: 13px; height: 13px; flex: 0 0 auto; }
+
+/* =========================================================================
+   Phones (app.js layout() sets body[data-phone] when the short side is under 520px).
+   Additive: tablets and desktops never match these rules.
+   ========================================================================= */
+/* ---- portrait phone: a two-row top bar (target / battle, stars + total over bar + turns) */
+body[data-phone="port"] #top { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; grid-template-rows: 32px 18px; column-gap: 7px; row-gap: 4px; padding: 0 8px; align-content: center; align-items: center; }
+body[data-phone="port"] #top .enemy { grid-column: 1; grid-row: 1 / 3; align-self: start; flex-direction: column; justify-content: center; align-items: center; gap: 2px; height: calc(var(--top) + 8px); padding: 0 10px 8px; }
+body[data-phone="port"] #top .enemy .crest { display: none; }
+body[data-phone="port"] #top .enemy .tgt { min-width: 0; margin-top: 0; }
+body[data-phone="port"] #top .enemy .tgt b { font-size: 25px; }
+body[data-phone="port"] #top .enemy .k { letter-spacing: 0.1em; }
+body[data-phone="port"] #top .enemy .bnum { flex-direction: row; align-items: baseline; gap: 4px; margin-top: 0; padding-left: 0; border-left: 0; }
+body[data-phone="port"] #top .enemy .bnum b { font-size: 15px; }
+body[data-phone="port"] #top .starrow { grid-column: 2; grid-row: 1; justify-self: start; align-self: center; gap: 3px; }
+body[data-phone="port"] #top .sr .star { width: 20px; height: 20px; }
+body[data-phone="port"] #top .total { grid-column: 3; grid-row: 1; justify-self: end; align-self: center; gap: 3px; }
+body[data-phone="port"] #top .total b { font-size: 26px; }
+body[data-phone="port"] #top .total .of { font-size: 15px; }
+body[data-phone="port"] #top .total .next { font-size: 15px; min-width: 1.9em; }
+body[data-phone="port"] #top .score { grid-column: 2; grid-row: 2; height: 100%; min-width: 0; align-self: stretch; }
+body[data-phone="port"] #top .bar { height: 12px; }
+body[data-phone="port"] #top .pips { grid-column: 3; grid-row: 2; justify-content: flex-end; align-self: center; gap: 5px; height: 18px; padding: 0 2px; }
+body[data-phone="port"] #top .pip8 { width: 8px; height: 8px; }
+body[data-phone="port"] #top .btns { grid-column: 4; grid-row: 1 / 3; gap: 6px; }
+body[data-phone="port"] #top .ibtn { width: 38px; height: 38px; min-width: 38px; min-height: 38px; }
+
+/* the rows under the board use the full width; the board centres above them */
+body[data-phone="port"] #main { grid-template-columns: var(--side) calc(var(--rw) - var(--side) - var(--gap)); }
+body[data-phone="port"] #stage { justify-self: center; width: var(--bs); }
+
+/* setup: the generals' row, then the armies, then difficulty + Begin, all under the board */
+body[data-phone="port"][data-phase="setup"] #main { grid-template-columns: var(--rw); grid-template-rows: var(--bs) var(--sideh) var(--trayh); grid-template-areas: "stage" "side" "tray"; }
+body[data-phone="port"] #side.pick { flex-direction: row; gap: var(--gap); }
+body[data-phone="port"] #side.pick .gen { flex: 1 1 0; min-width: 0; gap: 6px; padding: 4px 6px; }
+body[data-phone="port"] #side.pick .gen .coin { width: 34px; }
+body[data-phone="port"] #side.pick .gen .nm { font-size: 12px; }
+body[data-phone="port"] #side.pick .gen .glyph { width: 46px; }
+body[data-phone="port"] #side.pick .gen .cap { display: none; }
+body[data-phone="port"] .setupcol .armies { gap: 6px; }
+body[data-phone="port"] .banner { padding: 9px 2px 14px; }
+body[data-phone="port"] .banner .nm { font-size: 11px; white-space: normal; text-align: center; line-height: 1.1; }
+body[data-phone="port"] .banner .row { font-size: 15px; }
+body[data-phone="port"] .banner .row.main { font-size: 18px; }
+body[data-phone="port"] .banner .row .ico { width: 22px; height: 22px; }
+body[data-phone="port"] .lead { --lf: 18px; gap: 2px 4px; padding: 3px 3px 5px; }
+body[data-phone="port"] .setupcol .go { min-height: 46px; padding: 8px 6px; font-size: 19px; }
+
+/* play: the side column (general's coin + rule, run deck, formation key) at ~90px */
+body[data-phone="port"] #side.chosen { gap: 6px; justify-content: flex-start; }
+body[data-phone="port"] .gen.chosen { flex-direction: row; justify-content: center; gap: 4px; padding: 5px 3px; }
+body[data-phone="port"] .gen.chosen .coin { width: 30px; }
+body[data-phone="port"] .gen.chosen .txt { flex-direction: row; }
+body[data-phone="port"] .gen.chosen .nm { display: none; }
+body[data-phone="port"] .gen.chosen .glyph { width: 48px; }
+body[data-phone="port"] #side.chosen .armytag.deck { gap: 4px 2px; padding: 5px 3px; }
+body[data-phone="port"] #side.chosen .armytag.deck .dt { grid-template-columns: auto; justify-items: center; row-gap: 1px; }
+body[data-phone="port"] #side.chosen .armytag.deck .dt > .ico { width: 18px; height: 18px; }
+body[data-phone="port"] #side.chosen .armytag.deck .dt b { font-size: 13px; }
+body[data-phone="port"] #side.chosen .armytag.deck .dx { flex-wrap: wrap; min-height: 0; gap: 2px; }
+body[data-phone="port"] #side.chosen .armytag.deck .vt { font-size: 11px; }
+body[data-phone="port"] #side.chosen .armytag.deck .vt .chev { width: 10px; height: 8px; }
+body[data-phone="port"] #side.chosen .armytag.deck .tpi { width: 13px; height: 13px; }
+body[data-phone="port"] #side.chosen .armytag.deck .armylead { --lf: 17px; gap: 2px 6px; padding: 3px 3px 4px; }
+body[data-phone="port"] .fkey { --kp: 15px; padding: 4px 2px; gap: 3px; }
+body[data-phone="port"] .ke { padding: 2px; gap: 4px; }
+body[data-phone="port"] .kv { flex-direction: column; gap: 2px; min-width: 0; }
+body[data-phone="port"] .ke .kn { font-size: 10px; }
+
+/* cards at ~80px: smaller terrain chips, names may wrap above their "+N" */
+body[data-phone="port"] .card .nm { font-size: 11px; letter-spacing: 0; line-height: 1.15; text-align: center; padding: 0 2px; }
+body[data-phone="port"] .trow { gap: 2px; }
+body[data-phone="port"] .tm { gap: 1px; padding: 1px 3px 1px 1px; }
+body[data-phone="port"] .tm .tico { width: 15px; height: 15px; }
+body[data-phone="port"] .tm b { font-size: 12px; }
+body[data-phone="port"] .card .newtag { left: 4px; top: 9px; font-size: 10px; padding: 1px 5px 1px 4px; letter-spacing: 0.04em; }
+
+/* spoils and plates */
+body[data-phone="port"] .trplaque { padding: 5px 10px 5px 6px; gap: 8px; }
+body[data-phone="port"] .trplaque .tpc { width: 38px; height: 38px; }
+body[data-phone="port"] .trplaque .tw b { font-size: 15px; }
+body[data-phone="port"] .trplaque .tw i { font-size: 12px; }
+body[data-phone="port"] .spoils.upgrade .card { height: min(calc(var(--trayh) - 52px - var(--gap)), calc(var(--cw) * 1.6)); --cs: min(var(--cw), calc(var(--trayh) - 52px - var(--gap))); }
+body[data-phone="port"] .plate .go { font-size: 18px; padding: 8px 6px; min-height: 46px; }
+body[data-phone="port"] .plate .res b { font-size: 40px; }
+
+/* ---- landscape phone: the board is height-bound; wider side and tray beside it */
+body[data-phone="land"] #top { gap: 10px; padding: 0 10px; }
+body[data-phone="land"] #top .enemy .crest { width: 30px; height: 30px; }
+body[data-phone="land"] #top .score { min-width: 70px; }
+body[data-phone="land"] #top .pips { gap: 7px; }
+body[data-phone="land"] #top .pip8 { width: 12px; height: 12px; }
+body[data-phone="land"] #top .ibtn { width: 40px; height: 40px; }
+body[data-phone="land"] #side.pick .gen { flex-direction: row; justify-content: flex-start; gap: 10px; padding: 6px 10px; text-align: left; }
+body[data-phone="land"] #side.pick .gen .coin { width: 44px; }
+body[data-phone="land"] #side.pick .gen .txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+body[data-phone="land"] #side.pick .gen .glyph { width: 56px; }
+body[data-phone="land"] #side.chosen { gap: 6px; justify-content: flex-start; }
+body[data-phone="land"] .gen.chosen { flex: 0 0 auto; flex-direction: row; gap: 8px; padding: 5px 8px; text-align: left; }
+body[data-phone="land"] .gen.chosen .coin { width: 36px; }
+body[data-phone="land"] .gen.chosen .txt { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; column-gap: 6px; row-gap: 0; min-width: 0; }
+body[data-phone="land"] .gen.chosen .nm { font-size: 13px; }
+body[data-phone="land"] .gen.chosen .glyph { width: 52px; }
+body[data-phone="land"] .gen.chosen .cap { display: none; }
+body[data-phone="land"] #side.chosen .armytag { padding: 4px 6px; }
+body[data-phone="land"] #side.chosen .armytag.deck { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px 4px; padding: 5px 6px; }
+body[data-phone="land"] #side.chosen .armytag.deck .dt { display: grid; grid-template-columns: auto auto; justify-content: center; align-items: center; column-gap: 3px; row-gap: 2px; min-width: 0; }
+body[data-phone="land"] #side.chosen .armytag.deck .dt > .ico { width: 20px; height: 20px; }
+body[data-phone="land"] #side.chosen .armytag.deck .dt b { font-size: 15px; }
+body[data-phone="land"] #side.chosen .armytag.deck .dx { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 3px; }
+body[data-phone="land"] #side.chosen .armytag.deck .vt { font-size: 12px; }
+body[data-phone="land"] #side.chosen .armytag.deck .vt .chev { width: 12px; height: 9px; }
+body[data-phone="land"] #side.chosen .armytag.deck .armylead { grid-column: 1 / -1; --lf: 18px; gap: 2px 8px; padding: 3px 6px 5px; }
+body[data-phone="land"] .fkey { --kp: 18px; padding: 5px 4px; gap: 3px; }
+body[data-phone="land"] .ke { padding: 2px 4px; }
+body[data-phone="land"] .kv { flex-direction: row; gap: 4px; }
+body[data-phone="land"] .ke .kn { font-size: 11px; }
+body[data-phone="land"] .setupcol { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+body[data-phone="land"] .setupcol .armies { grid-column: 1 / -1; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+body[data-phone="land"] .banner { padding: 9px 2px 14px; gap: 0; }
+body[data-phone="land"] .banner .nm { font-size: 11px; white-space: normal; text-align: center; line-height: 1.1; }
+body[data-phone="land"] .banner .row .ico { width: 22px; height: 22px; }
+body[data-phone="land"] .lead { --lf: 18px; gap: 2px 4px; margin: 2px 2px 0; padding: 3px 3px 5px; }
+body[data-phone="land"] .tiers button span { font-size: 12px; }
+body[data-phone="land"] .setupcol .go { min-height: 46px; padding: 8px 6px; font-size: 19px; }
+body[data-phone="land"] .plate { padding: 10px; gap: 6px; }
+body[data-phone="land"] .plate .vcrown { display: none; }
+body[data-phone="land"] .plate .star { width: 40px; height: 40px; }
+body[data-phone="land"] .plate .star.mid { width: 48px; height: 48px; margin-bottom: 6px; }
+body[data-phone="land"] .plate .go { min-height: 44px; padding: 8px; font-size: 18px; }
+body[data-phone="land"] .trplaque { padding: 5px 10px 5px 6px; }
+body[data-phone="land"] .trplaque .tpc { width: 36px; height: 36px; }
+body[data-phone] #top .enemy .bnum b i { font-size: 11px; }
+body[data-phone] .pw, body[data-phone] .fc b.pw { font-size: 10px; }
+body[data-phone="port"] .gen.chosen { padding: 3px; }
+body[data-phone="port"] .gen.chosen .coin { width: 28px; }
+/* the formation count rides on its entry's corner so each entry stays one line tall */
+body[data-phone="port"] .kv { flex-direction: row; }
+body[data-phone="port"] .ke .kn { position: absolute; right: 0; top: -3px; z-index: 1; padding: 1px 3px; }
+/* the run's results: one compact row per battle */
+body[data-phone="port"] .plate.victory .runres { display: flex; gap: 3px; }
+body[data-phone="port"] .plate.victory .rr { padding: 2px 8px; }
+body[data-phone="port"] .plate.victory .rr b { font-size: 17px; }
+body[data-phone="port"] .plate.victory .rr .star { width: 17px; height: 17px; }
+body[data-phone="port"] .plate.victory { padding: 10px; gap: 6px; }
+body[data-phone="land"] .plate.victory { gap: 5px; }
+body[data-phone="land"] .plate.victory .rr { padding: 2px 8px; }
+/* the shortest landscape phones (667 x 375): a slimmer top bar, narrower army banners */
+@media (max-width: 720px) {
+  body[data-phone="land"] #top { gap: 8px; padding: 0 8px; }
+  body[data-phone="land"] #top .enemy .crest { display: none; }
+  body[data-phone="land"] #top .score { min-width: 44px; }
+  body[data-phone="land"] #top .total b { font-size: 24px; }
+  body[data-phone="land"] #top .pips { gap: 5px; }
+  body[data-phone="land"] #top .pip8 { width: 10px; height: 10px; }
+  body[data-phone="land"] .setupcol { grid-template-columns: minmax(0, 1fr); }
+  body[data-phone="land"] .setupcol .armies { gap: 4px; }
+  body[data-phone="land"] .banner { padding: 8px 1px 13px; }
+  body[data-phone="land"] .banner .row { font-size: 13px; gap: 2px; }
+  body[data-phone="land"] .banner .row.main { font-size: 15px; }
+  body[data-phone="land"] .banner .row .ico { width: 17px; height: 17px; }
+  body[data-phone="land"] .banner .nm { font-size: 10px; }
+  body[data-phone="land"] .lead { --lf: 13px; gap: 1px 2px; margin: 2px 1px 0; padding: 2px 1px 4px; }
+  body[data-phone="land"] .lead .hfs { gap: 2px; }
+  body[data-phone="land"] .lead .hf em i { width: 6px; height: 6px; }
+  body[data-phone="land"] .plate.victory { padding: 8px; gap: 3px; }
+  body[data-phone="land"] .plate.victory .rr { padding: 1px 5px; gap: 4px; }
+  body[data-phone="land"] .plate.victory .rr b { font-size: 16px; }
+  body[data-phone="land"] .plate.victory .rr .star { width: 15px; height: 15px; }
+}
+
+/* phone floor: nothing under 10px, and the chosen-general plaque stays a 36px target */
+body[data-phone] .cond > b, body[data-phone] .ringd > b, body[data-phone] .ob > b { font-size: max(10px, calc(var(--cs) * 0.11)); }
+body[data-phone] .cond .arrow { font-size: max(10px, calc(var(--cs) * 0.1)); }
+body[data-phone] .gen.chosen { min-height: 36px; }
+
+/* unit card base power: a brass coin on the token's lower-right corner ("1" basic, "2" veteran) */
+.card .big .bpw, .fc .tok .bpw { position: absolute; right: -10%; bottom: -8%; z-index: 2; width: max(40%, 19px); height: max(40%, 19px); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: max(calc(var(--cs) * 0.115), 12px); line-height: 1;
+  font-variant-numeric: tabular-nums; color: #3a2508; background: var(--brass-coin, #e7bf5c);
+  box-shadow: 0 0 0 2px #fff1b8, 0 2px 3px rgba(0, 0, 0, 0.45); pointer-events: none; }
+.card .big .bpw.up, .fc .tok .bpw.up { color: #fff6cf; background: linear-gradient(180deg, #4f8a3c, #2f5f22); box-shadow: 0 0 0 2px #e7f3c8, 0 2px 3px rgba(0, 0, 0, 0.45); }
+.fc .tok .bpw { font-size: 13px; right: -14%; bottom: -12%; }
+
+/* ---- guided highlights (app.js guide() sets body[data-guide]): a calm pulsing brass ring on
+   what the hint asks for. The rule holds the bright state, so with reduced motion (1 ms
+   animations) it stays a static outline. */
+body[data-guide~="gen"] #side.pick .gen {
+  box-shadow: var(--shadow-lift), 0 0 0 3px #f0c24f, 0 0 26px 6px rgba(255, 196, 80, 0.75), inset 0 0 0 2px rgba(180, 141, 85, 0.85);
+  animation: guideGen 1.25s ease-in-out infinite alternate;
+}
+@keyframes guideGen {
+  from { box-shadow: var(--shadow-lift), 0 0 0 2px rgba(240, 194, 79, 0.75), 0 0 10px 2px rgba(255, 196, 80, 0.4), inset 0 0 0 2px rgba(180, 141, 85, 0.85); }
+  to { box-shadow: var(--shadow-lift), 0 0 0 3px #f0c24f, 0 0 26px 6px rgba(255, 196, 80, 0.75), inset 0 0 0 2px rgba(180, 141, 85, 0.85); }
+}
+/* banners are clip-path shapes: the glow rides on their parent so it follows the swallowtails */
+body[data-guide~="army"] .armies {
+  filter: drop-shadow(0 0 2px #fbe7a6) drop-shadow(0 0 10px rgba(255, 214, 120, 0.85));
+  animation: guideArmy 1.25s ease-in-out infinite alternate;
+}
+body[data-guide~="army"] .banner { box-shadow: inset 0 0 0 2px rgba(251, 231, 166, 0.85); }
+@keyframes guideArmy {
+  from { filter: drop-shadow(0 0 1.5px rgba(251, 231, 166, 0.85)) drop-shadow(0 0 5px rgba(255, 214, 120, 0.45)); }
+  to { filter: drop-shadow(0 0 2px #fbe7a6) drop-shadow(0 0 10px rgba(255, 214, 120, 0.85)); }
+}
+body[data-guide~="begin"] #bBegin, body[data-guide~="go"] #bSpoilsGo {
+  box-shadow: 0 0 0 2px #4a300a, 0 0 0 5px #fbe7a6, 0 6px 10px rgba(0, 0, 0, 0.55), 0 0 26px rgba(255, 214, 120, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  animation: guideGo 1.1s ease-in-out infinite alternate;
+}
+@keyframes guideGo {
+  from { box-shadow: 0 0 0 2px #4a300a, 0 0 0 3px rgba(251, 231, 166, 0.7), 0 6px 10px rgba(0, 0, 0, 0.55), 0 0 10px rgba(255, 214, 120, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.6); }
+  to { box-shadow: 0 0 0 2px #4a300a, 0 0 0 5px #fbe7a6, 0 6px 10px rgba(0, 0, 0, 0.55), 0 0 26px rgba(255, 214, 120, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.6); }
+}
+body:not(.holding)[data-guide~="offer"] #tray .card[data-oi]:not(.off):not(.sel):not(.lifted),
+body[data-guide~="spoils"] #tray .card.pick:not(.chosen):not(.gone) {
+  box-shadow: var(--shadow-lift), 0 0 0 3px #f0c24f, 0 0 26px 6px rgba(255, 196, 80, 0.75), inset 0 0 0 2px rgba(180, 141, 85, 0.85), inset 0 0 0 5px rgba(251, 242, 216, 0.6), inset 0 0 0 6px rgba(180, 141, 85, 0.45);
+  animation: guideCard 1.25s ease-in-out infinite alternate;
+}
+body:not(.holding)[data-guide~="offer"] #tray .card[data-oi].deal:not(.off),
+body[data-guide~="spoils"] #tray .card.pick.deal:not(.chosen):not(.gone) { animation: deal 380ms var(--ease-back) backwards, guideCard 1.25s ease-in-out 400ms infinite alternate; }
+@keyframes guideCard {
+  from { box-shadow: var(--shadow-lift), 0 0 0 2px rgba(240, 194, 79, 0.75), 0 0 10px 2px rgba(255, 196, 80, 0.4), inset 0 0 0 2px rgba(180, 141, 85, 0.85), inset 0 0 0 5px rgba(251, 242, 216, 0.6), inset 0 0 0 6px rgba(180, 141, 85, 0.45); }
+  to { box-shadow: var(--shadow-lift), 0 0 0 3px #f0c24f, 0 0 26px 6px rgba(255, 196, 80, 0.75), inset 0 0 0 2px rgba(180, 141, 85, 0.85), inset 0 0 0 5px rgba(251, 242, 216, 0.6), inset 0 0 0 6px rgba(180, 141, 85, 0.45); }
+}
+
+/* ---- top bar swap: the turn diamonds lead, the score group goes compact -------------------
+   The 8 move diamonds take the score bar's old place and its flexible span; the score bar,
+   star row and live total sit together as one compact group on the right. Each diamond is a
+   square turned 45deg: its footprint is 1.414 x its side, so the side is sized from the
+   diamonds' own span (container query) and capped by the bar height; the margins keep a
+   --pk gap between neighbours. Overrides the earlier per-layout pip and score rules. */
+body[data-mode] #top .pips {
+  flex: 1 1 0; min-width: 0; align-self: stretch; height: auto; padding: 0; gap: 0;
+  justify-content: center; align-items: center; container-type: inline-size;
+}
+body[data-mode] #top .pip8 {
+  --pk: 6px; --cap: calc(var(--top) * 0.46);
+  --s: min(var(--cap), calc((100cqi - 8 * var(--pk)) / 11.32));
+  --g: clamp(var(--pk), calc((100cqi - var(--s) * 11.32) / 8), calc(var(--s) * 0.6)); /* spread out when there is room */
+  flex: 0 0 auto; width: var(--s); height: var(--s); margin: 0 calc(var(--s) * 0.207 + var(--g) / 2);
+  border-radius: 3px; box-shadow: inset 0 0 0 2px #8a6a34, inset 0 0 0 3px rgba(0, 0, 0, 0.35);
+}
+body[data-mode] #top .pip8.done { background: var(--brass-plate); box-shadow: inset 0 0 0 1.5px rgba(255, 241, 184, 0.7), 0 0 8px rgba(231, 191, 92, 0.65); }
+body[data-mode] #top .pip8.now { transform: rotate(45deg) scale(1.1); background: #3a2410; box-shadow: inset 0 0 0 2.5px var(--brass-hi), 0 0 12px rgba(251, 231, 166, 0.85); }
+body[data-mode] #top .score { flex: 0 0 clamp(110px, calc(110px + (100vw - 1024px) * 0.4), 220px); min-width: 0; }
+/* the score group reads as one: tighter gaps between bar, stars and total */
+body[data-mode="land"] #top .starrow, body[data-mode="land"] #top .total { margin-left: calc(var(--gap) * -0.6); }
+body[data-mode="land"] #top .starrow { gap: 4px; }
+
+/* portrait (iPad): diamonds fill the first row across the middle; bar, stars and total share
+   the second row beneath them */
+body[data-mode="port"] #top { grid-template-columns: auto minmax(0, 1fr) auto auto auto; grid-template-rows: calc(var(--top) - 38px) 33px; row-gap: 1px; padding-top: 3px; align-content: start; align-items: center; }
+body[data-mode="port"] #top .enemy { grid-column: 1; grid-row: 1 / 3; margin-top: -3px; } /* the banner still hangs from the very top */
+body[data-mode="port"] #top .pips { grid-column: 2 / 5; grid-row: 1; }
+body[data-mode="port"] #top .pip8 { --cap: calc((var(--top) - 38px) * 0.7); }
+body[data-mode="port"] #top .score { grid-column: 2; grid-row: 2; height: 100%; align-self: stretch; }
+body[data-mode="port"] #top .bar { height: 14px; }
+body[data-mode="port"] #top .starrow { grid-column: 3; grid-row: 2; align-self: center; gap: 4px; }
+body[data-mode="port"] #top .sr .star { width: 21px; height: 21px; }
+body[data-mode="port"] #top .total { grid-column: 4; grid-row: 2; align-self: center; gap: 4px; }
+body[data-mode="port"] #top .total b { font-size: 28px; }
+body[data-mode="port"] #top .total .of { font-size: 17px; }
+body[data-mode="port"] #top .total .next { font-size: 19px; min-width: 2em; }
+body[data-mode="port"] #top .btns { grid-column: 5; grid-row: 1 / 3; }
+
+/* portrait phone: the same two rows, slimmer (14px+ diamonds over a compact score group) */
+body[data-phone="port"] #top { grid-template-columns: auto minmax(0, 1fr) auto auto auto; grid-template-rows: 24px 30px; column-gap: 5px; row-gap: 4px; padding: 0 6px; align-content: center; }
+body[data-phone="port"] #top .enemy { padding: 0 8px 8px; margin-top: 0; }
+body[data-phone="port"] #top .pips { grid-column: 2 / 5; grid-row: 1; }
+body[data-phone="port"] #top .pip8 { --pk: 3px; --cap: 17px; }
+body[data-phone="port"] #top .score { grid-column: 2; grid-row: 2; }
+body[data-phone="port"] #top .bar { height: 12px; }
+body[data-phone="port"] #top .starrow { grid-column: 3; grid-row: 2; justify-self: auto; gap: 2px; }
+body[data-phone="port"] #top .sr .star { width: 16px; height: 16px; }
+body[data-phone="port"] #top .sr i { margin-top: 1px; }
+body[data-phone="port"] #top .total { grid-column: 4; grid-row: 2; justify-self: end; gap: 2px; }
+body[data-phone="port"] #top .total b { font-size: 21px; min-width: 0; }
+body[data-phone="port"] #top .total .of { font-size: 12px; }
+body[data-phone="port"] #top .total .next { font-size: 13px; min-width: 1.8em; }
+body[data-phone="port"] #top .btns { grid-column: 5; grid-row: 1 / 3; gap: 5px; }
+
+/* landscape phone: the desktop row, with a smaller score group */
+body[data-phone="land"] #top .score { flex-basis: 80px; min-width: 0; }
+body[data-phone="land"] #top .sr .star { width: 20px; height: 20px; }
+@media (max-width: 720px) {
+  body[data-phone="land"] #top .score { flex-basis: 50px; }
+  body[data-phone="land"] #top .pip8 { --pk: 4px; }
+  body[data-phone="land"] #top .total .next { min-width: 1.6em; }
+}
+
+/* ---- §8.7 retries: a loss plate leads with a big glowing Retry (same field, new draw) over
+   a smaller New run; the victory plate marks a battle that took retries with "↻n" ---------- */
+.plate .go.retry { min-height: 64px; font-size: 26px; }
+.plate .go.retry svg { width: 30px; height: 30px; }
+.plate .go.alt.small { min-height: 42px; padding: 6px 10px; font-size: 16px; }
+.plate .go.alt.small svg { width: 20px; height: 20px; }
+body[data-mode="port"] .plate .acts .go.retry { flex: 2; }
+body[data-mode="port"] .plate .acts .go.alt.small { flex: 1; align-self: center; }
+body[data-phone="port"] .plate .go.retry, body[data-phone="land"] .plate .go.retry { min-height: 52px; font-size: 21px; }
+body[data-phone="port"] .plate .go.alt.small, body[data-phone="land"] .plate .go.alt.small { min-height: 40px; font-size: 15px; }
+body[data-guide~="retry"] #bRetry {
+  box-shadow: 0 0 0 2px #4a300a, 0 0 0 5px #fbe7a6, 0 6px 10px rgba(0, 0, 0, 0.55), 0 0 26px rgba(255, 214, 120, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  animation: guideGo 1.1s ease-in-out infinite alternate;
+}
+.rr .rt { display: inline-flex; align-items: center; gap: 1px; font-style: normal; font-size: 13px; font-weight: 900; color: var(--ink-dim); margin-left: 4px; align-self: center; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.rr .rt svg { width: 13px; height: 13px; }
+.plate .go.retry, .plate .go.alt.small { white-space: nowrap; }
 </style>
 </head>
 <body data-mode="land" data-phase="setup">
@@ -664,11 +1162,12 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
   <div class="enemy" title="Target">
     <svg class="crest" viewBox="0 0 64 64" aria-hidden="true"><path d="M10,7 H54 V29 C54,45 43,55 32,60 C21,55 10,45 10,29 Z" fill="#8f2125" stroke="#e7bf5c" stroke-width="3"/><path d="M15,12 H49 V29 C49,41 41,49 32,53 C23,49 15,41 15,29 Z" fill="#5e161a" opacity=".55"/><use href="#u-swords"/></svg>
     <div class="tgt"><span class="k" id="tgtTier">Target</span><b id="tgtNum">20</b></div>
+    <div class="bnum" title="Battle"><span class="k">Battle</span><b><span id="bNum">1</span><i id="bOf">/4</i></b></div>
   </div>
+  <div class="pips" id="pips" aria-label="Moves"></div>
   <div class="score"><div class="bar" id="bar"><div class="fill"></div><div class="gh"></div><div id="notches"></div></div></div>
   <div class="starrow" id="starRow" aria-label="Star thresholds"></div>
   <div class="total"><b id="totNum">0</b><span class="of">/ <i id="totTgt">20</i></span><span class="next" id="totNext"></span></div>
-  <div class="pips" id="pips"></div>
   <div class="btns">
     <button class="ibtn" id="bRestart" title="Restart" aria-label="Restart"><svg class="uico" viewBox="0 0 32 32" aria-hidden="true"><use href="#u-restart"/></svg></button>
     <button class="ibtn" id="bUndo" title="Undo" aria-label="Undo"><svg class="uico" viewBox="0 0 32 32" aria-hidden="true"><use href="#u-undo"/></svg></button>
@@ -1805,7 +2304,7 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
         fields: {}
       }
     },
-    unit: { base: 1 },
+    unit: { base: 1 }, // base power when a tun has no run.rankPower (run.rankPower[0] for rank 1)
     combo: { line: 1, lineLen: 3, triad: 1 },
     officer: { host: 1, adj: 1 },
     hero: { power: 1, radius: 1, ring: 1, ringMet: 2 },
@@ -1834,7 +2333,52 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
     // Star ratios (x target) per tier (§7.7); a plain array still works and applies to every
     // tier. Totals needed: easy 18/27/38, normal 26/39/46, hard 44/49/52 (hard 42 -> 44 in §7.10). Easy 3 stars needs
     // greedy-level play, normal 3 stars lookahead-level, hard 2-3 stars stretch lookahead.
-    stars: { easy: [1, 1.5, 2.1], normal: [1, 1.5, 1.76], hard: [1, 1.1, 1.16] }
+    // A run battle reads run.stars (per battle, §8.8) instead; this stays the fallback.
+    stars: { easy: [1, 1.5, 2.1], normal: [1, 1.5, 1.76], hard: [1, 1.1, 1.16] },
+    // PLAN 45, the 4-battle run (docs/P44-CORE.md §8.1; core/js/run.js).
+    run: {
+      battles: 4,
+      // Target per battle (b1..b4) per tier (§8.6 retune with the proto rules on; casual /
+      // greedy 2000 seeds, lookahead 200): run completion easy casual 96.4%, normal casual
+      // 45.8% / greedy 100%, hard greedy 20.5% / lookahead 99.5%. No battle is above the
+      // single-battle target (18 / 26 / 44); easy b4 equals it.
+      target: { easy: [14, 15, 17, 18], normal: [19, 21, 23, 25], hard: [35, 37, 41, 43] },
+      // Star ratios (x that battle's target) per tier, one [1, 2-star, 3-star] row per battle
+      // (§8.8 star retune; overrides the top-level `stars` in run battles, rules.starRatios).
+      // Run totals barely rise across the run while targets do, so each battle has its own
+      // row. Totals needed (b1 / b2 / b3 / b4): easy 14-38-47, 15-38-47, 17-39-48, 18-38-49;
+      // normal 19-44-50, 21-44-50, 23-45-51, 25-46-52; hard 35-50-54, 37-49-54, 41-50-56,
+      // 43-51-55. Aim: easy 3 stars about half of lookahead play, normal 3 stars about a
+      // third of lookahead, hard 3 stars about one lookahead battle in ten.
+      stars: {
+        easy: [[1, 2.71, 3.35], [1, 2.53, 3.13], [1, 2.29, 2.82], [1, 2.11, 2.72]],
+        normal: [[1, 2.31, 2.63], [1, 2.09, 2.38], [1, 1.95, 2.21], [1, 1.84, 2.08]],
+        hard: [[1, 1.42, 1.54], [1, 1.32, 1.45], [1, 1.21, 1.36], [1, 1.18, 1.27]]
+      },
+      // Spoils after winning battle k (k is in one list; none -> straight to the next battle).
+      addAfter: [1], levelUpAfter: [2], upgradeAfter: [3],
+      xpToLevel: 2,          // XP a unit card needs to be promoted at a level-up step
+      maxRank: 2,
+      rankPower: [1, 2],     // base power by rank (rank 1, rank 2); replaces unit.base for units
+      addOffers: 3,          // cards offered by the add step
+      addLeaderChance: 0.25, // chance each add offer is a leader (officer or hero, half each)
+      addMainTypeWeight: 2,  // weight of the army's main type for added units / officers (others 1)
+      upgradeOffers: 3,      // unit cards offered the upgrade step's trait
+      traitPool: ['sure_footed', 'rally', 'banner', 'heavy'],
+      // heavy: +N to itself; rally: +N to orthogonal same-type neighbours;
+      // banner: counts as N units of its type toward hero formations.
+      traits: { heavy: 1, rally: 1, banner: 2 },
+      // PROTOTYPE-ONLY growth rules (§8.6, user decision 2026-10-13): the 4-battle run is a
+      // presentation / feel test, so each growth step is made to show NOW. NOT the full-game
+      // default; each flag off (false / 0) restores the §8.1 behaviour.
+      //   guaranteeDraw    the card added after battle 1 / upgraded after battle 3 is in the
+      //                    next battle's first offer (top of its seeded deck)
+      //   recruitRank      add-step unit offers come at this rank (2 = Pikeman / Crossbowman /
+      //                    Knight); 0 = the deck's rounded average rank
+      //   distinctUpgrade  the upgrade step's offers differ: three types when the deck allows,
+      //                    else different ranks
+      proto: { guaranteeDraw: true, recruitRank: 2, distinctUpgrade: true }
+    }
   };
 
   function isObj(v) { return v && typeof v === 'object' && !Array.isArray(v); }
@@ -1917,6 +2461,23 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
   C.TERRAINS = ['forest', 'hills', 'plains', 'fields'];
   C.TYPE_NAMES = { inf: 'Infantry', arc: 'Archers', cav: 'Cavalry' };
   C.LINE_NAMES = { inf: 'Shieldwall', arc: 'Volley', cav: 'Charge' };
+
+  // PLAN 45 (§8.1): rank names per type, index rank - 1 (rank 2 has power 2).
+  C.RANK_NAMES = { inf: ['Spearman', 'Pikeman'], arc: ['Archer', 'Crossbowman'], cav: ['Rider', 'Knight'] };
+  /** The rank name of a unit card or piece ({type, rank?}; rank missing = 1). */
+  C.rankName = (card) => {
+    const names = C.RANK_NAMES[card.type] || [];
+    return names[Math.min(Math.max((card.rank || 1), 1), names.length) - 1] || '';
+  };
+
+  // PLAN 45 (§8.1) unit traits, one per unit card; numbers live in tun.run.traits and
+  // rules.js applies them. `short` is the at-most-3-words caption under the trait icon.
+  C.TRAITS = [
+    { id: 'sure_footed', name: 'Sure-footed', short: 'Ignores bad ground' },
+    { id: 'rally', name: 'Rally', short: 'Same-type neighbours +1' },
+    { id: 'banner', name: 'Banner', short: 'Formations count double' },
+    { id: 'heavy', name: 'Heavy', short: '+1 power' }
+  ];
 
   // `short` is the at-most-4-words caption shown under the rule glyph.
   C.GENERALS = [
@@ -2022,11 +2583,23 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
  * the triad bonus, Captain's officer numbers count as officer, Warden's wider
  * ring counts as hero). parts.general only holds the flat loved-terrain
  * bonuses: Horse Lord's cav on plains and Ranger's arc on hills.
+ *
+ * PLAN 45 (§8.1-8.2): a unit piece may carry `rank` (1 or 2; missing = 1) and `trait`
+ * (null/missing, 'sure_footed', 'rally', 'banner' or 'heavy') from its run card.
+ *   parts.base    = the rank's power, tun.run.rankPower[rank-1] (tun.unit.base when the
+ *                   run block or the entry is missing), so rank 1 with no trait is the
+ *                   single battle exactly.
+ *   sure_footed   sets its hated-terrain part to 0 (parts.terrain, like Ranger).
+ *   heavy         +tun.run.traits.heavy to itself (parts.trait).
+ *   rally         +tun.run.traits.rally to every orthogonally adjacent unit of its own
+ *                 type (parts.trait of the receiver; several rallies stack).
+ *   banner        counts as tun.run.traits.banner units of its type toward every hero
+ *                 formation whose ring holds it (changes parts.hero; formationStatus too).
  */
 (function () {
   const C = globalThis.TTFCore = globalThis.TTFCore || {};
   const TYPES = ['inf', 'arc', 'cav'];
-  const PARTS = ['base', 'terrain', 'line', 'triad', 'officer', 'hero', 'general'];
+  const PARTS = ['base', 'terrain', 'line', 'triad', 'officer', 'hero', 'general', 'trait'];
   const N = 4, S = N * N;
 
   const tunOf = (st) => (st && st.tun) || C.TUN_DEFAULT;
@@ -2105,6 +2678,16 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
   const cheb1 = (i, j) => Math.max(Math.abs(i % N - j % N), Math.abs(((i / N) | 0) - ((j / N) | 0)));
   const heroRadius = (T, g) => (g === 'warden' ? T.general.warden : T.hero.radius);
   const TI = { inf: 0, arc: 1, cav: 2 };
+  const TRAIT_DEFAULT = { heavy: 1, rally: 1, banner: 2 };
+  /** Trait numbers (tun.run.traits, defaults when a tun has no run block). */
+  const traitsOf = (T) => Object.assign({}, TRAIT_DEFAULT, (T.run && T.run.traits) || {});
+  /** A unit's base power from its rank (§8.1): tun.run.rankPower[rank-1], else tun.unit.base. */
+  function rankPower(T, rank) {
+    const rp = T.run && T.run.rankPower, v = rp ? rp[(rank || 1) - 1] : undefined;
+    return v === undefined ? T.unit.base : v;
+  }
+  /** How many units of its type a unit counts as toward hero formations (banner: 2). */
+  const formationWeight = (p, TR) => (p && p.trait === 'banner' ? TR.banner : 1);
 
   const SCRATCH_PT = new Float64Array(PARTS.length * S), SCRATCH_TY = new Int8Array(S);
 
@@ -2118,15 +2701,17 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
     const pt = totalOnly ? SCRATCH_PT.fill(0) : new Float64Array(PARTS.length * S);
     const combos = wantCombos ? [] : null;
     const ty = (totalOnly ? SCRATCH_TY : new Int8Array(S)).fill(-1); // unit type index, -1 empty, post or hero
+    let hasTrait = false;
     for (let i = 0; i < S; i++) {
       const p = P[i];
       if (!p || p.kind === 'post') continue;
       if (p.kind === 'hero') { pt[i] = T.hero.power; continue; }
       ty[i] = TI[p.type];
-      pt[i] = T.unit.base;
+      pt[i] = rankPower(T, p.rank);
       const terr = board[i].terrain, tt = T.terrain.table[terr] || {};
       if (tt.love === p.type) pt[S + i] = T.terrain.love;
-      else if (tt.hate === p.type) pt[S + i] = (g === 'ranger' && p.type === 'arc') ? 0 : T.terrain.hate;
+      else if (tt.hate === p.type) pt[S + i] = ((g === 'ranger' && p.type === 'arc') || p.trait === 'sure_footed') ? 0 : T.terrain.hate;
+      if (p.trait) hasTrait = true;
       if (g === 'horse_lord' && p.type === 'cav' && terr === 'plains') pt[6 * S + i] = T.general.horse_lord;
       if (g === 'ranger' && p.type === 'arc' && tt.love === 'arc') pt[6 * S + i] = T.general.ranger;
     }
@@ -2173,14 +2758,25 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
       const ot = TI[o.type];
       for (const j of SHAPES[o.shape][i]) if (ty[j] === ot) pt[4 * S + j] += adjV;
     }
-    // Heroes: ring bonus, larger when the ring holds the formation. Warden: the
+    // Traits (§8.1): heavy adds to itself, rally to its orthogonal same-type neighbours.
+    const TR = hasTrait ? traitsOf(T) : TRAIT_DEFAULT;
+    if (hasTrait) {
+      for (let i = 0; i < S; i++) {
+        if (ty[i] < 0) continue;
+        const tr = P[i].trait;
+        if (tr === 'heavy') pt[7 * S + i] += TR.heavy;
+        else if (tr === 'rally') for (const j of ORTH[i]) if (ty[j] === ty[i]) pt[7 * S + j] += TR.rally;
+      }
+    }
+    // Heroes: ring bonus, larger when the ring holds the formation (a banner unit
+    // counts as traits.banner of its type). Warden: the
     // ring reaches general.warden; units beyond hero.radius get general.wardenFar
     // flat (0 = the same bonus as the inner ring).
     const r = heroRadius(T, g), far = g === 'warden' ? T.general.wardenFar : 0;
     for (let i = 0; i < S; i++) {
       if (!P[i] || P[i].kind !== 'hero') continue;
       const ring = chebOf(i, r), cnt = [0, 0, 0];
-      for (const j of ring) if (ty[j] >= 0) cnt[ty[j]]++;
+      for (const j of ring) if (ty[j] >= 0) cnt[ty[j]] += hasTrait ? formationWeight(P[j], TR) : 1;
       const cond = P[i].cond || {};
       const bonus = TYPES.every((t, k) => cnt[k] >= (cond[t] || 0)) ? T.hero.ringMet : T.hero.ring;
       for (const j of ring) if (ty[j] >= 0) pt[5 * S + j] += (far && cheb1(i, j) > T.hero.radius) ? far : bonus;
@@ -2215,6 +2811,11 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
   function pieceOf(card) {
     const p = card.kind === 'hero' ? { kind: 'hero', id: card.id, cond: card.cond } : { kind: 'unit', type: card.type };
     if (card.uid !== undefined) p.uid = card.uid;
+    if (card.kind === 'unit') {
+      // §8.1: a run card's rank and trait ride on its piece (rank 1 / no trait = the single battle).
+      if (card.rank > 1) p.rank = card.rank;
+      if (card.trait) p.trait = card.trait;
+    }
     return p;
   }
   /** The officer record a piece keeps: {uid?, type, shape}. */
@@ -2288,6 +2889,24 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
     return { officers: offs, heroes: always.concat(extra).map((h) => ({ id: h.id, cond: Object.assign({}, h.cond) })) };
   }
 
+  /** The leaders {officers, heroes} found in a card list (a run deck). */
+  function leadersOfCards(cards) {
+    return {
+      officers: cards.filter((c) => c.kind === 'officer').map((c) => ({ type: c.type, shape: c.shape })),
+      heroes: cards.filter((c) => c.kind === 'hero').map((c) => ({ id: c.id, cond: Object.assign({}, c.cond) }))
+    };
+  }
+  const copyCards = (cards) => cards.map((c) => (c.cond ? Object.assign({}, c, { cond: Object.assign({}, c.cond) }) : Object.assign({}, c)));
+
+  /**
+   * opts: {seed, tier, tun?} and, for a run battle (§8.2), optionally
+   *   cards   - the run deck (dealt in place of cardsFor(army); copied, never mutated),
+   *   general - locked general (generalOffer becomes [general]),
+   *   army    - locked army (with cards, leaders[army] lists the deck's leaders),
+   *   target  - this battle's target (overrides tun.target[tier]; target()/stars() read it),
+   *   battle  - the run battle number (1-based; picks the §8.8 per-battle star row).
+   * The extra fields (cards, locked, target) only appear on the state when given.
+   */
   function createBattle(opts) {
     const o = opts || {};
     const T = o.tun || C.TUN_DEFAULT;
@@ -2297,13 +2916,19 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
     // copies the chosen army's into officers / heroes.
     const leaders = {};
     for (const a of armies(T)) leaders[a.id] = leadersFor(seed, T, a);
-    return {
+    if (o.cards && o.army) leaders[o.army] = leadersOfCards(o.cards);
+    const st = {
       phase: 'setup', seed, tier: o.tier || 'normal', tun: T,
       board: C.generateBoard(seed, T),
-      generalOffer: gens.slice(0, T.generalOffer),
+      generalOffer: o.general ? [o.general] : gens.slice(0, T.generalOffer),
       leaders, heroes: [], officers: [],
       general: null, army: null, deck: [], offer: [], pieces: {}, turn: 0, prev: null
     };
+    if (o.cards) st.cards = copyCards(o.cards);
+    if (o.general || o.army) st.locked = { general: o.general || null, army: o.army || null };
+    if (typeof o.target === 'number') st.target = o.target;
+    if (typeof o.battle === 'number') st.battle = o.battle;
+    return st;
   }
 
   /** The battle's full card list for an army (unshuffled, uids assigned). */
@@ -2318,15 +2943,31 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
     return cards.map((c, uid) => Object.assign({ uid }, c));
   }
 
+  /**
+   * choice: {general, army, cards?}. A locked general / army (createBattle opts) is used
+   * when the choice leaves it out, and a choice that contradicts a lock throws. Cards
+   * (choice.cards, else the state's run deck) are dealt in place of cardsFor(army), with
+   * the same seeded shuffle; their leaders become state.officers / state.heroes.
+   */
   function chooseSetup(st, choice) {
     if (st.phase !== 'setup') throw new Error('not in setup');
-    const { general, army } = choice || {};
+    const ch = choice || {}, lock = st.locked || {};
+    const general = ch.general || lock.general, army = ch.army || lock.army;
+    if (lock.general && general !== lock.general) throw new Error('general is locked: ' + lock.general);
+    if (lock.army && army !== lock.army) throw new Error('army is locked: ' + lock.army);
     if (st.generalOffer.indexOf(general) < 0) throw new Error('general not offered: ' + general);
     const T = tunOf(st);
-    const deck = C.RNG.shuffle(C.RNG.seedFrom(st.seed, 'deck', army), cardsFor(st, army)).value;
+    const runCards = ch.cards || st.cards;
+    if (!runCards && !armies(T).find((a) => a.id === army)) throw new Error('unknown army ' + army);
+    const cards = runCards ? copyCards(runCards) : cardsFor(st, army);
+    const deck = C.RNG.shuffle(C.RNG.seedFrom(st.seed, 'deck', army), cards).value;
     const d = drawOffer(deck, T.offerSize);
-    const lead = (st.leaders && st.leaders[army]) || leadersFor(st.seed, T, armies(T).find((a) => a.id === army));
-    return Object.assign({}, st, { phase: 'draft', general, army, officers: lead.officers, heroes: lead.heroes, deck: d.deck, offer: d.offer, pieces: {}, turn: 0, prev: null });
+    const lead = runCards ? leadersOfCards(runCards)
+      : (st.leaders && st.leaders[army]) || leadersFor(st.seed, T, armies(T).find((a) => a.id === army));
+    const out = Object.assign({}, st, { phase: 'draft', general, army, officers: lead.officers, heroes: lead.heroes, deck: d.deck, offer: d.offer, pieces: {}, turn: 0, prev: null });
+    if (ch.cards) out.cards = copyCards(ch.cards);
+    if (runCards) out.leaders = Object.assign({}, st.leaders, { [army]: lead });
+    return out;
   }
 
   /** Sim helper: the same draft state with its deck replaced by `cards` (top first) and the offer redrawn. */
@@ -2402,15 +3043,15 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
    * §7.3: the formation of the hero at `heroSlot`, or of `cond` when given (e.g. a hero
    * card previewed at an empty slot). One entry per required type, in inf/arc/cav order,
    * counting the units of that type in the hero's whole ring (Warden's radius 2 too),
-   * exactly as the evaluator does. -> {need:[{type, have, need, met}], met, ring:[slot]},
+   * exactly as the evaluator does (a banner unit counts as tun.run.traits.banner). -> {need:[{type, have, need, met}], met, ring:[slot]},
    * or null when there is no hero there and no cond.
    */
   function formationStatus(st, heroSlot, cond) {
     const p = st.pieces[heroSlot];
     const c = cond || (p && p.kind === 'hero' ? p.cond : null);
     if (!c) return null;
-    const ring = heroArea(st, heroSlot), cnt = { inf: 0, arc: 0, cav: 0 };
-    for (const j of ring) { const q = st.pieces[j]; if (q && q.kind === 'unit') cnt[q.type]++; }
+    const ring = heroArea(st, heroSlot), cnt = { inf: 0, arc: 0, cav: 0 }, TR = traitsOf(tunOf(st));
+    for (const j of ring) { const q = st.pieces[j]; if (q && q.kind === 'unit') cnt[q.type] += formationWeight(q, TR); }
     const need = TYPES.filter((t) => (c[t] || 0) > 0).map((t) => ({ type: t, have: cnt[t], need: c[t], met: cnt[t] >= c[t] }));
     return { need, met: need.every((n) => n.met), ring };
   }
@@ -2438,13 +3079,32 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
     };
   }
 
-  const target = (st) => tunOf(st).target[st.tier];
+  /** The battle's target: state.target (a run battle, §8.1) or tun.target[tier]. */
+  const target = (st) => (typeof st.target === 'number' ? st.target : tunOf(st).target[st.tier]);
   /**
    * §7.7: the star ratios (x target) for the battle's tier. `tun.stars` is either one
    * array shared by every tier (the legacy form) or {easy:[...], normal:[...], hard:[...]};
    * a tier missing from the object falls back to normal's array, then [1].
+   * §8.8: a run battle reads `tun.run.stars[tier]` first, one ratio row per battle
+   * ([[1,a,b] x battles]; a battle past the list uses the last row). The battle is
+   * st.battle (Run.battleFor sets it), else the position of st.target in the tier's
+   * run.target list (a state rebuilt without it); neither -> the per-tier `stars` above.
    */
+  function runStarRow(st) {
+    const R = tunOf(st).run, s = R && R.stars;
+    if (!s || typeof s !== 'object' || Array.isArray(s)) return null;
+    const rows = s[st.tier] || s.normal;
+    if (!Array.isArray(rows) || !rows.length || !Array.isArray(rows[0])) return null;
+    let b = typeof st.battle === 'number' ? st.battle : 0;
+    if (!b && typeof st.target === 'number') {
+      const tl = R.target && R.target[st.tier];
+      b = Array.isArray(tl) ? tl.indexOf(st.target) + 1 : 0;
+    }
+    return b > 0 ? rows[Math.min(b, rows.length) - 1].slice() : null;
+  }
   function starRatios(st) {
+    const row = runStarRow(st);
+    if (row) return row;
     const s = tunOf(st).stars;
     if (Array.isArray(s)) return s.slice();
     const arr = s && (s[st.tier] || s.normal);
@@ -2462,13 +3122,15 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
    * Terrain modifiers a unit of `type` would get (§7.9, the unit card's terrain row):
    * {terrain: n} for every terrain where the terrain part plus the general's flat
    * terrain bonus is not 0. Read off evaluate() for a lone unit, so it can never
-   * disagree with the score.
+   * disagree with the score. `type` may also be a unit card or piece, so its trait
+   * counts (a sure_footed card has no hated-terrain entry, §8.1).
    */
   function terrainMods(st, type) {
     const T = tunOf(st), out = {};
+    const card = type && typeof type === 'object' ? type : null;
     for (const terr of Object.keys(T.terrain.table)) {
       const P = new Array(S).fill(null);
-      P[0] = { kind: 'unit', type };
+      P[0] = card ? { kind: 'unit', type: card.type, trait: card.trait === 'sure_footed' ? card.trait : undefined } : { kind: 'unit', type };
       const ev = evaluate(new Array(S).fill({ terrain: terr }), P, st && st.general, T, false);
       const n = ev.pt[PARTS.indexOf('terrain') * S] + ev.pt[PARTS.indexOf('general') * S];
       if (n) out[terr] = n;
@@ -2479,9 +3141,378 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
   Object.assign(C, {
     PARTS, SHAPE_IDS, createBattle, chooseSetup, legalSlots, canPick, place, valueMap, total, combosOf,
     partialCombos, predict, heroArea, officerArea, formationStatus, shapeCells, officerOf, stars, starRatios, starThresholds, target, undo,
-    totalAfter, redeal, cardsFor, leadersFor, terrainMods, orthOf: (i) => ORTH[i].slice(), diagOf: (i) => DIAG[i].slice()
+    totalAfter, redeal, cardsFor, leadersFor, leadersOfCards, terrainMods, rankPower, traitsOf, orthOf: (i) => ORTH[i].slice(), diagOf: (i) => DIAG[i].slice()
   });
   if (typeof module !== 'undefined') module.exports = C;
+})();
+</script>
+<script>
+/*
+ * core/js/run.js - PLAN 45, the 4-battle run (docs/P44-CORE.md §8). TTFCore.Run.
+ * Pure and DOM-free like rules.js; every function returns a new run and never
+ * mutates its input. A run is plain JSON (no `prev` chains, no battle state), so it
+ * can be saved to localStorage['ttf-core:run'] and resumed at the start of the
+ * current battle or spoils step.
+ *
+ * Run:
+ *   {v:1, seed, tier, general, army, battles, battle (1-based, the current one),
+ *    phase: 'battle' | 'spoils' | 'lost' | 'won',
+ *    deck: [card], nextUid,
+ *    results: [{battle, seed, total, target, stars, won, retries?}],
+ *    attempts?: {k: n}            (§8.7 retries of battle k; missing = 0)
+ *    spoils: null | {kind, battle, options, trait?, applied, picked?},
+ *    featured?: [uid]}           (proto.guaranteeDraw: dealt into this battle's first offer)
+ *    tun?}                       (tun only when startRun was given one)
+ * Cards (the persistent run deck):
+ *   unit    {uid, kind:'unit', type, rank, xp, trait}   (trait null or a TRAITS id)
+ *   officer {uid, kind:'officer', type, shape}
+ *   hero    {uid, kind:'hero', id, cond}
+ * Flow: setupFor -> startRun -> [battleFor -> (play) -> finishBattle ->
+ *   phase 'spoils': spoilsFor / applySpoils -> nextBattle] ... -> 'won'.
+ * A loss (phase 'lost') is retryable (§8.7): retryBattle replays the same board with the
+ * same deck and a new shuffle, as often as needed, so a run always ends 'won'.
+ */
+(function () {
+  const C = globalThis.TTFCore = globalThis.TTFCore || {};
+  const RNG = () => C.RNG;
+  const TYPES = ['inf', 'arc', 'cav'];
+
+  const tunOf = (run) => (run && run.tun) || C.TUN_DEFAULT;
+  const runTun = (T) => T.run || {};
+  const clone = (x) => JSON.parse(JSON.stringify(x));
+  const armyOf = (T, id) => (T.armies || C.ARMIES).find((a) => a.id === id);
+  /** The PROTOTYPE-ONLY growth rules (tun.run.proto, docs/P44-CORE.md §8.6); {} = off. */
+  const protoOf = (run) => runTun(tunOf(run)).proto || {};
+
+  /** The seed of battle k (1-based) of the run seeded `runSeed`. */
+  const battleSeed = (runSeed, k) => RNG().seedFrom(runSeed, 'battle', k);
+
+  /** The target of battle k (default: the current one) for the run's tier. */
+  function targetFor(run, k) {
+    const T = tunOf(run), b = k || run.battle, list = runTun(T).target && runTun(T).target[run.tier];
+    if (Array.isArray(list) && list.length) return list[Math.min(b, list.length) - 1];
+    return T.target[run.tier];
+  }
+
+  /**
+   * The setup screen's state: battle 1's board, general offer and every army's leaders
+   * (a plain createBattle in phase 'setup'). The run deck's leaders are the chosen army's
+   * leaders on this board, so the banners show exactly what the run gets.
+   */
+  function setupFor(opts) {
+    const o = opts || {};
+    const seed = o.seed === undefined || o.seed === null || o.seed === '' ? (Math.random() * 4294967296) >>> 0 : o.seed;
+    return C.createBattle({ seed: battleSeed(seed, 1), tier: o.tier || 'normal', tun: o.tun });
+  }
+
+  /** startRun({seed, tier, general, army, tun?}) -> run in phase 'battle', battle 1. */
+  function startRun(opts) {
+    const o = opts || {};
+    const seed = o.seed === undefined || o.seed === null || o.seed === '' ? (Math.random() * 4294967296) >>> 0 : o.seed;
+    const T = o.tun || C.TUN_DEFAULT;
+    if (!C.GENERALS.find((g) => g.id === o.general)) throw new Error('unknown general ' + o.general);
+    if (!armyOf(T, o.army)) throw new Error('unknown army ' + o.army);
+    const tier = o.tier || 'normal';
+    const st0 = setupFor({ seed, tier, tun: T });
+    const deck = C.cardsFor(st0, o.army).map((c) =>
+      (c.kind === 'unit' ? { uid: c.uid, kind: 'unit', type: c.type, rank: 1, xp: 0, trait: null } : clone(c)));
+    const run = {
+      v: 1, seed, tier, general: o.general, army: o.army,
+      battles: runTun(T).battles || 4, battle: 1, phase: 'battle',
+      deck, nextUid: deck.length, results: [], spoils: null
+    };
+    if (o.tun) run.tun = o.tun;
+    return clone(run);
+  }
+
+  /**
+   * A draft state (turn 0) with the cards whose uids are listed moved to the top of the
+   * deck, so they are in the first offer; every other card keeps its seeded order.
+   */
+  function featureCards(st, uids) {
+    if (!uids || !uids.length) return st;
+    const all = st.offer.concat(st.deck);
+    const top = all.filter((c) => uids.indexOf(c.uid) >= 0);
+    if (!top.length) return st;
+    return C.redeal(st, top.concat(all.filter((c) => uids.indexOf(c.uid) < 0)));
+  }
+
+  /** §8.7 how many times battle k (default: the current one) has been retried (0 = first attempt). */
+  function attemptsOf(run, k) {
+    const a = run && run.attempts, n = a && a[k || run.battle];
+    return typeof n === 'number' && n > 0 ? n : 0;
+  }
+
+  /**
+   * The battle state (phase 'draft', turn 0) of the run's current battle. Deterministic.
+   * A retry (§8.7) keeps the board (the battle seed) and re-shuffles the deck from a seed
+   * of the battle seed and the attempt number, so each attempt deals a new sequence.
+   * run.featured (proto.guaranteeDraw) puts the card just added / upgraded in the first offer.
+   */
+  function battleFor(run) {
+    if (!run || run.phase !== 'battle') throw new Error('run is not between battles: ' + (run && run.phase));
+    const seed = battleSeed(run.seed, run.battle);
+    const st = C.createBattle({
+      seed, tier: run.tier, tun: tunOf(run),
+      cards: run.deck, general: run.general, army: run.army, target: targetFor(run), battle: run.battle
+    });
+    let d = C.chooseSetup(st, {});
+    const n = attemptsOf(run);
+    if (n > 0) d = C.redeal(d, RNG().shuffle(RNG().seedFrom(seed, 'retry', n), d.offer.concat(d.deck)).value);
+    return featureCards(d, run.featured);
+  }
+
+  /** uids of the unit cards on the board of a finished battle (direct or joined to a post). */
+  function placedUnitUids(st) {
+    const out = [];
+    for (const k of Object.keys(st.pieces)) {
+      const p = st.pieces[k];
+      if (p && p.kind === 'unit' && p.uid !== undefined) out.push(p.uid);
+    }
+    return out;
+  }
+
+  /**
+   * Score a finished battle (phase 'done') and record the result. A win gives +1 XP to
+   * every unit card placed and moves to 'won' after the last battle, else to 'spoils' with
+   * the step's offers stored on run.spoils (null when no step follows this battle); its
+   * result carries `retries` when the battle took any. A loss gives no XP and moves to
+   * 'lost' (its result stays last in results until retryBattle drops it).
+   */
+  function finishBattle(run, st) {
+    if (!run || run.phase !== 'battle') throw new Error('run is not in a battle');
+    if (!st || st.phase !== 'done') throw new Error('battle is not finished');
+    if (st.seed !== battleSeed(run.seed, run.battle)) throw new Error('battle does not belong to this run');
+    const out = clone(run);
+    const total = C.total(st), stars = C.stars(st);
+    const won = stars >= 1;
+    if (won) {
+      const placed = placedUnitUids(st);
+      for (const c of out.deck) if (c.kind === 'unit' && placed.indexOf(c.uid) >= 0) c.xp = (c.xp || 0) + 1;
+    }
+    const res = { battle: run.battle, seed: st.seed, total, target: C.target(st), stars, won };
+    const retries = attemptsOf(run);
+    if (won && retries) res.retries = retries;
+    out.results.push(res);
+    if (!won) out.phase = 'lost';
+    else if (run.battle >= run.battles) out.phase = 'won';
+    else { out.phase = 'spoils'; out.spoils = null; out.spoils = computeSpoils(out); }
+    return out;
+  }
+
+  /** The spoils step that follows battle k: 'add' | 'levelup' | 'upgrade' | null. */
+  function spoilsKind(run, k) {
+    const R = runTun(tunOf(run)), has = (list) => Array.isArray(list) && list.indexOf(k) >= 0;
+    if (has(R.addAfter)) return 'add';
+    if (has(R.levelUpAfter)) return 'levelup';
+    if (has(R.upgradeAfter)) return 'upgrade';
+    return null;
+  }
+
+  const units = (run) => run.deck.filter((c) => c.kind === 'unit');
+  /** The army's main type (strictly the largest mix entry), or null for an even mix. */
+  function mainType(T, armyId) {
+    const mix = (armyOf(T, armyId) || {}).mix || {};
+    let best = null, n = -1, tie = false;
+    for (const t of TYPES) { const v = mix[t] || 0; if (v > n) { n = v; best = t; tie = false; } else if (v === n) tie = true; }
+    return tie ? null : best;
+  }
+  /** Round of the mean rank of the deck's unit cards (1 when there are none). */
+  function averageRank(run) {
+    const u = units(run);
+    return u.length ? Math.max(1, Math.round(u.reduce((s, c) => s + (c.rank || 1), 0) / u.length)) : 1;
+  }
+
+  function addOptions(run) {
+    const T = tunOf(run), R = runTun(T);
+    let s = RNG().seedFrom(run.seed, 'add', run.battle);
+    const rnd = () => { const r = RNG().next(s); s = r.s; return r.value; };
+    const main = mainType(T, run.army), wMain = R.addMainTypeWeight === undefined ? 2 : R.addMainTypeWeight;
+    const weights = TYPES.map((t) => (t === main ? wMain : 1)), wSum = weights.reduce((a, b) => a + b, 0);
+    const pickType = () => { let x = rnd() * wSum; for (let k = 0; k < 3; k++) { x -= weights[k]; if (x < 0) return TYPES[k]; } return TYPES[2]; };
+    const shapes = (T.officerShapes || ['cross']).length ? (T.officerShapes || ['cross']) : ['cross'];
+    const pr = protoOf(run).recruitRank;
+    const pool = T.heroPool || C.HEROES;
+    const rank = pr ? Math.max(1, Math.min(R.maxRank || 2, pr)) : averageRank(run);
+    const n = R.addOffers || 3, chance = R.addLeaderChance || 0, out = [], seen = {};
+    for (let tries = 0; out.length < n && tries < 200; tries++) {
+      let card;
+      if (rnd() < chance) {
+        if (rnd() < 0.5) card = { kind: 'officer', type: pickType(), shape: shapes[Math.floor(rnd() * shapes.length)] };
+        else { const h = pool[Math.floor(rnd() * pool.length)]; card = { kind: 'hero', id: h.id, cond: Object.assign({}, h.cond) }; }
+      } else card = { kind: 'unit', type: pickType(), rank, xp: 0, trait: null };
+      const sig = card.kind + ':' + (card.type || card.id) + ':' + (card.shape || '') + ':' + (card.rank || '');
+      if (seen[sig]) continue;
+      seen[sig] = 1;
+      out.push(card);
+    }
+    return out;
+  }
+
+  function levelupOptions(run) {
+    const R = runTun(tunOf(run)), need = R.xpToLevel || 2, max = R.maxRank || 2;
+    return units(run).filter((c) => (c.xp || 0) >= need && (c.rank || 1) < max).map((c) => {
+      const to = (c.rank || 1) + 1;
+      return { uid: c.uid, type: c.type, from: c.rank || 1, to,
+        fromName: C.rankName({ type: c.type, rank: c.rank || 1 }), toName: C.rankName({ type: c.type, rank: to }) };
+    });
+  }
+
+  /**
+   * Whether `trait` would change this unit card in this run: sure_footed needs a hated
+   * terrain left to ignore (none for Ranger archers), banner needs a hero in the deck
+   * whose formation asks for the card's type; rally and heavy always count.
+   */
+  function traitHelps(run, card, trait) {
+    if (trait === 'sure_footed') {
+      const mods = C.terrainMods({ tun: tunOf(run), general: run.general }, { type: card.type });
+      return Object.keys(mods).some((t) => mods[t] < 0);
+    }
+    if (trait === 'banner') return run.deck.some((d) => d.kind === 'hero' && ((d.cond || {})[card.type] || 0) > 0);
+    return true;
+  }
+
+  /**
+   * proto.distinctUpgrade: up to n cards from the (seeded-shuffled) list that differ
+   * visibly. First one per type, then new (type, rank) pairs, then anything left, each
+   * pass in the list's order, so a deck with three types always shows three types.
+   */
+  function distinctPicks(list, n) {
+    const out = [], types = {}, sigs = {};
+    const sig = (c) => c.type + ':' + (c.rank || 1);
+    const take = (c) => { out.push(c); types[c.type] = 1; sigs[sig(c)] = 1; };
+    for (const c of list) if (out.length < n && !types[c.type]) take(c);
+    for (const c of list) if (out.length < n && out.indexOf(c) < 0 && !sigs[sig(c)]) take(c);
+    for (const c of list) if (out.length < n && out.indexOf(c) < 0) take(c);
+    return out;
+  }
+
+  function upgradeSpoils(run) {
+    const R = runTun(tunOf(run));
+    const pool = R.traitPool && R.traitPool.length ? R.traitPool : C.TRAITS.map((t) => t.id);
+    const start = RNG().int(RNG().seedFrom(run.seed, 'upgradeTrait', run.battle), 0, pool.length - 1).value;
+    // the seeded trait, or the next one in the pool that changes at least one card
+    let trait = pool[start], free = [];
+    for (let k = 0; k < pool.length; k++) {
+      const t = pool[(start + k) % pool.length];
+      const f = units(run).filter((c) => !c.trait && traitHelps(run, c, t));
+      if (f.length) { trait = t; free = f; break; }
+    }
+    const n = R.upgradeOffers || 3;
+    const shuffled = RNG().shuffle(RNG().seedFrom(run.seed, 'upgrade', run.battle), free).value;
+    const picks = protoOf(run).distinctUpgrade ? distinctPicks(shuffled, n) : shuffled.slice(0, n);
+    return { trait, options: picks.map((c) => ({ uid: c.uid, type: c.type, rank: c.rank || 1, name: C.rankName(c) })) };
+  }
+
+  function computeSpoils(run) {
+    const kind = spoilsKind(run, run.battle);
+    if (!kind) return null;
+    const sp = { kind, battle: run.battle, applied: false };
+    if (kind === 'add') sp.options = addOptions(run);
+    else if (kind === 'levelup') sp.options = levelupOptions(run);
+    else Object.assign(sp, upgradeSpoils(run));
+    return sp;
+  }
+
+  /**
+   * The spoils step of a run in phase 'spoils' (the stored one, so a reload shows the
+   * same offers), or what would follow the current battle otherwise. Shapes:
+   *   add     {kind:'add', battle, options:[card without uid], applied}
+   *   levelup {kind:'levelup', battle, options:[{uid, type, from, to, fromName, toName}], applied}
+   *   upgrade {kind:'upgrade', battle, trait, options:[{uid, type, rank, name}], applied}
+   * null when no step follows that battle.
+   */
+  function spoilsFor(run) {
+    if (run.phase === 'spoils') return run.spoils ? clone(run.spoils) : null;
+    const sp = computeSpoils(run);
+    return sp ? clone(sp) : null;
+  }
+
+  /**
+   * Apply the pending spoils. choice: the option index for 'add' and 'upgrade' (a uid
+   * object {uid} also works for 'upgrade'); ignored for 'levelup' (every listed card is
+   * promoted, xp - xpToLevel). The run stays in 'spoils' with spoils.applied = true and
+   * spoils.picked = the uid of the added / upgraded card; nextBattle moves on.
+   */
+  function applySpoils(run, choice) {
+    if (!run || run.phase !== 'spoils' || !run.spoils) throw new Error('no spoils to apply');
+    if (run.spoils.applied) throw new Error('spoils already applied');
+    const out = clone(run), sp = out.spoils, R = runTun(tunOf(run));
+    if (sp.kind === 'add') {
+      const opt = sp.options[choice];
+      if (!opt) throw new Error('no add option ' + choice);
+      const card = Object.assign({ uid: out.nextUid++ }, clone(opt));
+      out.deck.push(card);
+      sp.picked = card.uid;
+    } else if (sp.kind === 'levelup') {
+      const need = R.xpToLevel || 2;
+      for (const o of sp.options) {
+        const c = out.deck.find((d) => d.uid === o.uid);
+        c.rank = o.to;
+        c.xp = Math.max(0, (c.xp || 0) - need);
+      }
+    } else if (sp.kind === 'upgrade') {
+      const idx = choice && typeof choice === 'object' ? sp.options.findIndex((o) => o.uid === choice.uid) : choice;
+      const opt = sp.options[idx];
+      if (!opt) throw new Error('no upgrade option ' + JSON.stringify(choice));
+      out.deck.find((d) => d.uid === opt.uid).trait = sp.trait;
+      sp.picked = opt.uid;
+    } else throw new Error('unknown spoils ' + sp.kind);
+    sp.applied = true;
+    return out;
+  }
+
+  /**
+   * From 'spoils' (applied, or none due) to the next battle, phase 'battle'. With
+   * proto.guaranteeDraw the card just added / upgraded becomes run.featured for that battle.
+   */
+  function nextBattle(run) {
+    if (!run || run.phase !== 'spoils') throw new Error('run is not at a spoils step');
+    if (run.spoils && !run.spoils.applied) throw new Error('spoils not applied yet');
+    const out = clone(run);
+    out.battle += 1;
+    out.phase = 'battle';
+    delete out.featured;
+    const sp = run.spoils;
+    if (protoOf(run).guaranteeDraw && sp && sp.applied && sp.picked !== undefined && (sp.kind === 'add' || sp.kind === 'upgrade')) out.featured = [sp.picked];
+    out.spoils = null;
+    return out;
+  }
+
+  /**
+   * §8.7 From 'lost' back to 'battle' on the same battle: the loss's result is dropped and
+   * attempts[battle] goes up by one, so battleFor deals the same board with a new shuffle.
+   * The deck (no XP from the lost attempt) and run.featured stay as they were.
+   */
+  function retryBattle(run) {
+    if (!run || run.phase !== 'lost') throw new Error('run has no lost battle to retry');
+    const out = clone(run);
+    const last = out.results[out.results.length - 1];
+    if (last && last.battle === out.battle && !last.won) out.results.pop();
+    out.attempts = Object.assign({}, out.attempts || {});
+    out.attempts[out.battle] = attemptsOf(run) + 1;
+    out.phase = 'battle';
+    return out;
+  }
+
+  /** Deck summary for the UI: unit counts per type, veterans (rank > 1), traits, leaders. */
+  function summary(run) {
+    const u = units(run), count = { inf: 0, arc: 0, cav: 0 };
+    for (const c of u) count[c.type]++;
+    return {
+      units: count, size: run.deck.length,
+      veterans: u.filter((c) => (c.rank || 1) > 1).length,
+      traits: u.filter((c) => c.trait).map((c) => ({ uid: c.uid, type: c.type, trait: c.trait })),
+      officers: run.deck.filter((c) => c.kind === 'officer').map((c) => ({ uid: c.uid, type: c.type, shape: c.shape })),
+      heroes: run.deck.filter((c) => c.kind === 'hero').map((c) => ({ uid: c.uid, id: c.id, cond: Object.assign({}, c.cond) }))
+    };
+  }
+
+  C.Run = {
+    battleSeed, targetFor, setupFor, startRun, battleFor, finishBattle, spoilsKind, spoilsFor,
+    applySpoils, nextBattle, retryBattle, attemptsOf, summary, averageRank, mainType, placedUnitUids, featureCards
+  };
+  if (typeof module !== 'undefined') module.exports = C.Run;
 })();
 </script>
 <!-- The interface. -->
@@ -2534,6 +3565,46 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
     }).join('');
   }
 
+  // PLAN 45 rank-2 figures (§8.3): Pikeman / Crossbowman / Knight, drawn in the same flat
+  // idiom as the old-game troop symbols (one currentColor silhouette on the y = 56 ground
+  // line, brass / class-colour / highlight accents, facing left). Each changes the outline
+  // so it reads at token size: the pike is lowered across the figure, the crossbowman
+  // carries a pavise, the knight's horse wears a caparison.
+  const CI = 'var(--c-infantry,#2f4d73)', CC = 'var(--c-cavalry,#7a3420)', CA = 'var(--c-archer,#2e5c3d)';
+  const BR = 'var(--accent-2,#c9a13a)', HL = 'var(--ink-invert,#faf1de)';
+  const GROUND = '<rect x="10" y="55" width="44" height="2.2" fill="currentColor" opacity="0.4"/>';
+  const BODY = '<path fill="currentColor" d="M18,20 H32 L34,41 H29 V56 H24 V45 H23 V56 H18 L16,41 Z"/><circle cx="25" cy="14" r="5.5" fill="currentColor"/>';
+  const HORSE = '<path fill="currentColor" d="M18.5,39 h3.4 v17 h-3.4 Z M24,39 h3.2 v17 h-3.2 Z M38,39 h3.4 v17 h-3.4 Z M43,39 h3.2 v17 h-3.2 Z"/>' +
+    '<path fill="currentColor" d="M49,29 C54,32 54,42 50,49 L47,47 C50,41 49,34 46,31 Z"/>' +
+    '<path fill="currentColor" d="M9,13 C6,14 5,19 7,22 L11,23 C12,27 14,29 18,30 C16,33 16,37 18,40 L44,40 C48,38 50,34 49,29 C46,26 40,25 30,25 C26,25 24,22 22,20 C21,17 15,13 9,13 Z"/>';
+  const RANK2 = {
+    // Pikeman: morion helmet, cuirass, a long pike lowered toward the enemy.
+    inf: GROUND + BODY +
+      '<path fill="' + BR + '" d="M19.5,12.5 A5.5,5.5 0 0 1 30.5,12.5 Z M21.5,8.6 Q25,3.2 28.5,8.6 Z M15.5,14 Q17.5,10.6 20,12 H30 Q32.5,10.6 34.5,14 Q25,12.4 15.5,14 Z"/>' +
+      '<path fill="' + CI + '" d="M19,21 H31 L32.4,33 Q25,36.5 17.6,33 Z"/>' +
+      '<path fill="currentColor" d="M53,52 L55.4,50.6 L8.6,2.4 L6.6,4.4 Z M3,-1 L10.4,3.2 L6.4,7.2 Z M30,25 L37,33 L34.4,35.4 L28,28 Z"/>',
+    // Crossbowman: kettle hat, crossbow levelled with a loaded bolt, a pavise on the back.
+    arc: GROUND +
+      '<path fill="' + CA + '" d="M30,17 L44,15 L46,52 L33,52 Z"/>' +
+      '<path fill="' + BR + '" opacity=".9" d="M36,24 L42,23.4 L42.6,34 L36.6,34.6 Z"/>' + BODY +
+      '<path fill="' + BR + '" d="M18,13 Q25,5 32,13 Z"/><rect x="16.5" y="12.4" width="17" height="2.2" fill="' + BR + '"/>' +
+      '<rect x="7" y="25.5" width="27" height="3.6" rx="1" fill="currentColor"/>' +
+      '<path fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" d="M11,16 C7,23 7,32 11,39"/>' +
+      '<path fill="none" stroke="currentColor" stroke-width="1.6" d="M11,16 L17,27.3 L11,39"/>' +
+      '<path fill="' + BR + '" d="M0,26 L8,25.8 L8,28.8 L0,28.6 Z"/>',
+    // Knight: a barded horse (scalloped caparison, brass chanfron), great helm and plume,
+    // couched lance with a pennon.
+    cav: GROUND + HORSE +
+      '<path fill="' + CC + '" d="M17.5,30 C20,26.6 30,26 40,26.4 C46,26.8 49.4,30 49.4,34 L48,48 L44.5,44.4 L41,48 L37.5,44.4 L34,48 L30.5,44.4 L27,48 L23.5,44.4 L20,48 L17.6,45 C16.4,40 16.2,34 17.5,30 Z"/>' +
+      '<path fill="' + BR + '" d="M7.4,15.2 C9.6,13.6 12.6,13.8 14,15 L12.2,19.6 L8,19.4 Z"/>' +
+      '<path fill="currentColor" d="M26,28 H34 L33,15 H27 Z"/>' +
+      '<path fill="' + BR + '" d="M25.8,6.4 H34.2 V13.8 Q30,15.6 25.8,13.8 Z"/>' +
+      '<rect x="25.8" y="9.4" width="8.4" height="1.6" fill="currentColor"/>' +
+      '<path fill="' + HL + '" d="M33.2,7 C36,2.4 42,3 41,8.4 C38.6,6.4 36,7.4 34.4,9.4 Z"/>' +
+      '<path fill="currentColor" d="M1,22 L34,18.6 L34,21.8 L1,25 Z"/>' +
+      '<path fill="' + HL + '" d="M9,21.8 L20,20.6 L17,24.8 L9,25.2 Z"/>'
+  };
+
   const OWN = {
     // Hero: a crowned bust with a cloak.
     'u-hero': '<path fill="currentColor" d="M12,58 C12,42 20,34 32,34 C44,34 52,42 52,58 Z"/>' +
@@ -2561,25 +3632,53 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
     warden: '<path fill="currentColor" d="M16,58 V24 H21 V15 H27 V22 H30 V15 H34 V22 H37 V15 H43 V24 H48 V58 Z"/><path fill="var(--coin,#d8b048)" d="M27,58 V47 A5,5 0 0 1 37,47 V58 Z"/><rect x="29.5" y="31" width="5" height="7" rx="2" fill="var(--coin,#d8b048)"/>'
   };
 
+  // PLAN 45 (§8.1) unit traits: one engraved icon each (currentColor), shown on a brass pip
+  // on cards and tokens. Sure-footed a boot, Rally a war horn, Banner a hanging standard
+  // (not the officer's swallow-tail flag), Heavy a shield.
+  const TRAIT = {
+    sure_footed: '<path fill="currentColor" d="M19,5 H35 V31 L50,37 C55,39 58,43 58,48 V52 H13 L15,31 Z"/><path fill="currentColor" d="M11,55 H60 V60 H11 Z"/><path stroke="var(--trait-bg,#e7bf5c)" stroke-width="2.6" stroke-linecap="round" d="M35,22 H24 M35,14 H24"/>',
+    rally: '<path fill="currentColor" d="M6,26 C18,24 32,16 44,6 L49,9 C53,22 53,38 49,51 L44,54 C32,44 18,38 6,37 Z"/><path fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" d="M14,38 L18,55 H26 L24,40"/><path fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" d="M55,20 L60,16 M56,30 H62 M55,40 L60,44"/>',
+    banner: '<path stroke="currentColor" stroke-width="4.4" stroke-linecap="round" d="M10,8 H54"/><circle cx="10" cy="8" r="4" fill="currentColor"/><circle cx="54" cy="8" r="4" fill="currentColor"/><path fill="currentColor" d="M17,11 H47 V56 L32,45 L17,56 Z"/><path fill="var(--trait-bg,#e7bf5c)" d="M32,18 L36,26 L45,27 L38.5,33 L40.5,42 L32,37.5 L23.5,42 L25.5,33 L19,27 L28,26 Z"/>',
+    heavy: '<path fill="currentColor" d="M32,3 L55,11 V30 C55,45 45,55 32,61 C19,55 9,45 9,30 V11 Z"/><path fill="var(--trait-bg,#e7bf5c)" d="M32,11 L47,16.5 V30 C47,40 40.5,47.5 32,52 Z" opacity=".55"/><circle cx="32" cy="30" r="6" fill="var(--trait-bg,#e7bf5c)"/>'
+  };
+
   let sheetDone = false;
   A.sheet = function sheet() {
     if (sheetDone || typeof document === 'undefined') return;
     sheetDone = true;
     let s = unitSymbols();
+    for (const t in RANK2) s += '<symbol id="u-' + t + '2" viewBox="0 0 64 64">' + RANK2[t] + '</symbol>';
     for (const k in OWN) s += '<symbol id="' + k + '" viewBox="0 0 ' + (k === 'u-star' ? 24 : k === 'u-restart' || k === 'u-undo' ? 32 : 64) + ' ' + (k === 'u-star' ? 24 : k === 'u-restart' || k === 'u-undo' ? 32 : 64) + '">' + OWN[k] + '</symbol>';
     for (const k in EMB) s += '<symbol id="g-' + k + '" viewBox="0 0 64 64">' + EMB[k] + '</symbol>';
+    for (const k in TRAIT) s += '<symbol id="t-' + k + '" viewBox="0 0 64 64">' + TRAIT[k] + '</symbol>';
     const div = document.createElement('div');
     div.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">' + s + '</svg>';
     document.body.insertBefore(div.firstChild, document.body.firstChild);
   };
 
   const use = (id, cls, vb) => '<svg class="' + (cls || 'ico') + '" viewBox="' + (vb || '0 0 64 64') + '" aria-hidden="true"><use href="#' + id + '"/></svg>';
-  A.icon = (type, cls) => use('u-' + type, 'ico ico-' + type + (cls ? ' ' + cls : ''));
+  /** icon(type, cls, rank) - a unit figure; rank 2+ draws the promoted figure (§8.3). */
+  A.icon = (type, cls, rank) => use('u-' + type + ((rank || 1) > 1 && RANK2[type] ? '2' : ''), 'ico ico-' + type + (cls ? ' ' + cls : ''));
+  /** unitIcon(cardOrPiece, cls) - the figure for that unit's type and rank. */
+  A.unitIcon = (c, cls) => A.icon(c.type, cls, c.rank);
   A.heroIcon = (cls) => use('u-hero', 'ico ico-hero' + (cls ? ' ' + cls : ''));
   A.officerIcon = (cls) => use('u-officer', 'ico ico-officer' + (cls ? ' ' + cls : ''));
   A.star = (cls) => use('u-star', 'star' + (cls ? ' ' + cls : ''), '0 0 24 24');
   A.ui = (name) => use('u-' + name, 'uico', '0 0 32 32');
   A.emblem = (id) => use('g-' + id, 'emblem');
+  /** trait(id, cls) - a trait's icon (§8.1), currentColor on --trait-bg. */
+  A.trait = (id, cls) => use('t-' + id, 'ico trt trt-' + id + (cls ? ' ' + cls : ''));
+  /** The rank-2 chevron (§8.3): a gold stripe with a dark edge. */
+  A.chevron = (cls) => '<svg class="chev' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 18" aria-hidden="true"><path d="M3,15 L12,6 L21,15" fill="none" stroke="#2a1a06" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3,15 L12,6 L21,15" fill="none" stroke="#f3cf6f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  /**
+   * tokDeco(cardOrPiece) - what a unit token wears for the run (§8.3): a chevron at the
+   * top right when rank 2+, the trait's brass pip at the top left. '' for rank 1, no trait.
+   */
+  A.tokDeco = (c) => {
+    if (!c || c.kind === 'hero' || c.kind === 'officer') return '';
+    return ((c.rank || 1) > 1 ? '<i class="rk">' + A.chevron() + '</i>' : '') +
+      (c.trait ? '<i class="tp">' + A.trait(c.trait) + '</i>' : '');
+  };
 
   // ---- officer shapes (docs/P44-CORE.md §7.2) --------------------------------
   // A small stroke glyph per shape (viewBox 24, currentColor): plus, x with corner
@@ -2742,7 +3841,8 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
  * tokens with live value medallions, the combo overlay (bands, triad
  * triangles, in-progress ghosts), hero rings at rest and the drop preview
  * (docs/P44-CORE.md §3), plus officer posts, at-rest officer areas, hero
- * formation badges and the hover / long-press area focus (§7). Reads state
+ * formation badges and the hover / long-press area focus (§7); run tokens
+ * wear a rank-2 chevron and a trait pip (§8.3, Art.tokDeco). Reads state
  * only through TTFCore.
  *
  * globalThis.TTFBoard = { mount(el), render(state, opts), preview(pred, after?), clear(),
@@ -2838,7 +3938,7 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
       if (p.kind === 'hero') {
         html += '<div class="tok hero' + (pop ? ' pop' : '') + '">' + Art.heroIcon() + '</div>';
         html += badgeHTML(C.formationStatus(st, i), st);
-      } else html += '<div class="tok ' + p.type + (pop ? ' pop' : '') + '">' + Art.icon(p.type) + '</div>';
+      } else html += '<div class="tok ' + p.type + (pop ? ' pop' : '') + '">' + Art.unitIcon(p) + Art.tokDeco(p) + '</div>';
       if (p.officer) html += pipHTML(C.officerOf(p.officer), pipPop ? 'pop' : '');
       const prev = lastVals[i];
       const bump = o.anim && prev !== undefined && prev !== v;
@@ -3050,7 +4150,7 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
         if (cellEls[slot].querySelector('.med')) add(slot, '<div class="med ghost ' + medClass(pred.ownValue) + '">' + pred.ownValue + '</div>');
       }
     } else {
-      let tok = card.kind === 'hero' ? '<div class="tok hero ghost">' + Art.heroIcon() + '</div>' : '<div class="tok ghost ' + card.type + '">' + Art.icon(card.type) + '</div>';
+      let tok = card.kind === 'hero' ? '<div class="tok hero ghost">' + Art.heroIcon() + '</div>' : '<div class="tok ghost ' + card.type + '">' + Art.unitIcon(card) + Art.tokDeco(card) + '</div>';
       if (card.kind === 'hero') tok += badgeHTML(C.formationStatus(st, slot, card.cond), st, 'ghost');
       if (here && here.kind === 'post') { cellEls[slot].classList.add('pvjoin'); tok += pipHTML(C.officerOf(here.officer), 'ghost'); }
       add(slot, tok + '<div class="med ghost ' + medClass(pred.ownValue) + '">' + pred.ownValue + '</div>');
@@ -3095,7 +4195,15 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
  * general) and the tray (setup, offer cards, result plate)
  * (docs/P44-CORE.md §3). Builds DOM strings; app.js wires the events.
  *
- * globalThis.TTFHud = { top(st, ghostTotal?), side(st, sel), tray(st, ui), cardHTML(card, st) }
+ * PLAN 45 (§8.3): the run's "Battle k / n" marker in the enemy banner, the run deck
+ * summary under the general, rank names / chevrons / trait pips on cards, the
+ * Continue / Retry / New run plates, the final victory plate and the spoils
+ * steps (add, level-up flips, upgrade).
+ *
+ * globalThis.TTFHud = { setRun(ctx), top(st, ghostTotal?), side(st, sel, run?, bump?),
+ *                       tray(st, ui), cardHTML(card, st), firstTarget(tun, tier) }
+ *   ctx = {run, pending, phase}: the run (null at setup), the scored-but-uncommitted run
+ *   of a finished battle (null otherwise) and the UI phase (setup|draft|done|spoils).
  */
 (function () {
   const C = globalThis.TTFCore, Art = globalThis.TTFArt;
@@ -3104,6 +4212,15 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
   const tunOf = (st) => st.tun || C.TUN_DEFAULT;
   const NAMES = { inf: 'Infantry', arc: 'Archers', cav: 'Cavalry' };
   const genById = (id) => C.GENERALS.find((g) => g.id === id);
+  const TYPES = ['inf', 'arc', 'cav'];
+  const cap = (t) => t[0].toUpperCase() + t.slice(1);
+  let ctx = { run: null, pending: null, phase: 'setup' };
+  H.setRun = (c) => { ctx = Object.assign({ run: null, pending: null, phase: 'setup' }, c || {}); };
+  /** Battle 1's target of the run for a tier (the setup screen's numbers). */
+  H.firstTarget = (T, tier) => (C.Run ? C.Run.targetFor({ tier, battle: 1, tun: T }, 1) : T.target[tier]);
+  const traitOf = (id) => C.TRAITS.find((t) => t.id === id) || { id, name: id, short: '' };
+  /** Set by the controller for one render: level-up cards animate their flip. */
+  H.flipNow = false;
 
   // ---- top bar ---------------------------------------------------------------
   let shownTotal = null;
@@ -3111,7 +4228,11 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
     const T = tunOf(st), tg = C.target(st);
     const tot = st.phase === 'setup' ? 0 : C.total(st);
     $('tgtNum').textContent = tg;
-    $('tgtTier').textContent = st.tier[0].toUpperCase() + st.tier.slice(1);
+    $('tgtTier').textContent = cap(st.tier);
+    // §8.3 the run's "Battle k / n" marker beside the target
+    const R = T.run || {};
+    $('bNum').textContent = ctx.run ? ctx.run.battle : 1;
+    $('bOf').textContent = '/' + (ctx.run ? ctx.run.battles : (R.battles || 4));
     $('totTgt').textContent = tg;
     const max = tg; // the bar's full length is the target; the fill caps there
     const pct = (v) => Math.max(0, Math.min(100, (v / max) * 100));
@@ -3153,8 +4274,10 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
     let ph = '';
     for (let k = 0; k < T.turns; k++) ph += '<i class="pip8' + (k < st.turn ? ' done' : '') + (st.phase === 'draft' && k === st.turn ? ' now' : '') + '"></i>';
     $('pips').innerHTML = ph;
-    $('bUndo').disabled = !st.prev;
-    $('bRestart').disabled = st.phase === 'setup';
+    // a lost battle (Retry on its plate) or a finished run: nothing to take back or replay (§8.1)
+    const over = !!ctx.run && (ctx.run.phase === 'lost' || ctx.run.phase === 'won');
+    $('bUndo').disabled = !st.prev || ctx.phase === 'spoils' || over;
+    $('bRestart').disabled = ctx.phase === 'setup' || ctx.phase === 'spoils' || over;
   };
   H.resetCount = () => { shownTotal = null; };
 
@@ -3167,16 +4290,35 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
    * §7.10 the army's leaders: one flag per officer in its type's colour, then one crown
    * per hero with its formation as coloured pips (inf, arc, cav order).
    */
-  function leadHTML(lead, cls) {
+  function leadHTML(lead, cls, count) {
     const offs = lead.officers.map((o) => '<span class="of" title="' + C.TYPE_NAMES[o.type] + ' officer" style="color:' + Art.TYPE_LIT[o.type] + '">' + Art.officerIcon() + '</span>').join('');
     const hers = lead.heroes.map((h) => {
       let pips = '';
       C.TYPES.forEach((t) => { for (let k = 0; k < ((h.cond || {})[t] || 0); k++) pips += '<i style="background:' + Art.TYPE_LIT[t] + '"></i>'; });
       return '<span class="hf" title="Hero">' + Art.heroIcon() + '<em>' + pips + '</em></span>';
     }).join('');
-    return '<div class="' + cls + '"><span class="ofs">' + offs + '</span><span class="hfs">' + hers + '</span></div>';
+    const n = lead.officers.length + lead.heroes.length;
+    return '<div class="' + cls + '"><span class="ofs">' + offs + '</span><span class="hfs">' + hers + '</span>' +
+      (count && n ? '<b class="lc" title="Leaders">×' + n + '</b>' : '') + '</div>';
   }
-  H.side = function side(st, sel) {
+  /**
+   * §8.3 the run deck under the general: per type the count, its veterans (chevron xN)
+   * and its trait pips; then the leaders (the same plate as the setup banners).
+   * bump: a type id or 'lead' that just grew (a spoils pick) pulses once.
+   */
+  function deckHTML(run, T, bump) {
+    const s = C.Run.summary(run), main = C.Run.mainType(T, run.army);
+    const vets = { inf: 0, arc: 0, cav: 0 }, trs = { inf: [], arc: [], cav: [] };
+    run.deck.forEach((c) => { if (c.kind === 'unit' && (c.rank || 1) > 1) vets[c.type]++; });
+    s.traits.forEach((t) => trs[t.type].push(t.trait));
+    return '<div class="armytag deck" id="deck">' + TYPES.map((t) =>
+      '<span class="dt ' + t + (t === main ? ' main' : '') + (bump === t ? ' bump' : '') + '" title="' + C.TYPE_NAMES[t] + '">' + Art.icon(t) + '<b>' + s.units[t] + '</b>' +
+      // veterans and trait pips share one wrapper: a second line in portrait, inline (display: contents) in landscape
+      '<em class="dx">' + (vets[t] ? '<em class="vt" title="Veterans">' + Art.chevron() + vets[t] + '</em>' : '') +
+      (trs[t].length ? '<em class="trs">' + trs[t].map((id) => '<i class="tpi" title="' + traitOf(id).name + '">' + Art.trait(id) + '</i>').join('') + '</em>' : '') + '</em></span>').join('') +
+      leadHTML(s, 'armylead' + (bump === 'lead' ? ' bump' : ''), true) + '</div>';
+  }
+  H.side = function side(st, sel, run, bump) {
     const el = $('side');
     if (st.phase === 'setup') {
       el.className = 'pick' + (sel.general ? ' has' : '');
@@ -3184,6 +4326,12 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
       return;
     }
     el.className = 'chosen';
+    if (run && C.Run) {
+      el.innerHTML = genCard(genById(st.general), 'chosen', tunOf(st)) + deckHTML(run, tunOf(st), bump) + '<div class="fkey" id="fkey"></div>';
+      keyShown = null;
+      H.key(st);
+      return;
+    }
     const army = (tunOf(st).armies || C.ARMIES).find((a) => a.id === st.army);
     const mx = Math.max(army.mix.inf, army.mix.arc, army.mix.cav), even = army.mix.inf === army.mix.arc && army.mix.arc === army.mix.cav;
     el.innerHTML = genCard(genById(st.general), 'chosen', tunOf(st)) +
@@ -3242,17 +4390,29 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
   };
 
   // ---- cards -----------------------------------------------------------------
+  /** Power a unit card has over a rank-1 unit with no trait: its rank, plus Heavy. */
+  function powerBonus(card, T) {
+    if (!C.rankPower) return 0;
+    const heavy = card.trait === 'heavy' ? C.traitsOf(T).heavy : 0;
+    return C.rankPower(T, card.rank || 1) - C.rankPower(T, 1) + heavy;
+  }
+  const pwHTML = (n, cls) => (n > 0 ? '<b class="pw' + (cls || '') + '" title="Power +' + n + '">+' + n + '</b>' : '');
   H.cardHTML = function cardHTML(card, st) {
     const T = tunOf(st);
     if (card.kind === 'unit') {
       // §7.9: the terrains that change this unit's value, from the engine (general-aware)
-      const mods = C.terrainMods(st, card.type);
+      const mods = C.terrainMods(st, card);
       const row = Object.keys(mods).sort((a, b) => mods[b] - mods[a]).map((t) => {
         const n = mods[t];
         return '<span class="tm ' + (n > 0 ? 'up' : 'dn') + '">' + Art.terrainIcon(t) + '<b>' + (n > 0 ? '+' + n : '−' + -n) + '</b></span>';
       }).join('');
-      return '<div class="big"><div class="tok ' + card.type + '">' + Art.icon(card.type) + '</div></div>' +
-        (row ? '<div class="trow">' + row + '</div>' : '') + '<div class="nm">' + NAMES[card.type] + '</div>';
+      // §8.3: the rank name (Spearman / Pikeman ...), a chevron at rank 2, the trait pip
+      // and what the rank (and Heavy) add over a plain unit, as a "+N" badge by the name
+      // Base power (rank + Heavy) as a coin on the token's corner: "1" for a basic unit.
+      const vet = (card.rank || 1) > 1, base = (C.rankPower ? C.rankPower(T, 1) : T.unit.base) + powerBonus(card, T);
+      return '<div class="big"><div class="tok ' + card.type + '">' + Art.unitIcon(card) + Art.tokDeco(card) + '</div>' +
+        '<b class="bpw' + (base > 1 ? ' up' : '') + '" title="Power ' + base + '">' + base + '</b></div>' +
+        (row ? '<div class="trow">' + row + '</div>' : '') + '<div class="nm' + (vet ? ' vet' : '') + '">' + (C.rankName ? C.rankName(card) : NAMES[card.type]) + '</div>';
     }
     if (card.kind === 'officer') {
       // §7.4: the shape on a mini 4x4 board (officer cell marked, covered cells in its
@@ -3301,7 +4461,7 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
           ['inf', 'arc', 'cav'].map((t) => '<span class="row' + (!even && ar.mix[t] === mx ? ' main' : '') + '">' + Art.icon(t) + ar.mix[t] + '</span>').join('') + leadHTML((st.leaders && st.leaders[ar.id]) || C.leadersFor(st.seed, T, ar), 'lead') + '</button>';
       });
       a += '</div>';
-      const tiers = '<div class="tiers">' + ['easy', 'normal', 'hard'].map((t) => '<button data-tier="' + t + '" class="' + (st.tier === t ? 'sel' : '') + '"><span>' + t[0].toUpperCase() + t.slice(1) + '</span><b>' + T.target[t] + '</b></button>').join('') + '</div>';
+      const tiers = '<div class="tiers">' + ['easy', 'normal', 'hard'].map((t) => '<button data-tier="' + t + '" class="' + (st.tier === t ? 'sel' : '') + '"><span>' + t[0].toUpperCase() + t.slice(1) + '</span><b>' + H.firstTarget(T, t) + '</b></button>').join('') + '</div>';
       const ready = !!(ui.sel.general && ui.sel.army);
       const go = '<button class="go' + (ready ? ' ready' : '') + '" id="bBegin"' + (ready ? '' : ' disabled') + '><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#u-swords"/></svg>Begin</button>';
       el.innerHTML = '<div class="setupcol">' + a + tiers + go + '</div>';
@@ -3309,22 +4469,78 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
     }
     if (st.phase === 'draft') {
       el.className = 'cards';
+      // §8.6 guaranteeDraw: the card just recruited / upgraded is dealt into this battle's
+      // first offer; a brass tag ("New" / "Upgraded") and a soft glow tie it to that reward
+      const feat = (ctx.run && ctx.run.featured) || [];
+      const fresh = (card) => feat.length > 0 && card.uid !== undefined && feat.indexOf(card.uid) >= 0;
+      const tagTxt = ctx.run && C.Run && C.Run.spoilsKind(ctx.run, ctx.run.battle - 1) === 'upgrade' ? 'Upgraded' : 'New';
       el.innerHTML = st.offer.map((card, i) => {
-        const ok = C.canPick(st, card);
-        return '<div class="' + cardCls(card) + (ok ? '' : ' off') + (ui.selected === i ? ' sel' : '') + (ui.deal ? ' deal' : '') + '" data-oi="' + i + '" style="animation-delay:' + (i * 70) + 'ms">' + H.cardHTML(card, st) + '</div>';
+        const ok = C.canPick(st, card), f = fresh(card);
+        return '<div class="' + cardCls(card) + (ok ? '' : ' off') + (f ? ' fresh' : '') + (ui.selected === i ? ' sel' : '') + (ui.deal ? ' deal' : '') + '" data-oi="' + i + '" style="animation-delay:' + (i * 70) + 'ms">' +
+          (f ? '<i class="newtag">' + tagTxt + '</i>' : '') + H.cardHTML(card, st) + '</div>';
       }).join('');
       return;
     }
-    // done: the result plate
+    if (ctx.phase === 'spoils' && ctx.run && ctx.run.spoils) { spoilsTray(el, st, ctx.run); return; }
+    // done: the result plate (§8.3): Continue after a won battle, the four battles' stars
+    // after the last one, Retry (same board, new draw; §8.7) / New run after a loss
+    const res = ctx.pending || ctx.run;
+    const phase = res ? res.phase : 'lost';
     el.className = 'result';
     const n = C.stars(st), tot = C.total(st), tg = C.target(st);
+    const tag = '<div class="tierTag">' + (ctx.run ? 'Battle ' + ctx.run.battle + ' · ' : '') + cap(st.tier) + '</div>';
+    if (phase === 'won' && res.results) {
+      const rows = res.results.map((r, k) =>
+        '<div class="rr" style="animation-delay:' + (250 + k * 180) + 'ms"><span class="bn">' + r.battle + '</span><span class="rs">' +
+        [0, 1, 2].map((q) => Art.star(q < r.stars ? 'on' : '')).join('') +
+        (r.retries ? '<em class="rt" title="Retries"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#u-restart"/></svg>' + r.retries + '</em>' : '') + '</span><b>' + r.total + '</b><i>/' + r.target + '</i></div>').join('');
+      el.innerHTML = '<div class="plate victory"><div class="phead win">Run won!</div><div class="tierTag">' + cap(st.tier) + '</div><div class="vcrown">' + Art.heroIcon() + '</div>' +
+        '<div class="runres">' + rows + '</div>' +
+        '<div class="acts"><button class="go" id="bNewRun"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#u-swords"/></svg>New run</button></div></div>';
+      return;
+    }
     let s = '';
     for (let k = 0; k < 3; k++) s += Art.star((k < n ? 'on' : '') + (k === 1 ? ' mid' : '')).replace('<svg ', '<svg style="animation-delay:' + (250 + k * 260) + 'ms" ');
-    el.innerHTML = '<div class="plate"><div class="tierTag">' + st.tier[0].toUpperCase() + st.tier.slice(1) + '</div><div class="stars">' + s + '</div>' +
+    const acts = phase === 'spoils'
+      ? '<button class="go ready" id="bContinue">Continue' + ARROW + '</button>'
+      : '<button class="go retry" id="bRetry"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#u-restart"/></svg><span class="gl">Retry<small>new draw</small></span></button>' +
+        '<button class="go alt small" id="bNewRun"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#u-swords"/></svg>New run</button>';
+    const head = phase === 'lost' ? '<div class="phead">Battle lost</div>' : '';
+    el.innerHTML = '<div class="plate">' + head + tag + '<div class="stars">' + s + '</div>' +
       '<div class="res"><b class="' + (n > 0 ? 'win' : 'lose') + '">' + tot + '</b><span>/ ' + tg + '</span></div>' +
-      '<div class="acts"><button class="go" id="bAgain"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#u-restart"/></svg>Again</button>' +
-      '<button class="go alt" id="bNew"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#u-swords"/></svg>New battle</button></div></div>';
+      '<div class="acts">' + acts + '</div></div>';
   };
+  const ARROW = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7,16 H24 M17,8 L25,16 L17,24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  // ---- spoils (§8.3): the choice sits in the tray over the finished board -------------
+  /** A promoted card: a parchment tile that flips from the old rank to the new one. */
+  function vetHTML(o, k, flip, T) {
+    const face = (rank, name, cls) => '<div class="fc ' + cls + '"><div class="tok ' + o.type + '">' + Art.icon(o.type, '', rank) + Art.tokDeco({ type: o.type, rank }) + '<b class="bpw' + (rank > 1 ? ' up' : '') + '">' + ((C.rankPower ? C.rankPower(T, 1) : T.unit.base) + powerBonus({ rank }, T)) + '</b>' + '</div><b>' + name + '</b></div>';
+    return '<div class="vet ' + o.type + '" data-uid="' + o.uid + '"><div class="flip' + (flip ? ' go' : ' done') + '" style="animation-delay:' + (450 + k * 260) + 'ms">' +
+      face(o.from, o.fromName, 'f') + face(o.to, o.toName, 'b') + '</div></div>';
+  }
+  function spoilsTray(el, st, run) {
+    const sp = run.spoils;
+    el.className = 'spoils ' + sp.kind;
+    const pick = (cards) => '<div class="sprow">' + cards.map((c, i) =>
+      '<div class="' + cardCls(c) + ' pick deal" data-sp="' + i + '" style="animation-delay:' + (i * 90) + 'ms">' + H.cardHTML(c, st) + '</div>').join('') + '</div>';
+    if (sp.kind === 'add') { el.innerHTML = pick(sp.options); return; }
+    if (sp.kind === 'upgrade') {
+      const t = traitOf(sp.trait);
+      const cards = sp.options.map((o) => run.deck.find((d) => d.uid === o.uid) || { kind: 'unit', type: o.type, rank: o.rank });
+      el.innerHTML = '<div class="trplaque"><span class="tpc">' + Art.trait(sp.trait) + '</span><span class="tw"><b>' + t.name + '</b><i>' + t.short + '</i></span></div>' + pick(cards);
+      return;
+    }
+    // levelup: every promoted card flips from its old name to its new one; then Continue
+    const n = sp.options.length, port = document.body.dataset.mode === 'port';
+    // a portrait phone's tray is ~270px wide: two columns keep "Crossbowman" on its tile
+    const cols = port ? Math.min(n, document.body.dataset.phone ? 2 : 4) || 1 : (n <= 3 ? 1 : 2);
+    el.style.setProperty('--vcols', String(cols));
+    el.style.setProperty('--vrows', String(Math.max(1, Math.ceil(n / cols))));
+    el.innerHTML = (n ? '<div class="vets">' + sp.options.map((o, k) => vetHTML(o, k, H.flipNow, tunOf(st))).join('') + '</div>'
+      : '<div class="plate novet"><span class="nvi">' + Art.chevron() + '</span><b>No veterans yet</b></div>') +
+      '<button class="go ready" id="bSpoilsGo">Continue' + ARROW + '</button>';
+  }
 })();
 </script>
 <script>
@@ -3440,26 +4656,40 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
 </script>
 <script>
 /*
- * core/js/app.js - the Core Battle controller (docs/P44-CORE.md §3): owns the
- * engine state, sizes the layout, wires setup / draft / end, the tap-select
- * fallback, hover previews and persistence (ttf-core:* keys only).
+ * core/js/app.js - the Core Battle controller (docs/P44-CORE.md §3, §8.3): owns the
+ * run (TTFCore.Run) and the current battle state, sizes the layout, wires setup /
+ * draft / end / spoils, the tap-select fallback, hover previews and persistence
+ * (ttf-core:* keys only).
+ *
+ * The game is a 4-battle run: setup once (general, army, tier) -> battle 1..4, with a
+ * spoils step after battles 1-3 shown over the finished board. A finished battle is
+ * scored at once (`pending`, so Undo still works on the result plate) and committed
+ * on Continue. The run is saved to localStorage['ttf-core:run'] at every battle start
+ * and spoils step (the finished board of a spoils step to 'ttf-core:runview'); a
+ * reload resumes at the start of the current battle or spoils step. A loss or the final
+ * win is committed and saved at once with its board, ↻ and Undo turn off, and a reload
+ * reopens its result plate. A loss is not the end (§8.7): its plate offers Retry (the
+ * same board and deck, a new shuffle; unlimited) or New run.
  */
 (function () {
   const C = globalThis.TTFCore, Art = globalThis.TTFArt, Board = globalThis.TTFBoard;
-  const Hud = globalThis.TTFHud, Drag = globalThis.TTFDrag;
+  const Hud = globalThis.TTFHud, Drag = globalThis.TTFDrag, R = C.Run;
   const $ = (id) => document.getElementById(id);
 
   // ---- persistence (ttf-core:* only, never trusted to exist) ------------------
   const LS = 'ttf-core:';
   const store = {
     get(k) { try { return window.localStorage.getItem(LS + k); } catch (e) { return null; } },
-    set(k, v) { try { window.localStorage.setItem(LS + k, v); } catch (e) { /* private mode */ } }
+    set(k, v) { try { window.localStorage.setItem(LS + k, v); } catch (e) { /* private mode */ } },
+    del(k) { try { window.localStorage.removeItem(LS + k); } catch (e) { /* private mode */ } }
   };
   let tun = C.TUN_DEFAULT;
   try { const raw = store.get('tun'); if (raw) tun = C.mergeTun(C.TUN_DEFAULT, JSON.parse(raw)); } catch (e) { tun = C.TUN_DEFAULT; }
   const TIERS = ['easy', 'normal', 'hard'];
   let tier = store.get('tier');
   if (TIERS.indexOf(tier) < 0) tier = 'easy';
+  const armies = () => tun.armies || C.ARMIES;
+  const newSeed = () => (Math.random() * 4294967296) >>> 0;
 
   function urlSeed() {
     try { const q = new URLSearchParams(window.location.search).get('seed'); return q === null || q === '' ? null : q; } catch (e) { return null; }
@@ -3469,60 +4699,256 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
   }
 
   // ---- state -----------------------------------------------------------------
-  let st = null;
-  const ui = { sel: { general: null, army: store.get('army') }, selected: null, deal: false, preview: null };
+  // st: the battle on the board (the setup state at setup, a finished battle during its
+  // spoils step). run: the run (null at setup). pending: the run as scored by the battle
+  // just finished, committed on Continue (null otherwise).
+  let st = null, run = null, pending = null;
+  const ui = { sel: { general: null, army: store.get('army') }, selected: null, deal: false, preview: null, phase: 'setup', runSeed: null, busy: false };
 
-  /** keep: restart the same board with the same general and army (straight to the draft). */
-  function newBattle(seed, keep) {
-    const was = st && st.general ? { general: st.general, army: st.army } : null;
-    st = C.createBattle({ seed: seed === null || seed === undefined ? undefined : seed, tier, tun });
-    if (keep && was && st.generalOffer.indexOf(was.general) >= 0) {
-      ui.sel.general = was.general; ui.sel.army = was.army;
-      st = C.chooseSetup(st, was);
-      ui.deal = true;
-    }
+  /** The run as saved: plain JSON without the tunables (they are re-attached on load). */
+  function save() {
+    if (!run) return;
+    const o = Object.assign({}, run);
+    delete o.tun;
+    store.set('run', JSON.stringify(o));
+  }
+  const ended = (r) => !!r && (r.phase === 'lost' || r.phase === 'won');
+  /** The finished board of the current battle (a spoils step or an ended run). */
+  function saveView() { store.set('runview', JSON.stringify({ seed: run.seed, battle: run.battle, pieces: st.pieces })); }
+  function clearSave() { store.del('run'); store.del('runview'); }
+  function loadRun() {
+    try {
+      const raw = store.get('run');
+      if (!raw) return null;
+      const r = JSON.parse(raw);
+      if (!r || r.v !== 1 || !Array.isArray(r.deck) || ['battle', 'spoils', 'lost', 'won'].indexOf(r.phase) < 0) return null;
+      if (!C.GENERALS.some((g) => g.id === r.general) || !armies().some((a) => a.id === r.army) || TIERS.indexOf(r.tier) < 0) return null;
+      r.tun = tun;
+      return r;
+    } catch (e) { return null; }
+  }
+  /** A spoils step after a reload: the finished board of battle k, rebuilt from 'runview'. */
+  function viewState(r) {
+    const k = r.battle;
+    let s = C.createBattle({ seed: R.battleSeed(r.seed, k), tier: r.tier, tun, cards: r.deck, general: r.general, army: r.army, target: R.targetFor(r, k) });
+    s = C.chooseSetup(s, {});
+    let pieces = {};
+    try {
+      const v = JSON.parse(store.get('runview') || 'null');
+      if (v && String(v.seed) === String(r.seed) && v.battle === k && v.pieces) pieces = v.pieces;
+    } catch (e) { pieces = {}; }
+    return Object.assign({}, s, { phase: 'done', pieces, deck: [], offer: [], turn: tun.turns, prev: null });
+  }
+
+  // ---- flow ------------------------------------------------------------------
+  /** Setup for a run seeded `seed` (null: a new one). The last picks stay preselected. */
+  function toSetup(seed, keepSave) {
+    if (!keepSave) clearSave();
+    run = null; pending = null;
+    ui.runSeed = seed === null || seed === undefined ? newSeed() : seed;
+    st = R.setupFor({ seed: ui.runSeed, tier, tun });
+    st.target = Hud.firstTarget(tun, tier);
     if (st.generalOffer.indexOf(ui.sel.general) < 0) ui.sel.general = null;
-    if (!(tun.armies || C.ARMIES).some((a) => a.id === ui.sel.army)) ui.sel.army = null;
-    ui.selected = null; ui.preview = null;
-    setUrlSeed(st.seed);
+    if (!armies().some((a) => a.id === ui.sel.army)) ui.sel.army = null;
+    ui.selected = null; ui.preview = null; ui.phase = 'setup'; ui.busy = false;
+    setUrlSeed(ui.runSeed);
     Hud.resetCount();
     render({});
-    hint(st.phase === 'setup' ? 'setup' : 'draft');
+    hint(ui.sel.general && ui.sel.army ? null : 'setup');
+  }
+  function begin() {
+    run = R.startRun({ seed: ui.runSeed, tier, general: ui.sel.general, army: ui.sel.army, tun });
+    startBattle();
+  }
+  /** The current battle of the run from its start (a new board; ↻ in battles 2-4). */
+  function startBattle() {
+    pending = null;
+    st = R.battleFor(run);
+    ui.phase = 'draft'; ui.selected = null; ui.preview = null; ui.busy = false; ui.deal = true;
+    save();
+    store.del('runview');
+    setUrlSeed(run.seed);
+    Hud.resetCount();
+    render({});
+    hint(run.battle === 1 ? 'draft' : null);
+  }
+  /** Continue on a won battle's plate: commit the scored run and open its spoils step. */
+  function commit() {
+    if (!pending || pending.phase !== 'spoils') return;
+    run = pending; pending = null;
+    saveView();
+    openSpoils(true);
+  }
+  function openSpoils(anim) {
+    const sp = run.spoils;
+    // no step after this battle, or a pick made just before a reload: straight on
+    if (!sp || (sp.applied && sp.kind !== 'levelup')) { advance(); return; }
+    if (sp.kind === 'levelup' && !sp.applied) run = R.applySpoils(run, null);
+    save();
+    ui.phase = 'spoils'; ui.selected = null; ui.preview = null; ui.busy = false;
+    Hud.flipNow = !!anim;
+    render({});
+    Hud.flipNow = false;
+    if (sp.kind === 'add') hint('add');
+    else if (sp.kind === 'levelup') hint(sp.options.length ? 'levelup' : 'novets');
+    else hint('upgrade', 'Choose who gets <span class="hti">' + Art.trait(sp.trait) + '</span>');
+  }
+  function advance() {
+    run = R.nextBattle(run);
+    startBattle();
+  }
+  /** Add / upgrade: tap a card; it joins the deck (or takes the trait) and flies into the summary. */
+  function pickSpoil(i, el) {
+    if (ui.busy || ui.phase !== 'spoils' || !run.spoils || run.spoils.applied) return;
+    const kind = run.spoils.kind;
+    if (kind !== 'add' && kind !== 'upgrade') return;
+    ui.busy = true;
+    run = R.applySpoils(run, i);
+    save();
+    hint(null);
+    const card = run.deck.find((d) => d.uid === run.spoils.picked);
+    document.querySelectorAll('#tray .card[data-sp]').forEach((c) => { if (c !== el) c.classList.add('gone'); });
+    el.classList.remove('deal');
+    el.classList.add('chosen');
+    let wait = 260;
+    if (kind === 'upgrade' && card) {
+      el.innerHTML = Hud.cardHTML(card, st); // the trait pip pops onto the chosen card
+      el.classList.add('blessed');
+      wait = 800;
+    }
+    const bump = card && card.kind === 'unit' ? card.type : 'lead';
+    setTimeout(() => fly(el, $('deck'), () => {
+      Hud.side(st, ui.sel, run, bump);
+      setTimeout(advance, 700);
+    }), wait);
+  }
+  /** A card flies from the tray into the deck summary (Web Animations; a timer backs it up). */
+  function fly(from, to, done) {
+    let fired = false, c = null;
+    const end = () => { if (fired) return; fired = true; if (c) c.remove(); done(); };
+    try {
+      const a = from.getBoundingClientRect(), b = (to || from).getBoundingClientRect();
+      c = from.cloneNode(true);
+      c.classList.remove('deal', 'pick', 'sel', 'chosen');
+      c.classList.add('flying');
+      c.style.cssText = 'position:fixed;left:' + a.left + 'px;top:' + a.top + 'px;width:' + a.width + 'px;height:' + a.height + 'px;margin:0;z-index:70;pointer-events:none;animation:none';
+      document.body.appendChild(c);
+      from.style.visibility = 'hidden';
+      const dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2);
+      const sc = Math.max(0.12, Math.min(0.35, (b.width / a.width) * 0.5));
+      const an = c.animate([
+        { transform: 'none', opacity: 1 },
+        { transform: 'translate(' + (dx * 0.45) + 'px,' + (dy * 0.45 - 50) + 'px) scale(0.72) rotate(-8deg)', opacity: 1, offset: 0.45 },
+        { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(' + sc + ')', opacity: 0.15 }
+      ], { duration: 720, easing: 'cubic-bezier(.45,0,.25,1)', fill: 'forwards' });
+      an.onfinish = end;
+    } catch (e) { /* no Web Animations: the timer below */ }
+    setTimeout(end, 950);
+  }
+  /** §8.7 Retry on a loss plate: the same battle again, same board, a new draw. */
+  function retryLost() {
+    if (!run || run.phase !== 'lost') return;
+    hint(null);
+    run = R.retryBattle(run);
+    startBattle();
+  }
+  /** Back to setup on the run's seed with its picks preselected (Try again, ↻ in battle 1). */
+  function retry(r) {
+    tier = r.tier;
+    ui.sel.general = r.general; ui.sel.army = r.army;
+    toSetup(r.seed);
   }
 
   // ---- hints -----------------------------------------------------------------
-  // One parchment line at the board's top edge each time a battle starts: what to do
-  // first. It fades on the first general / army pick, then on the first placement.
-  // Non-blocking (pointer-events: none), nothing stored.
-  const HINTS = { setup: 'Pick a general, army & difficulty to begin.', draft: 'Drag a card onto the field.' };
+  // One large parchment plate over the board's centre: what to do now. The setup hint
+  // fades once both a general and an army are picked, battle 1's on the first placement;
+  // a spoils step's stays until its choice. Non-blocking (pointer-events: none), dimmed
+  // while a card is held (body.holding), nothing stored. guide() lights what to pick.
+  const HINTS = {
+    setup: 'Pick a general, army & difficulty to begin.', draft: 'Drag a card onto the field.',
+    add: 'Add one to your army.', levelup: 'Veterans promoted!', novets: 'No veterans yet'
+  };
   let hintOn = null;
-  function hint(kind) {
+  function hint(kind, html) {
     const h = $('hint');
     if (!h) return;
     if (kind) {
-      h.textContent = HINTS[kind];
+      if (html) h.innerHTML = html; else h.textContent = HINTS[kind];
       h.classList.remove('show'); void h.offsetWidth; h.classList.add('show');
     } else if (hintOn) h.classList.remove('show');
     hintOn = kind || null;
+    guide();
   }
   const dropHint = (kind) => { if (hintOn === kind) hint(null); };
+  /**
+   * Guided highlights (body[data-guide], core.css "guided highlights"): the generals until
+   * one is picked, the army banners until one is, then Begin; battle 1's offer cards until
+   * the first placement; a spoils step's cards until one is picked (Continue on a level-up).
+   */
+  function guide() {
+    const g = [];
+    if (ui.phase === 'setup') {
+      if (!ui.sel.general) g.push('gen');
+      if (!ui.sel.army) g.push('army');
+      if (!g.length) g.push('begin');
+    } else if (ui.phase === 'draft') {
+      if (hintOn === 'draft') g.push('offer');
+    } else if (ui.phase === 'spoils' && run && run.spoils && !ui.busy) {
+      const sp = run.spoils;
+      if (sp.kind === 'levelup') g.push('go');
+      else if (!sp.applied) g.push('spoils');
+    } else if (ui.phase === 'done' && run && run.phase === 'lost') g.push('retry');
+    document.body.dataset.guide = g.join(' ');
+  }
+  /** A card held (dragged or tap-selected): the hint and the offer glow step back. */
+  let dragging = false;
+  const holding = () => document.body.classList.toggle('holding', dragging || ui.selected !== null);
 
   // ---- layout ----------------------------------------------------------------
   const cl = (a, v, b) => Math.max(a, Math.min(b, v));
   function layout() {
     const W = window.innerWidth, H = window.innerHeight, port = H > W * 1.05;
+    // a phone (short side under 520px) gets its own fit: a two-row top bar in portrait,
+    // the spare height under the board for the side column and cards, the spare width
+    // beside a landscape board for wider columns (core.css "phone" block)
+    const phone = Math.min(W, H) < 520 ? (port ? 'port' : 'land') : '';
     const gap = Math.round(cl(8, Math.min(W, H) * 0.016, 16));
-    const top = Math.round(cl(52, H * 0.08, 68));
-    let side, tray, trayh, bs, cw, ch;
-    if (!port) {
+    const top = phone === 'port' ? 62 : Math.round(cl(52, H * 0.08, 68));
+    let side, tray, trayh, bs, cw, ch, sideh = 0, rw = 0;
+    if (phone === 'port') {
+      // setup stacks the generals' row and the armies under the board; in play the side
+      // column (general, deck, formation key) and the three cards share what is left
+      const setup = ui.phase === 'setup';
+      sideh = setup ? 64 + gap : 0; // the generals' row and its gap
+      trayh = setup ? 226 : 236;
+      bs = Math.floor(Math.min(W - 2 * gap, H - top - sideh - trayh - 3 * gap));
+      // a tall phone keeps the rows snug under the board (the grid centres in the spare height)
+      trayh = Math.min(H - top - sideh - bs - 3 * gap, setup ? 240 : 280);
+      sideh = Math.max(0, sideh - gap);
+      // the rows under the board span the full width even when the board is height-bound
+      rw = W - 2 * gap;
+      side = setup ? rw : Math.round(cl(84, rw * 0.26, 104));
+      tray = setup ? rw : rw - side - gap;
+      cw = Math.floor((tray - 2 * gap) / 3); ch = Math.floor(Math.min(trayh, cw * 1.6));
+    } else if (!port) {
       side = Math.round(cl(108, W * 0.115, 160));
       tray = Math.round(cl(200, W * 0.215, 300));
       bs = Math.floor(Math.min(H - top - 2 * gap, W - side - tray - 4 * gap));
+      if (phone) {
+        // a landscape phone's board is height-bound: give the width left over to the columns
+        // (a short landscape phone, 667px wide, trims the board so the columns keep 340px)
+        if (W - bs - 4 * gap < 340) bs = W - 4 * gap - 340;
+        const avail = W - bs - 4 * gap;
+        side = Math.round(cl(140, avail * 0.4, 200));
+        tray = Math.min(320, avail - side);
+      }
       trayh = bs; cw = tray; ch = Math.floor(Math.min((bs - 2 * gap) / 3, tray * 1.05));
     } else {
       trayh = Math.round(cl(210, H * 0.26, 300));
       bs = Math.floor(Math.min(W - 2 * gap, H - top - trayh - 3 * gap));
-      side = Math.round(bs * (st && st.phase === 'setup' ? 0.4 : 0.24));
+      // in play the side (general, run deck, formation key) widens on a large board (an
+      // iPad's ~650px: 157 -> 182px) so the deck summary reads at 12px+; a phone keeps 0.24
+      side = Math.round(ui.phase === 'setup' ? bs * 0.4 : bs * 0.24 + Math.max(0, bs - 400) * 0.1);
       tray = bs - side - gap;
       cw = Math.floor((tray - 2 * gap) / 3); ch = Math.floor(Math.min(trayh, cw * 1.55));
     }
@@ -3533,21 +4959,26 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
     r.setProperty('--frame', px(frame)); r.setProperty('--cell', px(cell));
     r.setProperty('--side', px(side)); r.setProperty('--tray', px(tray)); r.setProperty('--trayh', px(trayh));
     r.setProperty('--cw', px(cw)); r.setProperty('--ch', px(ch)); r.setProperty('--cs', px(Math.min(cw, ch)));
+    r.setProperty('--sideh', px(sideh)); r.setProperty('--rw', px(rw));
     document.body.dataset.mode = port ? 'port' : 'land';
+    document.body.dataset.phone = phone;
   }
 
   // ---- render ----------------------------------------------------------------
   function render(opts) {
-    document.body.dataset.phase = st.phase;
+    document.body.dataset.phase = ui.phase;
     layout();
     Board.clear();
     Board.render(st, opts || {});
     Board.setPicking(null);
+    Hud.setRun({ run, pending, phase: ui.phase });
     Hud.top(st);
-    Hud.side(st, ui.sel);
+    Hud.side(st, ui.sel, run);
     Hud.tray(st, ui);
     ui.deal = false;
     if (ui.selected !== null) select(ui.selected);
+    holding();
+    guide();
   }
 
   // ---- selection and preview ---------------------------------------------------
@@ -3555,6 +4986,7 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
   const pickable = (i) => st.phase === 'draft' && !!st.offer[i] && C.canPick(st, st.offer[i]);
   function markSel() {
     document.querySelectorAll('#tray .card[data-oi]').forEach((c) => c.classList.toggle('sel', +c.dataset.oi === ui.selected));
+    holding();
   }
   function select(i) {
     ui.selected = i;
@@ -3589,12 +5021,21 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
     Hud.key(st);
   }
   function doPlace(i, slot) {
-    if (legal(i).indexOf(slot) < 0) return;
+    if (ui.phase !== 'draft' || legal(i).indexOf(slot) < 0) return;
     ui.preview = null;
     ui.selected = null;
     st = C.place(st, i, slot);
     dropHint('draft');
     ui.deal = true;
+    // a finished battle is scored at once (the plate shows what follows); Continue commits it
+    if (st.phase === 'done') {
+      pending = R.finishBattle(run, st);
+      // a loss or the final win is committed and saved at once (with its board), so
+      // neither ↻, Undo nor a reload can bring the battle back (§8.1); a loss's plate
+      // offers Retry (§8.7)
+      if (ended(pending)) { run = pending; pending = null; st = Object.assign({}, st, { prev: null }); saveView(); save(); }
+    }
+    ui.phase = st.phase;
     render({ fresh: slot, anim: true });
     if (st.phase === 'done') finish();
   }
@@ -3604,7 +5045,7 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
     const n = C.stars(st);
     if (n > 0) {
       setTimeout(() => Board.flash(), 200);
-      confetti(14 + n * 12);
+      confetti(run && run.phase === 'won' ? 90 : 14 + n * 12);
     }
   }
   function confetti(count) {
@@ -3621,45 +5062,58 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
   }
 
   // ---- wiring ----------------------------------------------------------------
+  /** A setup pick: the hint fades once a general and an army are both chosen. */
+  function picked() {
+    if (ui.sel.general && ui.sel.army) dropHint('setup');
+    guide();
+  }
   function wire() {
     const boardEl = Board.el();
     $('side').addEventListener('click', (e) => {
       const g = e.target.closest('[data-gen]');
-      if (!g || st.phase !== 'setup') return;
+      if (!g || ui.phase !== 'setup') return;
       ui.sel.general = g.dataset.gen;
-      dropHint('setup');
       Hud.side(st, ui.sel);
       Hud.tray(st, ui);
+      picked();
     });
     $('tray').addEventListener('click', (e) => {
       const a = e.target.closest('[data-army]'), t = e.target.closest('[data-tier]'), b = e.target.closest('button');
-      if (st.phase === 'setup') {
-        if (a) { ui.sel.army = a.dataset.army; store.set('army', ui.sel.army); dropHint('setup'); Hud.tray(st, ui); return; }
+      if (ui.phase === 'setup') {
+        if (a) { ui.sel.army = a.dataset.army; store.set('army', ui.sel.army); Hud.tray(st, ui); picked(); return; }
         if (t) {
           tier = t.dataset.tier; store.set('tier', tier);
-          st = Object.assign({}, st, { tier });
+          st = Object.assign({}, st, { tier, target: Hud.firstTarget(tun, tier) });
           Hud.top(st); Hud.tray(st, ui);
           return;
         }
-        if (b && b.id === 'bBegin' && ui.sel.general && ui.sel.army) {
-          st = C.chooseSetup(st, { general: ui.sel.general, army: ui.sel.army });
-          ui.deal = true;
-          Hud.resetCount();
-          render({});
-          hint('draft');
-        }
+        if (b && b.id === 'bBegin' && ui.sel.general && ui.sel.army) begin();
         return;
       }
-      if (st.phase === 'done' && b) {
-        if (b.id === 'bAgain') newBattle(st.seed, true);
-        else if (b.id === 'bNew') newBattle(null);
+      if (ui.phase === 'spoils') {
+        const c = e.target.closest('.card[data-sp]');
+        if (c) { pickSpoil(+c.dataset.sp, c); return; }
+        if (b && b.id === 'bSpoilsGo' && !ui.busy) { ui.busy = true; hint(null); advance(); }
+        return;
+      }
+      if (ui.phase === 'done' && b) {
+        if (b.id === 'bContinue') commit();
+        else if (b.id === 'bRetry') retryLost();
+        else if (b.id === 'bNewRun') toSetup(null);
       }
     });
-    // Restart = back to general / army / difficulty select on the same board, last picks preselected.
-    $('bRestart').addEventListener('click', () => { if (st.phase !== 'setup') newBattle(st.seed, false); });
+    // ↻: in battle 1 back to general / army / difficulty select on the same run seed
+    // (last picks preselected); in battles 2-4 the current battle from its start.
+    $('bRestart').addEventListener('click', () => {
+      if (ui.phase === 'setup' || ui.phase === 'spoils' || !run || ended(run)) return;
+      if (run.battle <= 1) retry(run);
+      else startBattle();
+    });
     $('bUndo').addEventListener('click', () => {
-      if (!st.prev) return;
+      if (!st.prev || ui.phase === 'spoils' || ui.phase === 'setup' || ended(run)) return;
       st = C.undo(st);
+      pending = null;
+      ui.phase = st.phase;
       ui.selected = null; ui.preview = null;
       render({});
     });
@@ -3719,10 +5173,10 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
       slotAt: Board.slotAt,
       cellSize: () => boardEl.getBoundingClientRect().width / 4,
       topLimit: () => $('top').getBoundingClientRect().bottom + 4,
-      onStart(i) { ui.selected = null; markSel(); hidePreview(); Board.focus(null); Board.setPicking(legal(i)); },
+      onStart(i) { dragging = true; ui.selected = null; markSel(); hidePreview(); Board.focus(null); Board.setPicking(legal(i)); },
       onMove(i, s) { if (s === null) { hidePreview(); Board.setHot(null); } else showPreview(i, s); },
-      onDrop(i, s) { doPlace(i, s); },
-      onCancel() { hidePreview(); Board.setPicking(null); },
+      onDrop(i, s) { dragging = false; holding(); doPlace(i, s); },
+      onCancel() { dragging = false; holding(); hidePreview(); Board.setPicking(null); },
       onTap(i) { if (ui.selected === i) deselect(); else { hidePreview(); select(i); } }
     });
 
@@ -3730,17 +5184,40 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
     window.addEventListener('resize', () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(layout); });
   }
 
+  /** A saved run resumes at the start of its current battle or spoils step. */
+  function resume(r) {
+    try {
+      run = r; pending = null;
+      tier = r.tier;
+      ui.sel.general = r.general; ui.sel.army = r.army;
+      if (r.phase === 'battle') { startBattle(); return; }
+      st = viewState(r);
+      setUrlSeed(r.seed);
+      Hud.resetCount();
+      // a lost battle or a won run reopens on its result plate (Retry, or the four battles' stars)
+      if (ended(r)) { ui.phase = 'done'; ui.selected = null; ui.preview = null; ui.busy = false; render({}); return; }
+      openSpoils(false);
+    } catch (e) {
+      run = null;
+      toSetup(urlSeed());
+    }
+  }
+
   function boot() {
     Art.sheet();
     Board.mount($('board'));
     wire();
-    newBattle(urlSeed());
+    const u = urlSeed(), saved = loadRun();
+    // a saved run wins unless the address asks for another seed
+    if (saved && (u === null || u === String(saved.seed))) resume(saved);
+    else toSetup(u, true);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 
-  // A read-only handle for tests and tools (never needed by the page itself).
-  globalThis.TTFApp = { state: () => st, ui: () => ui, layout, hint: () => hintOn };
+  // A handle for tests and tools (never needed by the page itself): read-only views plus
+  // place(i, slot), which plays an offer card exactly like a drop.
+  globalThis.TTFApp = { state: () => st, ui: () => ui, run: () => run, pending: () => pending, layout, hint: () => hintOn, place: (i, s) => doPlace(i, s) };
 })();
 </script>
 </body>
