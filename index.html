@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="8d376afb16";try{fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="1e99a6d24a";try{fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="icon" href="data:,">
@@ -1156,6 +1156,34 @@ body[data-guide~="retry"] #bRetry {
 .rr .rt { display: inline-flex; align-items: center; gap: 1px; font-style: normal; font-size: 13px; font-weight: 900; color: var(--ink-dim); margin-left: 4px; align-self: center; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .rr .rt svg { width: 13px; height: 13px; }
 .plate .go.retry, .plate .go.alt.small { white-space: nowrap; }
+
+/* ---- quit run: a white-flag button beside ↻ and Undo (hidden at setup), and a small
+   confirmation plate centred over the board (app.js placeQuit) on a dimmed backdrop ------- */
+.ibtn[hidden] { display: none; }
+#quit { position: fixed; inset: 0; z-index: 80; background: rgba(12, 6, 1, 0.55); animation: quitFade 160ms ease-out both; }
+#quit[hidden] { display: none; }
+@keyframes quitFade { from { opacity: 0; } to { opacity: 1; } }
+#quit .qplate {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: min(360px, calc(100vw - 32px)); box-sizing: border-box; padding: 20px 18px 18px; border-radius: 18px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; color: var(--ink);
+  background: var(--noise), linear-gradient(180deg, var(--parchment-lit), var(--parchment) 70%, var(--parchment-shade));
+  box-shadow: 0 22px 44px -10px rgba(6, 3, 0, 0.85), 0 6px 14px rgba(6, 3, 0, 0.5), inset 0 0 0 3px var(--brass), inset 0 0 0 6px rgba(251, 242, 216, 0.7), inset 0 0 0 7px rgba(155, 112, 32, 0.5);
+}
+#quit h2 { margin: 0; font-family: var(--face-name); font-weight: 700; font-size: 26px; line-height: 1.15; }
+#quit p { margin: 0 0 6px; font-size: 15px; color: var(--ink-dim); }
+#quit .acts { display: flex; gap: 10px; width: 100%; }
+#quit .go { flex: 1 1 0; min-width: 0; min-height: 48px; padding: 8px 10px; font-size: 18px; letter-spacing: 0.02em; white-space: nowrap; }
+.go.danger { background: linear-gradient(180deg, #b8382f 0%, #8f2125 60%, #6e171b 100%); color: #fbecc8; box-shadow: 0 0 0 2px #3e0c09, 0 6px 10px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 200, 170, 0.45); }
+.go:focus-visible { outline: 3px solid #fbe7a6; outline-offset: 2px; }
+body[data-phone] #quit .qplate { padding: 16px 14px 14px; }
+body[data-phone] #quit h2 { font-size: 22px; }
+body[data-phone] #quit .go { min-height: 44px; font-size: 16px; padding: 6px 8px; }
+/* a portrait phone's top bar: three 36px buttons, and the total drops its "/ target" (the red
+   banner already shows the target) so the score bar keeps its width */
+body[data-phone="port"] #top .btns { gap: 4px; }
+body[data-phone="port"] #top .ibtn { width: 36px; height: 36px; min-width: 36px; min-height: 36px; }
+body[data-phone="port"] #top .total .of { display: none; }
 </style>
 </head>
 <body data-mode="land" data-phase="setup">
@@ -1172,6 +1200,7 @@ body[data-guide~="retry"] #bRetry {
   <div class="btns">
     <button class="ibtn" id="bRestart" title="Restart" aria-label="Restart"><svg class="uico" viewBox="0 0 32 32" aria-hidden="true"><use href="#u-restart"/></svg></button>
     <button class="ibtn" id="bUndo" title="Undo" aria-label="Undo"><svg class="uico" viewBox="0 0 32 32" aria-hidden="true"><use href="#u-undo"/></svg></button>
+    <button class="ibtn" id="bQuit" title="Quit run" aria-label="Quit run" aria-haspopup="dialog" hidden><svg class="uico" viewBox="0 0 32 32" aria-hidden="true"><use href="#u-quit"/></svg></button>
   </div>
 </header>
 <div id="main">
@@ -1181,6 +1210,11 @@ body[data-guide~="retry"] #bRetry {
 </div>
 <div id="float"></div>
 <div id="confetti"></div>
+<div id="quit" hidden><div class="qplate" role="dialog" aria-modal="true" aria-labelledby="quitT" aria-describedby="quitD">
+  <h2 id="quitT">Quit this run?</h2>
+  <p id="quitD">Its battles and spoils are lost.</p>
+  <div class="acts"><button class="go danger" id="bQuitYes">Quit run</button><button class="go alt" id="bQuitNo">Keep playing</button></div>
+</div></div>
 
 <!-- Reused old-game art (both load standalone; art.js falls back without them). -->
 <script>
@@ -3620,6 +3654,9 @@ body[data-guide~="retry"] #bRetry {
     'u-star': '<path d="M12,1.6 L15.1,8.4 L22.5,9.1 L16.9,14 L18.6,21.3 L12,17.4 L5.4,21.3 L7.1,14 L1.5,9.1 L8.9,8.4 Z"/>',
     'u-restart': '<path fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" d="M27,9 A12,12 0 1 1 9.6,11"/><path fill="currentColor" d="M3,7 L14,4 L12,15 Z"/>',
     'u-undo': '<path fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" d="M9,13 H22 A7.5,7.5 0 0 1 22,28 H13"/><path fill="currentColor" d="M3,13 L11,6 V20 Z"/>',
+    // Quit run: a white flag of surrender on its pole.
+    'u-quit': '<path fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" d="M7,4 V29"/>' +
+      '<path fill="#fbf2d8" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" d="M8.6,5.5 C13,3 17,8 22,5.5 C24.5,4.3 26.5,4.6 28,5.5 V18 C26.5,17.1 24.5,16.8 22,18 C17,20.5 13,15.5 8.6,18 Z"/>',
     'u-swords': '<g stroke-linecap="round"><path stroke="#e9e2cf" stroke-width="4" d="M15,49 L47,13 M49,49 L17,13"/>' +
       '<path stroke="#5e3f0b" stroke-width="3" d="M12,44 L20,52 M52,44 L44,52"/><path stroke="#e7bf5c" stroke-width="5" d="M11,53 L14,50 M53,53 L50,50"/></g>'
   };
@@ -3649,7 +3686,8 @@ body[data-guide~="retry"] #bRetry {
     sheetDone = true;
     let s = unitSymbols();
     for (const t in RANK2) s += '<symbol id="u-' + t + '2" viewBox="0 0 64 64">' + RANK2[t] + '</symbol>';
-    for (const k in OWN) s += '<symbol id="' + k + '" viewBox="0 0 ' + (k === 'u-star' ? 24 : k === 'u-restart' || k === 'u-undo' ? 32 : 64) + ' ' + (k === 'u-star' ? 24 : k === 'u-restart' || k === 'u-undo' ? 32 : 64) + '">' + OWN[k] + '</symbol>';
+    const VB = { 'u-star': 24, 'u-restart': 32, 'u-undo': 32, 'u-quit': 32 };
+    for (const k in OWN) s += '<symbol id="' + k + '" viewBox="0 0 ' + (VB[k] || 64) + ' ' + (VB[k] || 64) + '">' + OWN[k] + '</symbol>';
     for (const k in EMB) s += '<symbol id="g-' + k + '" viewBox="0 0 64 64">' + EMB[k] + '</symbol>';
     for (const k in TRAIT) s += '<symbol id="t-' + k + '" viewBox="0 0 64 64">' + TRAIT[k] + '</symbol>';
     const div = document.createElement('div');
@@ -4279,6 +4317,8 @@ body[data-guide~="retry"] #bRetry {
     const over = !!ctx.run && (ctx.run.phase === 'lost' || ctx.run.phase === 'won');
     $('bUndo').disabled = !st.prev || ctx.phase === 'spoils' || over;
     $('bRestart').disabled = ctx.phase === 'setup' || ctx.phase === 'spoils' || over;
+    // Quit run: whenever a run exists (any battle, spoils step, loss or victory plate)
+    $('bQuit').hidden = ctx.phase === 'setup' || !ctx.run;
   };
   H.resetCount = () => { shownTotal = null; };
 
@@ -4670,7 +4710,9 @@ body[data-guide~="retry"] #bRetry {
  * reload resumes at the start of the current battle or spoils step. A loss or the final
  * win is committed and saved at once with its board, ↻ and Undo turn off, and a reload
  * reopens its result plate. A loss is not the end (§8.7): its plate offers Retry (the
- * same board and deck, a new shuffle; unlimited) or New run.
+ * same board and deck, a new shuffle; unlimited) or New run. The top bar's white flag
+ * (Quit run, shown whenever a run exists) asks first, then drops the saved run and
+ * opens setup on a new seed with the last picks preselected.
  */
 (function () {
   const C = globalThis.TTFCore, Art = globalThis.TTFArt, Board = globalThis.TTFBoard;
@@ -4705,6 +4747,8 @@ body[data-guide~="retry"] #bRetry {
   // spoils step). run: the run (null at setup). pending: the run as scored by the battle
   // just finished, committed on Continue (null otherwise).
   let st = null, run = null, pending = null;
+  // bumped when a run is quit, so a spoils pick's pending animation timers stand down
+  let epoch = 0;
   const ui = { sel: { general: null, army: store.get('army') }, selected: null, deal: false, preview: null, phase: 'setup', runSeed: null, busy: false };
 
   /** The run as saved: plain JSON without the tunables (they are re-attached on load). */
@@ -4805,6 +4849,7 @@ body[data-guide~="retry"] #bRetry {
     const kind = run.spoils.kind;
     if (kind !== 'add' && kind !== 'upgrade') return;
     ui.busy = true;
+    const ep = epoch;
     run = R.applySpoils(run, i);
     save();
     hint(null);
@@ -4820,8 +4865,9 @@ body[data-guide~="retry"] #bRetry {
     }
     const bump = card && card.kind === 'unit' ? card.type : 'lead';
     setTimeout(() => fly(el, $('deck'), () => {
+      if (ep !== epoch) return;
       Hud.side(st, ui.sel, run, bump);
-      setTimeout(advance, 700);
+      setTimeout(() => { if (ep === epoch) advance(); }, 700);
     }), wait);
   }
   /** A card flies from the tray into the deck summary (Web Animations; a timer backs it up). */
@@ -4859,6 +4905,35 @@ body[data-guide~="retry"] #bRetry {
     tier = r.tier;
     ui.sel.general = r.general; ui.sel.army = r.army;
     toSetup(r.seed);
+  }
+
+  // ---- quit run ----------------------------------------------------------------
+  // A small confirmation plate centred over the board (a dimmed backdrop over the rest):
+  // Quit run drops the saved run and opens setup on a new seed (tier / army / general
+  // preselected, as New run does); Keep playing, Escape or a tap outside closes it.
+  const quitOpen = () => !$('quit').hidden;
+  function placeQuit() {
+    const p = $('quit').firstElementChild, b = $('board').getBoundingClientRect();
+    const w = p.offsetWidth, h = p.offsetHeight, W = window.innerWidth, H = window.innerHeight;
+    p.style.left = Math.round(cl(w / 2 + 8, b.left + b.width / 2, W - w / 2 - 8)) + 'px';
+    p.style.top = Math.round(cl(h / 2 + 8, b.top + b.height / 2, H - h / 2 - 8)) + 'px';
+  }
+  function openQuit() {
+    if (!run || ui.phase === 'setup' || quitOpen()) return;
+    deselect();
+    $('quit').hidden = false;
+    placeQuit();
+    $('bQuitNo').focus({ preventScroll: true });
+  }
+  function closeQuit() {
+    if (!quitOpen()) return;
+    $('quit').hidden = true;
+    $('bQuit').focus({ preventScroll: true });
+  }
+  function quitRun() {
+    $('quit').hidden = true;
+    epoch++;
+    toSetup(null);
   }
 
   // ---- hints -----------------------------------------------------------------
@@ -5111,6 +5186,11 @@ body[data-guide~="retry"] #bRetry {
       if (run.battle <= 1) retry(run);
       else startBattle();
     });
+    $('bQuit').addEventListener('click', openQuit);
+    $('bQuitYes').addEventListener('click', quitRun);
+    $('bQuitNo').addEventListener('click', closeQuit);
+    // a tap on the backdrop (outside the plate) keeps playing
+    $('quit').addEventListener('click', (e) => { if (e.target === $('quit')) closeQuit(); });
     $('bUndo').addEventListener('click', () => {
       if (!st.prev || ui.phase === 'spoils' || ui.phase === 'setup' || ended(run)) return;
       st = C.undo(st);
@@ -5167,7 +5247,10 @@ body[data-guide~="retry"] #bRetry {
       if (e.target.closest('#tray .card[data-oi]')) return;
       deselect();
     });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') deselect(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      if (quitOpen()) closeQuit(); else deselect();
+    });
 
     Drag.init($('tray'), $('float'), {
       canPick: pickable,
@@ -5183,7 +5266,7 @@ body[data-guide~="retry"] #bRetry {
     });
 
     let rz = 0;
-    window.addEventListener('resize', () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(layout); });
+    window.addEventListener('resize', () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(() => { layout(); if (quitOpen()) placeQuit(); }); });
   }
 
   /** A saved run resumes at the start of its current battle or spoils step. */
