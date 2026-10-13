@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>(function(){var B="8d376afb16";try{fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="icon" href="data:,">
@@ -2346,14 +2347,14 @@ body[data-guide~="retry"] #bRetry {
       // Star ratios (x that battle's target) per tier, one [1, 2-star, 3-star] row per battle
       // (§8.8 star retune; overrides the top-level `stars` in run battles, rules.starRatios).
       // Run totals barely rise across the run while targets do, so each battle has its own
-      // row. Totals needed (b1 / b2 / b3 / b4): easy 14-38-47, 15-38-47, 17-39-48, 18-38-49;
-      // normal 19-44-50, 21-44-50, 23-45-51, 25-46-52; hard 35-50-54, 37-49-54, 41-50-56,
-      // 43-51-55. Aim: easy 3 stars about half of lookahead play, normal 3 stars about a
+      // row. 2-star ratios lowered 10% after playtest (2026-10-13). Totals needed (b1 / b2 / b3 / b4):
+      // easy 14-35-47, 15-35-47, 17-36-48, 18-35-49; normal 19-40-50, 21-40-50, 23-41-51, 25-42-52;
+      // hard 35-45-54, 37-44-54, 41-45-56, 43-46-55. Aim: easy 3 stars about half of lookahead play, normal 3 stars about a
       // third of lookahead, hard 3 stars about one lookahead battle in ten.
       stars: {
-        easy: [[1, 2.71, 3.35], [1, 2.53, 3.13], [1, 2.29, 2.82], [1, 2.11, 2.72]],
-        normal: [[1, 2.31, 2.63], [1, 2.09, 2.38], [1, 1.95, 2.21], [1, 1.84, 2.08]],
-        hard: [[1, 1.42, 1.54], [1, 1.32, 1.45], [1, 1.21, 1.36], [1, 1.18, 1.27]]
+        easy: [[1, 2.439, 3.35], [1, 2.277, 3.13], [1, 2.061, 2.82], [1, 1.899, 2.72]],
+        normal: [[1, 2.079, 2.63], [1, 1.881, 2.38], [1, 1.755, 2.21], [1, 1.656, 2.08]],
+        hard: [[1, 1.278, 1.54], [1, 1.188, 1.45], [1, 1.089, 1.36], [1, 1.062, 1.27]]
       },
       // Spoils after winning battle k (k is in one list; none -> straight to the next battle).
       addAfter: [1], levelUpAfter: [2], upgradeAfter: [3],
@@ -4695,7 +4696,8 @@ body[data-guide~="retry"] #bRetry {
     try { const q = new URLSearchParams(window.location.search).get('seed'); return q === null || q === '' ? null : q; } catch (e) { return null; }
   }
   function setUrlSeed(seed) {
-    try { window.history.replaceState(null, '', '?seed=' + encodeURIComponent(String(seed))); } catch (e) { /* file:// or sandbox */ }
+    // keep any other query params (the bundle's update check adds ?v=<build>)
+    try { const u = new URL(window.location.href); u.searchParams.set('seed', String(seed)); window.history.replaceState(null, '', u.search); } catch (e) { /* file:// or sandbox */ }
   }
 
   // ---- state -----------------------------------------------------------------
