@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="5d45bc63b5";try{fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="9d5633f47c";try{fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="icon" href="data:,">
@@ -684,6 +684,9 @@ body[data-mode="port"] .banner .row .ico { width: 24px; height: 24px; }
   background: var(--brass-coin); box-shadow: 0 0 0 1.5px #3a2508, 0 2px 3px rgba(0, 0, 0, 0.55); color: #3a2508; --trait-bg: #e7bf5c;
 }
 .tok .tp .ico { width: 74%; height: 74%; margin: 0; filter: none; }
+/* §8.13: the Vanguard general's first unit flies a tiny pennant on the token's left */
+.tok .vg { position: absolute; z-index: 1; pointer-events: none; left: -16%; top: 34%; width: 34%; height: 34%; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6)); }
+.tok .vg svg { display: block; width: 100%; height: 100%; }
 .card .nm.vet { color: #8a5f14; font-weight: 800; }
 /* the "+N" power badge by a veteran's (or Heavy unit's) name */
 .pw, .fc b.pw, .fc.b b.pw { display: inline-block; margin-left: 4px; padding: 0 5px; border-radius: 8px; background: var(--brass-coin); color: #3a2508; box-shadow: 0 0 0 1px #5e3f0b; font-family: inherit; font-size: 0.86em; font-weight: 900; line-height: 1.35; vertical-align: 0.06em; }
@@ -929,6 +932,13 @@ body[data-phone="port"] .trow { gap: 2px; }
 body[data-phone="port"] .tm { gap: 1px; padding: 1px 3px 1px 1px; }
 body[data-phone="port"] .tm .tico { width: 15px; height: 15px; }
 body[data-phone="port"] .tm b { font-size: 12px; }
+/* §8.13: Steward gives every unit card a third chip (fields); three chips pack tighter */
+.trow.n3 { gap: calc(var(--cs) * 0.02); }
+.trow.n3 .tm { padding-right: calc(var(--cs) * 0.02); }
+body[data-phone="port"] .trow.n3 { gap: 1px; }
+body[data-phone="port"] .trow.n3 .tm { gap: 0; padding: 1px 2px 1px 0; }
+body[data-phone="port"] .trow.n3 .tm .tico { width: 12px; height: 12px; }
+body[data-phone="port"] .trow.n3 .tm b { font-size: 11px; }
 body[data-phone="port"] .card .newtag { left: 4px; top: 9px; font-size: 10px; padding: 1px 5px 1px 4px; letter-spacing: 0.04em; }
 
 /* spoils and plates */
@@ -2356,7 +2366,11 @@ body[data-phone="port"] #top .total .of { display: none; }
     //                (Rev 1: 3 -> 4 once the diagonal extension went; greedy-rollout strength
     //                41.5 vs the other generals 39.1-40.8, at 3 it fell to 37.3)
     //   warden       hero ring radius N; units beyond hero.radius get +wardenFar (0 = same as inner)
-    general: { horse_lord: 2, ranger: 2, iron_marshal: 3, tactician: 2, captain: 4, warden: 2, wardenFar: 1 },
+    //   shield_lord  inf on forest get +N more;  steward  every unit on fields gets +N
+    //   vanguard     the battle's first unit placed gets +N (§8.13)
+    //   §8.13 tuning (--run, 200 seeds, lookahead pick share when offered): shield_lord 2 -> 38%;
+    //   steward 2 -> 2% (a dud), 3 -> 18%, 4 -> 61%; vanguard 3 -> 4% (a dud), 4 -> 14%, 5 -> 31%, 6 -> 43%
+    general: { horse_lord: 2, ranger: 2, iron_marshal: 3, tactician: 2, captain: 4, warden: 2, wardenFar: 1, shield_lord: 2, steward: 3, vanguard: 5 },
     // deck.officers: one officer card per entry (its type); each gets a shape drawn by the
     // seed from officerShapes, no shape repeated within a battle (docs/P44-CORE.md §7.2).
     deck: { heroes: 2, officers: ['inf', 'arc', 'cav'] },
@@ -2540,7 +2554,11 @@ body[data-phone="port"] #top .total .of { display: none; }
     { id: 'ranger', name: 'Ranger', short: 'Archers on hills +2' },
     { id: 'tactician', name: 'Tactician', short: 'Triads +2' },
     { id: 'captain', name: 'Captain', short: 'Officers +4' },
-    { id: 'warden', name: 'Warden', short: 'Hero ring 2' }
+    { id: 'warden', name: 'Warden', short: 'Hero ring 2' },
+    // §8.13
+    { id: 'shield_lord', name: 'Shield Lord', short: 'Inf on forest +2' },
+    { id: 'steward', name: 'Steward', short: 'Units on fields +3' },
+    { id: 'vanguard', name: 'Vanguard', short: 'First unit +5' }
   ];
 
   // §7.10: Marshal plus one hero {T:2, U:1} for every ordered pair of different
@@ -2635,8 +2653,14 @@ body[data-phone="port"] #top .total .of { display: none; }
  * Parts attribution: a general's rule changes the part it modifies (Ranger sets
  * arc's hated-terrain penalty to 0, Iron Marshal sets the line bonus, Tactician
  * the triad bonus, Captain's officer numbers count as officer, Warden's wider
- * ring counts as hero). parts.general only holds the flat loved-terrain
- * bonuses: Horse Lord's cav on plains and Ranger's arc on hills.
+ * ring counts as hero). parts.general only holds the flat bonuses: Horse Lord's
+ * cav on plains, Ranger's arc on hills, Shield Lord's inf on forest, Steward's every
+ * unit on fields and Vanguard's first unit (§8.13).
+ *
+ * §8.13 Vanguard: the first unit piece put on the board in a battle (a unit card on an
+ * empty slot or joining an officer post; officers and heroes never count) carries
+ * `first: true`, set at placement whatever the general (so undo, predict and totalAfter
+ * agree); under Vanguard it gets +general.vanguard (parts.general).
  *
  * PLAN 45 (§8.1-8.2): a unit piece may carry `rank` (1 or 2; missing = 1) and `trait`
  * (null/missing or a C.TRAITS id) from its run card.
@@ -2805,6 +2829,9 @@ body[data-phone="port"] #top .total .of { display: none; }
       if (p.trait) { hasTrait = true; if (p.trait === 'champion' && !fc) fc = new Int8Array(S); }
       if (g === 'horse_lord' && p.type === 'cav' && terr === 'plains') pt[6 * S + i] = T.general.horse_lord;
       if (g === 'ranger' && p.type === 'arc' && tt.love === 'arc') pt[6 * S + i] = T.general.ranger;
+      if (g === 'shield_lord' && p.type === 'inf' && terr === 'forest') pt[6 * S + i] = T.general.shield_lord;
+      if (g === 'steward' && terr === 'fields') pt[6 * S + i] = T.general.steward;
+      if (g === 'vanguard' && p.first) pt[6 * S + i] += T.general.vanguard;
     }
     // Combo types (§8.12): the real types, with each versatile unit's assigned type.
     let cty = ty;
@@ -2942,8 +2969,16 @@ body[data-phone="port"] #top .total .of { display: none; }
     if (card.uid !== undefined) o.uid = card.uid;
     return o;
   }
-  /** The piece at a slot once `card` is put there (`prev` = what stood there). */
-  function newPiece(prev, card) {
+  /** True when no unit piece stands in `list` (a pieces object or an array of 16). */
+  function noUnit(list) {
+    for (const k in list) { const q = list[k]; if (q && q.kind === 'unit') return false; }
+    return true;
+  }
+  /**
+   * The piece at a slot once `card` is put there (`prev` = what stood there). `first`:
+   * no unit stands on the board yet, so a unit piece made here is the battle's first (§8.13).
+   */
+  function newPiece(prev, card, first) {
     if (card.kind === 'officer') {
       if (prev) return Object.assign({}, prev, { officer: officerRec(card) });
       const post = { kind: 'post', officer: officerRec(card) };
@@ -2952,12 +2987,13 @@ body[data-phone="port"] #top .total .of { display: none; }
     }
     const p = pieceOf(card);
     if (prev && prev.kind === 'post') p.officer = prev.officer;
+    if (first && p.kind === 'unit') p.first = true;
     return p;
   }
   /** New pieces object with `card` put at `slot`. */
   function putPiece(pieces, card, slot) {
     const out = Object.assign({}, pieces);
-    out[slot] = newPiece(pieces[slot], card);
+    out[slot] = newPiece(pieces[slot], card, noUnit(pieces));
     return out;
   }
 
@@ -3117,7 +3153,7 @@ body[data-phone="port"] #top .total .of { display: none; }
   /** Fast path for policies: the total after placing offer card `oi` at `slot` (no legality check). */
   function totalAfter(st, oi, slot) {
     const P = toArr(st.pieces);
-    P[slot] = newPiece(P[slot], st.offer[oi]);
+    P[slot] = newPiece(P[slot], st.offer[oi], noUnit(P));
     return evaluate(st.board, P, st.general, tunOf(st), false, true);
   }
 
@@ -3773,7 +3809,16 @@ body[data-phone="port"] #top .total .of { display: none; }
     ranger: '<path fill="none" stroke="currentColor" stroke-width="4.2" stroke-linecap="round" d="M20,8 C38,18 38,46 20,56"/><path stroke="currentColor" stroke-width="2" d="M20,8 V56"/><path stroke="currentColor" stroke-width="3" stroke-linecap="round" d="M14,32 H50"/><path fill="currentColor" d="M56,32 L47,26 V38 Z"/><path fill="currentColor" d="M12,27 L17,32 L12,37 L9,37 L13,32 L9,27 Z"/>',
     tactician: '<circle cx="32" cy="32" r="22" fill="none" stroke="currentColor" stroke-width="3"/><path fill="currentColor" d="M32,6 L36.5,27.5 L58,32 L36.5,36.5 L32,58 L27.5,36.5 L6,32 L27.5,27.5 Z"/><circle cx="32" cy="32" r="3.2" fill="var(--coin,#d8b048)"/>',
     captain: '<path fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" d="M14,24 L32,12 L50,24 M14,38 L32,26 L50,38 M14,52 L32,40 L50,52"/>',
-    warden: '<path fill="currentColor" d="M16,58 V24 H21 V15 H27 V22 H30 V15 H34 V22 H37 V15 H43 V24 H48 V58 Z"/><path fill="var(--coin,#d8b048)" d="M27,58 V47 A5,5 0 0 1 37,47 V58 Z"/><rect x="29.5" y="31" width="5" height="7" rx="2" fill="var(--coin,#d8b048)"/>'
+    warden: '<path fill="currentColor" d="M16,58 V24 H21 V15 H27 V22 H30 V15 H34 V22 H37 V15 H43 V24 H48 V58 Z"/><path fill="var(--coin,#d8b048)" d="M27,58 V47 A5,5 0 0 1 37,47 V58 Z"/><rect x="29.5" y="31" width="5" height="7" rx="2" fill="var(--coin,#d8b048)"/>',
+    // §8.13: Shield Lord a kite shield with a boss, Steward a wheat sheaf, Vanguard a
+    // spearhead flying a forward pennant.
+    shield_lord: '<path fill="currentColor" d="M32,5 L53,12 V30 C53,44 44,53 32,60 C20,53 11,44 11,30 V12 Z"/><path fill="none" stroke="var(--coin,#d8b048)" stroke-width="3" d="M32,12 V52 M18,26 H46"/><circle cx="32" cy="26" r="5.5" fill="var(--coin,#d8b048)"/><circle cx="32" cy="26" r="2.4" fill="currentColor"/>',
+    steward: '<g fill="currentColor"><path d="M30.5,24 H33.5 V58 H30.5 Z"/><path d="M30.5,30 L18,58 H21.5 L32,35 Z"/><path d="M33.5,30 L46,58 H42.5 L32,35 Z"/>' +
+      '<ellipse cx="32" cy="12" rx="4.2" ry="7.5"/><ellipse cx="24" cy="17" rx="3.8" ry="7" transform="rotate(-28 24 17)"/><ellipse cx="40" cy="17" rx="3.8" ry="7" transform="rotate(28 40 17)"/>' +
+      '<ellipse cx="18.5" cy="25" rx="3.4" ry="6.4" transform="rotate(-50 18.5 25)"/><ellipse cx="45.5" cy="25" rx="3.4" ry="6.4" transform="rotate(50 45.5 25)"/></g>' +
+      '<path fill="var(--coin,#d8b048)" d="M22,36 H42 V41 H22 Z"/><path fill="currentColor" d="M22,37.5 H42 V39.5 H22 Z" opacity=".55"/>',
+    vanguard: '<path fill="currentColor" d="M29,22 H34 V60 H29 Z"/><path fill="currentColor" d="M31.5,3 L39,17 L34.5,24 H28.5 L24,17 Z"/><path fill="var(--coin,#d8b048)" d="M31.5,9 L34.5,17 L31.5,21 L28.5,17 Z"/>' +
+      '<path fill="currentColor" d="M34,26 H56 L48,33 L56,40 H34 Z"/><path fill="var(--coin,#d8b048)" d="M38,30.5 H46 V35.5 H38 Z"/>'
   };
 
   // PLAN 45 (§8.1) unit traits: one engraved icon each (currentColor), shown on a brass pip
@@ -3817,6 +3862,7 @@ body[data-phone="port"] #top .total .of { display: none; }
   A.star = (cls) => use('u-star', 'star' + (cls ? ' ' + cls : ''), '0 0 24 24');
   A.ui = (name) => use('u-' + name, 'uico', '0 0 32 32');
   A.emblem = (id) => use('g-' + id, 'emblem');
+  A.EMBLEM_IDS = Object.keys(EMB);
   /** trait(id, cls) - a trait's icon (§8.1), currentColor on --trait-bg. */
   A.trait = (id, cls) => use('t-' + id, 'ico trt trt-' + id + (cls ? ' ' + cls : ''));
   /** The rank-2 chevron (§8.3): a gold stripe with a dark edge. */
@@ -3830,6 +3876,8 @@ body[data-phone="port"] #top .total .of { display: none; }
     return ((c.rank || 1) > 1 ? '<i class="rk">' + A.chevron() + '</i>' : '') +
       (c.trait && TRAIT[c.trait] ? '<i class="tp">' + A.trait(c.trait) + '</i>' : '');
   };
+  /** §8.13: the tiny forward pennant a Vanguard general's first unit wears on its token. */
+  A.vanPip = () => '<i class="vg" title="Vanguard: first unit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4,2 V23" stroke="#2a1a06" stroke-width="3" stroke-linecap="round"/><path d="M5.5,3 H22 L16.5,8.5 L22,14 H5.5 Z" fill="#c23a2a" stroke="#2a1a06" stroke-width="1.6" stroke-linejoin="round"/></svg></i>';
 
   // ---- officer shapes (docs/P44-CORE.md §7.2) --------------------------------
   // A small stroke glyph per shape (viewBox 24, currentColor): plus, x with corner
@@ -3873,7 +3921,12 @@ body[data-phone="port"] #top .total .of { display: none; }
       '<circle cx="22" cy="7" r="5.5" fill="' + A.TYPE_LIT.inf + '"/><circle cx="6" cy="33" r="5.5" fill="' + A.TYPE_LIT.arc + '"/><circle cx="38" cy="33" r="5.5" fill="' + A.TYPE_LIT.cav + '"/>' + txt(57, 27, '+' + n.tactician, G, 19),
     captain: (n) => '<rect x="3" y="4" width="34" height="32" rx="6" fill="#f0e2bd" stroke="#9b7020" stroke-width="1.5"/>' + uicon('officer', 6, 5, 30, A.TYPE_LIT.inf) + txt(57, 27, '+' + n.captain, G, 19),
     warden: (n) => grid(5, 7.4, 3, 1.5, (x, y) => (x === 2 && y === 2 ? '#c9a13a' : '#f3dd96')) +
-      '<rect x="3" y="1.5" width="37" height="37" rx="3" fill="none" stroke="#c9a13a" stroke-width="2"/>' + txt(58, 27, String(n.warden), '#8a5f14', 19)
+      '<rect x="3" y="1.5" width="37" height="37" rx="3" fill="none" stroke="#c9a13a" stroke-width="2"/>' + txt(58, 27, String(n.warden), '#8a5f14', 19),
+    // §8.13
+    shield_lord: (n) => '<rect x="3" y="4" width="34" height="32" rx="6" fill="' + PAL.t_forest + '" stroke="#3d6233" stroke-width="1.5"/>' + uicon('inf', 5, 4, 30, '#fbf2d8') + txt(56, 27, '+' + n.shield_lord, G, 19),
+    steward: (n) => '<rect x="3" y="4" width="34" height="32" rx="6" fill="' + PAL.t_fields + '" stroke="#9b7a20" stroke-width="1.5"/>' +
+      ['inf', 'arc', 'cav'].map((t, k) => '<circle cx="' + (11 + k * 9) + '" cy="' + (k === 1 ? 14 : 26) + '" r="5" fill="' + A.TYPE_LIT[t] + '" stroke="' + INK + '" stroke-width="1.2"/>').join('') + txt(56, 27, '+' + n.steward, G, 19),
+    vanguard: (n) => '<rect x="2" y="7" width="36" height="26" rx="6" fill="#f0e2bd" stroke="#9b7020" stroke-width="1.5"/>' + txt(20, 26.5, '1st', INK, 16) + txt(57, 27, '+' + n.vanguard, G, 19)
   };
   /** glyph(generalId, tun?) - tun defaults to TTFCore.TUN_DEFAULT. */
   A.glyph = (id, tun) => {
@@ -4089,7 +4142,7 @@ body[data-phone="port"] #top .total .of { display: none; }
       if (p.kind === 'hero') {
         html += '<div class="tok hero' + (pop ? ' pop' : '') + '">' + Art.heroIcon() + '</div>';
         html += badgeHTML(C.formationStatus(st, i), st);
-      } else html += '<div class="tok ' + p.type + (pop ? ' pop' : '') + '">' + Art.unitIcon(p) + Art.tokDeco(p) + '</div>';
+      } else html += '<div class="tok ' + p.type + (pop ? ' pop' : '') + '">' + Art.unitIcon(p) + Art.tokDeco(p) + (p.first && st.general === 'vanguard' ? Art.vanPip() : '') + '</div>';
       if (p.officer) html += pipHTML(C.officerOf(p.officer), pipPop ? 'pop' : '');
       const prev = lastVals[i];
       const bump = o.anim && prev !== undefined && prev !== v;
@@ -4570,7 +4623,8 @@ body[data-phone="port"] #top .total .of { display: none; }
     if (card.kind === 'unit') {
       // §7.9: the terrains that change this unit's value, from the engine (general-aware)
       const mods = C.terrainMods(st, card);
-      const row = Object.keys(mods).sort((a, b) => mods[b] - mods[a]).map((t) => {
+      const keys = Object.keys(mods);
+      const row = keys.sort((a, b) => mods[b] - mods[a]).map((t) => {
         const n = mods[t];
         return '<span class="tm ' + (n > 0 ? 'up' : 'dn') + '">' + Art.terrainIcon(t) + '<b>' + (n > 0 ? '+' + n : '−' + -n) + '</b></span>';
       }).join('');
@@ -4580,7 +4634,7 @@ body[data-phone="port"] #top .total .of { display: none; }
       const vet = (card.rank || 1) > 1, base = (C.rankPower ? C.rankPower(T, 1) : T.unit.base) + powerBonus(card, T);
       return '<div class="big"><div class="tok ' + card.type + '">' + Art.unitIcon(card) + Art.tokDeco(card) + '</div>' +
         '<b class="bpw' + (base > 1 ? ' up' : '') + '" title="Power ' + base + '">' + base + '</b></div>' +
-        (row ? '<div class="trow">' + row + '</div>' : '') + '<div class="nm' + (vet ? ' vet' : '') + '">' + (C.rankName ? C.rankName(card) : NAMES[card.type]) + '</div>';
+        (row ? '<div class="trow' + (keys.length > 2 ? ' n3' : '') + '">' + row + '</div>' : '') + '<div class="nm' + (vet ? ' vet' : '') + '">' + (C.rankName ? C.rankName(card) : NAMES[card.type]) + '</div>';
     }
     if (card.kind === 'officer') {
       // §7.4: the shape on a mini 4x4 board (officer cell marked, covered cells in its
