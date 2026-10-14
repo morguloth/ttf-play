@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="4116f9714e";try{fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="5d45bc63b5";try{fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="icon" href="data:,">
@@ -2408,10 +2408,15 @@ body[data-phone="port"] #top .total .of { display: none; }
       addLeaderChance: 0.25, // chance each add offer is a leader (officer or hero, half each)
       addMainTypeWeight: 2,  // weight of the army's main type for added units / officers (others 1)
       upgradeOffers: 3,      // unit cards offered the upgrade step's trait
-      traitPool: ['sure_footed', 'rally', 'banner', 'heavy'],
+      traitPool: ['sure_footed', 'rally', 'banner', 'heavy', 'champion', 'inspiring', 'loner', 'versatile'],
       // heavy: +N to itself; rally: +N to orthogonal same-type neighbours;
-      // banner: counts as N units of its type toward hero formations.
-      traits: { heavy: 1, rally: 1, banner: 2 },
+      // banner: counts as N units of its type toward hero formations (§8.12:)
+      // champion: +N per line / triad it is part of; inspiring: +N to every orthogonal neighbour unit;
+      // loner: +N with no orthogonal neighbour unit; sure_footed: its hated terrain gives +N
+      // instead of terrain.hate (§8.12: 2 = same as loved measured a dud, +0.17 per upgrade
+      // for greedy; 4 = +1.4, beside the other traits). versatile (any type in lines /
+      // triads) has no number.
+      traits: { heavy: 1, rally: 1, banner: 2, champion: 1, inspiring: 1, loner: 3, sure_footed: 4 },
       // PROTOTYPE-ONLY growth rules (§8.6, user decision 2026-10-13): the 4-battle run is a
       // presentation / feel test, so each growth step is made to show NOW. NOT the full-game
       // default; each flag off (false / 0) restores the §8.1 behaviour.
@@ -2515,12 +2520,17 @@ body[data-phone="port"] #top .total .of { display: none; }
   };
 
   // PLAN 45 (§8.1) unit traits, one per unit card; numbers live in tun.run.traits and
-  // rules.js applies them. `short` is the at-most-3-words caption under the trait icon.
+  // rules.js applies them. `short` is the at-most-4-words caption under the trait icon.
+  // §8.12 added Champion (replacing Flanker), Inspiring, Loner and Versatile and reworked Sure-footed.
   C.TRAITS = [
-    { id: 'sure_footed', name: 'Sure-footed', short: 'Ignores bad ground' },
+    { id: 'sure_footed', name: 'Sure-footed', short: 'Bad ground is best' },
     { id: 'rally', name: 'Rally', short: 'Same-type neighbours +1' },
     { id: 'banner', name: 'Banner', short: 'Formations count double' },
-    { id: 'heavy', name: 'Heavy', short: '+1 power' }
+    { id: 'heavy', name: 'Heavy', short: '+1 power' },
+    { id: 'champion', name: 'Champion', short: '+1 per formation' },
+    { id: 'inspiring', name: 'Inspiring', short: 'All neighbours +1' },
+    { id: 'loner', name: 'Loner', short: 'Alone +3' },
+    { id: 'versatile', name: 'Versatile', short: 'Any type in formations' }
   ];
 
   // `short` is the at-most-4-words caption shown under the rule glyph.
@@ -2629,16 +2639,27 @@ body[data-phone="port"] #top .total .of { display: none; }
  * bonuses: Horse Lord's cav on plains and Ranger's arc on hills.
  *
  * PLAN 45 (§8.1-8.2): a unit piece may carry `rank` (1 or 2; missing = 1) and `trait`
- * (null/missing, 'sure_footed', 'rally', 'banner' or 'heavy') from its run card.
+ * (null/missing or a C.TRAITS id) from its run card.
  *   parts.base    = the rank's power, tun.run.rankPower[rank-1] (tun.unit.base when the
  *                   run block or the entry is missing), so rank 1 with no trait is the
  *                   single battle exactly.
- *   sure_footed   sets its hated-terrain part to 0 (parts.terrain, like Ranger).
+ *   sure_footed   its hated terrain turns good: parts.terrain = traits.sure_footed (4, above
+ *                 the loved +2, §8.12; Ranger archers have no hated terrain, so it does
+ *                 nothing for them).
  *   heavy         +tun.run.traits.heavy to itself (parts.trait).
  *   rally         +tun.run.traits.rally to every orthogonally adjacent unit of its own
  *                 type (parts.trait of the receiver; several rallies stack).
  *   banner        counts as tun.run.traits.banner units of its type toward every hero
  *                 formation whose ring holds it (changes parts.hero; formationStatus too).
+ *   champion      +traits.champion to itself per formation it is part of: each line and
+ *                 each triad (2x2 or straight) holding it counts once, exactly the combos
+ *                 combosOf lists (Versatile assignments included) (parts.trait).
+ *   inspiring     +traits.inspiring to every orthogonally adjacent unit of any type.
+ *   loner         +traits.loner to itself when no unit is orthogonally adjacent (heroes
+ *                 and posts are not units).
+ *   versatile     counts as any type for lines and triads (the type assignment with the
+ *                 highest board total wins); terrain, officers, rally and hero formations
+ *                 keep its real type.
  */
 (function () {
   const C = globalThis.TTFCore = globalThis.TTFCore || {};
@@ -2722,7 +2743,9 @@ body[data-phone="port"] #top .total .of { display: none; }
   const cheb1 = (i, j) => Math.max(Math.abs(i % N - j % N), Math.abs(((i / N) | 0) - ((j / N) | 0)));
   const heroRadius = (T, g) => (g === 'warden' ? T.general.warden : T.hero.radius);
   const TI = { inf: 0, arc: 1, cav: 2 };
-  const TRAIT_DEFAULT = { heavy: 1, rally: 1, banner: 2 };
+  const TRAIT_DEFAULT = { heavy: 1, rally: 1, banner: 2, champion: 1, inspiring: 1, loner: 3, sure_footed: 4 };
+  /** Sure-footed's terrain part on its hated terrain (§8.12): traits.sure_footed (default 4). */
+  const sureFooted = (T) => { const v = T.run && T.run.traits && T.run.traits.sure_footed; return typeof v === 'number' ? v : TRAIT_DEFAULT.sure_footed; };
   /** Trait numbers (tun.run.traits, defaults when a tun has no run block). */
   const traitsOf = (T) => Object.assign({}, TRAIT_DEFAULT, (T.run && T.run.traits) || {});
   /** A unit's base power from its rank (§8.1): tun.run.rankPower[rank-1], else tun.unit.base. */
@@ -2742,10 +2765,34 @@ body[data-phone="port"] #top .total .of { display: none; }
    * reuses scratch buffers and returns just the number.
    */
   function evaluate(board, P, g, T, wantCombos, totalOnly) {
+    // Versatile (§8.12): each versatile unit counts as any type for lines and triads; the
+    // assignment that gives the highest board total wins (first in inf/arc/cav order on a tie).
+    let vs = null;
+    for (let i = 0; i < S; i++) { const p = P[i]; if (p && p.kind === 'unit' && p.trait === 'versatile') (vs || (vs = [])).push(i); }
+    if (!vs) return evalCore(board, P, g, T, wantCombos, totalOnly, null);
+    let best = null, bv = -Infinity;
+    for (const as of assignments(vs)) {
+      const v = evalCore(board, P, g, T, false, true, as);
+      if (v > bv) { bv = v; best = as; }
+    }
+    return totalOnly ? bv : evalCore(board, P, g, T, wantCombos, false, best);
+  }
+  /** Every combo-type assignment [[slot, typeIndex], ...] of the versatile slots `vs` (3^n). */
+  function assignments(vs) {
+    let out = [[]];
+    for (const s of vs) {
+      const next = [];
+      for (const a of out) for (let t = 0; t < 3; t++) next.push(a.concat([[s, t]]));
+      out = next;
+    }
+    return out;
+  }
+  const SCRATCH_CT = new Int8Array(S);
+  function evalCore(board, P, g, T, wantCombos, totalOnly, assign) {
     const pt = totalOnly ? SCRATCH_PT.fill(0) : new Float64Array(PARTS.length * S);
     const combos = wantCombos ? [] : null;
     const ty = (totalOnly ? SCRATCH_TY : new Int8Array(S)).fill(-1); // unit type index, -1 empty, post or hero
-    let hasTrait = false;
+    let hasTrait = false, fc = null; // fc: per-slot formation count, only with a champion on the board
     for (let i = 0; i < S; i++) {
       const p = P[i];
       if (!p || p.kind === 'post') continue;
@@ -2754,22 +2801,29 @@ body[data-phone="port"] #top .total .of { display: none; }
       pt[i] = rankPower(T, p.rank);
       const terr = board[i].terrain, tt = T.terrain.table[terr] || {};
       if (tt.love === p.type) pt[S + i] = T.terrain.love;
-      else if (tt.hate === p.type) pt[S + i] = ((g === 'ranger' && p.type === 'arc') || p.trait === 'sure_footed') ? 0 : T.terrain.hate;
-      if (p.trait) hasTrait = true;
+      else if (tt.hate === p.type) pt[S + i] = (g === 'ranger' && p.type === 'arc') ? 0 : p.trait === 'sure_footed' ? sureFooted(T) : T.terrain.hate;
+      if (p.trait) { hasTrait = true; if (p.trait === 'champion' && !fc) fc = new Int8Array(S); }
       if (g === 'horse_lord' && p.type === 'cav' && terr === 'plains') pt[6 * S + i] = T.general.horse_lord;
       if (g === 'ranger' && p.type === 'arc' && tt.love === 'arc') pt[6 * S + i] = T.general.ranger;
+    }
+    // Combo types (§8.12): the real types, with each versatile unit's assigned type.
+    let cty = ty;
+    if (assign) {
+      cty = totalOnly ? SCRATCH_CT : new Int8Array(S);
+      cty.set(ty);
+      for (const [s, t] of assign) cty[s] = t;
     }
     // Lines: maximal same-type runs of >= lineLen along rows and columns.
     const lineV = g === 'iron_marshal' ? T.general.iron_marshal : T.combo.line;
     for (const L of LINES) {
       let a = 0;
       while (a < N) {
-        const t = ty[L[a]];
+        const t = cty[L[a]];
         if (t < 0) { a++; continue; }
         let b = a + 1;
-        while (b < N && ty[L[b]] === t) b++;
+        while (b < N && cty[L[b]] === t) b++;
         if (b - a >= T.combo.lineLen) {
-          for (let k = a; k < b; k++) pt[2 * S + L[k]] = lineV;
+          for (let k = a; k < b; k++) { pt[2 * S + L[k]] = lineV; if (fc) fc[L[k]]++; }
           if (combos) combos.push({ kind: 'line', type: TYPES[t], slots: L.slice(a, b) });
         }
         a = b;
@@ -2781,15 +2835,18 @@ body[data-phone="port"] #top .total .of { display: none; }
     const seen = {};
     for (const sq of SQUARES) {
       let mask = 0;
-      for (const s of sq) if (ty[s] >= 0) mask |= 1 << ty[s];
+      for (const s of sq) if (cty[s] >= 0) mask |= 1 << cty[s];
       if (mask !== 7) continue;
-      for (const s of sq) if (ty[s] >= 0) pt[3 * S + s] = triV;
-      if (!combos) continue;
+      for (const s of sq) if (cty[s] >= 0) pt[3 * S + s] = triV;
+      if (!combos && !fc) continue;
       const by = [[], [], []];
-      for (const s of sq) if (ty[s] >= 0) by[ty[s]].push(s);
+      for (const s of sq) if (cty[s] >= 0) by[cty[s]].push(s);
       for (const a of by[0]) for (const b of by[1]) for (const c of by[2]) {
         const slots = [a, b, c].sort((u, v) => u - v), key = slots.join(',');
-        if (!seen[key]) { seen[key] = 1; combos.push({ kind: 'triad', slots }); }
+        if (seen[key]) continue;
+        seen[key] = 1;
+        if (combos) combos.push({ kind: 'triad', slots });
+        if (fc) { fc[a]++; fc[b]++; fc[c]++; }
       }
     }
     // Straight triads (§8.10): one of each type in three consecutive slots of a row or
@@ -2797,10 +2854,11 @@ body[data-phone="port"] #top .total .of { display: none; }
     // Never the same slots as a 2x2 triad, and the bonus is still once per unit.
     for (const L of LINES) {
       for (let a = 0; a + 3 <= N; a++) {
-        const t0 = ty[L[a]], t1 = ty[L[a + 1]], t2 = ty[L[a + 2]];
+        const t0 = cty[L[a]], t1 = cty[L[a + 1]], t2 = cty[L[a + 2]];
         if (t0 < 0 || t1 < 0 || t2 < 0 || ((1 << t0) | (1 << t1) | (1 << t2)) !== 7) continue;
         pt[3 * S + L[a]] = pt[3 * S + L[a + 1]] = pt[3 * S + L[a + 2]] = triV;
         if (combos) combos.push({ kind: 'triad', slots: L.slice(a, a + 3) });
+        if (fc) { fc[L[a]]++; fc[L[a + 1]]++; fc[L[a + 2]]++; }
       }
     }
     // Officers (on a host or on a post): a host gets +host; every unit of the
@@ -2814,14 +2872,18 @@ body[data-phone="port"] #top .total .of { display: none; }
       const ot = TI[o.type];
       for (const j of SHAPES[o.shape][i]) if (ty[j] === ot) pt[4 * S + j] += adjV;
     }
-    // Traits (§8.1): heavy adds to itself, rally to its orthogonal same-type neighbours.
+    // Traits (§8.1, §8.12): heavy / champion / loner add to itself, rally to its orthogonal
+    // same-type neighbours, inspiring to every orthogonal neighbour unit.
     const TR = hasTrait ? traitsOf(T) : TRAIT_DEFAULT;
     if (hasTrait) {
       for (let i = 0; i < S; i++) {
         if (ty[i] < 0) continue;
         const tr = P[i].trait;
         if (tr === 'heavy') pt[7 * S + i] += TR.heavy;
-        else if (tr === 'rally') for (const j of ORTH[i]) if (ty[j] === ty[i]) pt[7 * S + j] += TR.rally;
+        else if (tr === 'rally') { for (const j of ORTH[i]) if (ty[j] === ty[i]) pt[7 * S + j] += TR.rally; }
+        else if (tr === 'inspiring') { for (const j of ORTH[i]) if (ty[j] >= 0) pt[7 * S + j] += TR.inspiring; }
+        else if (tr === 'champion') pt[7 * S + i] += TR.champion * fc[i];
+        else if (tr === 'loner') { if (!ORTH[i].some((j) => ty[j] >= 0)) pt[7 * S + i] += TR.loner; }
       }
     }
     // Heroes: ring bonus, larger when the ring holds the formation (a banner unit
@@ -3064,14 +3126,18 @@ body[data-phone="port"] #top .total .of { display: none; }
   /** Empty slots and posts (a unit may take either) x each type that would complete a combo there. */
   function partialCombos(st) {
     const out = [], P = toArr(st.pieces), T = tunOf(st);
+    let vs = null;
+    for (let i = 0; i < S; i++) { const p = P[i]; if (p && p.kind === 'unit' && p.trait === 'versatile') (vs || (vs = [])).push(i); }
     for (let i = 0; i < S; i++) {
       const was = P[i];
       if (was && was.kind !== 'post') continue;
       for (const t of TYPES) {
         P[i] = { kind: 'unit', type: t };
         const kinds = {};
-        for (const c of evaluate(st.board, P, st.general, T, true).combos)
-          if (c.slots.indexOf(i) >= 0) kinds[c.kind] = 1;
+        // §8.12: a versatile unit on the board may take any type, so every assignment counts
+        for (const as of vs ? assignments(vs) : [null])
+          for (const c of evalCore(st.board, P, st.general, T, true, false, as).combos)
+            if (c.slots.indexOf(i) >= 0) kinds[c.kind] = 1;
         for (const kind of Object.keys(kinds)) out.push({ slot: i, type: t, kind });
       }
       P[i] = was;
@@ -3197,7 +3263,7 @@ body[data-phone="port"] #top .total .of { display: none; }
   Object.assign(C, {
     PARTS, SHAPE_IDS, createBattle, chooseSetup, legalSlots, canPick, place, valueMap, total, combosOf,
     partialCombos, predict, heroArea, officerArea, formationStatus, shapeCells, officerOf, stars, starRatios, starThresholds, target, undo,
-    totalAfter, redeal, cardsFor, leadersFor, leadersOfCards, terrainMods, rankPower, traitsOf, orthOf: (i) => ORTH[i].slice(), diagOf: (i) => DIAG[i].slice()
+    totalAfter, redeal, sureFooted, cardsFor, leadersFor, leadersOfCards, terrainMods, rankPower, traitsOf, orthOf: (i) => ORTH[i].slice(), diagOf: (i) => DIAG[i].slice()
   });
   if (typeof module !== 'undefined') module.exports = C;
 })();
@@ -3416,8 +3482,8 @@ body[data-phone="port"] #top .total .of { display: none; }
 
   /**
    * Whether `trait` would change this unit card in this run: sure_footed needs a hated
-   * terrain left to ignore (none for Ranger archers), banner needs a hero in the deck
-   * whose formation asks for the card's type; rally and heavy always count.
+   * terrain to turn good (none for Ranger archers), banner needs a hero in the deck
+   * whose formation asks for the card's type; every other trait always counts.
    */
   function traitHelps(run, card, trait) {
     if (trait === 'sure_footed') {
@@ -3445,7 +3511,9 @@ body[data-phone="port"] #top .total .of { display: none; }
 
   function upgradeSpoils(run) {
     const R = runTun(tunOf(run));
-    const pool = R.traitPool && R.traitPool.length ? R.traitPool : C.TRAITS.map((t) => t.id);
+    // only known traits (a stored tun override may still list a removed one, e.g. flanker)
+    const known = (R.traitPool || []).filter(isTrait);
+    const pool = known.length ? known : C.TRAITS.map((t) => t.id);
     const start = RNG().int(RNG().seedFrom(run.seed, 'upgradeTrait', run.battle), 0, pool.length - 1).value;
     // the seeded trait, or the next one in the pool that changes at least one card
     let trait = pool[start], free = [];
@@ -3458,6 +3526,23 @@ body[data-phone="port"] #top .total .of { display: none; }
     const shuffled = RNG().shuffle(RNG().seedFrom(run.seed, 'upgrade', run.battle), free).value;
     const picks = protoOf(run).distinctUpgrade ? distinctPicks(shuffled, n) : shuffled.slice(0, n);
     return { trait, options: picks.map((c) => ({ uid: c.uid, type: c.type, rank: c.rank || 1, name: C.rankName(c) })) };
+  }
+
+  const isTrait = (id) => C.TRAITS.some((t) => t.id === id);
+  /**
+   * A saved run with traits this build no longer has (Flanker, removed in §8.12) loads as
+   * if they were never given: unknown card traits become null, and a pending (unapplied)
+   * upgrade step offering one is drawn again. Returns a new run; `run` is not changed.
+   */
+  function forgetUnknownTraits(run) {
+    const out = clone(run);
+    for (const c of out.deck || []) if (c.kind === 'unit' && c.trait && !isTrait(c.trait)) c.trait = null;
+    const sp = out.spoils;
+    if (out.phase === 'spoils' && sp && sp.kind === 'upgrade' && !isTrait(sp.trait)) {
+      if (sp.applied) sp.trait = null;
+      else out.spoils = computeSpoils(out);
+    }
+    return out;
   }
 
   function computeSpoils(run) {
@@ -3566,7 +3651,7 @@ body[data-phone="port"] #top .total .of { display: none; }
 
   C.Run = {
     battleSeed, targetFor, setupFor, startRun, battleFor, finishBattle, spoilsKind, spoilsFor,
-    applySpoils, nextBattle, retryBattle, attemptsOf, summary, averageRank, mainType, placedUnitUids, featureCards
+    applySpoils, nextBattle, retryBattle, attemptsOf, summary, forgetUnknownTraits, averageRank, mainType, placedUnitUids, featureCards
   };
   if (typeof module !== 'undefined') module.exports = C.Run;
 })();
@@ -3693,12 +3778,18 @@ body[data-phone="port"] #top .total .of { display: none; }
 
   // PLAN 45 (§8.1) unit traits: one engraved icon each (currentColor), shown on a brass pip
   // on cards and tokens. Sure-footed a boot, Rally a war horn, Banner a hanging standard
-  // (not the officer's swallow-tail flag), Heavy a shield.
+  // (not the officer's swallow-tail flag), Heavy a shield (§8.12 icons below).
   const TRAIT = {
     sure_footed: '<path fill="currentColor" d="M19,5 H35 V31 L50,37 C55,39 58,43 58,48 V52 H13 L15,31 Z"/><path fill="currentColor" d="M11,55 H60 V60 H11 Z"/><path stroke="var(--trait-bg,#e7bf5c)" stroke-width="2.6" stroke-linecap="round" d="M35,22 H24 M35,14 H24"/>',
     rally: '<path fill="currentColor" d="M6,26 C18,24 32,16 44,6 L49,9 C53,22 53,38 49,51 L44,54 C32,44 18,38 6,37 Z"/><path fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" d="M14,38 L18,55 H26 L24,40"/><path fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" d="M55,20 L60,16 M56,30 H62 M55,40 L60,44"/>',
     banner: '<path stroke="currentColor" stroke-width="4.4" stroke-linecap="round" d="M10,8 H54"/><circle cx="10" cy="8" r="4" fill="currentColor"/><circle cx="54" cy="8" r="4" fill="currentColor"/><path fill="currentColor" d="M17,11 H47 V56 L32,45 L17,56 Z"/><path fill="var(--trait-bg,#e7bf5c)" d="M32,18 L36,26 L45,27 L38.5,33 L40.5,42 L32,37.5 L23.5,42 L25.5,33 L19,27 L28,26 Z"/>',
-    heavy: '<path fill="currentColor" d="M32,3 L55,11 V30 C55,45 45,55 32,61 C19,55 9,45 9,30 V11 Z"/><path fill="var(--trait-bg,#e7bf5c)" d="M32,11 L47,16.5 V30 C47,40 40.5,47.5 32,52 Z" opacity=".55"/><circle cx="32" cy="30" r="6" fill="var(--trait-bg,#e7bf5c)"/>'
+    heavy: '<path fill="currentColor" d="M32,3 L55,11 V30 C55,45 45,55 32,61 C19,55 9,45 9,30 V11 Z"/><path fill="var(--trait-bg,#e7bf5c)" d="M32,11 L47,16.5 V30 C47,40 40.5,47.5 32,52 Z" opacity=".55"/><circle cx="32" cy="30" r="6" fill="var(--trait-bg,#e7bf5c)"/>',
+    // §8.12: Champion a laurel wreath round a star medal, Inspiring a sunburst,
+    // Loner a single figure inside a ring, Versatile a three-point star in the type colours.
+    champion: '<path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" d="M23.5,51.1 A20,20 0 0 1 20.5,16.6 M40.5,51.1 A20,20 0 0 0 43.5,16.6"/><g fill="currentColor"><ellipse cx="14.1" cy="48.5" rx="5.6" ry="2.5" transform="rotate(178 14.1 48.5)"/><ellipse cx="9.0" cy="38.3" rx="5.6" ry="2.5" transform="rotate(-154 9.0 38.3)"/><ellipse cx="9.2" cy="26.9" rx="5.6" ry="2.5" transform="rotate(-126 9.2 26.9)"/><ellipse cx="14.7" cy="16.9" rx="5.6" ry="2.5" transform="rotate(-98 14.7 16.9)"/><ellipse cx="23.5" cy="10.9" rx="5.6" ry="2.5" transform="rotate(-72 23.5 10.9)"/><ellipse cx="49.9" cy="48.5" rx="5.6" ry="2.5" transform="rotate(2 49.9 48.5)"/><ellipse cx="55.0" cy="38.3" rx="5.6" ry="2.5" transform="rotate(-26 55.0 38.3)"/><ellipse cx="54.8" cy="26.9" rx="5.6" ry="2.5" transform="rotate(-54 54.8 26.9)"/><ellipse cx="49.3" cy="16.9" rx="5.6" ry="2.5" transform="rotate(-82 49.3 16.9)"/><ellipse cx="40.5" cy="10.9" rx="5.6" ry="2.5" transform="rotate(-108 40.5 10.9)"/></g><circle cx="32" cy="32" r="10" fill="currentColor"/><path fill="var(--trait-bg,#e7bf5c)" d="M32,25.5 L34,30 L38.6,30.3 L35.1,33.3 L36.2,37.9 L32,35.5 L27.8,37.9 L28.9,33.3 L25.4,30.3 L30,30 Z"/>',
+    inspiring: '<path fill="currentColor" d="M28.6,15.4 L32,1 L35.4,15.4 Z M39.9,17.3 L52.5,9.5 L44.7,22.1 Z M46.6,26.6 L61,30 L46.6,33.4 Z M44.7,37.9 L52.5,50.5 L39.9,42.7 Z M35.4,44.6 L32,59 L28.6,44.6 Z M24.1,42.7 L11.5,50.5 L19.3,37.9 Z M17.4,33.4 L3,30 L17.4,26.6 Z M19.3,22.1 L11.5,9.5 L24.1,17.3 Z" transform="translate(0,2)"/><circle cx="32" cy="32" r="12" fill="currentColor"/><circle cx="32" cy="32" r="5.5" fill="var(--trait-bg,#e7bf5c)"/>',
+    loner: '<circle cx="32" cy="32" r="27" fill="none" stroke="currentColor" stroke-width="5"/><circle cx="32" cy="22" r="7.5" fill="currentColor"/><path fill="currentColor" d="M18,49 C18,37 24,32 32,32 C40,32 46,37 46,49 Z"/>',
+    versatile: '<g stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"><path fill="var(--inf,#2f4d73)" d="M32,39 L22.5,33.5 L32,10 L41.5,33.5 Z"/><path fill="var(--cav,#7a3420)" d="M32,39 L41.5,33.5 L57.1,53.5 L32,50 Z"/><path fill="var(--arc,#2e5c3d)" d="M32,39 L32,50 L6.9,53.5 L22.5,33.5 Z"/></g>'
   };
 
   let sheetDone = false;
@@ -3737,7 +3828,7 @@ body[data-phone="port"] #top .total .of { display: none; }
   A.tokDeco = (c) => {
     if (!c || c.kind === 'hero' || c.kind === 'officer') return '';
     return ((c.rank || 1) > 1 ? '<i class="rk">' + A.chevron() + '</i>' : '') +
-      (c.trait ? '<i class="tp">' + A.trait(c.trait) + '</i>' : '');
+      (c.trait && TRAIT[c.trait] ? '<i class="tp">' + A.trait(c.trait) + '</i>' : '');
   };
 
   // ---- officer shapes (docs/P44-CORE.md §7.2) --------------------------------
@@ -4806,7 +4897,7 @@ body[data-phone="port"] #top .total .of { display: none; }
       if (!r || r.v !== 1 || !Array.isArray(r.deck) || ['battle', 'spoils', 'lost', 'won'].indexOf(r.phase) < 0) return null;
       if (!C.GENERALS.some((g) => g.id === r.general) || !armies().some((a) => a.id === r.army) || TIERS.indexOf(r.tier) < 0) return null;
       r.tun = tun;
-      return r;
+      return R.forgetUnknownTraits(r);
     } catch (e) { return null; }
   }
   /** A spoils step after a reload: the finished board of battle k, rebuilt from 'runview'. */
