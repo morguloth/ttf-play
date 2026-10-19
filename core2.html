@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="71366f6ec4";if(location.protocol==="file:")return;try{fetch("core2-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core2:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="1d2a6ac626";if(location.protocol==="file:")return;try{fetch("core2-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core2:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="icon" href="data:,">
@@ -4968,6 +4968,20 @@ body[data-theme="battlefield"][data-ov="upgrade"] #strip { filter: blur(12px) br
 
 /* 2026-10-19: the home link is an <a> styled as a button; the home icon stays hidden until a home screen answers */
 a.c2-btn { text-decoration: none; }
+
+/* 2026-10-19: the run score (Laurels) on the campaign-won plate */
+.c2-laurels { margin: 8px auto 10px; max-width: 360px; text-align: center; }
+.c2-lau-k { font-family: var(--c2-serif); font-variant: small-caps; text-transform: lowercase; letter-spacing: 0.18em; font-size: 15px; color: var(--c2-ink-dim); }
+.c2-lau-n { font-family: var(--c2-serif); font-weight: 700; font-size: 52px; line-height: 1.05; color: #24180b; font-variant-numeric: lining-nums tabular-nums; text-shadow: 0 1px 0 rgba(255, 245, 210, 0.8); }
+.c2-lau-best { font-family: var(--c2-serif); font-style: italic; font-size: 14px; color: var(--c2-ink-dim); }
+.c2-lau-best.is-new { font-style: normal; font-weight: 700; font-variant: small-caps; letter-spacing: 0.1em; color: #7a1f1f; }
+.c2-lau-rows { list-style: none; margin: 10px 0 0; padding: 8px 0 0; border-top: 1px solid rgba(94, 63, 11, 0.3); }
+.c2-lau-rows li { display: flex; justify-content: space-between; gap: 16px; padding: 2px 4px; font-size: 14.5px; color: var(--c2-ink); }
+.c2-lau-rows b { font-variant-numeric: lining-nums tabular-nums; }
+@media (max-height: 820px) {
+  .c2-won .c2-wonseal { display: none; }
+  .c2-lau-n { font-size: 44px; }
+}
 </style>
 <!-- Cinzel: the banner titles only (Google Fonts, the one external file). -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap">
@@ -10419,6 +10433,12 @@ a.c2-btn { text-decoration: none; }
       pool: ['hold_hills', 'hold_woods', 'corners', 'centre', 'full_row', 'square', 'pincer', 'two_lines',
         'no_cav', 'forts', 'general', 'hero']
     },
+    // 2026-10-19: Laurels, the run score (display only; the same numbers in Core 2 and Core 3,
+    // adapted from the old campaign's js/laurels.js). Per battle won: (`win` + `objective` for a
+    // met bonus objective + Glory, the % the total beat the 1-star line by, capped at `gloryCap`)
+    // x the score stars' multiplier (`starMult` [1, 2, 3 stars]) x `bossScale` for a boss x the
+    // `retried` when the battle took any retry (one or many: the same, user ruling 2026-10-19).
+    laurels: { win: 20, objective: 15, gloryCap: 100, starMult: [1, 1.5, 2.5], bossScale: 2, retried: 0.5 },
     // Bosses (§1.13): every `every`-th battle (5, 10, ..., 30) has a seeded twist from `pool` that
     // restricts (no penalties) and a target x targetMult. offerSize / turns: the 'offers_2' and
     // 'short' twists. W2c: targetMult 1.1 -> 1.05 (the twist already costs 10-25% of the total).
@@ -13113,10 +13133,43 @@ a.c2-btn { text-decoration: none; }
     };
   }
 
+  /**
+   * 2026-10-19: Laurels, the run score (display only, read from run.results; the same formula in
+   * Core 2 and Core 3, tun.laurels). Per battle won:
+   *   (win + objective if met + Glory) x starMult[score stars - 1] x bossScale for a boss
+   *   x retried when the battle took any retry (one or many alike)
+   * where the score stars leave out the bonus objective's star (it is counted by `objective`) and
+   * Glory = min(gloryCap, round(100 x (total / target - 1))), target being the 1-star line.
+   * -> {total, base, starBonus, bossBonus, retryCost, battles:[{battle, stars, objective, glory,
+   *    base, mult, boss, retries, factor, laurels}]}; total = base + starBonus + bossBonus - retryCost.
+   */
+  function laurels(run) {
+    const L = Object.assign({ win: 20, objective: 15, gloryCap: 100, starMult: [1, 1.5, 2.5], bossScale: 2, retried: 0.5 },
+      (tunOf(run) || {}).laurels || {});
+    const O = C.ordersTunOf ? C.ordersTunOf(tunOf(run)) : { stars: 1 };
+    const out = { total: 0, base: 0, starBonus: 0, bossBonus: 0, retryCost: 0, battles: [] };
+    for (const r of (run && run.results) || []) {
+      if (!r || !r.won) continue;
+      const met = !!(r.order && r.orderMet);
+      const nStars = Math.max(1, (r.stars || 0) - (met ? O.stars || 0 : 0));
+      const g = r.target > 0 ? Math.max(0, Math.min(L.gloryCap, Math.round(100 * (r.total / r.target - 1)))) : 0;
+      const base = L.win + (met ? L.objective : 0) + g;
+      const mult = L.starMult[Math.min(nStars, L.starMult.length) - 1] || 1;
+      const starred = base * mult, bossed = r.boss ? starred * L.bossScale : starred;
+      const retries = r.retries || 0, factor = retries > 0 ? L.retried : 1;
+      const won = Math.round(bossed * factor);
+      out.base += base; out.starBonus += starred - base; out.bossBonus += bossed - starred;
+      out.retryCost += bossed - won;
+      out.total += won;
+      out.battles.push({ battle: r.battle, stars: nStars, objective: met, glory: g, base, mult, boss: !!r.boss, retries, factor, laurels: won });
+    }
+    return out;
+  }
+
   C.Run = {
     battleSeed, targetFor, startRun, battleFor, endBattle, finishBattle: endBattle,
     pickOffer, refuseOffer, pickUpgrade, upgradeEligible, pickDrill, retryBattle, attemptsOf, upgradeDue, summary, deckList,
-    placedUnitUids, rankForXp, xpForRank, offerRank, isBoss, bossFor, orderFor, heroAllowed, generalAllowed: heroAllowed, drillOptions, migrate
+    placedUnitUids, rankForXp, xpForRank, offerRank, isBoss, bossFor, orderFor, heroAllowed, generalAllowed: heroAllowed, drillOptions, migrate, laurels
   };
   if (typeof module !== 'undefined') module.exports = C.Run;
 })();
@@ -18379,16 +18432,45 @@ a.c2-btn { text-decoration: none; }
       + '<h2 class="c2-ribbon">The campaign is won</h2>'
       + '<div class="c2-wonseal">' + Cards().sealHtml('gold', 'c2-laurel', 0, '0 0 64 64') + '</div>'
       + '<p>' + esc(s.battles || 30) + ' battles fought and held.</p>'
+      + laurelsHtml(s.laurels, s.best)
       + '<div class="c2-wonstats">' + stat((s.stars || 0) + (s.maxStars ? ' / ' + s.maxStars : ''), 'stars') + stat(s.retries || 0, 'retries') + stat(s.drills || 0, 'drill levels') + '</div>'
       + '<div class="c2-end-acts"><button type="button" class="c2-btn" data-act="new" data-autofocus>Begin a new campaign</button>'
       + '<button type="button" class="c2-btn c2-leather" data-act="deck">See the deck</button>' + homeLink() + '</div></div>';
     const entry = open('won', html, { label: 'The campaign is won' });
     let done = false;
+    countUp(entry.ov.querySelector('[data-laurels]'), s.laurels ? s.laurels.total : 0);
     entry.ov.querySelector('[data-act="new"]').addEventListener('click', () => { if (done) return; done = true; close(entry).then(() => cb && cb('new')); });
     entry.ov.querySelector('[data-act="deck"]').addEventListener('click', () => { if (cb) cb('deck'); });
     return { el: entry.ov, close: () => close(entry) };
   }
 
+  /**
+   * 2026-10-19: the run score on the campaign-won plate: Laurels (Run.laurels) with how they were
+   * earned, and the best run so far in this browser (best: {laurels, isNew}).
+   */
+  function laurelsHtml(L, best) {
+    if (!L) return '';
+    const row = (label, n, sign) => (n ? '<li><span>' + esc(label) + '</span><b>' + (sign || '+') + esc(Math.round(n)) + '</b></li>' : '');
+    const bossN = L.battles.filter((b) => b.boss).length;
+    return '<div class="c2-laurels">'
+      + '<div class="c2-lau-k">Laurels</div>'
+      + '<div class="c2-lau-n" data-laurels>' + esc(L.total) + '</div>'
+      + (best ? '<div class="c2-lau-best' + (best.isNew ? ' is-new' : '') + '">' + (best.isNew ? 'A new best' : 'Best ' + esc(best.laurels)) + '</div>' : '')
+      + '<ul class="c2-lau-rows">'
+      + row('Battles won, bonus objectives and Glory', L.base) + row('Stars: ×1.5 for 2, ×2.5 for 3', L.starBonus)
+      + row('Bosses count double (' + bossN + ')', L.bossBonus) + row('Retried battles count half (' + L.battles.filter((b) => b.retries).length + ')', L.retryCost, '−')
+      + '</ul></div>';
+  }
+  /** Count a number up from 0 (the end plate's reveal); straight to it with reduced motion. */
+  function countUp(el, total) {
+    if (!el) return;
+    total = +total || 0;
+    if (reduced()) { el.textContent = String(total); return; }
+    const t0 = performance.now();
+    const step = (now) => { const k = Math.min(1, (now - t0) / 1100); el.textContent = String(Math.round(total * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(step); };
+    el.textContent = '0';
+    requestAnimationFrame(step);
+  }
   /** 2026-10-19: "Choose campaign" back to the public home screen, when the app found one (TTF2.home). */
   function homeLink() {
     const h = TTF2.home;
@@ -19205,6 +19287,7 @@ a.c2-btn { text-decoration: none; }
  * every step (st: the battle on the board, its undo chain included, tunables stripped),
  * so a reload resumes mid-battle, on the end plate or on the step screen.
  * 'ttf-core2:prefs' keeps the formation strip state; 'ttf-core2:seen' the tips already shown (callouts.js).
+ * 'ttf-core2:best' = {laurels, seed}: the best run score in this browser (2026-10-19).
  * Nothing else is read or written. A demo scene (?demo=<scene>, TTF2.Demo in demo.js) boots
  * on its fixed run and battle and reads or writes nothing at all.
  */
@@ -19545,7 +19628,15 @@ a.c2-btn { text-decoration: none; }
     const retries = res.reduce((s, r) => s + (r.retries || 0), 0);
     const drills = Object.keys(run.formationLevels || {}).reduce((s, k) => s + run.formationLevels[k], 0);
     const my = epoch;
-    TTF2.Screens.runWon({ stars, maxStars, retries, drills, battles: run.battles }, (act) => {
+    // 2026-10-19: the run score (Laurels) and the best run in this browser (ttf-*:best, additive;
+    // a reload of the same won run is not a new best)
+    const laurels = R.laurels(run);
+    let best = null;
+    try { best = JSON.parse(store.get('best') || 'null'); } catch (e) { best = null; }
+    const isNew = !best || laurels.total > (best.laurels || 0) || (best.seed === run.seed && best.laurels === laurels.total);
+    if (!demo && isNew) store.set('best', JSON.stringify({ laurels: laurels.total, seed: run.seed }));
+    const shown = { laurels: isNew ? laurels.total : best.laurels, isNew };
+    TTF2.Screens.runWon({ stars, maxStars, retries, drills, battles: run.battles, laurels, best: shown }, (act) => {
       if (my !== epoch) return;
       if (act === 'deck') { openDeck(); return; }
       store.del('run');
