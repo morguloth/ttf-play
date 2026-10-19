@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="357c6f0860";if(location.protocol==="file:")return;try{fetch("core2-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core2:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="71366f6ec4";if(location.protocol==="file:")return;try{fetch("core2-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core2:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="icon" href="data:,">
@@ -18263,8 +18263,8 @@ a.c2-btn { text-decoration: none; }
       + '<div class="c2-tap">Tap to begin</div></div>';
     const entry = open('intro', html, { label: 'Battle ' + k });
     let done = false;
-    const go = () => { if (done) return; done = true; clearTimeout(t); close(entry).then(() => cb && cb()); };
-    const t = setTimeout(go, 1500);
+    // 2026-10-19: it waits for the tap it asks for (it used to close itself after 1.5 s)
+    const go = () => { if (done) return; done = true; close(entry).then(() => cb && cb()); };
     entry.onEsc = go; entry.onBackdrop = go; entry.onKey = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } };
     entry.ov.querySelector('[data-tapclose]').addEventListener('click', go);
     return { el: entry.ov, close: go };
