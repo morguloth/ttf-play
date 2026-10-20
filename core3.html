@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="6e10284314";if(location.protocol==="file:")return;try{fetch("core3-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core3:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="dd49a17939";if(location.protocol==="file:")return;try{fetch("core3-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core3:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="icon" href="data:,">
@@ -5046,6 +5046,13 @@ a.c2-btn { text-decoration: none; }
   .c2-won .c2-wonseal { display: none; }
   .c2-lau-n { font-size: 44px; }
 }
+
+/* 2026-10-20: an officer's diamond carries his power on his type's colour (light numerals, like a unit's shield) */
+.c2-b-diamond.c2-b-offpow b { color: #fff8e0; text-shadow: 0 0.6cqw 0 rgba(0, 0, 0, 0.6), 0 0 1.6cqw rgba(0, 0, 0, 0.5); font-family: var(--c2-serif); font-weight: 800; font-size: 11cqw; }
+
+/* 2026-10-20: the replace view's big "Back to the spoils" button (in place of the corner cross) */
+.c2-deck-back { display: flex; justify-content: center; margin: 8px 0 2px; }
+.c2-deck-back .c2-btn { min-height: 48px; padding: 0 28px; font-size: 18px; }
 </style>
 <!-- Cinzel: the banner titles only (Google Fonts, the one external file). -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap">
@@ -10483,8 +10490,10 @@ a.c2-btn { text-decoration: none; }
     // they arrive (`arrivals` below). The leader keys stay so an override can still give a start
     // deck its leaders (Core 2's start: officers ['inf', 'arc', 'cav'], heroes {always: ['marshal',
     // 'iron_marshal', 'tactician'], random: 1}, engineers 3).
+    // 2026-10-20 (user): the deck starts at 30 units (10 / 10 / 10) and the 10 arriving leaders
+    // are ADDED (arrivalsAdd), so it grows to 40 by battle 4 and no arrival undoes the player's picks.
     startDeck: {
-      units: { inf: 14, arc: 13, cav: 13 },
+      units: { inf: 10, arc: 10, cav: 10 },
       officers: [],
       heroes: { always: [], random: 0 },
       engineers: 0
@@ -10496,6 +10505,7 @@ a.c2-btn { text-decoration: none; }
     // the `always` ids then `random` ring heroes drawn by the run seed; engineers: a count), with
     // Core 2's seeded draws, so a seed's leaders are Core 2's start leaders. `kind` names the card
     // kind it introduces: offers and bonus objectives hold a kind only from its arrival battle on.
+    arrivalsAdd: true,
     arrivals: [
       { battle: 2, kind: 'officer', officers: ['inf', 'arc', 'cav'] },
       { battle: 3, kind: 'hero', heroes: { always: ['marshal', 'iron_marshal', 'tactician'], random: 1 } },
@@ -10797,7 +10807,7 @@ a.c2-btn { text-decoration: none; }
   //          'cav_ends' (cavalry on both ends, any units between), 'lines' (two Lines, each one
   //          type, of any types); badge: its short label for the formation book.
   //   line           3+ units of one type in a row or column
-  //   triad          one of each type, in a 2x2 square or 3 straight slots of a row / column
+  //   triad          one of each type, in a triangle inside a 2x2 square (2026-10-20: never a straight row)
   //   pincer         cavalry on both end tiles of a row or column, with at least one unit between
   //                  them; other pieces between are fine (members: the two cavalry and the units)
   //   square         a 2x2 block of one type
@@ -11545,7 +11555,7 @@ a.c2-btn { text-decoration: none; }
     });
     return out;
   }
-  /** Triads: one of each type inside a 2x2 square (every 3-set once) or 3 straight slots. */
+  /** Triads: one of each type inside a 2x2 square (every 3-set once): the triangle, never a straight row. */
   function triadsOf(cty) {
     const out = [], seen = {};
     for (const sq of SQUARES) {
@@ -11561,16 +11571,7 @@ a.c2-btn { text-decoration: none; }
         out.push({ id: 'triad', slots });
       }
     }
-    for (const L of LINES) {
-      for (let a = 0; a + 3 <= N; a++) {
-        const t0 = cty[L[a]], t1 = cty[L[a + 1]], t2 = cty[L[a + 2]];
-        if (t0 < 0 || t1 < 0 || t2 < 0 || ((1 << t0) | (1 << t1) | (1 << t2)) !== 7) continue;
-        const slots = sortNum(L.slice(a, a + 3)), key = slots.join(',');
-        if (seen[key]) continue;
-        seen[key] = 1;
-        out.push({ id: 'triad', slots });
-      }
-    }
+    // 2026-10-20 (user): 3 in a straight row are no Triad; only the triangle inside a 2x2
     return out;
   }
   const lineLenOf = (T) => (T.combo && T.combo.lineLen) || 3;
@@ -12263,11 +12264,16 @@ a.c2-btn { text-decoration: none; }
    * -> {deck, added: [uid], removed: [uid], nextUid}. Pure; a deck with no unit left takes a card
    * without removing one.
    */
-  function arrivalSwap(deck, cards, nextUid) {
+  // 2026-10-20 (user): with a `cap` (tun.deckSize when tun.arrivalsAdd) a card joins on top while
+  // the deck is under the cap - the deck starts small and grows to 40, no pick undone - and only a
+  // deck already at the cap (a run begun before the change) makes way; without it each card
+  // replaces a weakest unit (the old rule)
+  function arrivalSwap(deck, cards, nextUid, cap) {
     const out = deck.slice(), added = [], removed = [], cuts = {};
     let uid = nextUid;
     for (const c of cards) {
-      const units = out.map((d, i) => ({ d, i })).filter((x) => x.d.kind === 'unit');
+      const room = typeof cap === 'number' && out.length < cap;
+      const units = room ? [] : out.map((d, i) => ({ d, i })).filter((x) => x.d.kind === 'unit');
       if (units.length) {
         const cnt = {};
         for (const x of units) cnt[x.d.type] = (cnt[x.d.type] || 0) + 1;
@@ -12862,7 +12868,7 @@ a.c2-btn { text-decoration: none; }
  * Run:
  *   {v:1, seed, battles, battle (1-based, the current one),
  *    phase: 'battle' | 'drill' | 'offer' | 'upgrade' | 'lost' | 'won',
- *    deck: [card] (always tun.deckSize = 40), nextUid,
+ *    deck: [card] (30 at the start, 40 once the leaders have arrived: 2026-10-20), nextUid,
  *    formationLevels: {formationId: level}   (missing = 0; Drills raise them)
  *    results: [{battle, seed, total, target, stars, won, retries?, order?, orderMet?, boss?}],
  *    attempts: {k: n}            (retries of battle k; missing = 0)
@@ -13286,8 +13292,8 @@ a.c2-btn { text-decoration: none; }
     return arrive(out);
   }
   /**
-   * CORE 3 (C1): the cards that arrive at the start of out.battle (C.arrivalCards) join the deck,
-   * each replacing a weakest unit (C.arrivalSwap). Sets out.arrival {battle, kinds, uids, shown:
+   * CORE 3 (C1): the cards that arrive at the start of out.battle (C.arrivalCards) join the deck
+   * on top of it (2026-10-20, tun.arrivalsAdd; false: each replaces a weakest unit, C.arrivalSwap). Sets out.arrival {battle, kinds, uids, shown:
    * false} for the arrival plate (null when nothing arrives) and logs the swap. Mutates `out`
    * (a fresh copy). Runs once per battle: on the way into it, never on a retry.
    */
@@ -13295,7 +13301,7 @@ a.c2-btn { text-decoration: none; }
     out.arrival = null;
     const T = tunOf(out), cards = C.arrivalCards ? C.arrivalCards(out.seed, T, out.battle) : [];
     if (!cards.length) return out;
-    const sw = C.arrivalSwap(out.deck, cards, out.nextUid);
+    const sw = C.arrivalSwap(out.deck, cards, out.nextUid, T.arrivalsAdd !== false ? (T.deckSize || 40) : undefined);
     out.deck = sw.deck;
     out.nextUid = sw.nextUid;
     const kinds = [];
@@ -16716,8 +16722,11 @@ a.c2-btn { text-decoration: none; }
         + '<path d="M20,6.5 L33,11 V21 C33,30.5 27,36 20,39.5 Z" fill="#000" opacity=".2"/>'
         + '<path d="M9,12 Q20,7 31,12" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.2"/></svg><b>' + powerOf(card, T) + '</b></div>';
     }
+    // 2026-10-20 (user): an officer's diamond shows his power (by rank, like a unit's shield and a
+    // hero's laurel) on his type's colour; his x multiplier is in the card text
     if (card.kind === 'officer') {
-      return '<div class="c2-badge c2-b-diamond" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20,1.5 L38.5,20 L20,38.5 L1.5,20 Z" fill="url(#c2-gold)" stroke="#2a1a06" stroke-width="1.6"/><path d="M20,6.5 L33.5,20 L20,33.5 L6.5,20 Z" fill="#f3e2b0" stroke="#7a520f" stroke-width="1"/></svg><b>×' + officerMult(T, officerRank(card)) + '</b></div>';
+      const oc = TYPE_COL[card.type] || TYPE_COL.inf;
+      return '<div class="c2-badge c2-b-diamond c2-b-offpow" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20,1.5 L38.5,20 L20,38.5 L1.5,20 Z" fill="url(#c2-gold)" stroke="#2a1a06" stroke-width="1.6"/><path d="M20,6.5 L33.5,20 L20,33.5 L6.5,20 Z" fill="' + oc.mid + '" stroke="' + oc.dark + '" stroke-width="1"/><path d="M20,6.5 L33.5,20 L20,33.5 Z" fill="#000" opacity=".18"/></svg><b>' + powerOf({ rank: officerRank(card) }, T) + '</b></div>';
     }
     // every hero wears the laurel, with his power (by rank, like a unit's shield) inside it
     if (card.kind === 'hero') {
@@ -18186,7 +18195,10 @@ a.c2-btn { text-decoration: none; }
     const html = '<div class="c2-deck-head"><h2 class="c2-ribbon"' + tone + '>' + esc(title) + '</h2>'
       + (o.head || '') + (o.sub ? '<div class="c2-deck-sub">' + esc(o.sub) + '</div>' : '')
       + (o.refuse ? '<div class="c2-deck-refuse"><button type="button" class="c2-btn c2-leather c2-sm" data-refuse>' + esc(o.refuse.label || 'Refuse') + '</button></div>' : '')
-      + (closable ? xBtn : '') + '</div>'
+      // 2026-10-20 (user): o.back {label} - a big button back to the screen underneath (the spoils),
+      // instead of the corner cross
+      + (o.back && closable ? '<div class="c2-deck-back"><button type="button" class="c2-btn c2-leather" data-backdeck>‹ ' + esc(o.back.label || 'Back') + '</button></div>' : '')
+      + (closable && !o.back ? xBtn : '') + '</div>'
       + (chooser ? chooseRowHtml(choices, { mode, levels: o.levels }) : '')
       + '<div class="c2-deck-scroll"><div class="c2-deck-groups">' + body + '</div></div>';
     let busy = false, fan = null;
@@ -18211,6 +18223,8 @@ a.c2-btn { text-decoration: none; }
     entry.onBackdrop = shut;
     const xb = entry.ov.querySelector('[data-close]');
     if (xb) xb.addEventListener('click', shut);
+    const bb = entry.ov.querySelector('[data-backdeck]');
+    if (bb) bb.addEventListener('click', shut);
     const rf = entry.ov.querySelector('[data-refuse]');
     if (rf) rf.addEventListener('click', () => {
       if (busy) return;
@@ -18519,7 +18533,7 @@ a.c2-btn { text-decoration: none; }
       try { rm = C.Run && C.Run.removableOf ? C.Run.removableOf(run) : []; } catch (e) { rm = []; }
       const can = new Set(rm);
       deckView(deck, {
-        mode: 'remove', levels, highlight: true,
+        mode: 'remove', levels, back: { label: 'Back to the spoils' }, highlight: true,
         eligible: rm.length ? (d) => can.has(d.uid) : null,
         title: 'Choose a card to replace',
         sub: 'Taking ' + name + ': one of these ' + (rm.length || 3) + ' cards makes way. Your deck stays at ' + deck.length + '.',
@@ -18714,7 +18728,7 @@ a.c2-btn { text-decoration: none; }
       + '<h3>' + esc(title) + '</h3>'
       + parts.map((p) => '<p class="c2-arrive-say">' + esc(p.say(T)) + '</p>').join('')
       + '<div class="c2-promos" style="--n:' + Math.max(1, Math.ceil(n / rows)) + ';--rows:' + rows + '">' + row + '</div>'
-      + '<p class="c2-arrive-foot">They join your deck for the rest of the campaign; it stays at ' + esc((run.deck || []).length) + ' cards.</p>'
+      + '<p class="c2-arrive-foot">They join your deck for the rest of the campaign; it now holds ' + esc((run.deck || []).length) + ' cards.</p>'
       + '<div class="c2-end-acts"><button type="button" class="c2-btn" data-act="go" data-autofocus>To the field</button></div></div>';
     const entry = open('arrival', html, { label: title });
     let done = false;

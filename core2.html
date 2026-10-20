@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="1d2a6ac626";if(location.protocol==="file:")return;try{fetch("core2-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core2:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="28df74a60d";if(location.protocol==="file:")return;try{fetch("core2-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core2:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="icon" href="data:,">
@@ -4982,6 +4982,13 @@ a.c2-btn { text-decoration: none; }
   .c2-won .c2-wonseal { display: none; }
   .c2-lau-n { font-size: 44px; }
 }
+
+/* 2026-10-20: an officer's diamond carries his power on his type's colour (light numerals, like a unit's shield) */
+.c2-b-diamond.c2-b-offpow b { color: #fff8e0; text-shadow: 0 0.6cqw 0 rgba(0, 0, 0, 0.6), 0 0 1.6cqw rgba(0, 0, 0, 0.5); font-family: var(--c2-serif); font-weight: 800; font-size: 11cqw; }
+
+/* 2026-10-20: the replace view's big "Back to the spoils" button (in place of the corner cross) */
+.c2-deck-back { display: flex; justify-content: center; margin: 8px 0 2px; }
+.c2-deck-back .c2-btn { min-height: 48px; padding: 0 28px; font-size: 18px; }
 </style>
 <!-- Cinzel: the banner titles only (Google Fonts, the one external file). -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap">
@@ -10695,7 +10702,7 @@ a.c2-btn { text-decoration: none; }
   //          'cav_ends' (cavalry on both ends, any units between), 'lines' (two Lines, each one
   //          type, of any types); badge: its short label for the formation book.
   //   line           3+ units of one type in a row or column
-  //   triad          one of each type, in a 2x2 square or 3 straight slots of a row / column
+  //   triad          one of each type, in a triangle inside a 2x2 square (2026-10-20: never a straight row)
   //   pincer         cavalry on both end tiles of a row or column, with at least one unit between
   //                  them; other pieces between are fine (members: the two cavalry and the units)
   //   square         a 2x2 block of one type
@@ -11439,7 +11446,7 @@ a.c2-btn { text-decoration: none; }
     });
     return out;
   }
-  /** Triads: one of each type inside a 2x2 square (every 3-set once) or 3 straight slots. */
+  /** Triads: one of each type inside a 2x2 square (every 3-set once): the triangle, never a straight row. */
   function triadsOf(cty) {
     const out = [], seen = {};
     for (const sq of SQUARES) {
@@ -11455,16 +11462,7 @@ a.c2-btn { text-decoration: none; }
         out.push({ id: 'triad', slots });
       }
     }
-    for (const L of LINES) {
-      for (let a = 0; a + 3 <= N; a++) {
-        const t0 = cty[L[a]], t1 = cty[L[a + 1]], t2 = cty[L[a + 2]];
-        if (t0 < 0 || t1 < 0 || t2 < 0 || ((1 << t0) | (1 << t1) | (1 << t2)) !== 7) continue;
-        const slots = sortNum(L.slice(a, a + 3)), key = slots.join(',');
-        if (seen[key]) continue;
-        seen[key] = 1;
-        out.push({ id: 'triad', slots });
-      }
-    }
+    // 2026-10-20 (user): 3 in a straight row are no Triad; only the triangle inside a 2x2
     return out;
   }
   const lineLenOf = (T) => (T.combo && T.combo.lineLen) || 3;
@@ -16430,8 +16428,11 @@ a.c2-btn { text-decoration: none; }
         + '<path d="M20,6.5 L33,11 V21 C33,30.5 27,36 20,39.5 Z" fill="#000" opacity=".2"/>'
         + '<path d="M9,12 Q20,7 31,12" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.2"/></svg><b>' + powerOf(card, T) + '</b></div>';
     }
+    // 2026-10-20 (user): an officer's diamond shows his power (by rank, like a unit's shield and a
+    // hero's laurel) on his type's colour; his x multiplier is in the card text
     if (card.kind === 'officer') {
-      return '<div class="c2-badge c2-b-diamond" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20,1.5 L38.5,20 L20,38.5 L1.5,20 Z" fill="url(#c2-gold)" stroke="#2a1a06" stroke-width="1.6"/><path d="M20,6.5 L33.5,20 L20,33.5 L6.5,20 Z" fill="#f3e2b0" stroke="#7a520f" stroke-width="1"/></svg><b>×' + officerMult(T, officerRank(card)) + '</b></div>';
+      const oc = TYPE_COL[card.type] || TYPE_COL.inf;
+      return '<div class="c2-badge c2-b-diamond c2-b-offpow" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20,1.5 L38.5,20 L20,38.5 L1.5,20 Z" fill="url(#c2-gold)" stroke="#2a1a06" stroke-width="1.6"/><path d="M20,6.5 L33.5,20 L20,33.5 L6.5,20 Z" fill="' + oc.mid + '" stroke="' + oc.dark + '" stroke-width="1"/><path d="M20,6.5 L33.5,20 L20,33.5 Z" fill="#000" opacity=".18"/></svg><b>' + powerOf({ rank: officerRank(card) }, T) + '</b></div>';
     }
     // every hero wears the laurel, with his power (by rank, like a unit's shield) inside it
     if (card.kind === 'hero') {
@@ -17891,7 +17892,10 @@ a.c2-btn { text-decoration: none; }
     if (!list.length) body = '<div class="c2-empty">No cards here.</div>';
     const tone = o.tone ? ' data-tone="' + esc(o.tone) + '"' : mode === 'remove' ? ' data-tone="crimson"' : '';
     const html = '<div class="c2-deck-head"><h2 class="c2-ribbon"' + tone + '>' + esc(title) + '</h2>'
-      + (o.head || '') + (o.sub ? '<div class="c2-deck-sub">' + esc(o.sub) + '</div>' : '') + (closable ? xBtn : '') + '</div>'
+      + (o.head || '') + (o.sub ? '<div class="c2-deck-sub">' + esc(o.sub) + '</div>' : '')
+      // 2026-10-20 (user): o.back {label} - a big button back to the screen underneath (the spoils),
+      // instead of the corner cross
+      + (o.back && closable ? '<div class="c2-deck-back"><button type="button" class="c2-btn c2-leather" data-backdeck>‹ ' + esc(o.back.label || 'Back') + '</button></div>' : '') + (closable && !o.back ? xBtn : '') + '</div>'
       + '<div class="c2-deck-scroll"><div class="c2-deck-groups">' + body + '</div></div>';
     let busy = false, fan = null;
     const entry = open(o.screen || 'deck', html, { label: title });
@@ -17915,6 +17919,8 @@ a.c2-btn { text-decoration: none; }
     entry.onBackdrop = shut;
     const xb = entry.ov.querySelector('[data-close]');
     if (xb) xb.addEventListener('click', shut);
+    const bb = entry.ov.querySelector('[data-backdeck]');
+    if (bb) bb.addEventListener('click', shut);
     // a click on the empty part of the scroll area is a backdrop click too
     entry.ov.querySelector('.c2-deck-scroll').addEventListener('click', (e) => { if (e.target === e.currentTarget || e.target.classList.contains('c2-grid') || e.target.classList.contains('c2-group') || e.target.classList.contains('c2-deck-groups')) shut(); });
     entry.ov.querySelector('.c2-deck-head').addEventListener('click', (e) => { if (e.target === e.currentTarget) shut(); });
@@ -18141,7 +18147,7 @@ a.c2-btn { text-decoration: none; }
       const name = Cards().nameOf(c);
       const deck = C.Run ? C.Run.deckList(run) : (run.deck || []);
       deckView(deck, {
-        mode: 'remove', levels,
+        mode: 'remove', levels, back: { label: 'Back to the spoils' },
         title: 'Choose a card to replace',
         sub: 'Taking ' + name + ' — your deck stays at ' + deck.length,
         onPick: (old, el) => {
