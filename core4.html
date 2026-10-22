@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="d0af793abc";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="89d5b8a7c9";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13293,6 +13293,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     const step1 = '<div class="plate wide spoils"><p class="kick">Battle ' + run.battle + ' won</p><h2>Spoils of victory</h2>' +
       '<p class="say">Take one: a card joins your deck in place of one of yours, or a general joins your six in place of one of them.</p>' +
       '<div class="orow">' + options.map(optHtml).join('') + '</div>' +
+      '<p class="say small holdhint">Press and hold a card or general to read what it does.</p>' +
       '<div class="acts">' + btn('refuse', 'Take nothing', 'quiet') + btn('deck', 'Your deck', 'quiet') + '</div></div>';
     const entry = open('offer', step1, { deal: '.orow > .pk' });
     bindLong(entry.ov, '.opt', (el) => { const o = options[+el.dataset.i]; return o.kind === 'general' ? { general: o } : { card: o }; }, T);
@@ -13308,6 +13309,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
         '<div><h2>' + (gen ? 'Which general leaves?' : 'Which card leaves?') + '</h2><p class="say">' +
         (gen ? esc(find(C.GENERALS, o.id).name) + ' joins your six at level 1. One of these three makes way.' : esc(Cards().nameOf(o)) + ' joins your deck. One of these three makes way.') + '</p></div></div>' +
         '<div class="grow">' + items + '</div>' +
+        '<p class="say small holdhint">Press and hold a card or general to read what it does.</p>' +
         '<div class="acts">' + btn('swap', 'Swap', 'primary', true) + btn('back', 'Back', 'quiet') + '</div></div>';
       Cards().fit(entry.ov);
       fitBody(entry.ov);
@@ -13658,6 +13660,8 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     { id: 'boss', when: (f) => f.boss },
     { id: 'drag', when: (f) => f.firstTurn },
     { id: 'generals', when: (f) => f.generals },
+    // 2026-10-22 (user): new players need to be told that holding anything shows what it does
+    { id: 'hold', when: (f) => f.placed != null },
     { id: 'home', when: (f) => (f.held === 'unit' || f.held === 'hero') && f.home, hold: true },
     { id: 'formation', when: (f) => f.formation, hold: true }
     // no tip for what has its own introduction screen: officers, heroes, engineers and forts
@@ -13818,6 +13822,8 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     f.generals = (st.generals || []).length > 0 && !!$('#stage .gens .g6');
     f.home = !!document.querySelector('#stage .tile.home');
     f.formation = !!document.querySelector('#stage .ftag');
+    const placed = Object.keys(st.pieces || {}).map(Number).filter((k) => st.pieces[k]);
+    f.placed = placed.length ? placed[0] : null;
     (st.offer || []).forEach((c) => { if (c) f.hand[c.kind] = true; });
     return f;
   }
@@ -13844,6 +13850,13 @@ var(--p2-cn) left top / 44px 44px no-repeat;
         return { target: fanTarget, side: ['top'], lines: ['Tap a card, then a lit tile.', 'Or drag the card onto the field.'] };
       case 'generals':
         return { target: () => $('#stage .gens .row'), side: ['bottom'], lines: ['Your generals this battle: violet ones teach a formation, amber ones boost.', 'Press and hold any card to read it.'] };
+      case 'hold': {
+        const slot = Object.keys(st.pieces || {}).map(Number).find((k) => st.pieces[k]);
+        return {
+          target: () => (slot != null ? tileTarget(slot) : null), side: ['top', 'right', 'left', 'bottom'],
+          lines: ['Press and hold anything to see what it does:', 'a soldier on the field, a card in your hand, a general.']
+        };
+      }
       case 'home': {
         const tiles = Array.from(document.querySelectorAll('#stage .tile'));
         const slot = tiles.findIndex((t) => t.classList.contains('home'));
@@ -13862,7 +13875,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     const top = () => { const ovs = document.querySelectorAll('.c2-ov:not(.is-out)'); return ovs[ovs.length - 1] || null; };
     const inScreen = (screen, sel) => () => { const o = top(); return o && o.getAttribute('data-screen') === screen ? o.querySelector(sel) : null; };
     switch (id) {
-      case 'swap': return { target: () => hug(inScreen('offer', '.orow')()), side: ['bottom', 'top'], lines: ['Take one: it replaces one of three you are shown.', 'A general replaces one of your six. Or take nothing.'] };
+      case 'swap': return { target: () => hug(inScreen('offer', '.orow')()), side: ['bottom', 'top'], lines: ['Take one: it replaces one of three you are shown.', 'Press and hold a card or general to read what it does.'] };
       case 'upgrade': return { target: () => hug(inScreen('upgrade', '.grow')()), side: ['bottom', 'top'], lines: ['One of these three units learns it, for good.', 'Or refuse it.'] };
       case 'promote': return { target: () => hug(inScreen('promote', '.grow')()), side: ['bottom', 'top'], lines: ['A promoted general is stronger in every battle he is dealt.'] };
     }
