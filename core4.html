@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="760caf3580";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="914f0c553f";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1747,6 +1747,10 @@ noscript p { position: fixed; inset: 40% 0 auto; text-align: center; font: 700 2
 .confirm { width: 520px; }
 .dlist { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 12px; margin-top: 10px; }
 .dsort { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 10px; }
+.dsort + .dsort { margin-top: 8px; }
+.dgrid { display: grid; grid-template-columns: repeat(4, 168px); justify-content: center; gap: 18px 12px; margin: 12px -16px 0; padding: 12px 8px 14px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.dgrid .dc { position: relative; cursor: pointer; }
+.dgrid .cnt { position: absolute; left: 50%; bottom: -10px; transform: translateX(-50%); min-width: 34px; height: 30px; padding: 0 7px; display: grid; place-items: center; border-radius: 999px; font: 900 18px/1 var(--face-num); color: #fff; background: #3a2508; box-shadow: 0 0 0 2px #e7bf5c; }
 .dsort > span { font: 700 17px/1 var(--face-title); letter-spacing: 0.08em; text-transform: uppercase; color: #7a520f; margin-right: 4px; }
 .ds { appearance: none; border: 0; cursor: pointer; min-height: 44px; padding: 0 14px; border-radius: 999px; font: 700 17px/1 var(--face-name); color: #3a2508; background: rgba(122, 82, 15, 0.1); box-shadow: inset 0 0 0 2px rgba(122, 82, 15, 0.4); }
 .ds.on { background: var(--brass-plate); box-shadow: 0 0 0 2px #5e3f0b; }
@@ -13188,7 +13192,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
  *   offer(run, cb)                    the spoils: cb({index, removeUid} | {index, replaceId} | {refuse})
  *   upgrade(run, cb)                  the training every 3 battles: cb({uid} | {refuse})
  *   runWon(sum, cb)                   the campaign won, with Laurels: cb('new')
- *   deckView(run)                     the deck (copies stacked, sortable: SORTS, remembered in 'ttf-core4:prefs') and, on its second tab, the generals' pool
+ *   deckView(run)                     the deck as card faces or rows (copies stacked, sortable: SORTS; both remembered in 'ttf-core4:prefs') and, on its second tab, the generals' pool
  *   book(st, run, tab?)               the reference (book.js)
  *   confirm(text, cb, {title, yes, no, link})
  *   close(), closeAll(), isOpen()
@@ -13609,32 +13613,53 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     });
     let tab = 'cards';
     let sort = SORTS.some((x) => x[0] === prefs.get('deckSort')) ? prefs.get('deckSort') : 'type';
+    let look = prefs.get('deckLook') === 'list' ? 'list' : 'cards';
     let shown = groups;
+    const pill = (act, key, on, label) => '<button type="button" class="ds' + (on ? ' on' : '') + '" data-act="' + act + '" data-' + act + '="' + key + '" aria-pressed="' + on + '">' + label + '</button>';
     const frame = () => '<div class="plate wide deckv"><div class="tabs">' +
       '<button type="button" class="tb' + (tab === 'cards' ? ' on' : '') + '" data-act="cards">Your deck · ' + list.length + '</button>' +
       '<button type="button" class="tb' + (tab === 'generals' ? ' on' : '') + '" data-act="generals">Your generals · ' + (run.generals || []).length + '</button></div>' +
       (tab === 'cards'
-        ? '<div class="dsort" role="group" aria-label="Sort the deck"><span>Sort</span>' + SORTS.map((x) => '<button type="button" class="ds' + (x[0] === sort ? ' on' : '') + '" data-act="sort" data-sort="' + x[0] + '" aria-pressed="' + (x[0] === sort) + '">' + x[1] + '</button>').join('') + '</div>' +
-        // a compact row per distinct card (its portrait, number and copies, its words in full):
-        // forty card faces only fit the plate shrunk past reading (a hold shows the full card)
-          '<div class="dlist">' + (shown = sortGroups(groups, sort, T)).map((g, i) => K.rowHtml(g.card, Object.assign({ tun: T, n: g.n, attrs: { 'data-i': i } }, deckWords(g.card, T)))).join('') + '</div>' +
+        ? '<div class="dsort" role="group" aria-label="Show the deck as"><span>Show</span>' + pill('look', 'cards', look === 'cards', 'Cards') + pill('look', 'list', look === 'list', 'List') + '</div>' +
+          '<div class="dsort" role="group" aria-label="Sort the deck"><span>Sort</span>' + SORTS.map((x) => pill('sort', x[0], x[0] === sort, x[1])).join('') + '</div>' +
+          ((shown = sortGroups(groups, sort, T)), look === 'cards'
+            // each distinct card's face at its readable size (copies stacked, the count on it); the
+            // grid scrolls inside the plate (capGrid) rather than the plate shrinking past reading
+            ? '<div class="dgrid">' + shown.map((g, i) => '<div class="dc" data-i="' + i + '">' + K.faceHtml(g.card, { w: K.MIN_FACE, tun: T }) + (g.n > 1 ? '<b class="cnt">×' + g.n + '</b>' : '') + '</div>').join('') + '</div>'
+            // or a compact row per distinct card (its portrait, number and copies, its words in full)
+            : '<div class="dlist">' + shown.map((g, i) => K.rowHtml(g.card, Object.assign({ tun: T, n: g.n, attrs: { 'data-i': i } }, deckWords(g.card, T)))).join('') + '</div>') +
           '<p class="say small">Press and hold a card to read it.</p>'
         : '<div class="gpool">' + (run.generals || []).map((g, i) => '<div class="gp" data-g="' + i + '">' + K.generalHtml(g, { w: 216, tun: T }) + '<p>' + esc(C.generalDesc(T, g.id, g.level || 1)) + '</p></div>').join('') + '</div>' +
           '<p class="say small">Each battle deals three of them.</p>') +
       '<div class="acts">' + btn('close', 'Close', 'primary') + '</div></div>';
     const entry = open('deck', frame(), { onEsc: () => close(entry) });
-    bindLong(entry.ov, '.dlist .c4row', (el) => ({ card: shown[+el.dataset.i].card }), T, true);
+    capGrid(entry.ov);
+    bindLong(entry.ov, '.dlist .c4row, .dgrid .dc', (el) => ({ card: shown[+el.dataset.i].card }), T, true);
     bindLong(entry.ov, '.gp', (el) => ({ general: run.generals[+el.dataset.g] }), T, true);
     onAct(entry, (act, el) => {
       if (act === 'sort') { sort = el.dataset.sort; prefs.set('deckSort', sort); }
+      if (act === 'look') { look = el.dataset.look; prefs.set('deckLook', look); }
       if (act === 'cards' || act === 'generals') tab = act;
-      if (act === 'cards' || act === 'generals' || act === 'sort') { entry.ov.querySelector('.ov-body').innerHTML = frame(); Cards().fit(entry.ov); fitBody(entry.ov); }
+      if (act === 'cards' || act === 'generals' || act === 'sort' || act === 'look') { entry.ov.querySelector('.ov-body').innerHTML = frame(); Cards().fit(entry.ov); capGrid(entry.ov); }
     });
     onAct(entry, (act) => { if (act === 'close') close(entry); });
     return entry;
   };
 
-  // ---- the deck view's sort (remembered per viewer: localStorage 'ttf-core4:prefs') ----------------
+  /** The deck view's card grid takes the plate's spare height and scrolls inside it (the one screen
+   *  that scrolls: forty faces only fit the stage shrunk past reading); then the usual fit. */
+  function capGrid(ov) {
+    const g = ov.querySelector('.dgrid'), body = ov.querySelector('.ov-body');
+    if (g && body) {
+      g.style.maxHeight = '';
+      body.style.transform = '';
+      const spare = host().offsetHeight - 24 - body.scrollHeight;
+      if (spare < 0) g.style.maxHeight = Math.max(260, g.offsetHeight + spare) + 'px';
+    }
+    fitBody(ov);
+  }
+
+  // ---- the deck view's sort and look (remembered per viewer: localStorage 'ttf-core4:prefs') --------
   const SORTS = [['type', 'Type'], ['power', 'Power'], ['rank', 'Rank'], ['xp', 'Next rank'], ['kind', 'Kind'], ['new', 'Newest']];
   S.SORTS = SORTS;
   const prefs = {
