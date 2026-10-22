@@ -12,10 +12,10 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap">
 <!--
   site/index.html - the public play page's home screen (morguloth.github.io/ttf-play): pick a
-  campaign. Built into the Pages clone by tools/build-pages.js next to core2.html / core3.html.
-  Raw Recruits = Core 3 (the army grows as card kinds are introduced); Full Muster = Core 2
-  (everything from battle 1). It reads each game's saved run (ttf-core2:run / ttf-core3:run, same
-  origin) only to say "Battle N in progress"; it never writes storage.
+  campaign. Built into the Pages clone by tools/build-pages.js next to core4.html / core3.html.
+  Council of War = Core 4 (featured; PLAN 53-56: generals dealt per battle); Raw Recruits = Core 3
+  (legacy). Full Muster (core2.html) stays on Pages, unlinked. It reads each game's saved run
+  (ttf-core4:run / ttf-core3:run, same origin) only to say "Battle N in progress"; it never writes storage.
 -->
 <style>
 :root {
@@ -141,6 +141,21 @@ footer { margin-top: auto; padding-top: 36px; font-size: 13px; color: var(--text
   main { grid-template-columns: minmax(0, 380px); }
   .art { max-width: 190px; margin-top: 12px; }
 }
+/* Core 4 featured, Core 3 below as a smaller legacy card (2026-10-22) */
+main { grid-template-columns: minmax(0, 560px); max-width: 600px; }
+.camp[data-tone="royal"] { --r1: #6a5fb0; --r2: #3a2f7a; --r3: #221a4f; --rink: #fff4d6; }
+.camp.feature { background: linear-gradient(160deg, #f7e2a4, #deb24a 40%, #86601a); box-shadow: 0 0 0 1px #2a1a06, 0 2px 2px rgba(10,5,0,.45), 0 14px 22px -6px rgba(10,5,0,.6), 0 34px 50px -18px rgba(6,3,0,.8), 0 0 70px -14px rgba(var(--lamp), .45); }
+.camp.feature .name { font-size: clamp(24px, 4vw, 32px); }
+.camp.feature .desc { font-size: 17.5px; }
+.camp.feature .go { font-size: 20px; min-height: 50px; padding: 0 36px; }
+.ribbon { position: absolute; z-index: 2; top: -12px; right: 18px; padding: 4px 14px; font-family: var(--banner); font-weight: 700; font-size: 15px; letter-spacing: .08em; color: #2a1a06; background: var(--brass-plate); box-shadow: 0 0 0 1px #4a300a, 0 4px 6px rgba(10,5,0,.5); clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%); }
+.camp.feature .face { position: relative; }
+.camp.legacy { filter: saturate(.8); }
+.camp.legacy .face { padding-bottom: 16px; }
+.camp.legacy .name { font-size: clamp(18px, 2.6vw, 22px); }
+.camp.legacy .desc { font-size: 16px; }
+.camp.legacy .go { min-height: 44px; font-size: 17px; }
+@media (min-width: 641px) and (max-height: 860px) { main { grid-template-columns: minmax(0, 480px) minmax(0, 340px); max-width: 880px; align-items: start; } }
 @media (prefers-reduced-motion: reduce) { .camp { transition: none; } .camp:hover { transform: none; } }
 </style>
 </head>
@@ -157,47 +172,38 @@ footer { margin-top: auto; padding-top: 36px; font-size: 13px; color: var(--text
 </header>
 
 <main>
-  <a class="camp" data-tone="verdigris" href="core3.html" data-key="ttf-core3:run">
+  <a class="camp feature" data-tone="royal" href="core4.html" data-key="ttf-core4:run">
     <div class="face">
-      <div class="name">Raw Recruits</div>
+      <div class="ribbon">New</div>
+      <div class="name">Council of War</div>
       <svg class="art" viewBox="0 0 230 110" aria-hidden="true">
-        <ellipse cx="115" cy="98" rx="100" ry="9" fill="rgba(94,63,11,.18)"/>
-        <g fill="#3b6f66" stroke="#1f4741" stroke-width="2">
-          <rect x="62" y="52" width="26" height="40" rx="5"/><circle cx="75" cy="40" r="10"/>
-          <rect x="102" y="48" width="26" height="44" rx="5"/><circle cx="115" cy="36" r="10"/>
-          <rect x="142" y="52" width="26" height="40" rx="5"/><circle cx="155" cy="40" r="10"/>
+        <ellipse cx="115" cy="98" rx="104" ry="9" fill="rgba(94,63,11,.18)"/>
+        <path d="M70 92 V52 L115 30 L160 52 V92 Z" fill="#e9dcc0" stroke="#5e3f0b" stroke-width="2"/>
+        <path d="M70 52 L115 30 L160 52" fill="none" stroke="#a3322f" stroke-width="4"/>
+        <path d="M104 92 V66 Q115 58 126 66 V92 Z" fill="#5e3f0b"/>
+        <g stroke="#5e3f0b" stroke-width="3" stroke-linecap="round"><path d="M115 30 V6"/><path d="M40 92 V34"/><path d="M190 92 V34"/></g>
+        <path d="M115 8 L140 14 L115 21 Z" fill="#deb24a" stroke="#5e3f0b" stroke-width="1.5"/>
+        <path d="M40 36 L60 41 L40 47 Z" fill="#3a2a7a" stroke="#5e3f0b" stroke-width="1.5"/>
+        <path d="M190 36 L210 41 L190 47 Z" fill="#c26a1c" stroke="#5e3f0b" stroke-width="1.5"/>
+        <g fill="#2f3d6e" stroke="#16203f" stroke-width="2">
+          <rect x="30" y="64" width="20" height="28" rx="4"/><circle cx="40" cy="56" r="7"/>
+          <rect x="180" y="64" width="20" height="28" rx="4"/><circle cx="190" cy="56" r="7"/>
         </g>
-        <g stroke="#5e3f0b" stroke-width="3" stroke-linecap="round"><path d="M92 92 V20"/><path d="M132 92 V16"/><path d="M172 92 V24"/></g>
-        <path d="M132 18 L158 24 L132 32 Z" fill="#a3322f" stroke="#5e3f0b" stroke-width="1.5"/>
       </svg>
-      <p class="tag">Guided introduction</p>
-      <p class="desc">Every new card replaces one of <b>three drawn at random</b> from your deck, and every upgrade goes to one of three random soldiers: make the most of what fate hands you. Officers, heroes, engineers and Drills are introduced one at a time as the campaign marches on.</p>
-      <p class="meta">30 battles · 40-card deck · random 3 from deck</p>
+      <p class="tag">Three generals take the field</p>
+      <p class="desc">Six generals serve you, and each battle <b>three are dealt</b> to command it: one teaches your troops a formation, another doubles your cavalry, a rare one multiplies the whole day. Draft soldiers turn by turn, raise veterans into <b>Knights, Pikemen and Longbowmen</b>, and promote the generals who carried you through.</p>
+      <p class="meta">30 battles · 3 of 6 generals each battle · best on iPad, upright</p>
       <p class="progress" aria-live="polite"></p>
-      <span class="go">March</span>
+      <span class="go">Take command</span>
     </div>
   </a>
 
-  <a class="camp" data-tone="crimson" href="core2.html" data-key="ttf-core2:run">
+  <a class="camp legacy" data-tone="verdigris" href="core3.html" data-key="ttf-core3:run">
     <div class="face">
-      <div class="name">Full Muster</div>
-      <svg class="art" viewBox="0 0 230 110" aria-hidden="true">
-        <ellipse cx="115" cy="98" rx="104" ry="9" fill="rgba(94,63,11,.18)"/>
-        <g fill="#7a1f1f" stroke="#3e0c09" stroke-width="2">
-          <rect x="22" y="58" width="22" height="34" rx="4"/><circle cx="33" cy="48" r="8"/>
-          <rect x="52" y="54" width="22" height="38" rx="4"/><circle cx="63" cy="44" r="8"/>
-          <rect x="156" y="54" width="22" height="38" rx="4"/><circle cx="167" cy="44" r="8"/>
-          <rect x="186" y="58" width="22" height="34" rx="4"/><circle cx="197" cy="48" r="8"/>
-        </g>
-        <path d="M84 92 V60 L100 50 V38 H130 V50 L146 60 V92 Z" fill="#8b867b" stroke="#4a463e" stroke-width="2"/>
-        <path d="M100 38 v-6 h7 v6 m8 0 v-6 h7 v6" stroke="#4a463e" stroke-width="2" fill="#8b867b"/>
-        <g stroke="#5e3f0b" stroke-width="3" stroke-linecap="round"><path d="M115 38 V8"/></g>
-        <path d="M115 10 L142 16 L115 24 Z" fill="#deb24a" stroke="#5e3f0b" stroke-width="1.5"/>
-        <path d="M30 22 l4 -9 l4 9 l9 1 l-7 6 l2 9 l-8 -5 l-8 5 l2 -9 l-7 -6 z" fill="#deb24a" stroke="#5e3f0b" stroke-width="1.2"/>
-      </svg>
-      <p class="tag">Every card from battle one</p>
-      <p class="desc">You choose <b>exactly which card</b> each new one replaces, and which soldier each upgrade goes to, from your whole deck. Units, officers, heroes and engineers all take the field from the first battle.</p>
-      <p class="meta">30 battles · 40-card deck · full deck control</p>
+      <div class="name">Raw Recruits</div>
+      <p class="tag">Legacy · the formation ladder</p>
+      <p class="desc">The earlier version: every formation always counts and climbs a ladder of multipliers, each new card replaces one of <b>three drawn at random</b> from your deck, and officers, heroes and engineers arrive one at a time.</p>
+      <p class="meta">30 battles · 40-card deck · stars and orders</p>
       <p class="progress" aria-live="polite"></p>
       <span class="go">March</span>
     </div>
