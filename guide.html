@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070605">
+<title>Quick Start · Take the Field</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap">
+<!--
+  site/guide.html - the testers' quick start for Council of War (Core 4), linked from the home
+  screen. Plain reference text: it reads and writes no storage. The numbers are the defaults of
+  core4/js/tunables.js on 2026-10-22; re-check them when the tunables move.
+-->
+<style>
+:root {
+  --serif: "Palatino Linotype", "Book Antiqua", Palatino, "Iowan Old Style", Georgia, serif;
+  --banner: "Cinzel", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  --stage: #070605;
+  --lamp: 255, 170, 82;
+  --text: #eee0c0;
+  --text-dim: #a58f6b;
+  --gold: #f3d27a;
+  --ink: #241a0f;
+  --ink-dim: #5c4a30;
+  --crimson: #7a1f1f;
+  --parch-lit: #fbf2d8;
+  --parch: #f0e2bd;
+  --parch-shade: #dcc592;
+  --brass-plate: linear-gradient(180deg, #f7e2a4 0%, #deb24a 38%, #b0822a 72%, #86601a 100%);
+  --inf: #a3322f;
+  --arc: #3b6f66;
+  --cav: #3a2f7a;
+  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .38 0 0 0 0 .26 0 0 0 0 .1 0 0 0 .34 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: var(--serif); color: var(--text); line-height: 1.5; font-size: 17px;
+  background:
+    radial-gradient(ellipse 70% 40% at 50% 0%, rgba(var(--lamp), 0.18), transparent 70%),
+    var(--stage);
+  padding: max(20px, env(safe-area-inset-top)) 16px max(32px, env(safe-area-inset-bottom));
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 760px; margin: 0 auto; }
+
+.back {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 4px;
+  color: var(--gold); text-decoration: none; font-variant: small-caps; letter-spacing: .08em; font-weight: 700;
+}
+.back:hover, .back:focus-visible { text-decoration: underline; }
+
+header { text-align: center; margin: 4px 0 22px; }
+h1 {
+  display: inline-block; margin: 0; padding: 10px clamp(30px, 6vw, 52px) 12px;
+  font-family: var(--banner); font-weight: 700; font-size: clamp(26px, 6vw, 42px); letter-spacing: .06em;
+  color: #2a1a06; text-shadow: 0 1px 0 rgba(255,245,210,.75);
+  background: linear-gradient(180deg, rgba(255,255,255,.28), transparent 45%, rgba(0,0,0,.18)), var(--brass-plate);
+  box-shadow: 0 0 0 1px #4a300a, inset 0 1px 0 rgba(255,252,225,.8), 0 10px 18px -4px rgba(10,5,0,.75);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 20px) 50%, 100% 100%, 0 100%, 20px 50%);
+}
+.kicker { margin: 14px 0 0; font-variant: small-caps; font-weight: 600; letter-spacing: .12em; color: var(--gold); }
+.lede { margin: 10px auto 0; max-width: 560px; color: var(--text-dim); font-style: italic; }
+
+nav.toc { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 8px; margin: 0 0 22px; }
+nav.toc a {
+  display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border-radius: 18px;
+  font-size: 15px; color: var(--text); text-decoration: none; border: 1px solid rgba(214,172,88,.34);
+}
+nav.toc a:hover, nav.toc a:focus-visible { background: rgba(214,172,88,.14); }
+
+section {
+  margin: 0 0 18px; padding: 18px clamp(16px, 4vw, 26px) 20px; border-radius: 10px; color: var(--ink);
+  background: var(--noise), radial-gradient(ellipse at 50% 20%, var(--parch-lit), var(--parch) 60%, var(--parch-shade));
+  box-shadow: 0 0 0 1px #2a1a06, inset 0 0 0 1px rgba(94,63,11,.55), inset 0 0 0 4px rgba(251,242,216,.5), 0 14px 22px -8px rgba(10,5,0,.7);
+}
+h2 {
+  margin: 0 0 10px; font-family: var(--banner); font-weight: 700; font-size: clamp(19px, 3.6vw, 24px); letter-spacing: .04em; color: var(--crimson);
+  display: flex; align-items: baseline; gap: 10px;
+}
+h2 .n {
+  flex: none; display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
+  font-size: 16px; color: #2a1a06; background: var(--brass-plate); box-shadow: 0 0 0 1px #4a300a;
+}
+h3 { margin: 16px 0 6px; font-size: 17px; font-variant: small-caps; letter-spacing: .08em; color: var(--ink-dim); }
+p { margin: 0 0 10px; }
+ul, ol { margin: 0 0 10px; padding-left: 22px; }
+li { margin: 0 0 6px; }
+b, strong { color: var(--crimson); }
+.dim { color: var(--ink-dim); font-size: 15px; }
+
+.tip {
+  margin: 12px 0 0; padding: 10px 14px; border-left: 4px solid #b0822a; border-radius: 4px;
+  background: rgba(176,130,42,.14); font-size: 16px;
+}
+.tip::before { content: "Tip · "; font-weight: 700; font-variant: small-caps; letter-spacing: .06em; color: #86601a; }
+
+table { width: 100%; border-collapse: collapse; margin: 6px 0 10px; font-size: 16px; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid rgba(94,63,11,.22); vertical-align: top; }
+th { font-variant: small-caps; letter-spacing: .06em; color: var(--ink-dim); font-weight: 700; }
+td.num { white-space: nowrap; font-weight: 700; }
+
+.chip { display: inline-block; padding: 0 8px; border-radius: 4px; color: #fff4d6; font-weight: 700; font-size: 15px; line-height: 1.6; }
+.chip.inf { background: var(--inf); } .chip.arc { background: var(--arc); } .chip.cav { background: var(--cav); }
+
+/* the formation cards: a mini board drawn from data-shape (rows split by "/") */
+.forms { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 8px 0 6px; }
+.form { display: flex; gap: 12px; align-items: flex-start; padding: 10px; border-radius: 8px; background: rgba(255,250,235,.55); box-shadow: inset 0 0 0 1px rgba(94,63,11,.25); }
+.form .mini { flex: none; display: grid; gap: 3px; }
+.form .mini i { width: 18px; height: 18px; border-radius: 3px; display: grid; place-items: center; font-style: normal; font-size: 11px; font-weight: 700; color: #fff4d6; }
+.form .mini i.I { background: var(--inf); } .form .mini i.A { background: var(--arc); } .form .mini i.C { background: var(--cav); }
+.form .mini i.X { background: #8a7550; } .form .mini i.o { background: rgba(94,63,11,.12); }
+.form b { display: block; font-size: 16px; }
+.form span { display: block; font-size: 14.5px; color: var(--ink-dim); line-height: 1.35; }
+.form em { font-style: normal; font-weight: 700; color: #86601a; }
+
+.flow { counter-reset: s; list-style: none; padding: 0; }
+.flow li { counter-increment: s; position: relative; padding-left: 34px; }
+.flow li::before {
+  content: counter(s); position: absolute; left: 0; top: 1px; width: 24px; height: 24px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 13px; font-weight: 700; color: #fff4d6; background: var(--crimson);
+}
+
+.btns { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin: 6px 0 4px; }
+.btns div { padding: 8px 10px; border-radius: 6px; background: rgba(255,250,235,.55); box-shadow: inset 0 0 0 1px rgba(94,63,11,.25); font-size: 15px; }
+.btns b { display: block; font-variant: small-caps; letter-spacing: .06em; }
+
+.cta { text-align: center; margin: 26px 0 8px; }
+.cta a {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 50px; padding: 0 36px; border-radius: 6px;
+  font-weight: 700; font-size: 20px; letter-spacing: .05em; font-variant: small-caps; text-decoration: none;
+  color: #2a1a06; text-shadow: 0 1px 0 rgba(255,245,210,.7);
+  background: linear-gradient(180deg, rgba(255,255,255,.3), transparent 50%), var(--brass-plate);
+  box-shadow: 0 0 0 1px #4a300a, inset 0 1px 0 rgba(255,252,225,.85), inset 0 -2px 0 rgba(90,60,10,.45), 0 4px 6px rgba(10,5,0,.45);
+}
+footer { margin-top: 18px; text-align: center; font-size: 14px; color: var(--text-dim); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">&#8592; Campaigns</a>
+
+  <header>
+    <h1>Quick Start</h1>
+    <p class="kicker">Council of War · how to play in five minutes</p>
+    <p class="lede">Everything you need for your first few battles. The game explains the rest as it comes up, and you can press and hold anything to read exactly what it does.</p>
+  </header>
+
+  <nav class="toc" aria-label="Sections">
+    <a href="#goal">The goal</a><a href="#battle">A battle</a><a href="#score">Scoring</a><a href="#generals">Generals</a>
+    <a href="#formations">Formations</a><a href="#between">Between battles</a><a href="#leaders">New card types</a><a href="#tips">Tips</a><a href="#controls">Controls</a>
+  </nav>
+
+  <section id="goal">
+    <h2><span class="n">1</span>The goal</h2>
+    <p>Win a campaign of <b>30 battles</b>. Each battle has a <b>target score</b>; reach it to win. Targets start low (40 in battle 1) and climb as your army grows.</p>
+    <p>Lose a battle and you <b>retry it</b>: same board, freshly shuffled deck. Nothing is lost; a retried win just earns half the Laurels (your run score). After every two failed retries you get a fresh set of generals.</p>
+  </section>
+
+  <section id="battle">
+    <h2><span class="n">2</span>A battle in 30 seconds</h2>
+    <ol class="flow">
+      <li>The board is a <b>4×4 grid of terrain</b>: forest, hills, plains and fields.</li>
+      <li>You get <b>8 turns</b>. Each turn, <b>3 cards</b> are dealt from your deck.</li>
+      <li><b>Pick one and place it</b> on an empty tile: tap the card then a lit tile, or drag it. The other two go to the bottom of the deck.</li>
+      <li>After 8 placements the board scores. Beat the target and you win.</li>
+    </ol>
+    <p class="dim">8 cards on 16 tiles: half the board stays empty, so <em>where</em> you put things matters as much as what you pick.</p>
+    <div class="tip">Made a mistake? <b>Undo</b> (bottom-left) takes back placements. Use it freely to try ideas.</div>
+  </section>
+
+  <section id="score">
+    <h2><span class="n">3</span>How units score</h2>
+    <p>Your deck starts as 30 plain soldiers: 10 each of <span class="chip inf">Infantry</span> <span class="chip arc">Archers</span> <span class="chip cav">Cavalry</span>. Each placed unit scores its <b>power</b>, then multipliers stack on top.</p>
+    <table>
+      <tr><th>Thing</th><th>Effect</th></tr>
+      <tr><td>Rank</td><td>Base power: rank 1 = <b>2</b>, rank 2 = <b>4</b>, rank 3 = <b>7</b>, rank 4 = <b>12</b>. Units earn XP from battles they win and rank up.</td></tr>
+      <tr><td>Home terrain</td><td class="num">×2</td></tr>
+      <tr><td colspan="2" class="dim" style="padding-top:0"><span class="chip inf">Infantry</span> forest · <span class="chip arc">Archers</span> hills · <span class="chip cav">Cavalry</span> plains · fields are nobody's home</td></tr>
+      <tr><td>Fort</td><td class="num">×3.5 <span class="dim">(built by Engineers, from battle 4)</span></td></tr>
+      <tr><td>Formations</td><td>A <b>bonus on top</b>, but only for formations your generals teach (next section).</td></tr>
+    </table>
+    <div class="tip">Home terrain is the easiest double there is. When you hold a unit, its home tiles glow.</div>
+  </section>
+
+  <section id="generals">
+    <h2><span class="n">4</span>Generals: the heart of the game</h2>
+    <p>You have a pool of <b>6 generals</b> (picked at random when you start). Each battle, <b>3 of them are dealt</b> and stand above the board. They decide how this battle scores, so <b>read them before your first placement</b>.</p>
+    <h3>Two kinds</h3>
+    <ul>
+      <li><b>Teachers</b> (Captains) make one <b>formation</b> live for the battle. A formation only scores if a dealt general teaches it.</li>
+      <li><b>Boosters</b> buff something: e.g. <i>Sergeant of Foot</i> (Infantry +power), <i>Steward</i> (home terrain bigger than ×2), <i>Quartermaster</i> (units <em>not</em> in a formation ×N). Rare ones like <i>Tactician</i> multiply the whole battle.</li>
+    </ul>
+    <p>Generals level up when you <b>promote</b> them (after boss wins), and you can win new ones in the spoils.</p>
+    <div class="tip">Press and hold a general to read its exact rule at its current level. <b>Info</b> (bottom-right) lists all your generals and every formation with a diagram.</div>
+  </section>
+
+  <section id="formations">
+    <h2><span class="n">5</span>Formations</h2>
+    <p>A formation adds a percentage of its members' points. Bigger shapes pay more. Units in a formation still score their own value too, and one unit can be part of several different formations.</p>
+    <div class="forms">
+      <div class="form"><div class="mini" data-shape="IA/Co"></div><div><b>Triad</b><span>1 of each type, touching · <em>+60%</em></span></div></div>
+      <div class="form"><div class="mini" data-shape="CC/Ao"></div><div><b>Raiding Party</b><span>2 Cavalry + 1 Archers, touching · <em>+35%</em></span></div></div>
+      <div class="form"><div class="mini" data-shape="III"></div><div><b>Shield Wall</b><span>3 Infantry in a straight line · <em>+125%</em></span></div></div>
+      <div class="form"><div class="mini" data-shape="CC/Co"></div><div><b>Wedge</b><span>3 Cavalry in an L · <em>+65%</em></span></div></div>
+      <div class="form"><div class="mini" data-shape="CXXC"></div><div><b>Pincer</b><span>Cavalry at both ends of a row/column, units between · <em>+45%</em></span></div></div>
+      <div class="form"><div class="mini" data-shape="AA/II"></div><div><b>Covered Archers</b><span>2 Archers + 2 Infantry, touching · <em>+95%</em></span></div></div>
+      <div class="form"><div class="mini" data-shape="ICA/ACI"></div><div><b>Combined Arms</b><span>2 of each type filling a 2×3 block, any order · <em>+135%</em></span></div></div>
+      <div class="form"><div class="mini" data-shape="CoC/III"></div><div><b>Hammer and Anvil</b><span>A Shield Wall + 2 Cavalry touching it · <em>+130%</em></span></div></div>
+      <div class="form"><div class="mini" data-shape="III/AAA"></div><div><b>Battle Line</b><span>3 Infantry in a line, 3 Archers right beside them · <em>+280%</em></span></div></div>
+    </div>
+    <p class="dim">Percentages are at level 1 and still being tuned. "Touching" means up, down, left or right, not diagonal.</p>
+    <div class="tip">Plan the shape on turn 1. You only get 8 placements, so pick tiles that let a formation land on home terrain too.</div>
+  </section>
+
+  <section id="between">
+    <h2><span class="n">6</span>Between battles</h2>
+    <ul>
+      <li><b>Spoils</b> (after every win): choose 1 of 3 rewards, a new card or occasionally a general. A new card <b>replaces</b> one of 3 random cards in your deck, so your deck stays at its size. You can always refuse.</li>
+      <li><b>Upgrade</b> (every 3 battles): a trait to give to one of your units, such as <i>Rally</i>, <i>Banner</i> or <i>Sure-footed</i>, or a <b>kind</b> like Knights, Pikemen or Longbowmen.</li>
+      <li><b>Boss battles</b> (every 5th): a twist such as fog, a blocked tile, a closed row or only 7 turns. Win one and you <b>promote</b> one of its generals a level.</li>
+    </ul>
+    <p class="dim">Tap <b>Deck</b> any time to see every card you own and your generals' pool.</p>
+  </section>
+
+  <section id="leaders">
+    <h2><span class="n">7</span>New card types (battles 2 to 4)</h2>
+    <p>Each one arrives with its own introduction screen and joins your deck.</p>
+    <table>
+      <tr><th>Battle</th><th>Arrives</th><th>What it does</th></tr>
+      <tr><td class="num">2</td><td><b>Officers</b></td><td>Multiply every unit of their type in their shape (shown on the card). Play one on an empty tile to stand alone, or on a unit to command it.</td></tr>
+      <tr><td class="num">3</td><td><b>Heroes</b></td><td>Units that start at rank 2 with a special rule, e.g. <i>Vanguard</i> is huge if played in the first two turns.</td></tr>
+      <tr><td class="num">4</td><td><b>Engineers</b></td><td>Build a <b>fort</b> on an empty tile (×3.5 for the unit that stands on it). Costs a turn, but the tile stays free.</td></tr>
+    </table>
+  </section>
+
+  <section id="tips">
+    <h2><span class="n">8</span>First-run tips</h2>
+    <ul>
+      <li><b>Read the 3 dealt generals first.</b> They tell you which formation to build and which units are worth the most this battle.</li>
+      <li><b>Home terrain is free points.</b> A rank-1 unit at home is worth as much as a rank-2 unit anywhere else.</li>
+      <li><b>Don't chase every formation.</b> One solid formation on good terrain usually beats two half-built ones.</li>
+      <li><b>Press and hold</b> any card, tile, general or formation tag to see exactly what it does.</li>
+      <li><b>Losing is normal.</b> Retries are free; experiment with Undo and learn the board.</li>
+      <li>Upgrades and kinds go furthest on units you'll keep drawing, so spread them around rather than stacking one card.</li>
+    </ul>
+  </section>
+
+  <section id="controls">
+    <h2><span class="n">9</span>Controls &amp; setup</h2>
+    <div class="btns">
+      <div><b>Undo</b>Take back a placement</div>
+      <div><b>Deck</b>Your cards and generals</div>
+      <div><b>Info</b>Formations &amp; generals reference</div>
+      <div><b>Menu</b>Quit the campaign, choose another, reset tips</div>
+    </div>
+    <ul>
+      <li>Best on an <b>iPad held upright</b>. Phones work too, also upright.</li>
+      <li>Your progress <b>saves in this browser</b> automatically. A different browser or device starts fresh.</li>
+      <li>Add the home page to your home screen to play full-screen.</li>
+    </ul>
+  </section>
+
+  <div class="cta"><a href="core4.html">Take command</a></div>
+  <footer>Spotted a bug, a confusing rule, or a battle that felt unwinnable? Note the battle number and what you were trying to do. That's exactly what we need.</footer>
+</div>
+
+<script>
+// draw each formation's mini board from data-shape: rows split by "/", I A C = a type, X = any unit, o = empty
+document.querySelectorAll('.mini[data-shape]').forEach(function (el) {
+  var rows = el.getAttribute('data-shape').split('/');
+  el.style.gridTemplateColumns = 'repeat(' + rows[0].length + ', 18px)';
+  el.setAttribute('aria-hidden', 'true');
+  rows.join('').split('').forEach(function (c) {
+    var i = document.createElement('i');
+    i.className = c;
+    i.textContent = c === 'o' ? '' : c === 'X' ? '?' : c;
+    el.appendChild(i);
+  });
+});
+</script>
+</body>
+</html>
