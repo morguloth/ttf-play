@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="914f0c553f";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="ad8b70c954";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -870,7 +870,7 @@ body[data-theme="battlefield"] .slot-decor .dio-fog .dio-st {
 </style>
 <style>
 /* ==========================================================================
-   core4/css/core4.css - the Core 4 page (docs/P53-CORE4.md §8). The first part is the
+   core4/css/core4.css - the Core 4 page (docs/P53-CORE4.md .pk .xpl, 8). The first part is the
    approved mock's stylesheet (core4-mock/mock.css: the stage, the band, the board and its
    miniatures, the hand, the Core 4 card face .c4, the generals' grand cards .g6, the reveal,
    the rotate screen), portrait only; the second part is the game's own (lit tiles and the
@@ -1749,8 +1749,7 @@ noscript p { position: fixed; inset: 40% 0 auto; text-align: center; font: 700 2
 .dsort { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 10px; }
 .dsort + .dsort { margin-top: 8px; }
 .dgrid { display: grid; grid-template-columns: repeat(4, 168px); justify-content: center; gap: 18px 12px; margin: 12px -16px 0; padding: 12px 8px 14px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
-.dgrid .dc { position: relative; cursor: pointer; }
-.dgrid .cnt { position: absolute; left: 50%; bottom: -10px; transform: translateX(-50%); min-width: 34px; height: 30px; padding: 0 7px; display: grid; place-items: center; border-radius: 999px; font: 900 18px/1 var(--face-num); color: #fff; background: #3a2508; box-shadow: 0 0 0 2px #e7bf5c; }
+.dgrid .dc { position: relative; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .dsort > span { font: 700 17px/1 var(--face-title); letter-spacing: 0.08em; text-transform: uppercase; color: #7a520f; margin-right: 4px; }
 .ds { appearance: none; border: 0; cursor: pointer; min-height: 44px; padding: 0 14px; border-radius: 999px; font: 700 17px/1 var(--face-name); color: #3a2508; background: rgba(122, 82, 15, 0.1); box-shadow: inset 0 0 0 2px rgba(122, 82, 15, 0.4); }
 .ds.on { background: var(--brass-plate); box-shadow: 0 0 0 2px #5e3f0b; }
@@ -2016,14 +2015,14 @@ noscript p { position: fixed; inset: 40% 0 auto; text-align: center; font: 700 2
 .rv-boom.calm .ring, .rv-boom.calm .sparks, .rv-flash.calm { display: none; }
 
 /* ---- item 2: a unit's XP under it in the replace and training pickers ------------------------ */
-.pk .xpl { display: flex; flex-direction: column; align-items: center; gap: 5px; font: 700 17px/1 var(--face-name); color: #3a2508; }
-.pk .xpl .xpb { position: relative; width: 120px; height: 10px; border-radius: 999px; overflow: hidden; background: #3a2b1d; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.7), 0 0 0 1.5px #7a520f; }
-.pk .xpl .xpb > i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: linear-gradient(180deg, #e8ffd0, #8fd06a 45%, #3f7a2e); }
-.pk .xpl.near { color: #24561a; }
-.pk .xpl.near .xpb { box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.7), 0 0 0 1.5px #3f7a2e, 0 0 10px 2px rgba(143, 208, 106, 0.8); }
-.pk .xpl.top { color: #7a520f; }
-.pk .xpl em { font-style: normal; font-size: 16px; color: #6b5536; }
-.pk .xpl.near em { color: #24561a; font-weight: 700; }
+.pk .xpl, .dc .xpl { display: flex; flex-direction: column; align-items: center; gap: 5px; font: 700 17px/1 var(--face-name); color: #3a2508; }
+.pk .xpl .xpb, .dc .xpl .xpb { position: relative; width: 120px; height: 10px; border-radius: 999px; overflow: hidden; background: #3a2b1d; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.7), 0 0 0 1.5px #7a520f; }
+.pk .xpl .xpb > i, .dc .xpl .xpb > i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: linear-gradient(180deg, #e8ffd0, #8fd06a 45%, #3f7a2e); }
+.pk .xpl.near, .dc .xpl.near { color: #24561a; }
+.pk .xpl.near .xpb, .dc .xpl.near .xpb { box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.7), 0 0 0 1.5px #3f7a2e, 0 0 10px 2px rgba(143, 208, 106, 0.8); }
+.pk .xpl.top, .dc .xpl.top { color: #7a520f; }
+.pk .xpl em, .dc .xpl em { font-style: normal; font-size: 16px; color: #6b5536; }
+.pk .xpl.near em, .dc .xpl.near em { color: #24561a; font-weight: 700; }
 
 /* ---- item 6: "Fresh orders" (the generals re-dealt after 2 failed retries) --------------------- */
 .fresh .grow .g6 { animation: dealin 520ms cubic-bezier(.2, 1.3, .4, 1) both; }
@@ -2033,7 +2032,7 @@ noscript p { position: fixed; inset: 40% 0 auto; text-align: center; font: 700 2
 @media (prefers-reduced-motion: reduce) { .fresh .grow .g6 { animation: none; } }
 
 /* ==========================================================================
-   The polish pass (2026-10-22, docs/P53-CORE4.md §8 "Finish"): one walnut / brass / parchment
+   The polish pass (2026-10-22, docs/P53-CORE4.md .pk .xpl, 8 "Finish"): one walnut / brass / parchment
    system on every screen, a lit table, and a few CSS-first motions. Nothing here moves or
    resizes a layout box (the fits, the hand's cover and the text checks stand as measured):
    only backgrounds, shadows, transforms and opacity. Every motion stops under reduced motion,
@@ -2236,7 +2235,7 @@ noscript p { position: fixed; inset: 40% 0 auto; text-align: center; font: 700 2
    at least 18 px in a darker ink, since a desktop window shows the column scaled down. This one
    applies everywhere, the iPad included. */
 :root { --ink-note: #3b2a14; }
-.plate .say.small, .tapnote, .co2-t span, .pk .tagn, .pk .xpl em, .bk-f .by { font-size: 18px; color: var(--ink-note); }
+.plate .say.small, .tapnote, .co2-t span, .pk .tagn, .pk .xpl em, .dc .xpl em, .bk-f .by { font-size: 18px; color: var(--ink-note); }
 
 /* ---- PC and phone (the check pass, 2026-10-22): the rest applies on no iPad ------------- */
 /* a phone (body.phone: a window under 600 px on its short side, app.js fitStage). The 820-wide
@@ -2261,7 +2260,7 @@ body.phone .rot h1 { font-size: 32px; }
 body.phone .rot p { font-size: 18px; }
 
 /* ==========================================================================
-   The bolder polish, round 2 (2026-10-22, docs/P53-CORE4.md §8 "Finish, round 2"): a clear warm
+   The bolder polish, round 2 (2026-10-22, docs/P53-CORE4.md .pk .xpl, 8 "Finish, round 2"): a clear warm
    key light across the table with darker edges, richer contact shadows, a carved walnut board
    frame with brass corners; parchment with a visible grain, burnished edges, an embossed brass
    frame and a wax seal; the generals on a walnut dais. As in round 1 nothing here moves or
@@ -13605,16 +13604,21 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   S.deckView = function deckView(run) {
     const C = Core(), T = tunOf(run), K = Cards();
     const list = C.Run.deckList(run);
-    const groups = [];
-    list.forEach((c) => {
-      const sig = K.sigOf(c);
-      const g = groups.find((x) => x.sig === sig);
-      if (g) { g.n++; g.cards.push(c); } else groups.push({ sig, card: c, n: 1, cards: [c], at: groups.length });
-    });
+    // every card on its own (each copy's XP and traits), identical copies kept side by side
+    const sigs = [];
+    list.forEach((c) => { const sig = K.sigOf(c); if (sigs.indexOf(sig) < 0) sigs.push(sig); });
+    const groups = list.map((c, j) => ({ card: c, n: 1, cards: [c], at: sigs.indexOf(K.sigOf(c)) * 1000 + j }));
     let tab = 'cards';
     let sort = SORTS.some((x) => x[0] === prefs.get('deckSort')) ? prefs.get('deckSort') : 'type';
     let look = prefs.get('deckLook') === 'list' ? 'list' : 'cards';
     let shown = groups;
+    // a row's words with the card's XP toward its next rank after its rank (units, heroes, officers)
+    const rowWords = (c) => {
+      const w = deckWords(c, T);
+      if (['unit', 'hero', 'officer'].indexOf(c.kind) < 0) return w;
+      const x = K.xpOf(c.kind === 'hero' ? Object.assign({}, c, { rank: c.rank || (T.heroes && T.heroes.rank) || 2 }) : c, T);
+      return Object.assign({}, w, { sub: w.sub + ' · ' + (x.next == null ? 'top rank' : x.text) });
+    };
     const pill = (act, key, on, label) => '<button type="button" class="ds' + (on ? ' on' : '') + '" data-act="' + act + '" data-' + act + '="' + key + '" aria-pressed="' + on + '">' + label + '</button>';
     const frame = () => '<div class="plate wide deckv"><div class="tabs">' +
       '<button type="button" class="tb' + (tab === 'cards' ? ' on' : '') + '" data-act="cards">Your deck · ' + list.length + '</button>' +
@@ -13623,11 +13627,11 @@ var(--p2-cn) left top / 44px 44px no-repeat;
         ? '<div class="dsort" role="group" aria-label="Show the deck as"><span>Show</span>' + pill('look', 'cards', look === 'cards', 'Cards') + pill('look', 'list', look === 'list', 'List') + '</div>' +
           '<div class="dsort" role="group" aria-label="Sort the deck"><span>Sort</span>' + SORTS.map((x) => pill('sort', x[0], x[0] === sort, x[1])).join('') + '</div>' +
           ((shown = sortGroups(groups, sort, T)), look === 'cards'
-            // each distinct card's face at its readable size (copies stacked, the count on it); the
-            // grid scrolls inside the plate (capGrid) rather than the plate shrinking past reading
-            ? '<div class="dgrid">' + shown.map((g, i) => '<div class="dc" data-i="' + i + '">' + K.faceHtml(g.card, { w: K.MIN_FACE, tun: T }) + (g.n > 1 ? '<b class="cnt">×' + g.n + '</b>' : '') + '</div>').join('') + '</div>'
-            // or a compact row per distinct card (its portrait, number and copies, its words in full)
-            : '<div class="dlist">' + shown.map((g, i) => K.rowHtml(g.card, Object.assign({ tun: T, n: g.n, attrs: { 'data-i': i } }, deckWords(g.card, T)))).join('') + '</div>') +
+            // each card's face at its readable size with its XP under it; the grid scrolls inside
+            // the plate (capGrid) rather than the plate shrinking past reading
+            ? '<div class="dgrid">' + shown.map((g, i) => '<div class="dc" data-i="' + i + '">' + K.faceHtml(g.card, { w: K.MIN_FACE, tun: T }) + xpHtml(g.card, T) + '</div>').join('') + '</div>'
+            // or a compact row per card (its portrait and number, its words and XP in full)
+            : '<div class="dlist">' + shown.map((g, i) => K.rowHtml(g.card, Object.assign({ tun: T, attrs: { 'data-i': i } }, rowWords(g.card)))).join('') + '</div>') +
           '<p class="say small">Press and hold a card to read it.</p>'
         : '<div class="gpool">' + (run.generals || []).map((g, i) => '<div class="gp" data-g="' + i + '">' + K.generalHtml(g, { w: 216, tun: T }) + '<p>' + esc(C.generalDesc(T, g.id, g.level || 1)) + '</p></div>').join('') + '</div>' +
           '<p class="say small">Each battle deals three of them.</p>') +
