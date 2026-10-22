@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="89d5b8a7c9";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="760caf3580";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1598,7 +1598,8 @@ noscript p { position: fixed; inset: 40% 0 auto; text-align: center; font: 700 2
 .hand .hc { cursor: grab; touch-action: none; transition: transform 160ms ease; }
 .hand.dragging .hc.sel { opacity: 0.35; }
 .hand .pick { pointer-events: none; }
-.hdrag { position: absolute; z-index: 40; pointer-events: none; transform: translate(-50%, -60%) rotate(-4deg); filter: drop-shadow(0 16px 18px rgba(0, 0, 0, 0.6)); }
+/* the dragged card follows the finger by its transform on its own layer (hand.js, once a frame) */
+.hdrag { position: absolute; z-index: 40; pointer-events: none; transform: translate(-50%, -60%) rotate(-4deg); filter: drop-shadow(0 16px 18px rgba(0, 0, 0, 0.6)); will-change: transform; }
 
 /* ---- the corner buttons ------------------------------------------------------------------- */
 .cbs { position: absolute; bottom: 16px; display: flex; flex-direction: column; gap: 10px; pointer-events: auto; }
@@ -11481,20 +11482,31 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   // ---- text fit: a long name steps down to 16px, then (a general's scroll) takes two lines --------
   function fit(root) {
     if (!root || !root.querySelectorAll) return;
-    root.querySelectorAll('.c4-name b, .c4-line, .g6-scroll b, .g6-line b').forEach((b) => {
+    const room = (b, host) => {
+      if (host === b) return b.clientWidth;
+      const cs = getComputedStyle(host);
+      // the line between the sprigs (g6-line): the host less its sprigs and gaps
+      const shown = Array.from(host.children).filter((x) => x !== b && x.offsetWidth > 0);
+      const spr = shown.reduce((a, x) => a + x.offsetWidth, 0) + shown.length * (parseFloat(cs.columnGap) || 0);
+      return host.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0) - spr;
+    };
+    const overOf = (b, host) => (host === b ? b.scrollWidth > b.clientWidth + 0.5 : b.scrollWidth > room(b, host) + 0.5);
+    // perf pass (2026-10-22): every reset first, then every measure (one layout for the lot, not
+    // one per line); a line that overflows steps down as before, and once one has changed, the
+    // lines after it are measured afresh
+    const items = Array.from(root.querySelectorAll('.c4-name b, .c4-line, .g6-scroll b, .g6-line b')).map((b) => {
       b.style.fontSize = ''; b.style.letterSpacing = '';
       const host = b.classList.contains('c4-line') ? b : b.parentElement;
       host.classList.remove('two', 'bare');
+      return { b, host };
+    });
+    items.forEach((it) => { it.over = overOf(it.b, it.host); });
+    let changed = false;
+    items.forEach(({ b, host, over: first }) => {
+      if (!(changed ? overOf(b, host) : first)) return;
+      changed = true;
       let fs = parseFloat(getComputedStyle(b).fontSize) || 16;
-      const room = () => {
-        if (host === b) return b.clientWidth;
-        const cs = getComputedStyle(host);
-        // the line between the sprigs (g6-line): the host less its sprigs and gaps
-        const shown = Array.from(host.children).filter((x) => x !== b && x.offsetWidth > 0);
-        const spr = shown.reduce((a, x) => a + x.offsetWidth, 0) + shown.length * (parseFloat(cs.columnGap) || 0);
-        return host.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0) - spr;
-      };
-      const over = () => (host === b ? b.scrollWidth > b.clientWidth + 0.5 : b.scrollWidth > room() + 0.5);
+      const over = () => overOf(b, host);
       let n = 0;
       while (over() && fs > 16 && n++ < 24) { fs = Math.max(16, fs - 1); b.style.fontSize = fs + 'px'; }
       // a general's one line has room for one line only: it drops its laurel sprigs first
@@ -11563,7 +11575,9 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   let zone = null, st = null, curW = 172, curH = 1180, curSel = null, drag = null;
   // the motion between renders (core4.css .hc.deal / .hc.lift): a new hand is dealt up from the
   // table edge, one card after another; a card selected (or let go) eases from where it stood
-  let lastKey = '', lastSel = null;
+  let lastKey = '', lastSel = null, fontsSeen = 0;
+  try { if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => { fontsSeen++; }); } catch (e) { /* no font events */ }
+  const fontsKey = () => { try { const f = document.fonts; return f ? fontsSeen + ':' + f.status + ':' + f.size : ''; } catch (e) { return ''; } };
   const tf = (x, y, rot, sc) => 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px) rotate(' + rot + 'deg)' + (sc !== 1 ? ' scale(' + sc + ')' : '');
   Hd.render = function render(el, s, o) {
     if (!el) return;
@@ -11571,27 +11585,45 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     const cards = s && s.phase === 'draft' ? s.offer : [];
     const G = geometry(cards.length, curSel, curW, curH);
     const T = s.tun || C.TUN_DEFAULT;
-    let h = '';
     const key = cards.length ? [s.battle, s.turn, cards.map((c) => (c.uid != null ? c.uid : c.id)).join(',')].join(':') : '';
     const dealt = !!key && key !== lastKey, prevSel = key === lastKey ? lastSel : null;
-    cards.forEach((c, i) => {
+    // each card's frame (its class and place) apart from its face
+    const frames = cards.map((c, i) => {
       const g = G[i], on = i === curSel;
-      let mv = '';
-      if (dealt) mv = ' deal" style="--i:' + i + ';--from:' + tf(g.x, g.y + 260, g.rot * 2.5, 0.92) + ';';
-      else if (on && prevSel !== i) mv = ' lift" style="--from:' + tf(g.x, 0, g.k * H0.tilt, 1) + ';';
-      else if (!on && prevSel === i) mv = ' lift" style="--from:' + tf(g.x, -H0.raise, 0, 1.03) + ';';
-      else mv = '" style="';
-      h += '<div class="hc' + (on ? ' sel' : '') + mv + 'left:' + (H0.cx - curW / 2).toFixed(1) + 'px;bottom:' + H0.bottom + 'px;z-index:' + (on ? 5 : 2 + i) +
-        ';transform:' + tf(g.x, g.y, g.rot, on ? 1.03 : 1) + '" data-i="' + i + '" role="button" tabindex="0">' +
-        TTF4.Cards.faceHtml(c, { w: curW, tun: T }) + '</div>';
+      let cls = 'hc' + (on ? ' sel' : ''), st0 = '';
+      if (dealt) { cls += ' deal'; st0 = '--i:' + i + ';--from:' + tf(g.x, g.y + 260, g.rot * 2.5, 0.92) + ';'; }
+      else if (on && prevSel !== i) { cls += ' lift'; st0 = '--from:' + tf(g.x, 0, g.k * H0.tilt, 1) + ';'; }
+      else if (!on && prevSel === i) { cls += ' lift'; st0 = '--from:' + tf(g.x, -H0.raise, 0, 1.03) + ';'; }
+      return { cls, style: st0 + 'left:' + (H0.cx - curW / 2).toFixed(1) + 'px;bottom:' + H0.bottom + 'px;z-index:' + (on ? 5 : 2 + i) + ';transform:' + tf(g.x, g.y, g.rot, on ? 1.03 : 1) };
     });
     lastKey = key;
     lastSel = curSel;
     // the prompt beside the hand, over the left corner buttons (the mock's "Pick one"; over the
     // raised card it would cost the board a row of height)
-    h += cards.length ? '<h3 class="pick" style="left:' + PICK.x + 'px;top:' + pickTop(curH).toFixed(1) + 'px">' + (curSel != null ? 'Tap a lit tile' : 'Pick one') + '</h3>' : '';
-    el.innerHTML = h;
-    TTF4.Cards.fit(el);
+    const pick = cards.length ? '<h3 class="pick" style="left:' + PICK.x + 'px;top:' + pickTop(curH).toFixed(1) + 'px">' + (curSel != null ? 'Tap a lit tile' : 'Pick one') + '</h3>' : '';
+    // perf pass (2026-10-22): a new selection in the same hand keeps the fitted faces; a card
+    // whose frame changed is swapped for a copy of itself in the new frame (its lift then plays
+    // from the start, as a fresh card's would), and the prompt is redrawn
+    const fitKey = [key, curW, curH, fontsKey()].join('|');
+    const old = Array.from(el.children).filter((x) => x.classList && x.classList.contains('hc'));
+    if (!dealt && key && el.fitKey === fitKey && el.fitTun === T && old.length === cards.length && old.every((x, i) => +x.dataset.i === i)) {
+      old.forEach((x, i) => {
+        const f = frames[i];
+        if (x.className === f.cls && x.getAttribute('style') === f.style) return;
+        const n = x.cloneNode(true);
+        n.className = f.cls;
+        n.setAttribute('style', f.style);
+        x.replaceWith(n);
+      });
+      const ph = el.querySelector('.pick');
+      if (ph && ph.outerHTML !== pick) ph.outerHTML = pick;
+    } else {
+      el.innerHTML = cards.map((c, i) => '<div class="' + frames[i].cls + '" style="' + frames[i].style + '" data-i="' + i + '" role="button" tabindex="0">' +
+        TTF4.Cards.faceHtml(c, { w: curW, tun: T }) + '</div>').join('') + pick;
+      TTF4.Cards.fit(el);
+      el.fitKey = fitKey;
+      el.fitTun = T;
+    }
     if (!el.dataset.bound) { el.dataset.bound = '1'; bind(el); }
   };
   /** The outlines the board must keep its units clear of: every card of an n-card hand at rest
@@ -11640,6 +11672,8 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     });
     const up = (e) => {
       if (!drag || e.pointerId !== drag.id) return;
+      // the move waiting for its frame lands first: the release decides on the latest tile
+      if (drag.raf) { cancelAnimationFrame(drag.raf); drag.raf = 0; if (drag.on) followDrag(); }
       const d = drag;
       drag = null;
       clearTimeout(d.timer);
@@ -11670,21 +11704,29 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     el.classList.add('dragging');
     const g = document.createElement('div');
     g.className = 'hdrag';
+    g.style.left = '0px';
+    g.style.top = '0px';
     g.innerHTML = TTF4.Cards.faceHtml(st.offer[drag.i], { w: Math.round(curW * 0.62), ghost: true, tun: st.tun || C.TUN_DEFAULT });
     zone.closest('.scr').appendChild(g);
     drag.ghost = g;
+    drag.legal = C.legalSlots(st, st.offer[drag.i]);
   }
+  // perf pass (2026-10-22): a move only notes the finger; once per frame the ghost follows it on
+  // its own layer (a transform: no layout, no repaint of the board under it) and the tile under
+  // it is looked up (the ghost takes no pointer input, so it need not hide for the lookup)
   function moveDrag(e) {
+    drag.cx = e.clientX; drag.cy = e.clientY;
+    const d = drag;
+    if (!d.raf) d.raf = requestAnimationFrame(() => { d.raf = 0; if (drag === d && d.on) followDrag(); });
+  }
+  function followDrag() {
     const B = TTF4.Board;
-    const p = B.toStage(e.clientX, e.clientY);
-    drag.ghost.style.left = p.x + 'px';
-    drag.ghost.style.top = p.y + 'px';
-    drag.ghost.style.display = 'none';
-    const under = document.elementFromPoint(e.clientX, e.clientY);
-    drag.ghost.style.display = '';
+    const p = B.toStage(drag.cx, drag.cy);
+    drag.ghost.style.transform = 'translate(' + p.x.toFixed(1) + 'px,' + p.y.toFixed(1) + 'px) translate(-50%, -60%) rotate(-4deg)';
+    const under = document.elementFromPoint(drag.cx, drag.cy);
     const t = under && under.closest ? under.closest('.tile') : null;
     const slot = t ? +t.dataset.slot : null;
-    const legal = slot != null && C.legalSlots(st, st.offer[drag.i]).indexOf(slot) >= 0;
+    const legal = slot != null && drag.legal.indexOf(slot) >= 0;
     drag.slot = legal ? slot : null;
     B.hoverSlot(legal ? slot : null);
   }
@@ -11886,6 +11928,27 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     return { w, h, left: (Cl - w) / 2, top: foot - h * BASE_FRONT };
   }
   /** The board's markup. o: {skeleton (fit pass: empty stands on every tile), view: {sel card, legal, homes, ghost}} */
+  /** A unit's shown value (the reveal's while it runs) and its reveal pop. */
+  function standVal(i, bd) {
+    const u = bd[i];
+    let v = u ? u.value : '', fire = '';
+    if (rv) { v = rv.vals[i] != null ? rv.vals[i] : v; fire = rv.fire[i] || ''; }
+    return { v, fire };
+  }
+  const standCls = (i, fire) => 'stand' + (fire ? ' fire' : '') + (rv && !fire ? ' rest' : '') + (fresh === i && !rv ? ' drop' : '');
+  /** A stand's medallion, reveal pop and preview change badge (liftBadges moves them flat). */
+  const badgesHtml = (ty, sv, d) => '<div class="val" data-type="' + ty + '"><b>' + sv.v + '</b></div>' +
+    (sv.fire ? '<div class="pop">' + esc(sv.fire) + '</div>' : '') + (d ? dltHtml(d) : '');
+  /** A unit's change badge in the preview (+n / −n). */
+  const dltHtml = (d) => '<div class="dlt' + (d < 0 ? ' neg' : '') + '">' + (d > 0 ? '+' : '−') + Math.abs(d) + '</div>';
+  /** The held card's ghost on the hovered empty tile: its miniature and its value there. */
+  function ghostHtml(gh, sb) {
+    const gp = gh.piece;
+    return '<div class="stand ghost" data-type="' + typeOf(gp) + '" style="left:' + sb.left.toFixed(1) + 'px;top:' + sb.top.toFixed(1) + 'px;width:' + sb.w.toFixed(1) + 'px;height:' + sb.h.toFixed(1) + 'px;transform-origin:50% ' + (BASE_FRONT * 100) + '%">' +
+      (gp ? '<div class="mini">' + Art.miniHtml(gp, { seed: 'ghost', ghost: true }) + '</div>' : '') +
+      (gh.own != null ? '<div class="val" data-type="' + typeOf(gp) + '"><b>' + gh.own + '</b></div>' : '') + '</div>';
+  }
+  const foCls = (n) => 'fo' + (rv && rv.formOn === n ? ' flare' : rv && rv.formDone && rv.formDone[n] ? ' done' : '');
   function boardHtml(bs, o) {
     const g = geo(bs), Cl = g.C, sb = standBox(Cl);
     const sc = o.skeleton ? null : o.score;
@@ -11911,22 +11974,13 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       }
       if (p) {
         const ty = o.skeleton ? 'inf' : typeOf(p);
-        const u = bd[i];
-        let v = u ? u.value : '';
-        let fire = '';
-        if (rv && !o.skeleton) { v = rv.vals[i] != null ? rv.vals[i] : v; fire = rv.fire[i] || ''; }
-        const cls = 'stand' + (fire ? ' fire' : '') + (rv && !fire ? ' rest' : '') + (fresh === i && !rv ? ' drop' : '');
-        inner += '<div class="' + cls + '" data-type="' + ty + '" data-slot="' + i + '" style="left:' + sb.left.toFixed(1) + 'px;top:' + sb.top.toFixed(1) + 'px;width:' + sb.w.toFixed(1) + 'px;height:' + sb.h.toFixed(1) + 'px;transform-origin:50% ' + (BASE_FRONT * 100) + '%">' +
+        const sv = o.skeleton ? { v: '', fire: '' } : standVal(i, bd);
+        inner += '<div class="' + standCls(i, sv.fire) + '" data-type="' + ty + '" data-slot="' + i + '" style="left:' + sb.left.toFixed(1) + 'px;top:' + sb.top.toFixed(1) + 'px;width:' + sb.w.toFixed(1) + 'px;height:' + sb.h.toFixed(1) + 'px;transform-origin:50% ' + (BASE_FRONT * 100) + '%">' +
           (o.skeleton ? '<div class="mini"></div>' : '<div class="mini">' + Art.miniHtml(p, { seed: 'u' + (p.uid != null ? p.uid : i) }) + '</div>') +
-          '<div class="val" data-type="' + ty + '"><b>' + v + '</b></div>' +
-          (fire ? '<div class="pop">' + esc(fire) + '</div>' : '') +
-          (o.deltas && o.deltas[i] ? '<div class="dlt' + (o.deltas[i] < 0 ? ' neg' : '') + '">' + (o.deltas[i] > 0 ? '+' : '−') + Math.abs(o.deltas[i]) + '</div>' : '') +
+          badgesHtml(ty, sv, o.deltas && o.deltas[i]) +
         '</div>';
       } else if (o.ghost && o.ghost.slot === i) {
-        const gp = o.ghost.piece;
-        inner += '<div class="stand ghost" data-type="' + typeOf(gp) + '" style="left:' + sb.left.toFixed(1) + 'px;top:' + sb.top.toFixed(1) + 'px;width:' + sb.w.toFixed(1) + 'px;height:' + sb.h.toFixed(1) + 'px;transform-origin:50% ' + (BASE_FRONT * 100) + '%">' +
-          (gp ? '<div class="mini">' + Art.miniHtml(gp, { seed: 'ghost', ghost: true }) + '</div>' : '') +
-          (o.ghost.own != null ? '<div class="val" data-type="' + typeOf(gp) + '"><b>' + o.ghost.own + '</b></div>' : '') + '</div>';
+        inner += ghostHtml(o.ghost, sb);
       }
       const lg = legal.indexOf(i) >= 0;
       tiles += '<div class="slot tile' + (lg ? ' legal' : '') + (lg && homes.indexOf(i) >= 0 ? ' home' : '') + (o.ghost && o.ghost.slot === i ? ' hot' : '') + '" data-slot="' + i + '" data-terrain="' + terr + '" data-state="' + state + '" style="left:' + g.cx(c).toFixed(1) + 'px;top:' + g.cy(r).toFixed(1) + 'px;width:' + Cl.toFixed(1) + 'px;height:' + Cl.toFixed(1) + 'px">' + inner + '</div>';
@@ -11946,8 +12000,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
           if (!has(r, c - 1)) d += 'M' + x0.toFixed(1) + ' ' + y0.toFixed(1) + 'V' + y1.toFixed(1);
           if (!has(r, c + 1)) d += 'M' + x1.toFixed(1) + ' ' + y0.toFixed(1) + 'V' + y1.toFixed(1);
         });
-        const on = rv && rv.formOn === n ? ' flare' : rv && rv.formDone && rv.formDone[n] ? ' done' : '';
-        outlines += '<g class="fo' + on + '" data-f="' + n + '"><path class="fo-glow" d="' + d + '"/><path class="fo-line" d="' + d + '"/></g>';
+        outlines += '<g class="' + foCls(n) + '" data-f="' + n + '"><path class="fo-glow" d="' + d + '"/><path class="fo-line" d="' + d + '"/></g>';
         // the tag's candidate spots (placeTags measures them and takes the first clear one)
         tags[n].forEach((t, k) => {
           anchors += '<div class="fanchor" data-f="' + n + '" data-k="' + k + '"' + (k ? '' : ' data-name="' + esc(f.name) + '"') + ' style="left:' + (g.cx(t.c) + Cl * t.x).toFixed(1) + 'px;top:' + (g.cy(t.r) + Cl * t.d).toFixed(1) + 'px"></div>';
@@ -12058,6 +12111,10 @@ var(--p2-cn) left top / 44px 44px no-repeat;
 
   // ---- render ----------------------------------------------------------------------------------------
   let lastScore = null;
+  let gensKeep = null, fontsSeen = 0;   // the fitted generals' row, and the web fonts loaded so far (a load refits it)
+  try { if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => { fontsSeen++; }); } catch (e) { /* no font events */ }
+  /** The web fonts' state: a fitted row is kept only while it is unchanged (a font that loads later refits). */
+  const fontsKey = () => { try { const f = document.fonts; return f ? fontsSeen + ':' + f.status + ':' + f.size : ''; } catch (e) { return ''; } };
   B.render = function render(s, opts) {
     const o = opts || {};
     st = s;
@@ -12076,8 +12133,12 @@ var(--p2-cn) left top / 44px 44px no-repeat;
         : '<section class="handzone">' + buttonsHtml() + '<div class="hand"></div></section>') +
       '</div>';
     drawBand();
-    stage.querySelector('.gens').innerHTML = gensHtml();
-    TTF4.Cards.fit(stage.querySelector('.gens'));
+    // the generals' row is kept as it was fitted when nothing in it changed (perf pass: a
+    // placement or a reveal step re-parsed and re-fitted three grand cards each time)
+    const gh = gensHtml(), gk = gh + '|' + fontsKey() + '|' + H + '|' + document.body.className;
+    if (gensKeep && gensKeep.key === gk) stage.querySelector('.gens').replaceWith(gensKeep.el);
+    else { stage.querySelector('.gens').innerHTML = gh; TTF4.Cards.fit(stage.querySelector('.gens')); }
+    gensKeep = { key: gk, el: stage.querySelector('.gens') };
     const band = loc(stage.querySelector('.band').getBoundingClientRect());
     const gens = stage.querySelector('.gens');
     gens.style.cssText = 'left:' + CX + 'px;top:' + Math.round(band.b + 26) + 'px';
@@ -12097,16 +12158,19 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   const handW = () => (H < 1150 ? TTF4.Cards.MIN_FACE : 172);   // a face is never narrower than its text needs
   const genW = () => (H < 1150 ? 228 : GW);
   let curBs = 0;
-  function drawBoard(bs) {
-    curBs = bs;
-    const field = stage.querySelector('.field');
-    const card = sel != null && st.phase === 'draft' ? st.offer[sel] : null;
+  let drawn = null;   // what the field shows: {st, bs, sel, keep} (patchBoard updates it in place)
+  /** The held card's legal tiles, and those of them that are its home. */
+  function legalOf(card) {
     const legal = card && !rv ? C.legalSlots(st, card) : [];
     let homes = [];
     if (card && (card.kind === 'unit' || card.kind === 'hero')) {
       const ht = C.homeTerrains(st, card.kind === 'hero' ? { type: card.type || C.heroType(card.id), traits: [] } : card).filter((h) => !h.second).map((h) => h.terrain);
       homes = legal.filter((i) => !C.isHidden(st, i) && ht.indexOf(st.board[i].terrain) >= 0);
     }
+    return { legal, homes };
+  }
+  /** The hovered tile's preview: B.preview, the ghost piece and the other units' changes. */
+  function hoverPreview(card, legal) {
     let ghost = null, deltas = null;
     if (card && hover != null && legal.indexOf(hover) >= 0 && !rv) {
       const pr = C.predict(st, sel, hover);
@@ -12119,31 +12183,131 @@ var(--p2-cn) left top / 44px 44px no-repeat;
         B.preview = pr;
       }
     } else B.preview = null;
+    return { ghost, deltas };
+  }
+  function drawBoard(bs) {
+    curBs = bs;
+    const field = stage.querySelector('.field');
+    const card = sel != null && st.phase === 'draft' ? st.offer[sel] : null;
+    const { legal, homes } = legalOf(card);
+    const { ghost, deltas } = hoverPreview(card, legal);
     field.innerHTML = boardHtml(bs, { score: lastScore, legal, homes, ghost, deltas });
     const t = field.querySelector('.table');
     t.style.top = (bs / 2 + (fitCache.lift || 0)) + 'px';
-    placeTags(field);
+    const keep = placeTags(field);
     liftBadges(field);
     drawAreas(field, card && !rv ? { card, slot: hover != null && legal.indexOf(hover) >= 0 ? hover : null } : null);
     capFigures(field);
     Art.ensureDefs();
     drawBand(true);
+    drawn = rv ? null : { st, bs, sel, keep };
+    rvDrawn = rv ? { st, bs, H } : null;
+  }
+  let rvDrawn = null;   // the reveal's board as B.render drew it: {st, bs, H} (revealPaint patches it)
+  /** A reveal frame on the reveal's own board: what B.render would draw, patched in place (perf
+   *  pass, 2026-10-22: a full redraw per step cost 100-250 ms on a 4x-throttled iPad, a stutter
+   *  each time a step began). The tiles, the miniatures and the board stay; each unit's state,
+   *  value and pop, the formation outlines and tags, the medallion layer, the generals' state and
+   *  the band are redone. B.fullPaint (a debugging switch) keeps the old full redraw. */
+  function revealPaint() {
+    const field = stage && stage.querySelector('.scr[data-mode="reveal"] .field');
+    const h = parseFloat(stage && stage.style.height) || (stage && stage.offsetHeight) || 1180;
+    if (B.fullPaint || !rv || !field || !rvDrawn || rvDrawn.st !== st || rvDrawn.bs !== curBs || rvDrawn.H !== h || h !== H ||
+        !field.querySelector('.table') || !stage.querySelector('.gens') || !gensKeep || gensKeep.el !== stage.querySelector('.gens')) { B.render(st, { hand: false }); return; }
+    drawBand();
+    // the generals: each card's state (waiting, done, acting) and the formation diagrams
+    const gh = gensHtml(), gk = gh + '|' + fontsKey() + '|' + H + '|' + document.body.className;
+    if (gensKeep.key !== gk) {
+      const gens = stage.querySelector('.gens');
+      const t = document.createElement('div');
+      t.innerHTML = gh;
+      const want = Array.from(t.querySelectorAll('.row > .g6')), have = Array.from(gens.querySelectorAll('.row > .g6'));
+      if (want.length !== have.length) { B.render(st, { hand: false }); return; }
+      have.forEach((el, i) => { if (el.className !== want[i].className) el.className = want[i].className; });
+      const fd = gens.querySelector('.fdrow'), nf = t.querySelector('.fdrow');
+      if (fd && nf) { if (fd.outerHTML !== nf.outerHTML) fd.replaceWith(nf); } else if (fd || nf) { B.render(st, { hand: false }); return; }
+      gensKeep.key = gk;
+    }
+    // the field: the medallion layer comes down, each stand takes its badges back, as drawn
+    const vals = field.querySelector('.vals');
+    if (vals) vals.remove();
+    const bd = {};
+    lastScore.units.forEach((u) => { bd[u.slot] = u; });
+    field.querySelectorAll('.stand').forEach((sd) => {
+      const i = +sd.dataset.slot, p = st.pieces[i];
+      if (!p || sd.classList.contains('ghost')) return;
+      const sv = standVal(i, bd);
+      sd.className = standCls(i, sv.fire);
+      sd.querySelectorAll(':scope > .val, :scope > .pop, :scope > .dlt').forEach((x) => x.remove());
+      sd.insertAdjacentHTML('beforeend', badgesHtml(typeOf(p), sv, null));
+    });
+    field.querySelectorAll('svg.forms g.fo').forEach((g) => { const c = foCls(+g.dataset.f); if (g.getAttribute('class') !== c) g.setAttribute('class', c); });
+    placeTags(field);
+    liftBadges(field);
+    drawAreas(field, null);
+    Art.ensureDefs();
+    drawBand(true);
+  }
+  /** A new selection or a hover change on the same board: the field as drawBoard would draw it,
+   *  patched in place (perf pass, 2026-10-22: a full redraw cost 60-100+ ms on a 4x-throttled
+   *  iPad, once per tile crossed while dragging). The pieces, the formations and the medallions
+   *  stay; what the held card changes is redone: the lit and home tiles, the hovered tile, the
+   *  ghost piece and its value, the other units' change badges, the officers' areas, the band,
+   *  and (a new selection moves the hand) the formation tags. */
+  function patchBoard() {
+    const field = stage && stage.querySelector('.field');
+    if (!field || !st || rv || !drawn || drawn.st !== st || drawn.bs !== curBs || !field.querySelector('.table') || !field.querySelector('.vals')) { drawBoard(curBs); return; }
+    const card = sel != null && st.phase === 'draft' ? st.offer[sel] : null;
+    const { legal, homes } = legalOf(card);
+    const { ghost, deltas } = hoverPreview(card, legal);
+    field.querySelectorAll('.tile').forEach((t) => {
+      const i = +t.dataset.slot, lg = legal.indexOf(i) >= 0;
+      t.classList.toggle('legal', lg);
+      t.classList.toggle('home', lg && homes.indexOf(i) >= 0);
+      t.classList.toggle('hot', !!ghost && ghost.slot === i);
+    });
+    // out with the last preview, in with this one (boardHtml's own markup: ghostHtml, dltHtml)
+    field.querySelectorAll('.stand.ghost, .vals .vb.ghost, .vals .dlt').forEach((x) => x.remove());
+    const sb = standBox(geo(curBs).C);
+    const touched = [];
+    if (ghost && !st.pieces[ghost.slot]) {
+      const tile = field.querySelector('.tile[data-slot="' + ghost.slot + '"]');
+      if (tile) { tile.insertAdjacentHTML('beforeend', ghostHtml(ghost, sb)); touched.push(tile.lastElementChild); }
+    }
+    if (deltas) {
+      for (let i = 0; i < 16; i++) {
+        if (!deltas[i] || !st.pieces[i]) continue;
+        const s = field.querySelector('.stand[data-slot="' + i + '"]:not(.ghost)');
+        if (s) { s.insertAdjacentHTML('beforeend', dltHtml(deltas[i])); touched.push(s); }
+      }
+    }
+    touched.sort((x, y) => +x.dataset.slot - +y.dataset.slot);
+    if (sel !== drawn.sel) placeTags(field, drawn.keep);
+    if (touched.length) liftBadges(field, touched);
+    drawAreas(field, card ? { card, slot: hover != null && legal.indexOf(hover) >= 0 ? hover : null } : null);
+    const gm = touched.filter((x) => x.classList.contains('ghost')).map((x) => x.querySelector(':scope > .mini')).filter(Boolean);
+    if (gm.length) capFigures(field, gm);
+    Art.ensureDefs();
+    drawBand(true);
+    drawn.sel = sel;
   }
   // PLAN 54 A: nothing on the board reaches the generals' cards. The fit leaves room for a
   // stand's usual reach (REACH, measured: an officer's pennant 2.2% of the stand's height, a
   // commanded knight's lance 3.6%); a taller part (a pike, a rank-1 knight's lance, up to 25%)
   // is capped CAP_GAP under the cards: each stand near them clips its miniature at that line.
   const REACH = 0.04, CAP_GAP = 8, TALLEST = 0.3;
-  function capFigures(field) {
+  function capFigures(field, only) {
     const cards = Array.from(stage.querySelectorAll('.gens .g6, .gens .fdg2'));
     if (!cards.length) return;
     const limit = Math.max.apply(null, cards.map((g) => loc(g.getBoundingClientRect()).b)) + CAP_GAP;
-    field.querySelectorAll('.stand > .mini').forEach((m) => {
+    // every read first, then every write (perf pass: one layout, not one per miniature)
+    const caps = Array.from(only || field.querySelectorAll('.stand > .mini')).map((m) => {
       const s = m.parentNode, r = loc(s.getBoundingClientRect()), h = r.b - r.t;
-      if (!(h > 0) || r.t - h * TALLEST >= limit) { m.style.clipPath = ''; return; }
+      if (!(h > 0) || r.t - h * TALLEST >= limit) return [m, ''];
       const y = (limit - r.t) * (s.offsetHeight / h);      // the cap in the stand's own pixels
-      m.style.clipPath = 'inset(' + y.toFixed(1) + 'px -100% -100% -100%)';
+      return [m, 'inset(' + y.toFixed(1) + 'px -100% -100% -100%)'];
     });
+    caps.forEach(([m, v]) => { m.style.clipPath = v; });
   }
   let bandLast = null;   // the total the band last showed outside a preview (a gain pulses once)
   function drawBand(settled) {
@@ -12159,26 +12323,39 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   /** The medallions (and the preview deltas and reveal pops beside them) leave their upright
    *  stands for one flat layer over the board, each where it stood: a miniature in the row in
    *  front, or a wide neighbour, can then never hide a unit's number. */
-  function liftBadges(field) {
-    const old = field.querySelector('.vals');
-    if (old) old.remove();
+  function liftBadges(field, only) {
+    // only: these stands' new badges join the layer already there (patchBoard)
+    let layer = only ? field.querySelector('.vals') : null;
+    if (!only) {
+      const old = field.querySelector('.vals');
+      if (old) old.remove();
+    }
     const fr = loc(field.getBoundingClientRect());
     const t = field.querySelector('.table');
-    const layer = document.createElement('div');
-    layer.className = 'vals' + (rv ? ' revealing' : '');
-    layer.style.setProperty('--cell', t ? t.style.getPropertyValue('--cell') : '');
+    if (!layer) {
+      layer = document.createElement('div');
+      layer.className = 'vals' + (rv ? ' revealing' : '');
+      layer.style.setProperty('--cell', t ? t.style.getPropertyValue('--cell') : '');
+    }
     const moves = [];
-    field.querySelectorAll('.stand').forEach((s) => {
+    Array.from(only || field.querySelectorAll('.stand')).forEach((s) => {
       const els = Array.from(s.querySelectorAll(':scope > .val, :scope > .pop, :scope > .dlt'));
       if (!els.length) return;
-      const box = document.createElement('div');
-      box.className = 'vb' + ['fire', 'ghost', 'rest', 'drop'].filter((c) => s.classList.contains(c)).map((c) => ' ' + c).join('');
-      box.dataset.slot = s.dataset.slot || '';
+      const ghost = s.classList.contains('ghost');
+      let box = only && !ghost ? layer.querySelector(':scope > .vb[data-slot="' + (s.dataset.slot || '') + '"]:not(.ghost)') : null;
+      if (!box) {
+        box = document.createElement('div');
+        box.className = 'vb' + ['fire', 'ghost', 'rest', 'drop'].filter((c) => s.classList.contains(c)).map((c) => ' ' + c).join('');
+        box.dataset.slot = s.dataset.slot || '';
+        // in the stands' (the tiles') order, as a full draw lays them (a ghost's box has no slot: its tile's)
+        const key = only ? +(s.dataset.slot || (s.closest('.tile') || s).dataset.slot) : 0;
+        const after = only ? Array.from(layer.children).find((b) => b.dataset.slot !== '' && +b.dataset.slot > key) : null;
+        layer.insertBefore(box, after || null);
+      }
       els.forEach((e) => {
         const r = loc(e.getBoundingClientRect()), w = e.offsetWidth, h = e.offsetHeight;
         moves.push({ e, box, l: (r.l + r.r) / 2 - fr.l - w / 2, t: (r.t + r.b) / 2 - fr.t - h / 2 });
       });
-      layer.appendChild(box);
     });
     moves.forEach((m) => {
       m.e.classList.add('flat');
@@ -12186,7 +12363,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       m.e.style.top = m.t.toFixed(1) + 'px';
       m.box.appendChild(m.e);
     });
-    field.appendChild(layer);
+    if (!only) field.appendChild(layer);
   }
 
   // ---- officers' areas (ported from Core 3's board2.js) ------------------------------------------
@@ -12335,20 +12512,25 @@ var(--p2-cn) left top / 44px 44px no-repeat;
    *  medallion, the other tags, the hand and the corner buttons; when none is, the clear spot in
    *  the field nearest its members' centre (the upper part of a tile, behind its miniature, is
    *  always free of bases and medallions). */
-  function placeTags(field) {
-    const old = field.querySelector('.ftags');
+  function placeTags(field, base) {
+    const old = field.querySelector('.ftags'), oldNext = old ? old.nextSibling : null;
     if (old) old.remove();
     const fr = loc(field.getBoundingClientRect());
     const fw = fr.r - fr.l, fh = fr.b - fr.t;
     const inF = (r) => ({ l: r.l - fr.l, r: r.r - fr.l, t: r.t - fr.t, b: r.b - fr.t });
-    const keep = [];
-    field.querySelectorAll('.stand:not(.ghost)').forEach((s) => {
-      const r = inF(loc(s.getBoundingClientRect()));
-      const c = (r.l + r.r) / 2, hw = (r.r - r.l) * 0.36;
-      keep.push({ l: c - hw, r: c + hw, t: r.t + (r.b - r.t) * 0.62, b: r.b });
-      const v = s.querySelector('.val');
-      if (v) keep.push(inF(loc(v.getBoundingClientRect())));
-    });
+    // the units' bases and medallions, as measured on the full draw (base: the board is unchanged
+    // and its medallions have since left their stands for the flat layer)
+    const keep = base ? base.slice() : [];
+    if (!base) {
+      field.querySelectorAll('.stand:not(.ghost)').forEach((s) => {
+        const r = inF(loc(s.getBoundingClientRect()));
+        const c = (r.l + r.r) / 2, hw = (r.r - r.l) * 0.36;
+        keep.push({ l: c - hw, r: c + hw, t: r.t + (r.b - r.t) * 0.62, b: r.b });
+        const v = s.querySelector('.val');
+        if (v) keep.push(inF(loc(v.getBoundingClientRect())));
+      });
+    }
+    const units = keep.slice();
     stage.querySelectorAll('.hand .hc, .cbs .cb').forEach((e) => keep.push(inF(loc(e.getBoundingClientRect()))));
     const pad = 3;
     const hit = (a) => a.l < 0 || a.t < 0 || a.r > fw || a.b > fh ||
@@ -12360,13 +12542,17 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     });
     const layer = document.createElement('div');
     layer.className = 'ftags' + (rv ? ' revealing' : '');
-    field.appendChild(layer);
-    Object.keys(anchors).forEach((key) => {
+    field.insertBefore(layer, oldNext);   // where the last tags stood (under the medallions)
+    // every tag in first, then every size read (one layout), then the spots in order
+    const made = Object.keys(anchors).map((key) => {
       const n = +key, list = anchors[key];
       const cls = rv && rv.formOn === n ? ' flare' : rv && rv.formDone && rv.formDone[n] ? ' done' : '';
       layer.insertAdjacentHTML('beforeend', '<div class="ftag' + cls + '" data-f="' + n + '" style="left:0;top:0"><span>' + ICO.teach + esc(list[0].name) + '</span>' +
         (rv && rv.formOn === n && rv.formPop ? '<em class="fpop">+' + rv.formPop + '</em>' : '') + '</div>');
-      const tag = layer.lastElementChild, sp = loc(tag.querySelector('span').getBoundingClientRect());
+      return { list, tag: layer.lastElementChild };
+    });
+    made.forEach((m) => { m.sp = loc(m.tag.querySelector('span').getBoundingClientRect()); });
+    made.forEach(({ list, tag, sp }) => {
       const w = sp.r - sp.l, h = sp.b - sp.t;
       const box = (x, y) => ({ l: x - w / 2, r: x + w / 2, t: y - h, b: y });
       let at = null;
@@ -12386,6 +12572,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       tag.style.top = at.y.toFixed(1) + 'px';
       keep.push(box(at.x, at.y));
     });
+    return units;
   }
 
   /** The biggest board that fits the field with every base and medallion clear of the hand and
@@ -12442,7 +12629,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     if (sel != null) focusSlot = -1;
     if (!st || !stage || !stage.querySelector('.field .table')) return;
     TTF4.Hand.render(stage.querySelector('.hand'), st, { sel, w: handW(), H });
-    drawBoard(curBs);
+    patchBoard();
     if (cb.onSelect) cb.onSelect(sel);
   };
   B.selected = () => sel;
@@ -12458,7 +12645,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   function setHover(i) {
     if (i === hover) return;
     hover = i;
-    if (st && sel != null) drawBoard(curBs);
+    if (st && sel != null) patchBoard();
   }
   B.hoverSlot = setHover;
   /** The tile under a pointer event. A press redraws the board (its preview), so the release may
@@ -12895,7 +13082,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     }
     function paint() {
       if (!stage) return;
-      B.render(st, { hand: false });
+      revealPaint();
       drawLedger();
       if (rv.end) stage.querySelector('.scr').classList.add('rv-end', won ? 'rv-won' : 'rv-lost');
     }
