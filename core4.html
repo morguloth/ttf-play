@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="8a34861437";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="b328cb3388";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -7921,7 +7921,9 @@ var(--p2-cn) left top / 44px 44px no-repeat;
  * TTFCore4.fillDesc / generalShort / generalDesc (rules.js) fill from the tunables:
  *   {a.b.c}       a number of the tunables (tun.a.b.c), printed as is (1.5, 3)
  *   {pct:a.b.c}   the same number as a percent (0.5 -> 50)
+ *   {mul:a.b.c}   a bonus share as the x it gives (0.5 -> 1.5)
  *   {N} {N1} {P}  a general's value at its level, that value + 1, and its value as a percent
+ *   {X} {X15}     a teacher's formation as the x it gives (1 + share); 1.5 + the value (Drillmaster)
  * A factor prints "×N"; never "x".
  */
 (function () {
@@ -7968,12 +7970,12 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       desc: 'For formations it counts as Infantry, Archers or Cavalry, whichever scores best. Its home terrain and its own rules stay its own. More copies do nothing more.' },
     { id: 'veteran', name: 'Veteran', kind: 'other', step: null, short: 'Earns double XP',
       desc: 'Earns +{traits.veteran} XP more from every battle it fights in and wins, so it ranks up faster. Copies add up.' },
-    { id: 'banner', name: 'Banner', kind: 'formation', step: 'formation', short: 'Its formations +{pct:traits.banner}%',
-      desc: 'Every formation it is part of scores +{pct:traits.banner}% more of its units\' points, once per formation however many Banners are in it.' },
-    { id: 'disciplined', name: 'Disciplined', kind: 'formation', step: 'formation', short: 'Formations +{pct:traits.disciplined}% each',
-      desc: 'Every formation it is part of scores +{pct:traits.disciplined}% more of its units\' points for each Disciplined unit in it. Copies add up.' },
-    { id: 'champion', name: 'Champion', kind: 'formation', step: 'formation', short: 'Formations +{pct:traits.champion}% per unit',
-      desc: 'Every formation it is part of scores +{pct:traits.champion}% more of its units\' points for each unit in that formation, counting at most {traits.champion_units}. Each Champion adds this again, and so do copies.' },
+    { id: 'banner', name: 'Banner', kind: 'formation', step: 'formation', short: 'Its formations +{traits.banner}×',
+      desc: 'Every formation it is part of counts {traits.banner} higher (its × goes up by {traits.banner}), once per formation however many Banners are in it.' },
+    { id: 'disciplined', name: 'Disciplined', kind: 'formation', step: 'formation', short: 'Formations +{traits.disciplined}× each',
+      desc: 'Every formation it is part of counts {traits.disciplined} higher for each Disciplined unit in it. Copies add up.' },
+    { id: 'champion', name: 'Champion', kind: 'formation', step: 'formation', short: 'Formations +{traits.champion}× per unit',
+      desc: 'Every formation it is part of counts {traits.champion} higher for each unit in that formation, counting at most {traits.champion_units}. Each Champion adds this again, and so do copies.' },
     { id: 'linchpin', name: 'Linchpin', kind: 'formation', step: 'formation', short: 'Counts ×{traits.linchpin} in formations',
       desc: 'In every formation it is part of, its points count ×{traits.linchpin} toward the formation\'s bonus. Copies stack.' },
     { id: 'standard_bearer', name: 'Standard-bearer', kind: 'formation', step: 'formation', short: 'Its teacher: level +{traits.standard_bearer}',
@@ -8001,23 +8003,23 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   // the others are position shapes. pct in tun.formations.
   C.FORMATIONS = [
     { id: 'triad', name: 'Triad', size: 3, combo: { inf: 1, arc: 1, cav: 1 }, short: '1 of each, touching',
-      desc: 'One Infantry, one Archers and one Cavalry unit, touching each other as one group. It scores +{pct:formations.triad}% of their points.' },
+      desc: 'One Infantry, one Archers and one Cavalry unit, touching each other as one group. Their points count ×{mul:formations.triad}: the extra is a bonus on top.' },
     { id: 'raiding_party', name: 'Raiding Party', size: 3, combo: { cav: 2, arc: 1 }, short: '2 Cavalry + 1 Archers',
-      desc: 'Two Cavalry and one Archers unit, touching each other as one group. It scores +{pct:formations.raiding_party}% of their points.' },
+      desc: 'Two Cavalry and one Archers unit, touching each other as one group. Their points count ×{mul:formations.raiding_party}: the extra is a bonus on top.' },
     { id: 'shield_wall', name: 'Shield Wall', size: 3, short: '3 Infantry in a line',
-      desc: 'Three Infantry units side by side in a straight row or column. It scores +{pct:formations.shield_wall}% of their points.' },
+      desc: 'Three Infantry units side by side in a straight row or column. Their points count ×{mul:formations.shield_wall}: the extra is a bonus on top.' },
     { id: 'wedge', name: 'Wedge', size: 3, short: '3 Cavalry in an L',
-      desc: 'Three Cavalry units filling 3 tiles of a 2x2 block (an L). It scores +{pct:formations.wedge}% of their points.' },
+      desc: 'Three Cavalry units filling 3 tiles of a 2x2 block (an L). Their points count ×{mul:formations.wedge}: the extra is a bonus on top.' },
     { id: 'pincer', name: 'Pincer', size: 4, short: 'Cavalry at both ends',
-      desc: 'Cavalry on both end tiles of a row or column, with at least one unit between them; the units between join it. It scores +{pct:formations.pincer}% of their points.' },
+      desc: 'Cavalry on both end tiles of a row or column, with at least one unit between them; the units between join it. Their points count ×{mul:formations.pincer}: the extra is a bonus on top.' },
     { id: 'covered_archers', name: 'Covered Archers', size: 4, combo: { arc: 2, inf: 2 }, short: '2 Archers + 2 Infantry',
-      desc: 'Two Archers and two Infantry units, touching each other as one group. It scores +{pct:formations.covered_archers}% of their points.' },
+      desc: 'Two Archers and two Infantry units, touching each other as one group. Their points count ×{mul:formations.covered_archers}: the extra is a bonus on top.' },
     { id: 'combined_arms', name: 'Combined Arms', size: 6, combo: { inf: 2, arc: 2, cav: 2 }, short: '2 of each in a 2x3',
-      desc: 'Six units filling a 2x3 block (two rows of three, or two columns of three): two Infantry, two Archers and two Cavalry, placed any way. It scores +{pct:formations.combined_arms}% of their points.' },
+      desc: 'Six units filling a 2x3 block (two rows of three, or two columns of three): two Infantry, two Archers and two Cavalry, placed any way. Their points count ×{mul:formations.combined_arms}: the extra is a bonus on top.' },
     { id: 'hammer_anvil', name: 'Hammer and Anvil', size: 5, short: 'Wall + 2 Cavalry',
-      desc: 'A Shield Wall (three Infantry in a straight line) with two Cavalry units each touching it. It scores +{pct:formations.hammer_anvil}% of their points.' },
+      desc: 'A Shield Wall (three Infantry in a straight line) with two Cavalry units each touching it. Their points count ×{mul:formations.hammer_anvil}: the extra is a bonus on top.' },
     { id: 'battle_line', name: 'Battle Line', size: 6, short: '3 Infantry + 3 Archers',
-      desc: 'Three Infantry in a straight row or column with three Archers in the row or column directly beside them, over the same span (a 2x3 block). It scores +{pct:formations.battle_line}% of their points.' }
+      desc: 'Three Infantry in a straight row or column with three Archers in the row or column directly beside them, over the same span (a 2x3 block). Their points count ×{mul:formations.battle_line}: the extra is a bonus on top.' }
   ];
   C.FORMATION_IDS = C.FORMATIONS.map((f) => f.id);
 
@@ -8033,7 +8035,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   // step it acts in. short: the card's one line (at most 3 words, a template).
   const teach = (id, name, rarity, fid, fname) => ({
     id, name, rarity, role: 'teach', effect: { teach: fid }, step: 'formation', short: fname,
-    desc: 'Teaches ' + fname + ': it is live this battle and scores +{P}% of its units\' points.'
+    desc: 'Teaches ' + fname + ': it is live this battle and its units\' points count ×{X} (the extra is a bonus on top).'
   });
   C.GENERALS = [
     teach('cpt_line', 'Captain of the Line', 'common', 'triad', 'Triad'),
@@ -8053,7 +8055,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     { id: 'steward', name: 'Steward', rarity: 'common', role: 'boost', effect: { kind: 'home' }, step: 'mult',
       short: 'Home ×{N}', desc: 'A unit on its home terrain is ×{N} instead of ×{terrain.mult}.' },
     { id: 'drillmaster', name: 'Drillmaster', rarity: 'common', role: 'boost', effect: { kind: 'formPct' }, step: 'formation',
-      short: 'Formations +{P}%', desc: 'Every live formation scores +{P}% more of its units\' points.' },
+      short: 'Formations +{N}×', desc: 'Every live formation counts {N} higher: a ×1.5 formation counts ×{X15}.' },
     // PLAN 57: the placement boosters, each asking for its own layout (they took the places of
     // the plain "+N to a type" boosters above, which stay defined, `retired`, for saved pools)
     { id: 'marshal_centre', name: 'Marshal of the Centre', rarity: 'common', role: 'boost', effect: { kind: 'zone', zone: 'centre' }, step: 'mult',
@@ -8086,7 +8088,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     { id: 'grand_marshal', name: 'Grand Marshal', rarity: 'rare', role: 'boost', effect: { kind: 'allTypes' }, step: 'battle',
       short: 'All arms: ×{N}', desc: 'The battle total is ×{N} if every type has a unit in a live formation.' },
     { id: 'old_campaigner', name: 'Old Campaigner', rarity: 'rare', role: 'boost', effect: { kind: 'wins' }, step: 'battle',
-      short: 'Battle ×{N}, growing', desc: 'The battle total is ×{N}, +{generals.old_campaigner.perWin} for every battle won since he joined.' }
+      short: 'Battle ×{N}, growing', desc: 'The battle total is ×{N} now, and grows by {generals.old_campaigner.perWin} with every battle won while he is in your six.' }
   ];
   C.GENERAL_IDS = C.GENERALS.map((g) => g.id);
   C.RARITIES = ['common', 'uncommon', 'rare'];
@@ -9384,24 +9386,31 @@ var(--p2-cn) left top / 44px 44px no-repeat;
    */
   function fillDesc(tpl, T0, vars) {
     const T = T0 || C.TUN_DEFAULT, V = vars || {};
-    return String(tpl).replace(/\{(pct:)?([A-Za-z0-9_.]+)\}/g, (m, pc, path) => {
+    // {pct:path} a share as a percent (0.5 -> 50); {mul:path} a bonus share as the x it gives (0.5 -> 1.5)
+    return String(tpl).replace(/\{(pct:|mul:)?([A-Za-z0-9_.]+)\}/g, (m, pc, path) => {
       let v;
       if (!pc && Object.prototype.hasOwnProperty.call(V, path)) v = V[path];
       else { v = T; for (const k of path.split('.')) v = v == null ? v : v[k]; }
       if (typeof v !== 'number') return typeof v === 'string' ? v : m;
-      return fmtNum(pc ? v * 100 : v);
+      return fmtNum(pc === 'pct:' ? v * 100 : pc === 'mul:' ? 1 + v : v);
     });
   }
-  /** {N, N1, P} of general `id` at `level`: its value, +1, and as a percent (a teacher: its formation's pct). */
-  function generalVars(T0, id, level) {
-    const T = T0 || C.TUN_DEFAULT, d = generalDef(id), v = generalValue(T, id, level);
-    const P = d && d.role === 'teach' ? (formPct(T, d.effect.teach) + v) * 100 : v * 100;
-    return { N: Number(v.toFixed(2)), N1: Number((v + 1).toFixed(2)), P: Number(P.toFixed(2)) };
+  /** {N, N1, P, X, X15} of general `id` at `level`: its value (the Old Campaigner's with `wins`,
+   *  the battles he has won: what he gives now), +1, as a percent (a teacher: its formation's
+   *  pct), a teacher's formation as the x it gives (1 + pct), and 1.5 + the value (Drillmaster's
+   *  example). 2026-10-23 (user): every general reads as a x. */
+  function generalVars(T0, id, level, wins) {
+    const T = T0 || C.TUN_DEFAULT, d = generalDef(id);
+    let v = generalValue(T, id, level);
+    if (d && d.effect && d.effect.kind === 'wins') v += genNum(T, id, 'perWin', 0.1) * Math.max(0, wins || 0);
+    const share = d && d.role === 'teach' ? formPct(T, d.effect.teach) + v : v;
+    const r2 = (x) => Number(x.toFixed(2));
+    return { N: r2(v), N1: r2(v + 1), P: r2(share * 100), X: r2(1 + share), X15: r2(1.5 + v) };
   }
-  /** The one line of general `id` at `level` (generals.js short, filled). */
-  const generalShort = (T, id, level) => { const d = generalDef(id); return d ? fillDesc(d.short, T, generalVars(T, id, level)) : ''; };
+  /** The one line of general `id` at `level` (generals.js short, filled; `wins` for the Old Campaigner). */
+  const generalShort = (T, id, level, wins) => { const d = generalDef(id); return d ? fillDesc(d.short, T, generalVars(T, id, level, wins)) : ''; };
   /** The full rule of general `id` at `level` (generals.js desc, filled). */
-  const generalDesc = (T, id, level) => { const d = generalDef(id); return d ? fillDesc(d.desc, T, generalVars(T, id, level)) : ''; };
+  const generalDesc = (T, id, level, wins) => { const d = generalDef(id); return d ? fillDesc(d.desc, T, generalVars(T, id, level, wins)) : ''; };
 
   Object.assign(C, {
     SHAPE_IDS, createBattle, startDeck, leaderCards, arrivalsOf, arrivalsAt, arrivalCards, kindIntroduced, arrivalSwap, redeal,
@@ -11485,7 +11494,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     if (!d) return '';
     const T = TUN(o.tun), lv = Math.max(1, (g.level || 1));
     const C = Core();
-    const line = o.line != null ? o.line : (C.generalShort ? C.generalShort(T, d.id, lv) : '');
+    const line = o.line != null ? o.line : (C.generalShort ? C.generalShort(T, d.id, lv, g.wins) : '');
     return '<div class="g6 ' + d.role + (o.cls ? ' ' + o.cls : '') + '" data-general="' + esc(d.id) + '" data-rarity="' + esc(d.rarity) + '" style="--cw:' + Math.round(o.w || 252) + 'px"' + attrsOf(o.attrs) + ' aria-label="' + esc(d.name) + (d.rarity !== 'common' ? ', ' + esc(d.rarity) : '') + '">' +
       '<div class="g6-band"></div>' +
       '<div class="g6-win"><div class="g6-sky"></div>' + generalScene(d.id) + '</div>' +
@@ -11500,14 +11509,14 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     '</div>';
   }
 
-  /** A general's strength at a level in a few words: a booster's one line ("Infantry +5"), a
-   *  teacher's formation and bonus ("Shield Wall +150%"). */
+  /** A general's strength at a level in a few words: a booster's one line ("Centre ×1.75"), a
+   *  teacher's formation and the x it gives ("Shield Wall ×2.5"; 2026-10-23: x, not %). */
   function levelLine(tun, id, lv) {
     const C = Core(), T = TUN(tun), d = genDef(id);
     if (!d) return '';
     if (d.role !== 'teach') return C.generalShort(T, id, lv);
     const f = find(C.FORMATIONS, d.effect.teach);
-    return (f ? f.name + ' ' : '') + '+' + Math.round(numOr((T.formations || {})[d.effect.teach], 0) * 100 + C.generalValue(T, id, lv) * 100) + '%';
+    return (f ? f.name + ' ' : '') + '×' + Number((1 + numOr((T.formations || {})[d.effect.teach], 0) + C.generalValue(T, id, lv)).toFixed(2));
   }
 
   // ---- the long-press panel: a card's full text ---------------------------------------------------
@@ -11518,7 +11527,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     if (item.general) {
       const d = genDef(item.general.id), lv = item.general.level || 1;
       if (!d) return { title: '', body: '' };
-      let body = '<p class="dt-k">' + (d.role === 'teach' ? 'Teaches a formation' : 'Boost') + ' · ' + esc(d.rarity) + ' · level ' + lv + '</p>' + p(C.generalDesc(T, d.id, lv));
+      let body = '<p class="dt-k">' + (d.role === 'teach' ? 'Teaches a formation' : 'Boost') + ' · ' + esc(d.rarity) + ' · level ' + lv + '</p>' + p(C.generalDesc(T, d.id, lv, item.general.wins));
       if (d.role === 'teach') {
         const f = find(C.FORMATIONS, d.effect.teach);
         if (f) body += '<div class="dt-form">' + (TTF4.Art ? TTF4.Art.formationDiagram(f.id) : '') + '<div><b>' + esc(f.name) + '</b>' + p(fill(f.desc, T)) + '</div></div>';
@@ -12215,10 +12224,11 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     return '<div class="fdrow">' + teach.map((id, i) => {
       if (!id) return '<div class="fdslot" style="width:' + genW() + 'px"></div>';
       const lf = live.find((f) => f.id === id && f.general === gens[i].id) || live.find((f) => f.id === id);
-      const pct = lf ? Math.round(lf.pct * 100) : null;
+      // 2026-10-23 (user): every general reads as a x; a formation's share pct shows as x(1 + pct)
+      const mul = lf ? Number((1 + lf.pct).toFixed(2)) : null;
       const n = formed[id] || 0;
       return '<div class="fdslot" style="width:' + genW() + 'px"><div class="fdg2' + (n ? ' on' : '') + (flare === id ? ' flare' : '') + '" data-gi="' + i + '" data-form="' + esc(id) + '">' +
-        Art.formationDots(id) + (pct != null ? '<b>+' + pct + '%</b>' : '') + (n > 1 ? '<i>×' + n + '</i>' : '') + '</div></div>';
+        Art.formationDots(id) + (mul != null ? '<b>×' + mul + '</b>' : '') + (n > 1 ? '<i>' + n + ' live</i>' : '') + '</div></div>';
     }).join('') + '</div>';
   }
 
@@ -13493,7 +13503,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   S.generalsIntro = function generalsIntro(intro, tun, cb) {
     const T = tun || Core().TUN_DEFAULT;
     const cards = (intro.generals || []).map((g) => '<div class="gi">' + Cards().generalHtml(g, { w: 220, tun: T }) +
-      '<p>' + esc(Core().generalDesc(T, g.id, g.level || 1)) + '</p></div>').join('');
+      '<p>' + esc(Core().generalDesc(T, g.id, g.level || 1, g.wins)) + '</p></div>').join('');
     const html = '<div class="plate wide gintro"><p class="kick">Battle ' + intro.battle + '</p><h2>Your generals</h2>' +
       '<p class="say">You command six generals. Each battle, three of them take the field: they stand above the board.</p>' +
       '<div class="legend"><span class="lg-t">' + roleDot('teach') + 'Violet: teaches a formation (a bonus on top)</span><span class="lg-b">' + roleDot('boost') + 'Amber: boosts your units</span></div>' +
@@ -13512,7 +13522,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     const C = Core(), T = tun || tunOf(st);
     const gens = (st && st.generals) || [];
     const cards = gens.map((g) => '<div class="gi">' + Cards().generalHtml(g, { w: 220, tun: T }) +
-      '<p>' + esc(C.generalDesc(T, g.id, g.level || 1)) + '</p></div>').join('');
+      '<p>' + esc(C.generalDesc(T, g.id, g.level || 1, g.wins)) + '</p></div>').join('');
     const html = '<div class="plate wide gintro fresh"><p class="kick">Battle ' + ((st && st.battle) || 1) + '</p><h2>Fresh orders</h2>' +
       '<p class="say">New generals take the field. The field stays the same; three of your six are dealt anew.</p>' +
       '<div class="grow">' + cards + '</div>' +
@@ -13789,7 +13799,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
             // or a compact row per card (its portrait and number, its words and XP in full)
             : '<div class="dlist">' + shown.map((g, i) => K.rowHtml(g.card, Object.assign({ tun: T, attrs: { 'data-i': i } }, rowWords(g.card)))).join('') + '</div>') +
           '<p class="say small">Press and hold a card to read it.</p>'
-        : '<div class="gpool">' + (run.generals || []).map((g, i) => '<div class="gp" data-g="' + i + '">' + K.generalHtml(g, { w: 216, tun: T }) + '<p>' + esc(C.generalDesc(T, g.id, g.level || 1)) + '</p></div>').join('') + '</div>' +
+        : '<div class="gpool">' + (run.generals || []).map((g, i) => '<div class="gp" data-g="' + i + '">' + K.generalHtml(g, { w: 216, tun: T }) + '<p>' + esc(C.generalDesc(T, g.id, g.level || 1, g.wins)) + '</p></div>').join('') + '</div>' +
           '<p class="say small">Each battle deals three of them.</p>') +
       '<div class="acts">' + btn('close', 'Close', 'primary') + '</div></div>';
     const entry = open('deck', frame(), { onEsc: () => close(entry) });
@@ -13957,7 +13967,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
         }).join('') + '</div>' +
           '<p class="say small">A formation scores only when one of the battle\'s generals teaches it: its units score as usual and it adds its bonus on top. One unit may serve in several formations.</p>';
       }
-      const yours = pool.map((g) => '<div class="bk-g">' + K.generalHtml(g, { w: 200, tun: T }) + '<p>' + esc(C.generalDesc(T, g.id, g.level || 1)) + '</p></div>').join('');
+      const yours = pool.map((g) => '<div class="bk-g">' + K.generalHtml(g, { w: 200, tun: T }) + '<p>' + esc(C.generalDesc(T, g.id, g.level || 1, g.wins)) + '</p></div>').join('');
       const others = C.GENERALS.filter((g) => !g.retired && !pool.some((q) => q.id === g.id)).map((g) =>
         '<li><i class="rdot ' + g.role + '"></i><b>' + esc(g.name) + '</b><span>' + esc(C.generalShort(T, g.id, 1)) + '</span><em>' + esc(g.rarity) + '</em></li>').join('');
       return '<h4>Your six</h4><div class="bk-gens">' + yours + '</div><h4>Others you may meet in the spoils</h4><ul class="bk-others">' + others + '</ul>';
