@@ -13,8 +13,8 @@
 <!--
   site/index.html - the public play page's home screen (morguloth.github.io/ttf-play): pick a
   campaign. Built into the Pages clone by tools/build-pages.js next to core4.html.
-  Council of War = Core 4 (PLAN 53-58: generals dealt per battle), the only version published
-  since 2026-10-23 (the legacy builds were taken down). It reads the saved run (ttf-core4:run,
+  The one game is Core 4 (PLAN 53-58: generals dealt per battle), the only version published
+  since 2026-10-23 (the legacy builds were taken down; no build name on the card). It reads the saved run (ttf-core4:run,
   same origin) only to say "Battle N in progress"; it never writes storage.
 -->
 <style>
@@ -94,14 +94,6 @@ main {
   background: var(--noise), radial-gradient(ellipse at 50% 30%, var(--parch-lit), var(--parch) 60%, var(--parch-shade));
   box-shadow: inset 0 0 0 1px rgba(94,63,11,.55), inset 0 0 0 4px rgba(251,242,216,.5), inset 0 0 26px rgba(120,80,20,.28);
 }
-.name {
-  margin: 14px -8px 0; align-self: stretch; padding: 8px 18px 10px;
-  font-family: var(--banner); font-weight: 700; font-size: clamp(20px, 3vw, 26px); letter-spacing: 0.05em;
-  color: var(--rink); text-shadow: 0 1px 1px rgba(0,0,0,.55);
-  background: linear-gradient(180deg, rgba(255,255,255,.2), transparent 45%, rgba(0,0,0,.25)), linear-gradient(180deg, var(--r1), var(--r2) 55%, var(--r3));
-  box-shadow: 0 0 0 1px rgba(30,15,5,.8), 0 5px 8px -3px rgba(10,5,0,.55);
-  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 50%, 100% 100%, 0 100%, 12px 50%);
-}
 .art { width: 100%; max-width: 230px; height: auto; margin: 16px 0 4px; }
 .tag {
   margin: 4px 0 10px; font-variant: small-caps; font-weight: 700; letter-spacing: 0.12em; font-size: 14px; color: var(--ink-dim);
@@ -145,10 +137,8 @@ footer { margin-top: auto; padding-top: 36px; font-size: 13px; color: var(--text
 main { grid-template-columns: minmax(0, 560px); max-width: 600px; }
 .camp[data-tone="royal"] { --r1: #6a5fb0; --r2: #3a2f7a; --r3: #221a4f; --rink: #fff4d6; }
 .camp.feature { background: linear-gradient(160deg, #f7e2a4, #deb24a 40%, #86601a); box-shadow: 0 0 0 1px #2a1a06, 0 2px 2px rgba(10,5,0,.45), 0 14px 22px -6px rgba(10,5,0,.6), 0 34px 50px -18px rgba(6,3,0,.8), 0 0 70px -14px rgba(var(--lamp), .45); }
-.camp.feature .name { font-size: clamp(24px, 4vw, 32px); }
 .camp.feature .desc { font-size: 17.5px; }
 .camp.feature .go { font-size: 20px; min-height: 50px; padding: 0 36px; }
-.ribbon { position: absolute; z-index: 2; top: -12px; right: 18px; padding: 4px 14px; font-family: var(--banner); font-weight: 700; font-size: 15px; letter-spacing: .08em; color: #2a1a06; background: var(--brass-plate); box-shadow: 0 0 0 1px #4a300a, 0 4px 6px rgba(10,5,0,.5); clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%); }
 .camp.feature .face { position: relative; }
 @media (prefers-reduced-motion: reduce) { .camp { transition: none; } .camp:hover { transform: none; } }
 </style>
@@ -168,8 +158,6 @@ main { grid-template-columns: minmax(0, 560px); max-width: 600px; }
 <main>
   <a class="camp feature" data-tone="royal" href="core4.html" data-key="ttf-core4:run">
     <div class="face">
-      <div class="ribbon">New</div>
-      <div class="name">Council of War</div>
       <svg class="art" viewBox="0 0 230 110" aria-hidden="true">
         <ellipse cx="115" cy="98" rx="104" ry="9" fill="rgba(94,63,11,.18)"/>
         <path d="M70 92 V52 L115 30 L160 52 V92 Z" fill="#e9dcc0" stroke="#5e3f0b" stroke-width="2"/>
