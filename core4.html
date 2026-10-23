@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="f5fc1d2540";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="651e30e920";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1159,6 +1159,10 @@ svg.areas path { fill: none; stroke-linejoin: round; stroke-linecap: round; }
 .zn.lit .zo { fill: rgba(255, 196, 96, 0.28); }
 .zn.lit .zl { stroke: #ffe3a3; stroke-width: calc(var(--cell) * 0.03); stroke-dasharray: none; filter: drop-shadow(0 0 4px rgba(255, 190, 90, 0.95)); }
 .table.focusing .zn { opacity: 0.3; }
+/* PLAN 58: the one-time lesson glow: where the held card would complete a taught formation */
+svg.areas path.cg { fill: rgba(176, 120, 255, 0.24); stroke: #d7b8ff; stroke-width: calc(var(--cell) * 0.035); filter: drop-shadow(0 0 6px rgba(170, 110, 255, 0.95)); animation: cgPulse 1.4s ease-in-out infinite; }
+@keyframes cgPulse { 50% { fill: rgba(176, 120, 255, 0.4); } }
+@media (prefers-reduced-motion: reduce) { svg.areas path.cg { animation: none; } }
 .ar .al { stroke: var(--ac); stroke-width: calc(var(--cell) * 0.02); stroke-dasharray: calc(var(--cell) * 0.05) calc(var(--cell) * 0.04); }
 .table.holding .ar { opacity: 0.7; }
 .table.focusing .ar { opacity: 0.22; }
@@ -8127,7 +8131,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   // The card kinds' own rules (templates as above).
   C.CARD_DESC = {
     unit: 'Scores its value: its rank power, ×{terrain.mult} on its home terrain, ×{fort.mult} on a fort, × an officer\'s factor when one of its type reaches it, its traits, and the boosts of the generals in play. Formations taught by your generals add a bonus on top.',
-    officer: 'He multiplies his type: every unit of his type in his shape or on his own tile is × his factor, never himself. Played on an empty tile he stands alone as a unit of his type; played on a unit or hero without an officer he commands it. He earns XP and ranks up.',
+    officer: 'He multiplies his type: every unit of his type in his area or on his own tile is × his factor, never himself. His area is not a formation: the two stack. Played on an empty tile he stands alone as a unit of his type; played on a unit or hero without an officer he commands it. He earns XP and ranks up.',
     engineer: 'Builds a fort on an empty tile; the tile stays free for a card. A unit standing on a fort is ×{fort.mult}. A fort is never part of a formation.',
     hero: 'A unit of its type that starts at rank {heroes.rank} and grows by itself (its rule). It fills a slot of its type in formations, earns XP and ranks up like a unit.'
   };
@@ -9261,6 +9265,14 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   function totalAfter(st, pick, slot) {
     try { return total(place(st, pick, slot)); } catch (e) { return null; }
   }
+  /** PLAN 58: the legal slots where hand card `pick` (a unit or hero) would make one more taught
+   *  formation instance live (the onboarding's one-time glow); [] for any other card. */
+  function completesAt(st, pick) {
+    const card = st && st.phase === 'draft' ? (st.offer || [])[pick] : null;
+    if (!card || (card.kind !== 'unit' && card.kind !== 'hero')) return [];
+    const n0 = score(st).formations.length;
+    return legalSlots(st, card).filter((s) => { try { return score(place(st, pick, s)).formations.length > n0; } catch (e) { return false; } });
+  }
   /** The battle's target: state.target or tun.run.target[0]. */
   const target = (st) => (typeof st.target === 'number' ? st.target : tunOf(st).run.target[0]);
   /** Is the battle won (battle total at least the target)? */
@@ -9385,7 +9397,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     heroAbility, heroCard, heroTypeOf, heroRank: heroRankOf, pieceFor: newPiece, migrateCard, migrateState,
     bossOf, blockedOf, turnsOf, offerSizeOf, isHidden, hiddenSlots, rankPower, maxRank, traitTun,
     traitsOf: (c) => traitList(c).slice(), traitCounts, hasTrait, stackTraitFactor: stackFx, kindOf,
-    generalDef, generalValue, inZone, largestGroups, liveFormations, candidates, xpAtRank, fillDesc, generalShort, generalDesc,
+    generalDef, generalValue, inZone, largestGroups, completesAt, liveFormations, candidates, xpAtRank, fillDesc, generalShort, generalDesc,
     cardName, cardOrder, sortCards, drawPileList, orthOf: (i) => ORTH[i].slice(), isEdge, homeMult, fortMult
   });
   if (typeof module !== 'undefined') module.exports = C;
@@ -11509,7 +11521,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     } else if (card.kind === 'officer') {
       const r = officerRank(card);
       body += '<p class="dt-k">' + esc((TYPE_NAMES[card.type] || '') + ' officer · rank ' + r + ' · ' + (SHAPE_NAMES[card.shape] || '') + ' · ×' + officerMult(T, r) + ' · ' + xpOf(card, T).text) + '</p>';
-      body += '<div class="dt-shape">' + shapeDiagram(card.shape) + '<span>His shape: the lit tiles around him.</span></div>';
+      body += '<div class="dt-shape">' + shapeDiagram(card.shape) + '<span>His area: the lit tiles around him. It is not a formation; the two stack.</span></div>';
       body += p(fill(C.CARD_DESC.officer, T));
     } else if (card.kind === 'engineer') {
       body += p(fill(C.CARD_DESC.engineer, T));
@@ -12564,6 +12576,13 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   B.outlinePath = outlinePath;
 
   let focusSlot = -1;
+  // PLAN 58: the onboarding's one-time glow (callouts.js 'complete'): the tiles where the held
+  // card would complete a taught formation, while that card stays held
+  let lessonSlots = null;
+  B.lesson = function lesson(slots) {
+    lessonSlots = slots && slots.length ? slots.slice() : null;
+    if (stage) drawAreas(stage.querySelector('.field'), sel != null && st ? { card: st.offer[sel], slot: hover != null ? hover : null } : null);
+  };
   /** Draw the areas into the board's svg: the faint outlines, the lit ones, the focus, the held
    *  officer's preview (o: {card, slot: the target tile}). */
   function drawAreas(field, o) {
@@ -12596,6 +12615,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       a.cells.forEach((i) => { s += '<path class="ac" d="' + outlinePath([i], 7 * u, 12 * u, at) + '"/>'; });
       return s + '<path class="ah" d="' + outlinePath([a.slot], 3 * u, 12 * u, at) + '"/></g>';
     };
+    if (lessonSlots && held && !rv) lessonSlots.forEach((i) => { h += '<path class="cg" d="' + outlinePath([i], 4 * u, 14 * u, at) + '"/>'; });
     if (foc) h += strong(foc, 'focus');
     if (held && held.kind === 'officer' && o.slot != null && !rv) {
       h += strong({ slot: o.slot, type: held.type || 'inf', cells: areaCellsOf(st, o.slot, held) }, 'prev');
@@ -13480,7 +13500,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   function arrivalText(kind, T0) {
     const T = T0 || Core().TUN_DEFAULT;
     const om = (T.officer && T.officer.mult && T.officer.mult[0]) || 2, fm = (T.fort && T.fort.mult) || 3;
-    if (kind === 'officer') return { title: 'Officers have joined your army', say: 'An officer multiplies his type: every unit of his type in his shape (the lit tiles around him) or on his own tile is ×' + om + '. Play him on a unit to command it, or on an empty tile to stand as a unit himself.' };
+    if (kind === 'officer') return { title: 'Officers have joined your army', say: 'An officer multiplies his type: every unit of his type in his area (the lit tiles around him) or on his own tile is ×' + om + '. His area is not a formation: no officer is needed for one. Play him on a unit to command it, or on an empty tile to stand as a unit himself.' };
     if (kind === 'hero') return { title: 'Heroes have joined your army', say: 'A hero is a unit of his type who starts at rank ' + ((T.heroes && T.heroes.rank) || 2) + ', earns XP and ranks up like any unit, and grows by his own rule: some by the turn they are played, some by what stands around them. Press and hold one to read it.' };
     if (kind === 'engineer') return { title: 'Engineers have joined your army', say: 'An engineer builds a fort on an empty tile. A unit standing on a fort is ×' + fm + '. The fort is a tile feature: the tile still takes a unit.' };
     return { title: 'New cards have joined your army', say: '' };
@@ -13986,11 +14006,22 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     // 2026-10-22 (user): new players need to be told that holding anything shows what it does
     { id: 'hold', when: (f) => f.placed != null },
     { id: 'home', when: (f) => (f.held === 'unit' || f.held === 'hero') && f.home, hold: true },
+    // PLAN 58 (a first-time player's feedback): each idea where it is first used, one per tip.
+    // teach: a soldier held while a teacher is dealt; complete: the one-time glow where the held
+    // soldier would complete a taught formation; zone: a placement general's amber tiles; officer
+    // and engineer: the first one held; fort: a fort standing empty, no card held
+    { id: 'teach', when: (f) => (f.held === 'unit' || f.held === 'hero') && f.teach, hold: true },
+    { id: 'complete', when: (f) => !!(f.completes && f.completes.length), hold: true },
+    // (zone waits for a soldier on the board, so the first card held is not a wall of tips)
+    { id: 'zone', when: (f) => (f.held === 'unit' || f.held === 'hero') && f.zone && f.placed != null, hold: true },
+    { id: 'officer', when: (f) => f.held === 'officer', hold: true },
+    { id: 'engineer', when: (f) => f.held === 'engineer', hold: true },
+    { id: 'fort', when: (f) => !f.held && f.emptyFort != null },
     { id: 'formation', when: (f) => f.formation, hold: true }
     // no tip for what has its own introduction screen: officers, heroes, engineers and forts
     // (the arrival screens); "Your generals" opens battle 1 and the tip then points at the row.
   ];
-  const SCREENS = ['swap', 'upgrade', 'promote'];
+  const SCREENS = ['swap', 'newgeneral', 'upgrade', 'promote'];
   const FIRST = ['drag', 'generals'];
 
   /** The in-battle tip to show now, or null: the first relevant unseen one in CONCEPTS order
@@ -14148,6 +14179,18 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     const placed = Object.keys(st.pieces || {}).map(Number).filter((k) => st.pieces[k]);
     f.placed = placed.length ? placed[0] : null;
     (st.offer || []).forEach((c) => { if (c) f.hand[c.kind] = true; });
+    // PLAN 58
+    const gdef = Core.generalDef || (() => null), hidden = Core.isHidden || (() => false);
+    const gens = (st.generals || []).map((g) => gdef(g.id)).filter(Boolean);
+    f.teach = gens.some((d) => d.role === 'teach');
+    f.zone = !!(TTF4.Board && TTF4.Board.zones && TTF4.Board.zones(st).length);
+    const empty = (st.forts || []).find((k) => !(st.pieces || {})[k] && !hidden(st, k));
+    f.emptyFort = empty == null ? null : empty;
+    // the glow's slots are worked out only while its lesson is still to come (it scores the board)
+    if (x.hold && !seen.has('complete') && (x.hold.kind === 'unit' || x.hold.kind === 'hero')) {
+      const pick = (st.offer || []).indexOf(x.hold);
+      f.completes = pick >= 0 && Core.completesAt ? Core.completesAt(st, pick) : [];
+    }
     return f;
   }
   /** Why no battle tip may show right now: 'idle' (not in a battle), 'busy' (a screen is up,
@@ -14191,6 +14234,60 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       }
       case 'formation':
         return { target: () => $('#stage .ftag span'), side: ['top', 'bottom', 'right'], lines: ['A formation! Its units score a bonus on top, counted at the end.', 'Only formations your generals teach count.'] };
+      // PLAN 58
+      case 'teach': {
+        const gi = (st.generals || []).findIndex((g) => (Core.generalDef(g.id) || {}).role === 'teach');
+        const g = Core.generalDef(st.generals[gi].id), fd = (Core.FORMATIONS || []).find((q) => q.id === g.effect.teach) || {};
+        return {
+          target: () => $('#stage .gens .fdg2[data-gi="' + gi + '"]') || $('#stage .gens .fdg2'), side: ['bottom', 'right', 'left'],
+          lines: [g.name + ' teaches ' + fd.name + ': ' + String(fd.short || '').replace(/^[A-Z](?=[a-z])/, (c) => c.toLowerCase()) + '.', 'Any of your units of those types, touching. No officer needed.']
+        };
+      }
+      case 'complete': {
+        const pick = (st.offer || []).indexOf(x.hold), slots = Core.completesAt(st, pick);
+        if (!slots.length) return null;
+        const before = Core.score(st).formations.map((q) => q.id);
+        let name = 'a formation';
+        try {
+          const after = Core.score(Core.place(st, pick, slots[0])).formations.map((q) => q.id);
+          const id = after.find((q) => { const k = before.indexOf(q); if (k < 0) return true; before.splice(k, 1); return false; });
+          const fd = (Core.FORMATIONS || []).find((q) => q.id === id);
+          if (fd) name = fd.name;
+        } catch (e) { /* the generic name */ }
+        const held = x.hold;
+        return {
+          target: () => tileTarget(slots[0]), side: ['top', 'right', 'left', 'bottom'],
+          start: () => { if (TTF4.Board && TTF4.Board.lesson) TTF4.Board.lesson(slots); },
+          until: () => { const h = ctxFn().hold; return !!h && h === held; },
+          end: () => { if (TTF4.Board && TTF4.Board.lesson) TTF4.Board.lesson(null); },
+          lines: ['Place it on a glowing tile to complete ' + name + '!', 'Its units then score a bonus on top.']
+        };
+      }
+      case 'zone': {
+        const z = TTF4.Board.zones(st)[0], g = Core.generalDef(z.id), lv = ((st.generals || []).find((q) => q.id === z.id) || {}).level || 1;
+        return {
+          target: () => tileTarget(z.cells[0]), side: ['top', 'right', 'left', 'bottom'],
+          lines: ['Amber tiles: ' + g.name + ' gives ×' + Core.generalValue(T, z.id, lv) + ' to any unit there.', 'Any type counts, and it stacks with home ground.']
+        };
+      }
+      case 'officer':
+        return {
+          target: () => handSlots()[(st.offer || []).indexOf(x.hold)] || fanTarget(), side: ['top', 'right', 'left'],
+          lines: ['An officer multiplies units of his type in his area: the lit tiles around him.', 'His area is not a formation; the two stack.']
+        };
+      case 'engineer':
+        return {
+          target: () => handSlots()[(st.offer || []).indexOf(x.hold)] || fanTarget(), side: ['top', 'right', 'left'],
+          lines: ['An engineer builds a fort on an empty tile.', 'A unit you place on the fort later is ×' + fortMult(T) + '.']
+        };
+      case 'fort': {
+        const slot = (st.forts || []).find((k) => !st.pieces[k] && !Core.isHidden(st, k));
+        return {
+          target: () => tileTarget(slot), side: ['top', 'right', 'left', 'bottom'],
+          until: () => { const x2 = ctxFn(); return !!x2.st && !(x2.st.pieces || {})[slot] && !x2.hold; },
+          lines: ['Your fort: stand a strong unit here.', 'It is ×' + fortMult(T) + ' while it holds the fort.']
+        };
+      }
     }
     return null;
   }
@@ -14198,6 +14295,8 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     const top = () => { const ovs = document.querySelectorAll('.c2-ov:not(.is-out)'); return ovs[ovs.length - 1] || null; };
     const inScreen = (screen, sel) => () => { const o = top(); return o && o.getAttribute('data-screen') === screen ? o.querySelector(sel) : null; };
     switch (id) {
+      // PLAN 58: the first spoils that offer a general
+      case 'newgeneral': return { target: () => { const o = top(); const g = o && o.getAttribute('data-screen') === 'offer' ? o.querySelector('.orow .g6') : null; return g ? g.closest('.pk') : null; }, side: ['bottom', 'top', 'right', 'left'], lines: ['A new general: he joins your six, replacing one of them.', 'Each battle, three of your six are dealt.'] };
       case 'swap': return { target: () => hug(inScreen('offer', '.orow')()), side: ['bottom', 'top'], lines: ['Take one: it replaces one of three you are shown.', 'Press and hold a card or general to read what it does.'] };
       case 'upgrade': return { target: () => hug(inScreen('upgrade', '.grow')()), side: ['bottom', 'top'], lines: ['One of these three units learns it, for good.', 'Or refuse it.'] };
       case 'promote': return { target: () => hug(inScreen('promote', '.grow')()), side: ['bottom', 'top'], lines: ['A promoted general is stronger in every battle he is dealt.'] };
@@ -14222,6 +14321,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     document.body.appendChild(el);
     cur = { id, el, tip, screen, shownAt: performance.now(), missing: 0 };
     markSeen(id);
+    if (tip.start) tip.start();
     place(true);
     el.classList.add('is-in');
     tickT = setInterval(tick, 200);
@@ -14302,8 +14402,9 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   }
   function dismiss() {
     if (!cur) return;
-    const el = cur.el, wasBattle = !cur.screen;
+    const el = cur.el, wasBattle = !cur.screen, end = cur.tip.end;
     cur = null;
+    if (end) end();
     clearInterval(tickT);
     // fade out; the button stays under the pointer until the press is over, so the click that
     // follows a press on it lands on it, never on whatever lay beneath
@@ -14401,7 +14502,8 @@ var(--p2-cn) left top / 44px 44px no-repeat;
  * Saves (never trusted to exist): localStorage 'ttf-core4:run' = {v:1, run, st} after every step
  * (st: the battle on the board with its undo chain, tunables stripped); 'ttf-core4:best' =
  * {laurels, seed}; 'ttf-core4:seen' the tips shown (callouts.js); 'ttf-core4:tun' an override
- * of the tunables (read only); 'ttf-core4:prefs' = {deckSort} the deck view's sort (screens.js).
+ * of the tunables (read only); 'ttf-core4:prefs' = {deckSort, deckLook} the deck view (screens.js);
+ * 'ttf-core4:reset' the last forced reset applied (forcedReset).
  * Nothing else is read or written.
  */
 (function () {
@@ -14420,6 +14522,17 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   };
   let tun = null;
   try { const raw = store.get('tun'); if (raw) tun = C.mergeTun(C.TUN_DEFAULT, JSON.parse(raw)); } catch (e) { tun = null; }
+
+  // ---- a one-time forced reset (2026-10-23, user: after PLAN 57/58 everyone starts fresh) ------
+  // When RESET_ID changes, the next load drops the saved run and the tips seen, once per browser.
+  // The best Laurels, the tuning override and the preferences stay.
+  const RESET_ID = '2026-10-23-p58';
+  function forcedReset() {
+    if (store.get('reset') === RESET_ID) return;
+    store.del('run');
+    Tips.reset();
+    store.set('reset', RESET_ID);
+  }
 
   // ---- state -----------------------------------------------------------------------------------
   // mode: 'boot' | 'battle' (placing) | 'screen' (a plate or prompt before the hand) | 'reveal' |
@@ -14532,6 +14645,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     document.addEventListener('keydown', onKey);
     homeCheck();
     Tips.mount({ off: false, ctx: () => ({ mode, st, run, hold: st && Board.selected() != null && st.phase === 'draft' ? st.offer[Board.selected()] : null, dealing: false }) });
+    forcedReset();
     const saved = load();
     if (saved) { run = saved.run; st = saved.st; resume(); } else newRun();
     if (document.body.dataset.phase === 'boot') document.body.dataset.phase = 'ready';   // the boot guard (index.html) reads it
@@ -14688,7 +14802,9 @@ var(--p2-cn) left top / 44px 44px no-repeat;
         const opt = run.offer.options[ch.index];
         return opt && opt.kind === 'general' ? R.pickGeneralOffer(run, ch.index, ch.replaceId) : R.pickOffer(run, ch.index, ch.removeUid);
       }));
-      Tips.screen('swap');
+      // PLAN 58: the first spoils with a general explain the pool; the plain swap tip waits
+      const hasGen = ((run.offer && run.offer.options) || []).some((o) => o && o.kind === 'general');
+      Tips.screen(hasGen && Tips.seen().indexOf('newgeneral') < 0 ? 'newgeneral' : 'swap');
     } else if (run.phase === 'upgrade') {
       Screens.upgrade(run, go((ch) => (ch && ch.refuse ? R.refuseUpgrade(run) : R.pickUpgrade(run, { uid: ch.uid }))));
       Tips.screen('upgrade');
