@@ -12,10 +12,10 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap">
 <!--
   site/index.html - the public play page's home screen (morguloth.github.io/ttf-play): pick a
-  campaign. Built into the Pages clone by tools/build-pages.js next to core4.html / core3.html.
-  Council of War = Core 4 (featured; PLAN 53-56: generals dealt per battle); Raw Recruits = Core 3
-  (legacy). Full Muster (core2.html) stays on Pages, unlinked. It reads each game's saved run
-  (ttf-core4:run / ttf-core3:run, same origin) only to say "Battle N in progress"; it never writes storage.
+  campaign. Built into the Pages clone by tools/build-pages.js next to core4.html.
+  Council of War = Core 4 (PLAN 53-58: generals dealt per battle), the only version published
+  since 2026-10-23 (the legacy builds were taken down). It reads the saved run (ttf-core4:run,
+  same origin) only to say "Battle N in progress"; it never writes storage.
 -->
 <style>
 :root {
@@ -141,7 +141,7 @@ footer { margin-top: auto; padding-top: 36px; font-size: 13px; color: var(--text
   main { grid-template-columns: minmax(0, 380px); }
   .art { max-width: 190px; margin-top: 12px; }
 }
-/* Core 4 featured, Core 3 below as a smaller legacy card (2026-10-22) */
+/* Core 4, the one campaign (2026-10-23: the legacy card is gone) */
 main { grid-template-columns: minmax(0, 560px); max-width: 600px; }
 .camp[data-tone="royal"] { --r1: #6a5fb0; --r2: #3a2f7a; --r3: #221a4f; --rink: #fff4d6; }
 .camp.feature { background: linear-gradient(160deg, #f7e2a4, #deb24a 40%, #86601a); box-shadow: 0 0 0 1px #2a1a06, 0 2px 2px rgba(10,5,0,.45), 0 14px 22px -6px rgba(10,5,0,.6), 0 34px 50px -18px rgba(6,3,0,.8), 0 0 70px -14px rgba(var(--lamp), .45); }
@@ -150,12 +150,6 @@ main { grid-template-columns: minmax(0, 560px); max-width: 600px; }
 .camp.feature .go { font-size: 20px; min-height: 50px; padding: 0 36px; }
 .ribbon { position: absolute; z-index: 2; top: -12px; right: 18px; padding: 4px 14px; font-family: var(--banner); font-weight: 700; font-size: 15px; letter-spacing: .08em; color: #2a1a06; background: var(--brass-plate); box-shadow: 0 0 0 1px #4a300a, 0 4px 6px rgba(10,5,0,.5); clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%); }
 .camp.feature .face { position: relative; }
-.camp.legacy { filter: saturate(.8); }
-.camp.legacy .face { padding-bottom: 16px; }
-.camp.legacy .name { font-size: clamp(18px, 2.6vw, 22px); }
-.camp.legacy .desc { font-size: 16px; }
-.camp.legacy .go { min-height: 44px; font-size: 17px; }
-@media (min-width: 641px) and (max-height: 860px) { main { grid-template-columns: minmax(0, 480px) minmax(0, 340px); max-width: 880px; align-items: start; } }
 @media (prefers-reduced-motion: reduce) { .camp { transition: none; } .camp:hover { transform: none; } }
 </style>
 </head>
@@ -168,7 +162,7 @@ main { grid-template-columns: minmax(0, 560px); max-width: 600px; }
     <path d="M32 24 L35 31 L42 31 L36.5 35.5 L38.5 43 L32 38.5 L25.5 43 L27.5 35.5 L22 31 L29 31 Z" fill="url(#br)"/>
   </svg>
   <h1>Take the Field</h1>
-  <p class="kicker">Choose your campaign</p>
+  <p class="kicker">A campaign of thirty battles</p>
 </header>
 
 <main>
@@ -195,17 +189,6 @@ main { grid-template-columns: minmax(0, 560px); max-width: 600px; }
       <p class="meta">30 battles · 3 of 6 generals each battle · best on iPad, upright</p>
       <p class="progress" aria-live="polite"></p>
       <span class="go">Take command</span>
-    </div>
-  </a>
-
-  <a class="camp legacy" data-tone="verdigris" href="core3.html" data-key="ttf-core3:run">
-    <div class="face">
-      <div class="name">Raw Recruits</div>
-      <p class="tag">Legacy · the formation ladder</p>
-      <p class="desc">The earlier version: every formation always counts and climbs a ladder of multipliers, each new card replaces one of <b>three drawn at random</b> from your deck, and officers, heroes and engineers arrive one at a time.</p>
-      <p class="meta">30 battles · 40-card deck · stars and orders</p>
-      <p class="progress" aria-live="polite"></p>
-      <span class="go">March</span>
     </div>
   </a>
 </main>
