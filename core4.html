@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="ad8b70c954";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="658c18ab47";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1745,7 +1745,7 @@ noscript p { position: fixed; inset: 40% 0 auto; text-align: center; font: 700 2
 .laurels b { position: relative; font: 900 44px/1 var(--face-title); color: #3a2508; margin-top: -14px; }
 .laurels span { position: absolute; bottom: -26px; font: 700 18px/1 var(--face-title); letter-spacing: 0.1em; text-transform: uppercase; color: #7a520f; }
 .confirm { width: 520px; }
-.dlist { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 12px; margin-top: 10px; }
+.dlist { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-content: start; gap: 8px 12px; margin: 10px -16px 0; padding: 10px 8px 10px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
 .dsort { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 10px; }
 .dsort + .dsort { margin-top: 8px; }
 .dgrid { display: grid; grid-template-columns: repeat(4, 168px); justify-content: center; gap: 18px 12px; margin: 12px -16px 0; padding: 12px 8px 14px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
@@ -13243,7 +13243,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     const k = Math.min(1, (H - 24) / Math.max(1, h), (W - 16) / Math.max(1, w));
     if (k < 1) body.style.transform = 'scale(' + k.toFixed(3) + ')';
   }
-  S.refit = () => stack.forEach((e) => fitBody(e.ov));
+  S.refit = () => stack.forEach((e) => capGrid(e.ov));
   const still = () => !!(Cards() && Cards().still && Cards().still());
   /** Polish round 2: the cards of an arrival or the spoils are dealt from a deck pile at the battle's
    *  Deck button, one after another, and settle (core4.css .dkpile / .dealt). Transforms only; the
@@ -13612,12 +13612,12 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     let sort = SORTS.some((x) => x[0] === prefs.get('deckSort')) ? prefs.get('deckSort') : 'type';
     let look = prefs.get('deckLook') === 'list' ? 'list' : 'cards';
     let shown = groups;
-    // a row's words with the card's XP toward its next rank after its rank (units, heroes, officers)
+    // a row's words with the card's XP toward its next rank on the last line (units, heroes, officers)
     const rowWords = (c) => {
       const w = deckWords(c, T);
       if (['unit', 'hero', 'officer'].indexOf(c.kind) < 0) return w;
       const x = K.xpOf(c.kind === 'hero' ? Object.assign({}, c, { rank: c.rank || (T.heroes && T.heroes.rank) || 2 }) : c, T);
-      return Object.assign({}, w, { sub: w.sub + ' · ' + (x.next == null ? 'top rank' : x.text) });
+      return Object.assign({}, w, { more: [x.next == null ? 'Top rank' : x.text].concat(w.more ? [w.more] : []).join(' · ') });
     };
     const pill = (act, key, on, label) => '<button type="button" class="ds' + (on ? ' on' : '') + '" data-act="' + act + '" data-' + act + '="' + key + '" aria-pressed="' + on + '">' + label + '</button>';
     const frame = () => '<div class="plate wide deckv"><div class="tabs">' +
@@ -13650,10 +13650,10 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     return entry;
   };
 
-  /** The deck view's card grid takes the plate's spare height and scrolls inside it (the one screen
+  /** The deck view's card grid (or list) takes the plate's spare height and scrolls inside it (the one screen
    *  that scrolls: forty faces only fit the stage shrunk past reading); then the usual fit. */
   function capGrid(ov) {
-    const g = ov.querySelector('.dgrid'), body = ov.querySelector('.ov-body');
+    const g = ov.querySelector('.dgrid, .dlist'), body = ov.querySelector('.ov-body');
     if (g && body) {
       g.style.maxHeight = '';
       body.style.transform = '';
