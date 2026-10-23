@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="2a3a89e335";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="ee1568feac";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -7822,9 +7822,11 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       // smoothed and never decreasing over the ordinary battles; b1-b2 lowered for weak deals (§10.1).
       // PLAN 54: b5-b30 re-set the same way after the bigger fort and Combined Arms lifted casual (§10.1).
       // PLAN 55: b5-b30 re-set the same way after the retune (§10.3); b1-b4 unchanged.
-      // 2026-10-23 (user, run 4): battles 16-30 +10%, the early game unchanged (lean easy)
-      target: [40, 55, 90, 105, 95, 115, 125, 140, 155, 140, 170, 190, 200, 225, 205, 270, 290, 310, 335, 305,
-        365, 395, 415, 450, 415, 485, 525, 535, 545, 485],
+      // 2026-10-23 (user, run 4): battles 16-30 +10%, the early game unchanged (lean easy).
+      // 2026-10-23 (user): officers take a slot of their own (no tile shared), which cost casual
+      // first try 76% -> 69%; every target x0.92 (rounded to 5) brings it back to 77% (§10.8).
+      target: [35, 50, 85, 95, 85, 105, 115, 130, 145, 130, 155, 175, 185, 205, 190, 250, 265, 285, 310, 280,
+        335, 365, 380, 415, 380, 445, 485, 490, 500, 445],
       offerOptions: 3,           // options in the after-battle offer
       generalChance: 0.25,       // chance an option is a general (rolled first)
       generalMax: 1,             // at most this many generals in one spoils offer (2026-10-22, user)
@@ -8131,7 +8133,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   // The card kinds' own rules (templates as above).
   C.CARD_DESC = {
     unit: 'Scores its value: its rank power, ×{terrain.mult} on its home terrain, ×{fort.mult} on a fort, × an officer\'s factor when one of its type reaches it, its traits, and the boosts of the generals in play. Formations taught by your generals add a bonus on top.',
-    officer: 'He multiplies his type: every unit of his type in his area or on his own tile is × his factor, never himself. His area is not a formation: the two stack. Played on an empty tile he stands alone as a unit of his type; played on a unit or hero without an officer he commands it. He earns XP and ranks up.',
+    officer: 'He takes a tile of his own and stands there as a unit of his type. He multiplies his type: every unit of his type in his area is × his factor, never himself. His area is not a formation: the two stack. He earns XP and ranks up.',
     engineer: 'Builds a fort on an empty tile; the tile stays free for a card. A unit standing on a fort is ×{fort.mult}. A fort is never part of a formation.',
     hero: 'A unit of its type that starts at rank {heroes.rank} and grows by itself (its rule). It fills a slot of its type in formations, earns XP and ranks up like a unit.'
   };
@@ -9004,8 +9006,10 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   }
 
   /**
-   * Legal slots for `card`: unit / hero -> empty or an officer post; officer -> empty or a unit /
-   * hero without an officer; engineer -> empty without a fort. Blocked tiles take nothing.
+   * Legal slots for `card`: every card takes an empty tile (2026-10-23, user: an officer takes a
+   * slot of his own, standing as a unit of his type; no card shares a tile any more), an engineer
+   * one without a fort. Blocked tiles take nothing. (Pieces sharing a tile in a saved battle still
+   * score as before: newPiece and the scoring keep the commanding officer.)
    */
   function legalSlots(st, card) {
     if (!st || st.phase !== 'draft' || !card) return [];
@@ -9013,11 +9017,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     for (let i = 0; i < S; i++) {
       if (blocked.indexOf(i) >= 0) continue;
       const p = st.pieces[i];
-      const ok = card.kind === 'engineer' ? (!p && forts.indexOf(i) < 0)
-        : !p ? true
-        : card.kind === 'officer' ? ((p.kind === 'unit' || !!heroTypeOf(p)) && !p.officer)
-        : card.kind === 'unit' || isHero(card) ? p.kind === 'post'
-        : false;
+      const ok = card.kind === 'engineer' ? (!p && forts.indexOf(i) < 0) : !p;
       if (ok) out.push(i);
     }
     return out;
@@ -13500,7 +13500,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   function arrivalText(kind, T0) {
     const T = T0 || Core().TUN_DEFAULT;
     const om = (T.officer && T.officer.mult && T.officer.mult[0]) || 2, fm = (T.fort && T.fort.mult) || 3;
-    if (kind === 'officer') return { title: 'Officers have joined your army', say: 'An officer multiplies his type: every unit of his type in his area (the lit tiles around him) or on his own tile is ×' + om + '. His area is not a formation: no officer is needed for one. Play him on a unit to command it, or on an empty tile to stand as a unit himself.' };
+    if (kind === 'officer') return { title: 'Officers have joined your army', say: 'An officer takes a tile of his own and stands there as a unit of his type. He multiplies his type: every unit of his type in his area (the lit tiles around him) is ×' + om + '. His area is not a formation: no officer is needed for one.' };
     if (kind === 'hero') return { title: 'Heroes have joined your army', say: 'A hero is a unit of his type who starts at rank ' + ((T.heroes && T.heroes.rank) || 2) + ', earns XP and ranks up like any unit, and grows by his own rule: some by the turn they are played, some by what stands around them. Press and hold one to read it.' };
     if (kind === 'engineer') return { title: 'Engineers have joined your army', say: 'An engineer builds a fort on an empty tile. A unit standing on a fort is ×' + fm + '. The fort is a tile feature: the tile still takes a unit.' };
     return { title: 'New cards have joined your army', say: '' };
@@ -14503,7 +14503,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
  * (st: the battle on the board with its undo chain, tunables stripped); 'ttf-core4:best' =
  * {laurels, seed}; 'ttf-core4:seen' the tips shown (callouts.js); 'ttf-core4:tun' an override
  * of the tunables (read only); 'ttf-core4:prefs' = {deckSort, deckLook} the deck view (screens.js);
- * 'ttf-core4:reset' the last forced reset applied (forcedReset).
+ * 'ttf-core4:reset' the last forced reset applied (forcedReset, RESET.id).
  * Nothing else is read or written.
  */
 (function () {
@@ -14523,15 +14523,17 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   let tun = null;
   try { const raw = store.get('tun'); if (raw) tun = C.mergeTun(C.TUN_DEFAULT, JSON.parse(raw)); } catch (e) { tun = null; }
 
-  // ---- a one-time forced reset (2026-10-23, user: after PLAN 57/58 everyone starts fresh) ------
-  // When RESET_ID changes, the next load drops the saved run and the tips seen, once per browser.
-  // The best Laurels, the tuning override and the preferences stay.
-  const RESET_ID = '2026-10-23-p58';
+  // ---- a one-time forced reset (user) --------------------------------------------------------
+  // When RESET.id changes, the next load drops the saved run (and the tips seen, when RESET.tips),
+  // once per browser. The best Laurels, the tuning override and the preferences stay.
+  // 2026-10-23-p58: after PLAN 57/58, runs and tips. 2026-10-23-officers: officers take a slot of
+  // their own, runs only.
+  const RESET = { id: '2026-10-23-officers', tips: false };
   function forcedReset() {
-    if (store.get('reset') === RESET_ID) return;
+    if (store.get('reset') === RESET.id) return;
     store.del('run');
-    Tips.reset();
-    store.set('reset', RESET_ID);
+    if (RESET.tips) Tips.reset();
+    store.set('reset', RESET.id);
   }
 
   // ---- state -----------------------------------------------------------------------------------
