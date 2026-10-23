@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="a6216f459c";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="e303f27dee";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -7841,7 +7841,9 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       poolSize: 6,               // generals in the pool
       startTeachers: 3,          // the start pool: common teachers ...
       startBoosters: 3,          // ... and common boosters
-      dealt: 3                   // generals dealt each battle
+      dealt: 3,                  // generals dealt each battle
+      // teachers in every deal of a battle, [min, max] (2026-10-23, user): b1 exactly one, b2-b3 at most two
+      dealTeachers: { 1: [1, 1], 2: [0, 2], 3: [0, 2] }
     }
   };
 
@@ -9569,7 +9571,27 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   /** The pool indices dealt for battle b in deal round r (sorted). Round 0 is the PLAN 53 deal. */
   function dealIdx(run, b, r, n) {
     const pool = run.generals || [];
-    const draw = (s) => RNG().shuffle(s, pool.map((_, i) => i)).value.slice(0, n).sort((x, y) => x - y);
+    // 2026-10-23 (user): tun.run.dealTeachers[b] = [min, max] teachers in every deal of battle b
+    // (battle 1 exactly one, battles 2-3 at most two). The seeded order is walked, skipping a
+    // teacher past max; short of min, the last boosters give way to the next teachers in order.
+    // A pool that cannot meet them is dealt as drawn.
+    const lim = (runTun(tunOf(run)).dealTeachers || {})[b];
+    const isT = (i) => ((C.generalDef(pool[i].id) || {}).role === 'teach');
+    const draw = (s) => {
+      const order = RNG().shuffle(s, pool.map((_, i) => i)).value;
+      if (!Array.isArray(lim)) return order.slice(0, n).sort((x, y) => x - y);
+      const lo = lim[0] || 0, hi = lim[1] == null ? n : lim[1], out = [];
+      for (const i of order) { if (out.length >= n) break; if (isT(i) && out.filter(isT).length >= hi) continue; out.push(i); }
+      for (const i of order) {
+        if (out.filter(isT).length >= lo) break;
+        if (!isT(i) || out.indexOf(i) >= 0) continue;
+        const k = out.map(isT).lastIndexOf(false);
+        if (k < 0) break;
+        out[k] = i;
+      }
+      const t = out.filter(isT).length;
+      return (out.length === n && t >= lo && t <= hi ? out : order.slice(0, n)).sort((x, y) => x - y);
+    };
     if (!r) return draw(RNG().seedFrom(run.seed, 'deal', b));
     // a fresh deal: seeded by (run seed, battle, round); redrawn (seeded, at most 20 times) until
     // it differs from the previous round's, so "Fresh orders" always brings a change when it can
