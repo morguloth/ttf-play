@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="42c589b1ae";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="f5fc1d2540";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -7818,8 +7818,9 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       // smoothed and never decreasing over the ordinary battles; b1-b2 lowered for weak deals (§10.1).
       // PLAN 54: b5-b30 re-set the same way after the bigger fort and Combined Arms lifted casual (§10.1).
       // PLAN 55: b5-b30 re-set the same way after the retune (§10.3); b1-b4 unchanged.
-      target: [40, 55, 90, 105, 95, 115, 125, 140, 155, 140, 170, 190, 200, 225, 205, 245, 265, 280, 305, 275,
-        330, 360, 375, 410, 375, 440, 475, 485, 495, 440],
+      // 2026-10-23 (user, run 4): battles 16-30 +10%, the early game unchanged (lean easy)
+      target: [40, 55, 90, 105, 95, 115, 125, 140, 155, 140, 170, 190, 200, 225, 205, 270, 290, 310, 335, 305,
+        365, 395, 415, 450, 415, 485, 525, 535, 545, 485],
       offerOptions: 3,           // options in the after-battle offer
       generalChance: 0.25,       // chance an option is a general (rolled first)
       generalMax: 1,             // at most this many generals in one spoils offer (2026-10-22, user)
