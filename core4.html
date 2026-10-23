@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="f52b105dfd";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="42c589b1ae";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -8013,7 +8013,8 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   ];
   C.FORMATION_IDS = C.FORMATIONS.map((f) => f.id);
 
-  // The generals (§3.2). retired: still scores in a saved pool, never dealt to a new run or
+  // The generals (§3.2). needs: the leader kind (officer, engineer) a general works through; the
+  // spoils never offer him before that kind has arrived (2026-10-23, user). retired: still scores in a saved pool, never dealt to a new run or
   // offered (PLAN 57). role 'teach' (effect.teach = a formation id) | 'boost'. effect.kind
   // names the rule (rules.js): 'flat' (+power to `type` units, or every unit), 'home' (home xN
   // instead of x2), 'fort' (forts xN instead of x2), 'officer' (officers xN / xN+1), 'loose'
@@ -8061,9 +8062,9 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       short: 'Loose units ×{N}', desc: 'Every unit that is in no live formation is ×{N}.' },
     { id: 'old_guard', name: 'Old Guard', rarity: 'uncommon', role: 'boost', effect: { kind: 'ranked' }, step: 'mult',
       short: 'Ranks 3-4 ×{N}', desc: 'Every unit fighting at rank 3 or higher is ×{N}.' },
-    { id: 'colonel', name: 'Colonel', rarity: 'uncommon', role: 'boost', effect: { kind: 'officer' }, step: 'mult',
+    { id: 'colonel', needs: 'officer', name: 'Colonel', rarity: 'uncommon', role: 'boost', effect: { kind: 'officer' }, step: 'mult',
       short: 'Officers ×{N}', desc: 'Officers give ×{N} at ranks 1-2 and ×{N1} at ranks 3-4, instead of their own factor.' },
-    { id: 'siege_master', name: 'Siege Master', rarity: 'uncommon', role: 'boost', effect: { kind: 'fort' }, step: 'mult',
+    { id: 'siege_master', needs: 'engineer', name: 'Siege Master', rarity: 'uncommon', role: 'boost', effect: { kind: 'fort' }, step: 'mult',
       short: 'Forts ×{N}', desc: 'A unit on a fort is ×{N} instead of ×{fort.mult}.' },
     { id: 'pike_master', name: 'Pike Master', rarity: 'uncommon', role: 'boost', effect: { kind: 'kinded' }, step: 'mult',
       short: 'Kinds ×{N}', desc: 'Every unit with a kind (Pikemen, Guards, Longbowmen, Marksmen, Light Horse, Knights) is ×{N}.' },
@@ -9740,7 +9741,8 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   /**
    * The seeded after-battle offer: tun.run.offerOptions distinct options. Each is first a general
    * with tun.run.generalChance, at most tun.run.generalMax (1) per offer (its rarity by tun.run.generalRarity, drawn from that rarity's
-   * generals not in the pool nor already offered; none left: the next rarity down; none at all:
+   * generals not in the pool nor already offered, nor needing a leader kind not yet arrived (g.needs);
+   * none left: the next rarity down; none at all:
    * the option falls through), else a leader with tun.run.leaderChance (the kinds in play; a hero
    * only from the ones not in the deck), else a unit of a type not yet offered at offerRank, which
    * comes with a random kind of its type with tun.run.kindChance.
@@ -9768,7 +9770,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       let k = 0, acc = 0;
       for (; k < order.length - 1; k++) { acc += rarity[order[k]] || 0; if (r < acc) break; }
       for (let j = k; j >= 0; j--) {
-        const free = C.GENERALS.filter((g) => g.rarity === order[j] && !g.retired && pool.indexOf(g.id) < 0 && !out.some((o) => o.kind === 'general' && o.id === g.id));
+        const free = C.GENERALS.filter((g) => g.rarity === order[j] && !g.retired && (!g.needs || inPlay(g.needs)) && pool.indexOf(g.id) < 0 && !out.some((o) => o.kind === 'general' && o.id === g.id));
         if (free.length) return pickOf(free);
       }
       return null;
