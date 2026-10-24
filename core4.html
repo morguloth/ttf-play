@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="b6a317a25f";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="cb93e5a101";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14692,9 +14692,12 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   // turned sharing off (the Menu; 'ttf-core4:prefs'.share === false). Sends queue in
   // 'ttf-core4:outbox' (at most 40) and are retried on the next load; 'ttf-core4:sent' keeps the
   // last keys sent so a reload never sends a battle twice. 'ttf-core4:player' is the random id.
-  const SHARE_URL = '';
+  const SHARE_URL = 'https://script.google.com/macros/s/AKfycbzrzPXwodAuYL_OyNq2V-V2yJ-esqiYEYEFQnoXSEJvnfcbTvZdOA1eA9_P0XtU443_Bw/exec';
   const prefsGet = () => { try { const o = JSON.parse(store.get('prefs') || '{}'); return o && typeof o === 'object' ? o : {}; } catch (e) { return {}; } };
-  const shareOn = () => !!SHARE_URL && prefsGet().share !== false;
+  // on by default for every run played from the published page (GitHub Pages); never from a
+  // local copy, the LAN server or a test page (2026-10-24, user)
+  const PUBLISHED = typeof location !== 'undefined' && location.protocol === 'https:' && /\.github\.io$/.test(location.hostname);
+  const shareOn = () => !!SHARE_URL && PUBLISHED && prefsGet().share !== false;
   function setShare(on) { const o = prefsGet(); o.share = !!on; store.set('prefs', JSON.stringify(o)); }
   function playerId() {
     let id = store.get('player');
@@ -15046,7 +15049,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     }, { title: 'Quit the campaign?', yes: 'Quit campaign', no: 'Back', home: TTF4.home || '', links: [
       { label: 'Reset tips', done: 'Tips reset', act: () => Tips.reset() },
       { label: 'Copy run data', done: 'Run data copied', fail: 'Could not copy', act: copyRunData }
-    ].concat(SHARE_URL ? [shareOn()
+    ].concat(SHARE_URL && PUBLISHED ? [shareOn()
       ? { label: 'Stop sharing anonymous play data', done: 'Sharing stopped', act: () => setShare(false) }
       : { label: 'Share anonymous play data', done: 'Sharing on, thank you', act: () => { setShare(true); flushShare(); } }] : []) });
   }
