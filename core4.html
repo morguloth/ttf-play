@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="4ef3e6db64";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="3c87a635a2";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -7690,6 +7690,12 @@ var(--p2-cn) left top / 44px 44px no-repeat;
 (function () {
   const C = globalThis.TTFCore4 = globalThis.TTFCore4 || {};
 
+  // The rules version (2026-10-24, user): every shared battle and every copied run carries it,
+  // so play data from different rules is never mixed. Bump it with any change to a rule or a
+  // number (test/core4-version.test.js fails until the fingerprint is updated); docs/P53-CORE4.md
+  // §13 lists every version and the builds that played it.
+  C.RULES_VERSION = 3;
+
   C.TUN_DEFAULT = {
     board: { size: 4, minEach: 3, maxEach: 5, tries: 300 },
     turns: 8,
@@ -8003,28 +8009,31 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   /** Old trait ids of saved runs -> today's. */
   C.TRAIT_RENAMES = { drilled: 'disciplined' };
 
-  // The 9 typed formations (§4.1). Live only when a dealt general teaches them. `combo`: the
-  // exact type counts (of a touching group; Combined Arms: of one filled 2x3 block, PLAN 54);
-  // the others are position shapes. pct in tun.formations.
+  // The 9 typed formations (§4.1). Live only when a dealt general teaches them. `shape`: the
+  // formation exactly as its symbol (2026-10-24, user), turned or mirrored any way on the board;
+  // 'i' / 'a' / 'c' a unit of that type, '?' any unit, '.' a tile it leaves free (rules.js
+  // placements; art2.js draws the same rows). pct in tun.formations.
+  const X = ' Turned or mirrored any way. Their points count ×{mul:formations.ID}: the extra is a bonus on top.';
+  const form = (id, name, size, shape, short, what) => ({ id, name, size, shape, short, desc: what + X.replace('ID', id) });
   C.FORMATIONS = [
-    { id: 'triad', name: 'Triad', size: 3, combo: { inf: 1, arc: 1, cav: 1 }, short: '1 of each, touching',
-      desc: 'One Infantry, one Archers and one Cavalry unit, touching each other as one group. Their points count ×{mul:formations.triad}: the extra is a bonus on top.' },
-    { id: 'raiding_party', name: 'Raiding Party', size: 3, combo: { cav: 2, arc: 1 }, short: '2 Cavalry + 1 Archers',
-      desc: 'Two Cavalry and one Archers unit, touching each other as one group. Their points count ×{mul:formations.raiding_party}: the extra is a bonus on top.' },
-    { id: 'shield_wall', name: 'Shield Wall', size: 3, short: '3 Infantry in a line',
-      desc: 'Three Infantry units side by side in a straight row or column. Their points count ×{mul:formations.shield_wall}: the extra is a bonus on top.' },
-    { id: 'wedge', name: 'Wedge', size: 3, short: '3 Cavalry in an L',
-      desc: 'Three Cavalry units filling 3 tiles of a 2x2 block (an L). Their points count ×{mul:formations.wedge}: the extra is a bonus on top.' },
-    { id: 'pincer', name: 'Pincer', size: 4, short: 'Cavalry at both ends',
-      desc: 'Cavalry on both end tiles of a row or column, with at least one unit between them; the units between join it. Their points count ×{mul:formations.pincer}: the extra is a bonus on top.' },
-    { id: 'covered_archers', name: 'Covered Archers', size: 4, combo: { arc: 2, inf: 2 }, short: '2 Archers + 2 Infantry',
-      desc: 'Two Archers and two Infantry units, touching each other as one group. Their points count ×{mul:formations.covered_archers}: the extra is a bonus on top.' },
-    { id: 'combined_arms', name: 'Combined Arms', size: 6, combo: { inf: 2, arc: 2, cav: 2 }, short: '2 of each in a 2x3',
-      desc: 'Six units filling a 2x3 block (two rows of three, or two columns of three): two Infantry, two Archers and two Cavalry, placed any way. Their points count ×{mul:formations.combined_arms}: the extra is a bonus on top.' },
-    { id: 'hammer_anvil', name: 'Hammer and Anvil', size: 5, short: 'Wall + 2 Cavalry',
-      desc: 'A Shield Wall (three Infantry in a straight line) with two Cavalry units each touching it. Their points count ×{mul:formations.hammer_anvil}: the extra is a bonus on top.' },
-    { id: 'battle_line', name: 'Battle Line', size: 6, short: '3 Infantry + 3 Archers',
-      desc: 'Three Infantry in a straight row or column with three Archers in the row or column directly beside them, over the same span (a 2x3 block). Their points count ×{mul:formations.battle_line}: the extra is a bonus on top.' }
+    form('triad', 'Triad', 3, ['ia', 'c.'], 'L, Infantry at the corner',
+      'An L of three: an Infantry unit at the corner, an Archers unit on one side of it and a Cavalry unit on the other.'),
+    form('raiding_party', 'Raiding Party', 3, ['cc', 'a.'], 'L, Cavalry at the corner',
+      'An L of three: a Cavalry unit at the corner, another Cavalry unit on one side of it and an Archers unit on the other.'),
+    form('shield_wall', 'Shield Wall', 3, ['iii'], '3 Infantry in a line',
+      'Three Infantry units side by side in a straight row or column.'),
+    form('wedge', 'Wedge', 3, ['cc', 'c.'], '3 Cavalry in an L',
+      'Three Cavalry units filling 3 tiles of a 2x2 block (an L).'),
+    form('pincer', 'Pincer', 4, ['c??c'], 'Full line, Cavalry ends',
+      'A full row or column: Cavalry on both end tiles and a unit of any type on each of the two tiles between.'),
+    form('covered_archers', 'Covered Archers', 4, ['aa', 'ii'], '2x2, Archers by Infantry',
+      'A 2x2 block: two Archers side by side, with two Infantry side by side directly in front of them.'),
+    form('combined_arms', 'Combined Arms', 6, ['iac', 'iac'], '2x3, a pair of each',
+      'A 2x3 block of three pairs side by side: two Infantry, then two Archers in the middle, then two Cavalry.'),
+    form('hammer_anvil', 'Hammer and Anvil', 5, ['c.c', 'iii'], 'Wall, Cavalry at ends',
+      'A Shield Wall (three Infantry in a straight line) with a Cavalry unit beside each end tile, both on the same side.'),
+    form('battle_line', 'Battle Line', 6, ['iii', 'aaa'], '3 Infantry + 3 Archers',
+      'Three Infantry in a straight row or column with three Archers in the row or column directly beside them, over the same span (a 2x3 block).')
   ];
   C.FORMATION_IDS = C.FORMATIONS.map((f) => f.id);
 
@@ -8321,7 +8330,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   /** An officer's area: his shape's cells and his own tile, sorted. */
   const officerCells = (shape, slot) => shapeCells(shape, slot).concat([slot]).sort((a, b) => a - b);
 
-  // Rows and columns (LINES: row 0, column 0, row 1, column 1, ...) and 2x2 squares.
+  // Rows and columns (LINES: row 0, column 0, row 1, column 1, ...).
   const LINES = [];
   for (let k = 0; k < N; k++) {
     const row = [], col = [];
@@ -8329,12 +8338,6 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     LINES.push(row, col);
   }
   const ROWS = LINES.filter((_, k) => k % 2 === 0);
-  const SQUARES = [];
-  for (let y = 0; y < N - 1; y++)
-    for (let x = 0; x < N - 1; x++) { const a = y * N + x; SQUARES.push([a, a + 1, a + N, a + N + 1]); }
-  /** The 3-tile straight windows of every row and column. */
-  const WINDOWS3 = [];
-  for (const L of LINES) for (let a = 0; a + 3 <= N; a++) WINDOWS3.push(L.slice(a, a + 3));
 
   // ---- numbers ------------------------------------------------------------------------
   const TRAIT_DEFAULT = {
@@ -8517,114 +8520,48 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   }
 
   // ---- formation candidates (§4.1) ----------------------------------------------------
-  // cty: the formation type index per slot (-1: no unit). Each generator returns the candidate
-  // instances as slot masks; formation `id`'s are deduplicated and sorted in slot order.
-  /** Connected groups with exactly `need` = [inf, arc, cav] units, using only those units. */
-  function combosOf(cty, need) {
-    const n = need[0] + need[1] + need[2];
-    const ok = (s) => cty[s] >= 0 && need[cty[s]] > 0;
-    let layer = [];
-    const seen = new Set();
-    for (let s = 0; s < S; s++) if (ok(s)) { const m = 1 << s, c = [0, 0, 0]; c[cty[s]]++; layer.push({ m, c }); seen.add(m); }
-    for (let size = 1; size < n; size++) {
-      const next = [];
-      for (const { m, c } of layer) {
-        for (let s = 0; s < S; s++) {
-          if (!(m & (1 << s))) continue;
-          for (const j of ORTH[s]) {
-            if ((m & (1 << j)) || !ok(j) || c[cty[j]] >= need[cty[j]]) continue;
-            const m2 = m | (1 << j);
-            if (seen.has(m2)) continue;
-            seen.add(m2);
-            const c2 = c.slice(); c2[cty[j]]++;
-            next.push({ m: m2, c: c2 });
-          }
-        }
-      }
-      layer = next;
-    }
-    return layer.map((x) => x.m);
-  }
-  const allOf = (cty, slots, t) => slots.every((s) => cty[s] === t);
-  const shieldWalls = (cty) => WINDOWS3.filter((w) => allOf(cty, w, TI.inf)).map(maskOf);
-  function wedges(cty) {
-    const out = [];
-    for (const sq of SQUARES) for (let k = 0; k < 4; k++) {
-      const three = sq.filter((_, j) => j !== k);
-      if (allOf(cty, three, TI.cav)) out.push(maskOf(three));
-    }
-    return out;
-  }
-  function pincers(cty) {
-    const out = [];
-    for (const L of LINES) {
-      if (cty[L[0]] !== TI.cav || cty[L[N - 1]] !== TI.cav) continue;
-      const mid = L.slice(1, N - 1).filter((s) => cty[s] >= 0);
-      if (mid.length) out.push(maskOf([L[0], L[N - 1]].concat(mid)));
-    }
-    return out;
-  }
-  function hammers(cty) {
-    const out = [];
-    for (const w of WINDOWS3) {
-      if (!allOf(cty, w, TI.inf)) continue;
-      const cav = [];
-      for (let s = 0; s < S; s++) if (cty[s] === TI.cav && w.indexOf(s) < 0 && ORTH[s].some((j) => w.indexOf(j) >= 0)) cav.push(s);
-      for (let a = 0; a < cav.length; a++) for (let b = a + 1; b < cav.length; b++) out.push(maskOf(w.concat([cav[a], cav[b]])));
-    }
-    return out;
-  }
-  function battleLines(cty) {
-    const out = [];
-    // a row span (dx = 1) or a column span (dx = N), its parallel line one step away (step)
-    const spans = [];
-    for (let y = 0; y < N; y++) for (let x = 0; x + 3 <= N; x++) spans.push({ a: y * N + x, d: 1, y, x, row: true });
-    for (let x = 0; x < N; x++) for (let y = 0; y + 3 <= N; y++) spans.push({ a: y * N + x, d: N, y, x, row: false });
-    for (const sp of spans) {
-      const inf = [sp.a, sp.a + sp.d, sp.a + 2 * sp.d];
-      if (!allOf(cty, inf, TI.inf)) continue;
-      for (const side of [-1, 1]) {
-        if (sp.row ? (sp.y + side < 0 || sp.y + side >= N) : (sp.x + side < 0 || sp.x + side >= N)) continue;
-        const off = sp.row ? side * N : side;
-        const arc = inf.map((s) => s + off);
-        if (allOf(cty, arc, TI.arc)) out.push(maskOf(inf.concat(arc)));
+  // cty: the formation type index per slot (-1: no unit). Every formation is its symbol, exactly
+  // (2026-10-24, user): its `shape` rows (generals.js) placed on the board turned or mirrored
+  // any way; 'i' / 'a' / 'c' a unit of that type, '?' any unit, '.' a tile it does not use.
+  // A placement is {slots, types} (types[k]: the type index slot k needs, -1 any unit).
+  const SHAPE_CH = { i: TI.inf, a: TI.arc, c: TI.cav, '?': -1 };
+  const placeCache = {};
+  /** Every placement of formation `id`'s shape on the board (8 turns and mirrors, deduplicated). */
+  function placements(id) {
+    if (placeCache[id]) return placeCache[id];
+    const rows = formDef(id).shape || [];
+    const cells = [];
+    rows.forEach((r, y) => r.split('').forEach((ch, x) => { if (ch in SHAPE_CH) cells.push({ x, y, t: SHAPE_CH[ch] }); }));
+    const out = [], seen = new Set();
+    for (let k = 0; k < 8; k++) {
+      // turn k % 4 quarter turns, then mirror when k >= 4; normalised to the top-left corner
+      const tc = cells.map((c) => {
+        let x = c.x, y = c.y;
+        for (let q = 0; q < k % 4; q++) { const t = x; x = -y; y = t; }
+        if (k >= 4) x = -x;
+        return { x, y, t: c.t };
+      });
+      const mx = Math.min.apply(null, tc.map((c) => c.x)), my = Math.min.apply(null, tc.map((c) => c.y));
+      const w = Math.max.apply(null, tc.map((c) => c.x)) - mx, h = Math.max.apply(null, tc.map((c) => c.y)) - my;
+      for (let oy = 0; oy + h < N; oy++) for (let ox = 0; ox + w < N; ox++) {
+        const pl = tc.map((c) => ({ s: (c.y - my + oy) * N + (c.x - mx + ox), t: c.t })).sort((a, b) => a.s - b.s);
+        const key = pl.map((c) => c.s + ':' + c.t).join(',');
+        if (seen.has(key)) continue;
+        seen.add(key);
+        out.push({ slots: pl.map((c) => c.s), types: pl.map((c) => c.t) });
       }
     }
-    return out;
+    return (placeCache[id] = out);
   }
-  /** The 2x3 and 3x2 blocks of the board (slot lists). */
-  const BLOCKS6 = [];
-  for (const [w, h] of [[3, 2], [2, 3]])
-    for (let y = 0; y + h <= N; y++) for (let x = 0; x + w <= N; x++) {
-      const b = [];
-      for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) b.push((y + dy) * N + x + dx);
-      BLOCKS6.push(b);
-    }
-  /** Combined Arms (PLAN 54): units exactly filling one 2x3 (or 3x2) block, 2 of each type, any order. */
-  function combinedArms(cty, need) {
-    const out = [];
-    for (const b of BLOCKS6) {
-      const c = [0, 0, 0];
-      if (b.some((s) => cty[s] < 0)) continue;
-      for (const s of b) c[cty[s]]++;
-      if (c[0] === need[0] && c[1] === need[1] && c[2] === need[2]) out.push(maskOf(b));
-    }
-    return out;
-  }
-  const COMBO_NEED = (id) => { const c = (formDef(id).combo) || {}; return [c.inf || 0, c.arc || 0, c.cav || 0]; };
-  const GEN = {
-    triad: (cty) => combosOf(cty, COMBO_NEED('triad')),
-    raiding_party: (cty) => combosOf(cty, COMBO_NEED('raiding_party')),
-    covered_archers: (cty) => combosOf(cty, COMBO_NEED('covered_archers')),
-    combined_arms: (cty) => combinedArms(cty, COMBO_NEED('combined_arms')),
-    shield_wall: shieldWalls, wedge: wedges, pincer: pincers, hammer_anvil: hammers, battle_line: battleLines
-  };
+  /** The placements of `id` the units on `cty` fill, as slot masks. */
+  const shapeMatches = (id, cty) => placements(id)
+    .filter((p) => p.slots.every((s, k) => cty[s] >= 0 && (p.types[k] < 0 || cty[s] === p.types[k])))
+    .map((p) => maskOf(p.slots));
   const lexCmp = (a, b) => { for (let k = 0; k < Math.min(a.length, b.length); k++) if (a[k] !== b[k]) return a[k] - b[k]; return a.length - b.length; };
   /** The candidate instances of formation `id` on `cty`: [slot list], deduplicated, in slot order. */
   function candidates(id, cty) {
-    const g = GEN[id];
-    if (!g) return [];
-    const masks = Array.from(new Set(g(cty)));
+    if (!(formDef(id).shape || []).length) return [];
+    const masks = Array.from(new Set(shapeMatches(id, cty)));
     return masks.map(slotsOf).sort(lexCmp);
   }
   /**
@@ -9437,7 +9374,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     heroAbility, heroCard, heroTypeOf, heroRank: heroRankOf, pieceFor: newPiece, migrateCard, migrateState,
     bossOf, blockedOf, turnsOf, offerSizeOf, isHidden, playerView, hiddenSlots, rankPower, maxRank, traitTun,
     traitsOf: (c) => traitList(c).slice(), traitCounts, hasTrait, stackTraitFactor: stackFx, kindOf,
-    generalDef, generalValue, inZone, largestGroups, completesAt, liveFormations, candidates, xpAtRank, fillDesc, generalShort, generalDesc,
+    generalDef, generalValue, inZone, largestGroups, completesAt, liveFormations, candidates, placements, xpAtRank, fillDesc, generalShort, generalDesc,
     cardName, cardOrder, sortCards, drawPileList, orthOf: (i) => ORTH[i].slice(), isEdge, homeMult, fortMult
   });
   if (typeof module !== 'undefined') module.exports = C;
@@ -11051,17 +10988,9 @@ var(--p2-cn) left top / 44px 44px no-repeat;
 
   // ---- formation diagrams (Core 4's nine typed formations, P53 §4.1) ------------------
   // Cells: '.' empty, '?' any unit (grey), 'i' / 'a' / 'c' a unit of that type (its colour).
-  const FGLYPH = {
-    triad: ['ia', 'c.'],
-    raiding_party: ['cc', 'a.'],
-    shield_wall: ['iii'],
-    wedge: ['cc', 'c.'],
-    pincer: ['c??c'],
-    covered_archers: ['aa', 'ii'],
-    combined_arms: ['iac', 'iac'],
-    hammer_anvil: ['c.c', 'iii'],
-    battle_line: ['iii', 'aaa']
-  };
+  // The rows are each formation's `shape` (generals.js), the very pattern the rules match.
+  const FGLYPH = {};
+  for (const f of (C && C.FORMATIONS) || []) FGLYPH[f.id] = f.shape;
   A.FGLYPH = FGLYPH;
   A.GLYPH_COL = { '?': '#8f8676', i: A.TYPE_LIT.inf, a: A.TYPE_LIT.arc, c: A.TYPE_LIT.cav };
   /** A formation's shape diagram: its cells as painted squares in a 4 x 3 box, coloured by type. */
@@ -14389,7 +14318,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
         const g = Core.generalDef(st.generals[gi].id), fd = (Core.FORMATIONS || []).find((q) => q.id === g.effect.teach) || {};
         return {
           target: () => $('#stage .gens .fdg2[data-gi="' + gi + '"]') || $('#stage .gens .fdg2'), side: ['bottom', 'right', 'left'],
-          lines: [g.name + ' teaches ' + fd.name + ': ' + String(fd.short || '').replace(/^[A-Z](?=[a-z])/, (c) => c.toLowerCase()) + '.', 'Any of your units of those types, touching. No officer needed.']
+          lines: [g.name + ' teaches ' + fd.name + ': ' + String(fd.short || '').replace(/^[A-Z](?=[a-z])/, (c) => c.toLowerCase()) + '.', 'Exactly as its symbol shows, turned or mirrored any way. No officer needed.']
         };
       }
       case 'complete': {
@@ -14708,6 +14637,9 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     return id;
   }
   const readList = (k) => { try { const a = JSON.parse(store.get(k) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
+  // the sheet's build column reads "rules 3 · <page hash>": the rules version first (§13 of the
+  // spec), so rows sort and filter by it; the hash names the exact page
+  const buildName = () => 'rules ' + C.RULES_VERSION + ' · ' + (globalThis.TTF4_BUILD || 'dev');
   function shareBattle(after) {
     if (!shareOn() || !after) return;
     const res = (after.results || [])[(after.results || []).length - 1];
@@ -14724,7 +14656,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     if (sent.indexOf(key) >= 0) return;
     store.set('sent', JSON.stringify(sent.concat([key]).slice(-120)));
     const item = {
-      v: 1, key, player: playerId(), build: globalThis.TTF4_BUILD || 'dev', at: new Date().toISOString(), seed: after.seed,
+      v: 1, key, player: playerId(), rules: C.RULES_VERSION, build: buildName(), at: new Date().toISOString(), seed: after.seed,
       attempt, phase: after.phase, pool: (after.generals || []).map((g) => ({ id: g.id, level: g.level || 1, wins: g.wins || 0 })),
       deckSize: (after.deck || []).length, result: r
     };
@@ -15070,7 +15002,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     let data = store.get('run') || '{}';
     try {
       const o = JSON.parse(data);
-      o.exported = { at: new Date().toISOString(), build: globalThis.TTF4_BUILD || 'dev' };
+      o.exported = { at: new Date().toISOString(), rules: C.RULES_VERSION, build: buildName() };
       data = JSON.stringify(o);
     } catch (e) { /* the raw save */ }
     const fallback = () => {
