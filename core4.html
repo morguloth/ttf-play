@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="b328cb3388";if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="6637bc190c";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -7718,8 +7718,10 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     // 2026-10-23 (user run 3, §10.5): the easy-to-force any-shape ones down (Triad 0.6 -> 0.5,
     // Covered Archers 0.95 -> 0.8). 2026-10-23 (§10.9, user: Hammer and Anvil too good): ordered by
     // what an instance pays (pct x units), Hammer and Anvil 1.3 -> 0.9, Combined Arms 1.35 -> 1.1.
+    // 2026-10-24 (run 5, §10.10): Shield Wall 1.25 -> 1 (three Infantry in a line: easy in an
+    // infantry deck).
     formations: {
-      triad: 0.5, raiding_party: 0.35, wedge: 0.65, pincer: 0.45, shield_wall: 1.25,
+      triad: 0.5, raiding_party: 0.35, wedge: 0.65, pincer: 0.45, shield_wall: 1,
       covered_archers: 0.8, combined_arms: 1.1, hammer_anvil: 0.9, battle_line: 2.8
     },
     // Officer: mult[rank - 1] is the factor he gives the units of his type in his shape and on
@@ -7842,6 +7844,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       startTeachers: 3,          // the start pool: common teachers ...
       startBoosters: 3,          // ... and common boosters
       dealt: 3,                  // generals dealt each battle
+      undoMax: 1,                // undos per battle attempt; an undo reshuffles the draw pile (2026-10-24, user)
       // teachers in every deal of a battle, [min, max] (2026-10-23, user): b1 exactly one, b2-b3 at most two
       dealTeachers: { 1: [1, 1], 2: [0, 2], 3: [0, 2] }
     }
@@ -9222,7 +9225,21 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   function canPlace(st, pick, slot) {
     try { place(st, pick, slot); return true; } catch (e) { return false; }
   }
-  const undo = (st) => (st && st.prev) || st;
+  /** 2026-10-24 (user): tun.run.undoMax (1) undos per battle attempt; st.undos counts them. */
+  function undosLeft(st) {
+    const m = ((tunOf(st) || {}).run || {}).undoMax;
+    return Math.max(0, (typeof m === 'number' ? m : 1) - ((st && st.undos) || 0));
+  }
+  const canUndo = (st) => !!(st && st.phase === 'draft' && st.prev && undosLeft(st) > 0);
+  /** Back one turn: the board and the hand as they were, but the draw pile reshuffled (seeded by
+   *  the battle, the turn and the undo count), so an undo never shows what is coming next; the
+   *  state itself when no undo is left. */
+  function undo(st) {
+    if (!canUndo(st)) return st;
+    const p = st.prev, n = (st.undos || 0) + 1;
+    const deck = C.RNG.shuffle(C.RNG.seedFrom(st.seed, 'undo', p.turn, n), p.deck.slice()).value;
+    return Object.assign({}, p, { deck, undos: n });
+  }
 
   // ---- score --------------------------------------------------------------------------
   /** The battle score (see the header): units, formations, battle factors and the total. */
@@ -9414,7 +9431,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
 
   Object.assign(C, {
     SHAPE_IDS, createBattle, startDeck, leaderCards, arrivalsOf, arrivalsAt, arrivalCards, kindIntroduced, arrivalSwap, redeal,
-    legalSlots, playable, place, canPlace, undo, breakdown, total, score, battleTotal, won, predict, totalAfter, target,
+    legalSlots, playable, place, canPlace, undo, canUndo, undosLeft, breakdown, total, score, battleTotal, won, predict, totalAfter, target,
     officerArea, shapeCells, officerOf, officerMult, officerRank: officerRankOf, homeTerrains, xpOf,
     heroAbility, heroCard, heroTypeOf, heroRank: heroRankOf, pieceFor: newPiece, migrateCard, migrateState,
     bossOf, blockedOf, turnsOf, offerSizeOf, isHidden, playerView, hiddenSlots, rankPower, maxRank, traitTun,
@@ -9738,6 +9755,10 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     const retries = attemptsOf(run);
     if (won && retries) res.retries = retries;
     if (st.boss) res.boss = st.boss.id;
+    // 2026-10-24 (user): every attempt keeps its detail for run analysis (battleStats); a lost
+    // attempt also goes to run.losses, which a retry never pops (tools/core4-runstats.js reads both)
+    try { res.stats = battleStats(st); } catch (e) { /* the result stands without its detail */ }
+    if (!won) out.losses = (out.losses || []).concat([Object.assign({ attempt: retries }, res)]);
     out.results.push(res);
     if (!won) out.phase = 'lost';
     else if (run.battle >= run.battles) out.phase = 'won';
@@ -9747,6 +9768,75 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     } else toOffer(out);
     return out;
   }
+  /**
+   * A finished battle's detail for analysis (2026-10-24, user), compact: the generals with their
+   * levels (and wins), the board (terrain letters f/p/h/w per tile, forts, a boss detail), every
+   * scoring piece {s slot, u uid, k kind (u unit, h hero, o officer post), t type, r rank, id
+   * (hero), tr traits, pl turn placed, v value, b base power (rank, x a power kind), f flat
+   * power added, x {src: factor} (the x parts), a {src: +power} (the flat parts)}, the formations
+   * {id, g general, s slots, sum, pct, b bonus}, the battle factors {id: factor}, the sums, and
+   * the hands turn by turn {t turn, shown [signature#uid], took uid, at slot}; an officer adds sh
+   * (his area's shape).
+   */
+  const TERR = { fields: 'f', plains: 'p', hills: 'h', forest: 'w' };
+  function battleStats(st) {
+    const sc = C.score(st), P = st.pieces || {};
+    const r2 = (x) => Math.round(x * 100) / 100;
+    const units = sc.units.map((u) => {
+      const p = P[u.slot] || {}, o = { s: u.slot, k: u.kind === 'hero' ? 'h' : u.kind === 'post' ? 'o' : 'u', t: u.type, v: u.value, x: {} };
+      if (p.uid !== undefined) o.u = p.uid;
+      o.r = u.kind === 'post' ? ((p.officer || {}).rank || 1) : (p.rank || 1);
+      if (u.kind === 'hero') o.id = p.id;
+      const tr = C.traitsOf(p);
+      if (tr.length) o.tr = tr;
+      if (typeof p.placed === 'number') o.pl = p.placed;
+      if (p.officer && u.kind !== 'post') o.cmd = p.officer.uid !== undefined ? p.officer.uid : true;
+      // an officer's area shape (on his post, or commanding a unit in an older save)
+      if (p.officer) o.sh = p.officer.shape;
+      o.b = r2((u.steps || {}).base || 0);
+      o.f = r2(((u.steps || {}).flat || 0) - ((u.steps || {}).base || 0));
+      for (const q of u.parts || []) {
+        if (q.op === 'mul') o.x[q.src] = r2(q.v);
+        else if (q.op === 'add') (o.a = o.a || {})[q.src] = r2(q.v);
+      }
+      return o;
+    });
+    const battle = {};
+    for (const b of sc.battle || []) battle[b.id] = r2(b.factor);
+    // the hands, turn by turn, from the battle's undo chain: what was offered, what was played
+    // where ('#uid' after each card's signature; an engineer's tile is the fort it built)
+    const chain = [];
+    for (let s = st; s; s = s.prev) chain.unshift(s);
+    const hands = [];
+    for (let k = 0; k + 1 < chain.length; k++) {
+      const a = chain[k], b = chain[k + 1];
+      if (a.phase !== 'draft') continue;
+      const h = { t: a.turn, shown: (a.offer || []).map((c) => optSig(c) + (c.uid !== undefined ? '#' + c.uid : '')) };
+      for (let i = 0; i < 16; i++) {
+        const pa = (a.pieces || {})[i], pb = (b.pieces || {})[i];
+        if (pb && (!pa || pa.uid !== pb.uid)) { h.took = pb.uid; h.at = i; break; }
+      }
+      if (h.at === undefined) {
+        const nf = (b.forts || []).find((f) => (a.forts || []).indexOf(f) < 0);
+        if (nf !== undefined) { const sp = (b.spent || [])[(b.spent || []).length - 1]; h.took = sp ? sp.uid : 'e'; h.at = nf; }
+      }
+      hands.push(h);
+    }
+    return {
+      hands,
+      undos: st.undos || 0,
+      gens: (st.generals || []).map((g) => [g.id, g.level || 1, g.wins || 0]),
+      terr: (st.board || []).map((b) => TERR[b.terrain] || '?').join(''),
+      forts: (st.forts || []).slice(),
+      boss: st.boss ? Object.assign({}, st.boss) : undefined,
+      turns: st.turn,
+      units,
+      forms: sc.formations.map((f) => ({ id: f.id, g: f.general, s: f.slots, sum: f.sum, pct: r2(f.pct), b: f.bonus })),
+      battle,
+      sums: { units: sc.unitsTotal, forms: sc.formationsTotal, sub: sc.subtotal, total: sc.total }
+    };
+  }
+
   function toOffer(out) {
     out.phase = 'offer';
     out.promote = null;
@@ -9764,7 +9854,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     const g = out.generals.find((x) => x.id === id);
     if (!g) throw new Error('general ' + id + ' is not in the pool');
     g.level = (g.level || 1) + 1;
-    out.log.push({ battle: run.battle, kind: 'promote', id, level: g.level });
+    out.log.push({ battle: run.battle, kind: 'promote', id, level: g.level, shown: opts.slice() });
     return toOffer(out);
   }
   /** Refuse the promotion: no general rises; then the offer. */
@@ -9997,7 +10087,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     const card = Object.assign({ uid: out.nextUid++ }, clone(opt));
     out.deck.splice(k, 1);
     out.deck.push(card);
-    out.log.push({ battle: run.battle, kind: 'pick', added: card.uid, removed: removeUid });
+    out.log.push({ battle: run.battle, kind: 'pick', added: card.uid, removed: removeUid, card: optSig(opt), shown: offerShown(run) });
     return afterOffer(out);
   }
   /** Take general option `index` into the pool in place of pool general `replaceId` (one of generalReplaceOf). It joins at level 1. */
@@ -10011,14 +10101,25 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     const out = clone(run);
     const k = out.generals.findIndex((g) => g.id === replaceId);
     out.generals[k] = { id: opt.id, level: 1, wins: 0 };
-    out.log.push({ battle: run.battle, kind: 'general', added: opt.id, removed: replaceId });
+    out.log.push({ battle: run.battle, kind: 'general', added: opt.id, removed: replaceId, shown: offerShown(run) });
     return afterOffer(out);
   }
+  /** An offer option in a few characters for the log (2026-10-24): 'u:inf:3:pikemen', 'h:huntsman',
+   *  'o:arc:cross:2', 'e', 'g:old_guard'. */
+  function optSig(o) {
+    if (!o) return '';
+    if (o.kind === 'general') return 'g:' + o.id;
+    if (o.kind === 'hero') return 'h:' + o.id;
+    if (o.kind === 'officer') return 'o:' + o.type + ':' + o.shape + ':' + (o.rank || 1);
+    if (o.kind === 'engineer') return 'e';
+    return 'u:' + o.type + ':' + (o.rank || 1) + (C.traitsOf(o).length ? ':' + C.traitsOf(o).join('+') : '');
+  }
+  const offerShown = (run) => ((run.offer && run.offer.options) || []).map(optSig);
   /** Refuse the offer: the deck and the pool are unchanged. */
   function refuseOffer(run) {
     if (!run || run.phase !== 'offer' || !run.offer) throw new Error('no offer to refuse');
     const out = clone(run);
-    out.log.push({ battle: run.battle, kind: 'refuse' });
+    out.log.push({ battle: run.battle, kind: 'refuse', shown: offerShown(run) });
     return afterOffer(out);
   }
   /** Give the upgrade's trait to one of its options ({uid} or an index into upgrade.options), then the next battle. */
@@ -10036,14 +10137,14 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     const k = out.deck.findIndex((d) => d.uid === uid);
     const c = C.migrateCard(out.deck[k]);
     out.deck[k] = Object.assign({}, c, { traits: C.traitsOf(c).concat([trait]) });
-    out.log.push({ battle: run.battle, kind: 'upgrade', uid, trait });
+    out.log.push({ battle: run.battle, kind: 'upgrade', uid, trait, shown: (up.options || []).map((o) => o.uid) });
     return advance(out);
   }
   /** Refuse the upgrade: no card takes the trait; on to the next battle. */
   function refuseUpgrade(run) {
     if (!run || run.phase !== 'upgrade' || !run.upgrade) throw new Error('no upgrade to refuse');
     const out = clone(run);
-    out.log.push({ battle: run.battle, kind: 'refuseUpgrade', trait: run.upgrade.trait });
+    out.log.push({ battle: run.battle, kind: 'refuseUpgrade', trait: run.upgrade.trait, shown: (run.upgrade.options || []).map((o) => o.uid) });
     return advance(out);
   }
 
@@ -10106,7 +10207,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     pickPromote, refusePromote, pickOffer, pickGeneralOffer, refuseOffer, pickUpgrade, refuseUpgrade,
     upgradeEligible, removableOf, generalReplaceOf, arrivalPending, ackArrival, generalsIntroPending, ackGeneralsIntro, freshOrdersPending, ackFreshOrders,
     retryBattle, attemptsOf, upgradeDue, upgradeStep, summary, deckList, placedUnitUids, rankForXp, xpForRank, offerRank,
-    offerOptions, isBoss, bossFor, startPool, dealtFor, dealRoundOf, freshDeal, migrate, laurels
+    offerOptions, battleStats, isBoss, bossFor, startPool, dealtFor, dealRoundOf, freshDeal, migrate, laurels
   };
   if (typeof module !== 'undefined') module.exports = C.Run;
 })();
@@ -13880,13 +13981,21 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   // ---- confirm ----------------------------------------------------------------------------------------
   S.confirm = function confirm(text, cb, o) {
     const opt = o || {};
+    const links = opt.links || (opt.link ? [opt.link] : []);
     const html = '<div class="plate confirm"><h2>' + esc(opt.title || 'Are you sure?') + '</h2><p class="say">' + esc(text) + '</p>' +
       '<div class="acts">' + btn('yes', opt.yes || 'Yes', 'primary danger') + btn('no', opt.no || 'Back', 'quiet') + '</div>' +
       (opt.home ? '<div class="acts">' + btn('home', 'Home screen', 'quiet') + '</div>' : '') +
-      (opt.link ? '<button type="button" class="lnk" data-act="link">' + esc(opt.link.label) + '</button>' : '') + '</div>';
+      // opt.link, or opt.links (2026-10-24): small text actions under the buttons; act() may
+      // return a Promise (its result, false: the link reads its `fail` words)
+      links.map((l, i) => '<button type="button" class="lnk" data-act="link" data-l="' + i + '">' + esc(l.label) + '</button>').join('') + '</div>';
     const entry = open('confirm', html, { onEsc: () => { close(entry); cb(false); } });
     onAct(entry, (act, el) => {
-      if (act === 'link') { opt.link.act(); el.textContent = opt.link.done || 'Done'; el.disabled = true; return; }
+      if (act === 'link') {
+        const l = links[+el.dataset.l || 0];
+        el.disabled = true;
+        Promise.resolve(l.act()).then((ok) => { el.textContent = ok === false ? (l.fail || 'Failed') : (l.done || 'Done'); }, () => { el.textContent = l.fail || 'Failed'; });
+        return;
+      }
       // 2026-10-22: back to the public home screen (the run is saved after every step)
       if (act === 'home') { location.href = opt.home; return; }
       close(entry); cb(act === 'yes');
@@ -14542,7 +14651,8 @@ var(--p2-cn) left top / 44px 44px no-repeat;
  * (st: the battle on the board with its undo chain, tunables stripped); 'ttf-core4:best' =
  * {laurels, seed}; 'ttf-core4:seen' the tips shown (callouts.js); 'ttf-core4:tun' an override
  * of the tunables (read only); 'ttf-core4:prefs' = {deckSort, deckLook} the deck view (screens.js);
- * 'ttf-core4:reset' the last forced reset applied (forcedReset, RESET.id).
+ * 'ttf-core4:reset' the last forced reset applied (forcedReset, RESET.id); 'ttf-core4:player',
+ * 'ttf-core4:outbox', 'ttf-core4:sent' the shared play data (SHARE_URL); prefs.share its switch.
  * Nothing else is read or written.
  */
 (function () {
@@ -14574,6 +14684,59 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     store.del('run');
     if (RESET.tips) Tips.reset();
     store.set('reset', RESET.id);
+  }
+
+  // ---- shared play data (2026-10-24, user) ----------------------------------------------------
+  // Every finished battle (won or lost) goes, anonymously, to the collector (a Google Sheet's
+  // Apps Script web app: tools/sheets/collect.gs): a random player id, the build, the run seed,
+  // the battle's result with its detail (Run.battleStats: the board, every unit's parts, the
+  // hands), the pool and the deck size. Nothing is sent while SHARE_URL is empty or the player
+  // turned sharing off (the Menu; 'ttf-core4:prefs'.share === false). Sends queue in
+  // 'ttf-core4:outbox' (at most 40) and are retried on the next load; 'ttf-core4:sent' keeps the
+  // last keys sent so a reload never sends a battle twice. 'ttf-core4:player' is the random id.
+  const SHARE_URL = '';
+  const prefsGet = () => { try { const o = JSON.parse(store.get('prefs') || '{}'); return o && typeof o === 'object' ? o : {}; } catch (e) { return {}; } };
+  const shareOn = () => !!SHARE_URL && prefsGet().share !== false;
+  function setShare(on) { const o = prefsGet(); o.share = !!on; store.set('prefs', JSON.stringify(o)); }
+  function playerId() {
+    let id = store.get('player');
+    if (!id) { id = 'p' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4); store.set('player', id); }
+    return id;
+  }
+  const readList = (k) => { try { const a = JSON.parse(store.get(k) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
+  function shareBattle(after) {
+    if (!shareOn() || !after) return;
+    const res = (after.results || [])[(after.results || []).length - 1];
+    const loss = (after.losses || [])[(after.losses || []).length - 1];
+    const r = res && res.battle === after.battle ? res : loss && loss.battle === after.battle ? loss : null;
+    if (!r) return;
+    const attempt = r.won ? (r.retries || 0) : (r.attempt || 0);
+    const key = after.seed + ':' + r.battle + ':' + attempt;
+    const sent = readList('sent');
+    if (sent.indexOf(key) >= 0) return;
+    store.set('sent', JSON.stringify(sent.concat([key]).slice(-120)));
+    const item = {
+      v: 1, key, player: playerId(), build: globalThis.TTF4_BUILD || 'dev', at: new Date().toISOString(), seed: after.seed,
+      attempt, phase: after.phase, pool: (after.generals || []).map((g) => ({ id: g.id, level: g.level || 1, wins: g.wins || 0 })),
+      deckSize: (after.deck || []).length, result: r
+    };
+    store.set('outbox', JSON.stringify(readList('outbox').concat([item]).slice(-40)));
+    flushShare();
+  }
+  let flushing = false;
+  function flushShare() {
+    if (!shareOn() || flushing || typeof fetch !== 'function') return;
+    const box = readList('outbox');
+    if (!box.length) return;
+    flushing = true;
+    const item = box[0];
+    // text/plain and no-cors: a simple request the Apps Script web app takes without a preflight
+    fetch(SHARE_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(item) })
+      .then(() => {
+        store.set('outbox', JSON.stringify(readList('outbox').filter((x) => x.key !== item.key)));
+        flushing = false;
+        flushShare();
+      }, () => { flushing = false; });
   }
 
   // ---- state -----------------------------------------------------------------------------------
@@ -14681,13 +14844,14 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     Board.mount(stage, {
       onPlace, onUndo: undo, onDeck: openDeck, onBook: openBook, onMenu: quit,
       onDetail: (item) => Screens.detail(withXp(item), (st && st.tun) || tun || C.TUN_DEFAULT),
-      canUndo: () => mode === 'battle' && !!st && st.phase === 'draft' && !!st.prev,
+      canUndo: () => mode === 'battle' && C.canUndo(st),
       onSelect: () => Tips.poke()
     });
     document.addEventListener('keydown', onKey);
     homeCheck();
     Tips.mount({ off: false, ctx: () => ({ mode, st, run, hold: st && Board.selected() != null && st.phase === 'draft' ? st.offer[Board.selected()] : null, dealing: false }) });
     forcedReset();
+    flushShare();
     const saved = load();
     if (saved) { run = saved.run; st = saved.st; resume(); } else newRun();
     if (document.body.dataset.phase === 'boot') document.body.dataset.phase = 'ready';   // the boot guard (index.html) reads it
@@ -14773,7 +14937,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     return true;
   }
   function undo() {
-    if (mode !== 'battle' || !st || st.phase !== 'draft' || !st.prev) return;
+    if (mode !== 'battle' || !C.canUndo(st)) return;
     st = C.undo(st);
     save();
     Board.select(null);
@@ -14793,6 +14957,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     mode = 'plate';
     document.body.dataset.phase = 'plate';
     pending = R.endBattle(run, st);
+    shareBattle(pending);
     const won = C.won(st);
     const promotions = (pending.promotions || []).map((p) => {
       const card = pending.deck.find((d) => d.uid === p.uid);
@@ -14880,7 +15045,38 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       if (!yes) return;
       store.del('run');
       newRun();
-    }, { title: 'Quit the campaign?', yes: 'Quit campaign', no: 'Back', home: TTF4.home || '', link: { label: 'Reset tips', done: 'Tips reset', act: () => Tips.reset() } });
+    }, { title: 'Quit the campaign?', yes: 'Quit campaign', no: 'Back', home: TTF4.home || '', links: [
+      { label: 'Reset tips', done: 'Tips reset', act: () => Tips.reset() },
+      { label: 'Copy run data', done: 'Run data copied', fail: 'Could not copy', act: copyRunData }
+    ].concat(SHARE_URL ? [shareOn()
+      ? { label: 'Stop sharing anonymous play data', done: 'Sharing stopped', act: () => setShare(false) }
+      : { label: 'Share anonymous play data', done: 'Sharing on, thank you', act: () => { setShare(true); flushShare(); } }] : []) });
+  }
+  /**
+   * 2026-10-24 (user): the whole save (the run with every battle's detail and the losses, and the
+   * battle on the board), stamped with the build, onto the clipboard for analysis
+   * (tools/core4-runstats.js). Resolves false when the browser allows no copy.
+   */
+  function copyRunData() {
+    save();
+    let data = store.get('run') || '{}';
+    try {
+      const o = JSON.parse(data);
+      o.exported = { at: new Date().toISOString(), build: globalThis.TTF4_BUILD || 'dev' };
+      data = JSON.stringify(o);
+    } catch (e) { /* the raw save */ }
+    const fallback = () => {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = data; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        const ok = document.execCommand('copy');
+        ta.remove();
+        return ok;
+      } catch (e) { return false; }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(data).then(() => true, fallback);
+    return fallback();
   }
   /**
    * 2026-10-22: the public page's home screen (index.html beside this file, where the player picks
