@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="3c87a635a2";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="d8b0784aab";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -7694,7 +7694,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   // so play data from different rules is never mixed. Bump it with any change to a rule or a
   // number (test/core4-version.test.js fails until the fingerprint is updated); docs/P53-CORE4.md
   // §13 lists every version and the builds that played it.
-  C.RULES_VERSION = 3;
+  C.RULES_VERSION = 4;
 
   C.TUN_DEFAULT = {
     board: { size: 4, minEach: 3, maxEach: 5, tries: 300 },
@@ -8009,31 +8009,28 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   /** Old trait ids of saved runs -> today's. */
   C.TRAIT_RENAMES = { drilled: 'disciplined' };
 
-  // The 9 typed formations (§4.1). Live only when a dealt general teaches them. `shape`: the
-  // formation exactly as its symbol (2026-10-24, user), turned or mirrored any way on the board;
-  // 'i' / 'a' / 'c' a unit of that type, '?' any unit, '.' a tile it leaves free (rules.js
-  // placements; art2.js draws the same rows). pct in tun.formations.
-  const X = ' Turned or mirrored any way. Their points count ×{mul:formations.ID}: the extra is a bonus on top.';
-  const form = (id, name, size, shape, short, what) => ({ id, name, size, shape, short, desc: what + X.replace('ID', id) });
+  // The 9 typed formations (§4.1), of two kinds (2026-10-24, user; spec §10.14):
+  // - any shape (`combo`: the exact type counts): the units touch as one group, in any
+  //   arrangement; drawn as loose dots with no tiles (art2.js);
+  // - exact shape (`shape` rows): the shape as drawn on its tiles, turned or mirrored any way;
+  //   'i' / 'a' / 'c' a unit of that type, '?' any unit, '.' a tile it leaves free (rules.js
+  //   placements; art2.js draws the same rows).
+  // Every short line says which kind it is. pct in tun.formations.
+  const X = ' Their points count ×{mul:formations.ID}: the extra is a bonus on top.';
+  const loose = (id, name, combo, short, what) => ({ id, name, size: (combo.inf || 0) + (combo.arc || 0) + (combo.cav || 0), combo, short: 'Any shape: ' + short,
+    desc: what + ', touching each other as one group, in any arrangement (a line, an L, a square: anything).' + X.replace('ID', id) });
+  const exact = (id, name, shape, short, what) => ({ id, name, size: shape.join('').replace(/\./g, '').length, shape, short: 'Exact shape: ' + short,
+    desc: what + ' Exactly as drawn, turned or mirrored any way.' + X.replace('ID', id) });
   C.FORMATIONS = [
-    form('triad', 'Triad', 3, ['ia', 'c.'], 'L, Infantry at the corner',
-      'An L of three: an Infantry unit at the corner, an Archers unit on one side of it and a Cavalry unit on the other.'),
-    form('raiding_party', 'Raiding Party', 3, ['cc', 'a.'], 'L, Cavalry at the corner',
-      'An L of three: a Cavalry unit at the corner, another Cavalry unit on one side of it and an Archers unit on the other.'),
-    form('shield_wall', 'Shield Wall', 3, ['iii'], '3 Infantry in a line',
-      'Three Infantry units side by side in a straight row or column.'),
-    form('wedge', 'Wedge', 3, ['cc', 'c.'], '3 Cavalry in an L',
-      'Three Cavalry units filling 3 tiles of a 2x2 block (an L).'),
-    form('pincer', 'Pincer', 4, ['c??c'], 'Full line, Cavalry ends',
-      'A full row or column: Cavalry on both end tiles and a unit of any type on each of the two tiles between.'),
-    form('covered_archers', 'Covered Archers', 4, ['aa', 'ii'], '2x2, Archers by Infantry',
-      'A 2x2 block: two Archers side by side, with two Infantry side by side directly in front of them.'),
-    form('combined_arms', 'Combined Arms', 6, ['iac', 'iac'], '2x3, a pair of each',
-      'A 2x3 block of three pairs side by side: two Infantry, then two Archers in the middle, then two Cavalry.'),
-    form('hammer_anvil', 'Hammer and Anvil', 5, ['c.c', 'iii'], 'Wall, Cavalry at ends',
-      'A Shield Wall (three Infantry in a straight line) with a Cavalry unit beside each end tile, both on the same side.'),
-    form('battle_line', 'Battle Line', 6, ['iii', 'aaa'], '3 Infantry + 3 Archers',
-      'Three Infantry in a straight row or column with three Archers in the row or column directly beside them, over the same span (a 2x3 block).')
+    loose('triad', 'Triad', { inf: 1, arc: 1, cav: 1 }, '1 of each', 'One Infantry, one Archers and one Cavalry unit'),
+    loose('raiding_party', 'Raiding Party', { cav: 2, arc: 1 }, '2 Cavalry + 1 Archers', 'Two Cavalry and one Archers unit'),
+    exact('shield_wall', 'Shield Wall', ['iii'], '3 Infantry in a line', 'Three Infantry units side by side in a straight row or column.'),
+    exact('wedge', 'Wedge', ['cc', 'c.'], '3 Cavalry in an L', 'Three Cavalry units filling 3 tiles of a 2x2 block (an L).'),
+    exact('pincer', 'Pincer', ['c??c'], 'Cavalry at both ends', 'A full row or column: Cavalry on both end tiles and a unit of any type on each of the two tiles between.'),
+    loose('covered_archers', 'Covered Archers', { arc: 2, inf: 2 }, '2 Archers + 2 Infantry', 'Two Archers and two Infantry units'),
+    loose('combined_arms', 'Combined Arms', { inf: 2, arc: 2, cav: 2 }, '2 of each', 'Two Infantry, two Archers and two Cavalry units'),
+    exact('hammer_anvil', 'Hammer and Anvil', ['c.c', 'iii'], 'wall, Cavalry at ends', 'A Shield Wall (three Infantry in a straight line) with a Cavalry unit beside each end tile, both on the same side.'),
+    exact('battle_line', 'Battle Line', ['iii', 'aaa'], 'Infantry row + Archers row', 'Three Infantry in a straight row or column with three Archers in the row or column directly beside them, over the same span (a 2x3 block).')
   ];
   C.FORMATION_IDS = C.FORMATIONS.map((f) => f.id);
 
@@ -8520,19 +8517,49 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   }
 
   // ---- formation candidates (§4.1) ----------------------------------------------------
-  // cty: the formation type index per slot (-1: no unit). Every formation is its symbol, exactly
-  // (2026-10-24, user): its `shape` rows (generals.js) placed on the board turned or mirrored
-  // any way; 'i' / 'a' / 'c' a unit of that type, '?' any unit, '.' a tile it does not use.
-  // A placement is {slots, types} (types[k]: the type index slot k needs, -1 any unit).
+  // cty: the formation type index per slot (-1: no unit). Two kinds (2026-10-24, user): an
+  // any-shape formation (`combo`) is a touching group with exactly its type counts; an
+  // exact-shape one (`shape` rows, generals.js) is those rows placed on the board turned or
+  // mirrored any way; 'i' / 'a' / 'c' a unit of that type, '?' any unit, '.' a tile it does not
+  // use. A placement is {slots, types} (types[k]: the type index slot k needs, -1 any unit).
+  /** Connected groups with exactly `need` = [inf, arc, cav] units, using only those units. */
+  function combosOf(cty, need) {
+    const n = need[0] + need[1] + need[2];
+    const ok = (s) => cty[s] >= 0 && need[cty[s]] > 0;
+    let layer = [];
+    const seen = new Set();
+    for (let s = 0; s < S; s++) if (ok(s)) { const m = 1 << s, c = [0, 0, 0]; c[cty[s]]++; layer.push({ m, c }); seen.add(m); }
+    for (let size = 1; size < n; size++) {
+      const next = [];
+      for (const { m, c } of layer) {
+        for (let s = 0; s < S; s++) {
+          if (!(m & (1 << s))) continue;
+          for (const j of ORTH[s]) {
+            if ((m & (1 << j)) || !ok(j) || c[cty[j]] >= need[cty[j]]) continue;
+            const m2 = m | (1 << j);
+            if (seen.has(m2)) continue;
+            seen.add(m2);
+            const c2 = c.slice(); c2[cty[j]]++;
+            next.push({ m: m2, c: c2 });
+          }
+        }
+      }
+      layer = next;
+    }
+    return layer.map((x) => x.m);
+  }
+  /** An any-shape formation's type counts, [inf, arc, cav] (null: an exact-shape one). */
+  const comboNeed = (id) => { const c = formDef(id).combo; return c ? [c.inf || 0, c.arc || 0, c.cav || 0] : null; };
   const SHAPE_CH = { i: TI.inf, a: TI.arc, c: TI.cav, '?': -1 };
   const placeCache = {};
-  /** Every placement of formation `id`'s shape on the board (8 turns and mirrors, deduplicated). */
+  /** Every placement of an exact-shape formation on the board (8 turns and mirrors, deduplicated). */
   function placements(id) {
     if (placeCache[id]) return placeCache[id];
     const rows = formDef(id).shape || [];
     const cells = [];
     rows.forEach((r, y) => r.split('').forEach((ch, x) => { if (ch in SHAPE_CH) cells.push({ x, y, t: SHAPE_CH[ch] }); }));
     const out = [], seen = new Set();
+    if (!cells.length) return (placeCache[id] = out);   // an any-shape formation: no drawn shape
     for (let k = 0; k < 8; k++) {
       // turn k % 4 quarter turns, then mirror when k >= 4; normalised to the top-left corner
       const tc = cells.map((c) => {
@@ -8560,8 +8587,9 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   const lexCmp = (a, b) => { for (let k = 0; k < Math.min(a.length, b.length); k++) if (a[k] !== b[k]) return a[k] - b[k]; return a.length - b.length; };
   /** The candidate instances of formation `id` on `cty`: [slot list], deduplicated, in slot order. */
   function candidates(id, cty) {
-    if (!(formDef(id).shape || []).length) return [];
-    const masks = Array.from(new Set(shapeMatches(id, cty)));
+    const need = comboNeed(id);
+    if (!need && !(formDef(id).shape || []).length) return [];
+    const masks = Array.from(new Set(need ? combosOf(cty, need) : shapeMatches(id, cty)));
     return masks.map(slotsOf).sort(lexCmp);
   }
   /**
@@ -10987,16 +11015,46 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   A.typeGlyph = typeGlyph;
 
   // ---- formation diagrams (Core 4's nine typed formations, P53 §4.1) ------------------
-  // Cells: '.' empty, '?' any unit (grey), 'i' / 'a' / 'c' a unit of that type (its colour).
-  // The rows are each formation's `shape` (generals.js), the very pattern the rules match.
+  // Two kinds (2026-10-24, user), drawn so they never read alike:
+  // - exact shape (`shape` rows): its cells on the board's tiles. '.' empty, '?' any unit
+  //   (grey), 'i' / 'a' / 'c' a unit of that type (its colour); the very rows the rules match.
+  // - any shape (`combo`): its units as loose dots packed in a cluster inside a dashed outline,
+  //   with no tiles at all, so no position can be read into them.
   const FGLYPH = {};
-  for (const f of (C && C.FORMATIONS) || []) FGLYPH[f.id] = f.shape;
+  for (const f of (C && C.FORMATIONS) || []) if (f.shape) FGLYPH[f.id] = f.shape;
   A.FGLYPH = FGLYPH;
   A.GLYPH_COL = { '?': '#8f8676', i: A.TYPE_LIT.inf, a: A.TYPE_LIT.arc, c: A.TYPE_LIT.cav };
-  /** A formation's shape diagram: its cells as painted squares in a 4 x 3 box, coloured by type. */
+  const formOf = (id) => ((C && C.FORMATIONS) || []).find((f) => f.id === id) || null;
+  /** An any-shape formation's dots: [{x, y, ch}] in dot spacings, two rows, the lower one set
+   *  half a dot over (3: a triangle, 4: a lozenge, 6: three over three); null for an exact one. */
+  function looseDots(id) {
+    const f = formOf(id);
+    if (!f || !f.combo) return null;
+    const chs = [];
+    for (const [t, ch] of [['inf', 'i'], ['arc', 'a'], ['cav', 'c']]) for (let k = 0; k < (f.combo[t] || 0); k++) chs.push(ch);
+    const top = Math.ceil(chs.length / 2);
+    return chs.map((ch, k) => (k < top ? { x: k, y: 0, ch } : { x: k - top + 0.5, y: 0.87, ch }));
+  }
+  A.looseDots = looseDots;
+  /** A painted unit dot (the shared look of both kinds' dots). */
+  const dot = (cx, cy, r, ch, sw) => '<circle cx="' + r1(cx) + '" cy="' + r1(cy) + '" r="' + r + '" fill="' + A.GLYPH_COL[ch] + '" stroke="#1e1206" stroke-width="' + sw + '"/>' +
+    '<circle cx="' + r1(cx - r * 0.28) + '" cy="' + r1(cy - r * 0.31) + '" r="' + r1(r * 0.31) + '" fill="#fff" opacity=".35"/>';
+  /** The dashed outline round a loose cluster (x, y, w, h): pale on the battle screen's dark
+   *  pill, dark brown on the book's parchment (dark). */
+  const hull = (x, y, w, h, sw, dark) => '<rect x="' + r1(x) + '" y="' + r1(y) + '" width="' + r1(w) + '" height="' + r1(h) + '" rx="' + r1(h / 2) + '" fill="' + (dark ? '#7a5a2e' : '#d8c48f') + '" fill-opacity=".14" stroke="' + (dark ? '#6b4a22' : '#d8c48f') + '" stroke-opacity=".8" stroke-width="' + sw + '" stroke-dasharray="' + r1(sw * 2.4) + ' ' + r1(sw * 1.8) + '"/>';
+  /** A formation's diagram (the book, the card details): an exact shape as painted squares on a
+   *  4 x 3 box of tiles; an any-shape one as its loose dots in a dashed outline, no tiles. */
   A.formationDiagram = function formationDiagram(id, cls) {
-    const rows = FGLYPH[id] || ['?'];
     const W = 4, H = 3, cs = 10, gap = 2;
+    const open = '<svg class="fdg' + (cls ? ' ' + cls : '') + '" viewBox="0 0 ' + W * (cs + gap) + ' ' + H * (cs + gap) + '" aria-hidden="true" focusable="false">';
+    const ld = looseDots(id);
+    if (ld) {
+      const sp = 11, r = 5, n = Math.max.apply(null, ld.map((d) => d.x)) + 1;
+      const w = (n - 1) * sp + 2 * r, h = 0.87 * sp + 2 * r;
+      const ox = (W * (cs + gap) - w) / 2 + r, oy = (H * (cs + gap) - h) / 2 + r;
+      return open + hull(ox - r - 3, oy - r - 3, w + 6, h + 6, 1, true) + ld.map((d) => dot(ox + d.x * sp, oy + d.y * sp, r, d.ch, 1)).join('') + '</svg>';
+    }
+    const rows = FGLYPH[id] || ['?'];
     const w = Math.max.apply(null, rows.map((r) => r.length)), h = rows.length;
     const ox = (W - w) / 2 * (cs + gap), oy = (H - h) / 2 * (cs + gap);
     let o = '';
@@ -11009,24 +11067,29 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       o += '<rect x="' + X + '" y="' + Y + '" width="' + cs + '" height="' + cs + '" rx="2" fill="' + A.GLYPH_COL[ch] + '" stroke="#1e1206" stroke-width="1"/>' +
         '<rect x="' + r1(X + 1.4) + '" y="' + r1(Y + 1.2) + '" width="' + (cs - 2.8) + '" height="2" rx="1" fill="#fff" opacity=".3"/>';
     }));
-    return '<svg class="fdg' + (cls ? ' ' + cls : '') + '" viewBox="0 0 ' + (W * (cs + gap) + 0) + ' ' + (H * (cs + gap) + 0) + '" aria-hidden="true" focusable="false">' + o + '</svg>';
+    return open + o + '</svg>';
   };
   A.formationGlyph = A.formationDiagram;
-  /** PLAN 55: a formation's shape as type-coloured unit dots on its own footprint only (the
-   *  battle screen's small diagram under a teaching general; the same FGLYPH as the book). */
+  /** PLAN 55: a formation's small diagram under a teaching general (the battle screen): an exact
+   *  shape as unit dots on its own tiles; an any-shape one as its loose dots in a dashed outline. */
   A.formationDots = function formationDots(id, cls) {
-    const rows = FGLYPH[id] || ['?'];
     const p = 16, rd = 6.4;
+    const svg = (w, h, o) => '<svg class="fdots' + (cls ? ' ' + cls : '') + '" viewBox="0 0 ' + r1(w) + ' ' + r1(h) + '" width="' + r1(w) + '" height="' + r1(h) + '" aria-hidden="true" focusable="false">' + o + '</svg>';
+    const ld = looseDots(id);
+    if (ld) {
+      const sp = 13.4, n = Math.max.apply(null, ld.map((d) => d.x)) + 1, pad = 2.6;
+      const w = (n - 1) * sp + 2 * rd + 2 * pad, h = 0.87 * sp + 2 * rd + 2 * pad;
+      return svg(w, h, hull(0.7, 0.7, w - 1.4, h - 1.4, 1.2) + ld.map((d) => dot(pad + rd + d.x * sp, pad + rd + d.y * sp, rd, d.ch, 1.4)).join(''));
+    }
+    const rows = FGLYPH[id] || ['?'];
     const w = Math.max.apply(null, rows.map((r) => r.length)), h = rows.length;
     let o = '';
     rows.forEach((r, y) => r.split('').forEach((ch, x) => {
-      const cx = r1(x * p + p / 2), cy = r1(y * p + p / 2);
-      o += '<rect x="' + r1(x * p + 1) + '" y="' + r1(y * p + 1) + '" width="' + (p - 2) + '" height="' + (p - 2) + '" rx="3" fill="#d8c48f" opacity=".22"/>';
+      o += '<rect x="' + r1(x * p + 1) + '" y="' + r1(y * p + 1) + '" width="' + (p - 2) + '" height="' + (p - 2) + '" rx="3" fill="#d8c48f" opacity=".34"/>';
       if (ch === '.') return;
-      o += '<circle cx="' + cx + '" cy="' + cy + '" r="' + rd + '" fill="' + A.GLYPH_COL[ch] + '" stroke="#1e1206" stroke-width="1.4"/>' +
-        '<circle cx="' + r1(cx - 1.8) + '" cy="' + r1(cy - 2) + '" r="2" fill="#fff" opacity=".35"/>';
+      o += dot(x * p + p / 2, y * p + p / 2, rd, ch, 1.4);
     }));
-    return '<svg class="fdots' + (cls ? ' ' + cls : '') + '" viewBox="0 0 ' + w * p + ' ' + h * p + '" width="' + w * p + '" height="' + h * p + '" aria-hidden="true" focusable="false">' + o + '</svg>';
+    return svg(w * p, h * p, o);
   };
 
   /** Human names of a parts list source ("general:sgt_foot" -> "Sergeant of Foot",
@@ -11561,7 +11624,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       let body = '<p class="dt-k">' + (d.role === 'teach' ? 'Teaches a formation' : 'Boost') + ' · ' + esc(d.rarity) + ' · level ' + lv + '</p>' + p(C.generalDesc(T, d.id, lv, item.general.wins));
       if (d.role === 'teach') {
         const f = find(C.FORMATIONS, d.effect.teach);
-        if (f) body += '<div class="dt-form">' + (TTF4.Art ? TTF4.Art.formationDiagram(f.id) : '') + '<div><b>' + esc(f.name) + '</b>' + p(fill(f.desc, T)) + '</div></div>';
+        if (f) body += '<div class="dt-form">' + (TTF4.Art ? TTF4.Art.formationDiagram(f.id) : '') + '<div><b>' + esc(f.name) + '</b>' + p(fill(f.short + '. ' + f.desc, T)) + '</div></div>';
       }
       body += p('Next level: ' + levelLine(T, d.id, lv + 1) + '.');
       return { title: d.name, body };
@@ -14001,7 +14064,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
           const teacher = C.GENERALS.find((g) => g.role === 'teach' && g.effect.teach === f.id);
           const lv = live.indexOf(f.id) >= 0;
           return '<div class="bk-f' + (lv ? ' live' : '') + '" data-f="' + esc(f.id) + '">' + TTF4.Art.formationDiagram(f.id) +
-            '<div><b>' + esc(f.name) + '</b>' + (lv ? '<em>live this battle</em>' : '') + '<p>' + esc(C.fillDesc(f.desc, T)) + '</p>' +
+            '<div><b>' + esc(f.name) + '</b>' + (lv ? '<em>live this battle</em>' : '') + '<p><strong>' + esc(f.short) + '.</strong> ' + esc(C.fillDesc(f.desc, T)) + '</p>' +
             '<span class="by">Taught by ' + esc(teacher ? teacher.name : '-') + '</span></div></div>';
         }).join('') + '</div>' +
           '<p class="say small">A formation scores only when one of the battle\'s generals teaches it: its units score as usual and it adds its bonus on top. One unit may serve in several formations.</p>';
@@ -14318,7 +14381,8 @@ var(--p2-cn) left top / 44px 44px no-repeat;
         const g = Core.generalDef(st.generals[gi].id), fd = (Core.FORMATIONS || []).find((q) => q.id === g.effect.teach) || {};
         return {
           target: () => $('#stage .gens .fdg2[data-gi="' + gi + '"]') || $('#stage .gens .fdg2'), side: ['bottom', 'right', 'left'],
-          lines: [g.name + ' teaches ' + fd.name + ': ' + String(fd.short || '').replace(/^[A-Z](?=[a-z])/, (c) => c.toLowerCase()) + '.', 'Exactly as its symbol shows, turned or mirrored any way. No officer needed.']
+          lines: [g.name + ' teaches ' + fd.name + ' (' + String(fd.short || '').replace(/^[A-Z](?=[a-z])/, (c) => c.toLowerCase()) + ').',
+            fd.combo ? 'Place them in any arrangement, as long as they all touch. No officer needed.' : 'Place them exactly as its symbol shows, turned or mirrored any way. No officer needed.']
         };
       }
       case 'complete': {
