@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="cb93e5a101";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="549f5b76c5";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -7721,8 +7721,11 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     // 2026-10-24 (run 5, §10.10): Shield Wall 1.25 -> 1 (three Infantry in a line: easy in an
     // infantry deck).
     formations: {
-      triad: 0.5, raiding_party: 0.35, wedge: 0.65, pincer: 0.45, shield_wall: 1,
-      covered_archers: 0.8, combined_arms: 1.1, hammer_anvil: 0.9, battle_line: 2.8
+      // 2026-10-24 (user, §10.12): set by what each asks for, not by measured play (too little data):
+      // 3 any-shape | 3 fixed-shape one-type | 4 any-shape | 5 | 6 exact 2x3. The board is never
+      // full (8 units on 16 tiles), so an L and a line are about as hard.
+      triad: 0.5, raiding_party: 0.5, wedge: 0.8, pincer: 0.75, shield_wall: 0.8,
+      covered_archers: 0.7, combined_arms: 1.1, hammer_anvil: 0.9, battle_line: 1.5
     },
     // Officer: mult[rank - 1] is the factor he gives the units of his type in his shape and on
     // his own tile (several multiply; never himself). The Colonel general replaces it.
@@ -7758,9 +7761,9 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       // to 0.05, so a promoted cavalry pool (the user's run) keeps its formation share at <= 50%.
       // 2026-10-23 (§10.5): the easy formations' captains grow least (Line 0.25 -> 0.1, Archers and
       // Combined Arms 0.3 -> 0.15; the harder shapes keep 0.3) and Steward 0.5 -> 0.3 (L4 home x3.4).
-      cpt_line: { base: 0, up: 0.1 }, cpt_horse: { base: 0, up: 0.05 }, cpt_foot: { base: 0, up: 0.3 },
-      cpt_lances: { base: 0, up: 0.05 }, cpt_flanks: { base: 0, up: 0.15 }, cpt_archers: { base: 0, up: 0.15 },
-      cpt_combined: { base: 0, up: 0.15 }, cpt_hammer: { base: 0, up: 0.15 }, cpt_battleline: { base: 0, up: 0.3 },
+      cpt_line: { base: 0, up: 0.1 }, cpt_horse: { base: 0, up: 0.1 }, cpt_foot: { base: 0, up: 0.15 },
+      cpt_lances: { base: 0, up: 0.15 }, cpt_flanks: { base: 0, up: 0.15 }, cpt_archers: { base: 0, up: 0.15 },
+      cpt_combined: { base: 0, up: 0.15 }, cpt_hammer: { base: 0, up: 0.15 }, cpt_battleline: { base: 0, up: 0.2 },
       sgt_foot: { base: 3, up: 2 }, master_bows: { base: 3, up: 2 }, master_horse: { base: 3, up: 2 },
       field_sgt: { base: 2, up: 0.75 }, steward: { base: 2.5, up: 0.3 }, drillmaster: { base: 0.4, up: 0.05 },
       quartermaster: { base: 1.4, up: 0.15 }, old_guard: { base: 1.4, up: 0.15 }, colonel: { base: 3, up: 0.5 },
