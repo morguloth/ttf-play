@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="6637bc190c";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="b6a317a25f";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -7844,7 +7844,6 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       startTeachers: 3,          // the start pool: common teachers ...
       startBoosters: 3,          // ... and common boosters
       dealt: 3,                  // generals dealt each battle
-      undoMax: 1,                // undos per battle attempt; an undo reshuffles the draw pile (2026-10-24, user)
       // teachers in every deal of a battle, [min, max] (2026-10-23, user): b1 exactly one, b2-b3 at most two
       dealTeachers: { 1: [1, 1], 2: [0, 2], 3: [0, 2] }
     }
@@ -9212,7 +9211,8 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     const rest = st.offer.filter((c, k) => k !== pk.index);
     let deck = st.deck.concat(rest);
     const turn = st.turn + 1;
-    const base = { pieces, forts, turn, prev: st };
+    // (back: false: a placement may be undone again, one step; 2026-10-24)
+    const base = { pieces, forts, turn, prev: st, back: false };
     if (st.revealed) {
       const rv = st.revealed.slice();
       if (rv.indexOf(slot) < 0) rv.push(slot);
@@ -9225,20 +9225,18 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   function canPlace(st, pick, slot) {
     try { place(st, pick, slot); return true; } catch (e) { return false; }
   }
-  /** 2026-10-24 (user): tun.run.undoMax (1) undos per battle attempt; st.undos counts them. */
-  function undosLeft(st) {
-    const m = ((tunOf(st) || {}).run || {}).undoMax;
-    return Math.max(0, (typeof m === 'number' ? m : 1) - ((st && st.undos) || 0));
-  }
-  const canUndo = (st) => !!(st && st.phase === 'draft' && st.prev && undosLeft(st) > 0);
+  /** 2026-10-24 (user): one step back only, once per turn. The last placement may be undone, but
+   *  not again from the state an undo restored (st.back), and a turn's placement only once
+   *  (st.undone: the turns already taken back), so place / undo cannot reroll the draw. */
+  const canUndo = (st) => !!(st && st.phase === 'draft' && st.prev && !st.back && (st.undone || []).indexOf(st.prev.turn) < 0);
   /** Back one turn: the board and the hand as they were, but the draw pile reshuffled (seeded by
-   *  the battle, the turn and the undo count), so an undo never shows what is coming next; the
-   *  state itself when no undo is left. */
+   *  the battle and the turn), so an undo never shows what is coming next; the state itself when
+   *  no undo is allowed. st.undos counts them (the run analysis). */
   function undo(st) {
     if (!canUndo(st)) return st;
-    const p = st.prev, n = (st.undos || 0) + 1;
-    const deck = C.RNG.shuffle(C.RNG.seedFrom(st.seed, 'undo', p.turn, n), p.deck.slice()).value;
-    return Object.assign({}, p, { deck, undos: n });
+    const p = st.prev, undone = (st.undone || []).concat([p.turn]);
+    const deck = C.RNG.shuffle(C.RNG.seedFrom(st.seed, 'undo', p.turn), p.deck.slice()).value;
+    return Object.assign({}, p, { deck, undone, undos: undone.length, back: true });
   }
 
   // ---- score --------------------------------------------------------------------------
@@ -9431,7 +9429,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
 
   Object.assign(C, {
     SHAPE_IDS, createBattle, startDeck, leaderCards, arrivalsOf, arrivalsAt, arrivalCards, kindIntroduced, arrivalSwap, redeal,
-    legalSlots, playable, place, canPlace, undo, canUndo, undosLeft, breakdown, total, score, battleTotal, won, predict, totalAfter, target,
+    legalSlots, playable, place, canPlace, undo, canUndo, breakdown, total, score, battleTotal, won, predict, totalAfter, target,
     officerArea, shapeCells, officerOf, officerMult, officerRank: officerRankOf, homeTerrains, xpOf,
     heroAbility, heroCard, heroTypeOf, heroRank: heroRankOf, pieceFor: newPiece, migrateCard, migrateState,
     bossOf, blockedOf, turnsOf, offerSizeOf, isHidden, playerView, hiddenSlots, rankPower, maxRank, traitTun,
