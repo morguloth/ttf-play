@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="549f5b76c5";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="4ef3e6db64";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14712,9 +14712,13 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     if (!shareOn() || !after) return;
     const res = (after.results || [])[(after.results || []).length - 1];
     const loss = (after.losses || [])[(after.losses || []).length - 1];
-    const r = res && res.battle === after.battle ? res : loss && loss.battle === after.battle ? loss : null;
+    // a win is the last result; a loss is the last entry of run.losses, which carries its attempt
+    // (2026-10-24 fix: a lost result has none, so every loss was keyed attempt 0 and a second loss
+    // of the same battle was skipped as already sent)
+    const won = !!(res && res.battle === after.battle && res.won);
+    const r = won ? res : loss && loss.battle === after.battle ? loss : null;
     if (!r) return;
-    const attempt = r.won ? (r.retries || 0) : (r.attempt || 0);
+    const attempt = won ? (r.retries || 0) : (r.attempt || 0);
     const key = after.seed + ':' + r.battle + ':' + attempt;
     const sent = readList('sent');
     if (sent.indexOf(key) >= 0) return;
