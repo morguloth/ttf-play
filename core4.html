@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="713e9f0168";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="cff88d9b13";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -7694,7 +7694,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   // so play data from different rules is never mixed. Bump it with any change to a rule or a
   // number (test/core4-version.test.js fails until the fingerprint is updated); docs/P53-CORE4.md
   // §13 lists every version and the builds that played it.
-  C.RULES_VERSION = 5;
+  C.RULES_VERSION = 6;
 
   C.TUN_DEFAULT = {
     board: { size: 4, minEach: 3, maxEach: 5, tries: 300 },
@@ -7735,6 +7735,8 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       // general) and Triad 0.5 -> 0.4; Pincer 0.75 -> 0.65 (high early); the exact shapes that
       // fell behind up: Hammer and Anvil 0.9 -> 1.2 (its rule got stricter, §10.14), Wedge 0.8 -> 1,
       // Battle Line 1.5 -> 1.8, Shield Wall 0.8 -> 0.9 (below the user's 1).
+      // 2026-10-25 (user, §10.16, rules 6): Covered Archers is an exact 2x2 again (the Archers
+      // together, the Infantry together); its number stays.
       triad: 0.4, raiding_party: 0.5, wedge: 1, pincer: 0.65, shield_wall: 0.9,
       covered_archers: 0.7, combined_arms: 0.6, hammer_anvil: 1.2, battle_line: 1.8
     },
@@ -8032,7 +8034,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     exact('shield_wall', 'Shield Wall', ['iii'], '3 Infantry in a line', 'Three Infantry units side by side in a straight row or column.'),
     exact('wedge', 'Wedge', ['cc', 'c.'], '3 Cavalry in an L', 'Three Cavalry units filling 3 tiles of a 2x2 block (an L).'),
     exact('pincer', 'Pincer', ['c??c'], 'Cavalry at both ends', 'A full row or column: Cavalry on both end tiles and a unit of any type on each of the two tiles between.'),
-    loose('covered_archers', 'Covered Archers', { arc: 2, inf: 2 }, '2 Archers + 2 Infantry', 'Two Archers and two Infantry units'),
+    exact('covered_archers', 'Covered Archers', ['aa', 'ii'], '2 Archers by 2 Infantry', 'A 2x2 block: two Archers side by side, with two Infantry side by side directly beside them.'),
     loose('combined_arms', 'Combined Arms', { inf: 2, arc: 2, cav: 2 }, '2 of each', 'Two Infantry, two Archers and two Cavalry units'),
     exact('hammer_anvil', 'Hammer and Anvil', ['c.c', 'iii'], 'wall, Cavalry at ends', 'A Shield Wall (three Infantry in a straight line) with a Cavalry unit beside each end tile, both on the same side.'),
     exact('battle_line', 'Battle Line', ['iii', 'aaa'], 'Infantry row + Archers row', 'Three Infantry in a straight row or column with three Archers in the row or column directly beside them, over the same span (a 2x3 block).')
