@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="56c677d452";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="3ca8316b6a";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1215,6 +1215,10 @@ svg.areas path.cg { fill: rgba(176, 120, 255, 0.24); stroke: #d7b8ff; stroke-wid
 .val[data-type="cav"] { --tc: var(--cav-lit); }
 .val[data-type="inf"] { --tc: var(--inf-lit); }
 .val b { font: 900 calc(var(--cell) * 0.23)/1 var(--face-title); color: #2c1a04; margin-top: -2px; text-shadow: 0 1px 0 rgba(255, 245, 200, 0.7); }
+/* a long number sets smaller so it stays on its coin (data-n: its digit count) */
+.val b[data-n="3"] { font-size: calc(var(--cell) * 0.2); }
+.val b[data-n="4"] { font-size: calc(var(--cell) * 0.155); letter-spacing: -0.02em; }
+.val b[data-n="5"], .val b[data-n="6"] { font-size: calc(var(--cell) * 0.125); letter-spacing: -0.03em; }
 
 /* Core 3's miniature rules (core3/css/core3.css .m2; copied: that sheet styles Core 3's page) */
 .m2 { position: absolute; inset: 0; transform-origin: 50% 72%; }
@@ -12177,8 +12181,11 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     return { v, fire };
   }
   const standCls = (i, fire) => 'stand' + (fire ? ' fire' : '') + (rv && !fire ? ' rest' : '') + (fresh === i && !rv ? ' drop' : '');
+  /** A medallion's number: data-n is its digit count, so a long number sets smaller and stays on
+   *  its coin (2026-10-26: a 4-digit value ran past the coin and was cut at the board's edge). */
+  const valB = (v) => '<b data-n="' + String(v).length + '">' + v + '</b>';
   /** A stand's medallion, reveal pop and preview change badge (liftBadges moves them flat). */
-  const badgesHtml = (ty, sv, d) => '<div class="val" data-type="' + ty + '"><b>' + sv.v + '</b></div>' +
+  const badgesHtml = (ty, sv, d) => '<div class="val" data-type="' + ty + '">' + valB(sv.v) + '</div>' +
     (sv.fire ? '<div class="pop">' + esc(sv.fire) + '</div>' : '') + (d ? dltHtml(d) : '');
   /** A unit's change badge in the preview (+n / −n). */
   const dltHtml = (d) => '<div class="dlt' + (d < 0 ? ' neg' : '') + '">' + (d > 0 ? '+' : '−') + Math.abs(d) + '</div>';
@@ -12187,7 +12194,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     const gp = gh.piece;
     return '<div class="stand ghost" data-type="' + typeOf(gp) + '" style="left:' + sb.left.toFixed(1) + 'px;top:' + sb.top.toFixed(1) + 'px;width:' + sb.w.toFixed(1) + 'px;height:' + sb.h.toFixed(1) + 'px;transform-origin:50% ' + (BASE_FRONT * 100) + '%">' +
       (gp ? '<div class="mini">' + Art.miniHtml(gp, { seed: 'ghost', ghost: true }) + '</div>' : '') +
-      (gh.own != null ? '<div class="val" data-type="' + typeOf(gp) + '"><b>' + gh.own + '</b></div>' : '') + '</div>';
+      (gh.own != null ? '<div class="val" data-type="' + typeOf(gp) + '">' + valB(gh.own) + '</div>' : '') + '</div>';
   }
   const foCls = (n) => 'fo' + (rv && rv.formOn === n ? ' flare' : rv && rv.formDone && rv.formDone[n] ? ' done' : '');
   function boardHtml(bs, o) {
@@ -13295,7 +13302,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       const box = field && field.querySelector('.vals .vb[data-slot="' + b.slot + '"]');
       if (!box) return;
       const val = box.querySelector('.val');
-      if (val) { const t = val.querySelector('b'); if (t) t.textContent = b.to; restart(val, 'hit'); }
+      if (val) { const t = val.querySelector('b'); if (t) { t.textContent = b.to; t.dataset.n = String(b.to).length; } restart(val, 'hit'); }
       box.classList.add('fire');
       box.classList.remove('rest');
       const stand = field.querySelector('.stand[data-slot="' + b.slot + '"]');
