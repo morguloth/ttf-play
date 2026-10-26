@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="d442e4d650";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="56c677d452";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1765,6 +1765,8 @@ noscript p { position: fixed; inset: 40% 0 auto; text-align: center; font: 700 2
 .dt-t b { font: 700 18px/1.1 var(--face-name); color: #3a2508; font-variant-numeric: tabular-nums; }
 .dt-t i { font: italic 14px/1.2 var(--face-name); color: #6b4a1a; }
 .dt-t.eng { grid-template-columns: auto; padding: 5px 10px; }
+.dt-t.chg { background: rgba(214, 160, 40, 0.28); box-shadow: inset 0 0 0 2px #8a5c0e; }
+.swtally .dtally { margin-top: 8px; }
 .dsort + .dsort { margin-top: 8px; }
 .dgrid { display: grid; grid-template-columns: repeat(4, 168px); justify-content: center; gap: 18px 12px; margin: 12px -16px 0; padding: 12px 8px 14px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
 .dgrid .dc { position: relative; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -13774,6 +13776,8 @@ var(--p2-cn) left top / 44px 44px no-repeat;
         '<div><h2>' + (gen ? 'Which general leaves?' : 'Which card leaves?') + '</h2><p class="say">' +
         (gen ? esc(find(C.GENERALS, o.id).name) + ' joins your six at level 1. One of these three makes way.' : esc(Cards().nameOf(o)) + ' joins your deck. One of these three makes way.') + '</p></div></div>' +
         '<div class="grow">' + items + '</div>' +
+        // 2026-10-26 (user): the deck's tally under a card swap; picking the card that leaves shows the result
+        (gen ? '' : '<div class="swtally">' + tallyHtml(C.Run.deckList(run)) + '</div>') +
         '<p class="say small holdhint">Press and hold a card or general to read what it does.</p>' +
         '<div class="acts">' + btn('swap', 'Swap', 'primary', true) + btn('back', 'Back', 'quiet') + '</div></div>';
       Cards().fit(entry.ov);
@@ -13794,6 +13798,11 @@ var(--p2-cn) left top / 44px 44px no-repeat;
         entry.ov.querySelectorAll('.rp').forEach((x) => x.classList.toggle('is-sel', +x.dataset.k === repl));
         const ok = entry.ov.querySelector('[data-act="swap"]');
         ok.disabled = false;
+        const box = entry.ov.querySelector('.swtally');
+        if (box) {
+          const deck = C.Run.deckList(run), out = entry.list[repl];
+          box.innerHTML = tallyHtml(deck, deck.filter((c) => c.uid !== out.uid).concat([options[choice]]));
+        }
       }
     });
     onAct(entry, (act) => {
@@ -13962,19 +13971,23 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     return out;
   }
   S.deckTally = deckTally;
-  /** The tally strip: per type its glyph, name and count, and what the count is made of. */
-  function tallyHtml(list) {
-    const K = Cards(), A = TTF4.Art, tl = deckTally(list);
+  /** The tally strip: per type its glyph, name and count, and what the count is made of. With
+   *  `after` (the deck a swap would leave, 2026-10-26), a count that changes reads "12 → 13" and its
+   *  chip is marked; the breakdown is the one after the swap. */
+  function tallyHtml(list, after) {
+    const K = Cards(), A = TTF4.Art, tl = deckTally(list), ta = after ? deckTally(after) : tl;
     const part = (n, one, many) => (n ? n + ' ' + (n === 1 ? one : many) : '');
+    const count = (a, b) => (a === b ? String(a) : a + ' → ' + b);
     const cell = (t) => {
-      const x = tl[t];
+      const x = ta[t], chg = tl[t].total !== x.total;
       const made = [part(x.units, 'unit', 'units'), part(x.heroes, 'hero', 'heroes'), part(x.officers, 'officer', 'officers')].filter(Boolean).join(' · ');
-      return '<div class="dt-t ' + t + '"><span class="dt-g" style="color:' + (A && A.TYPE_LIT ? A.TYPE_LIT[t] : 'currentColor') + '">' + (A ? A.typeGlyph(t) : '') + '</span>' +
-        '<b>' + esc(K.TYPE_NAMES[t]) + ' ' + x.total + '</b><i>' + esc(made || 'none') + '</i></div>';
+      return '<div class="dt-t ' + t + (chg ? ' chg' : '') + '"><span class="dt-g" style="color:' + (A && A.TYPE_LIT ? A.TYPE_LIT[t] : 'currentColor') + '">' + (A ? A.typeGlyph(t) : '') + '</span>' +
+        '<b>' + esc(K.TYPE_NAMES[t]) + ' ' + count(tl[t].total, x.total) + '</b><i>' + esc(made || 'none') + '</i></div>';
     };
     return '<div class="dtally" aria-label="Your deck by type">' + ['inf', 'arc', 'cav'].map(cell).join('') +
-      (tl.engineers ? '<div class="dt-t eng"><b>Engineers ' + tl.engineers + '</b></div>' : '') + '</div>';
+      (tl.engineers || ta.engineers ? '<div class="dt-t eng' + (tl.engineers !== ta.engineers ? ' chg' : '') + '"><b>Engineers ' + count(tl.engineers, ta.engineers) + '</b></div>' : '') + '</div>';
   }
+  S.tallyHtml = tallyHtml;
 
   // ---- the deck view's sort and look (remembered per viewer: localStorage 'ttf-core4:prefs') --------
   const SORTS = [['type', 'Type'], ['power', 'Power'], ['rank', 'Rank'], ['xp', 'Next rank'], ['kind', 'Kind'], ['new', 'Newest']];
