@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="d8bac47fa1";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="ce93b8ddaf";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13114,8 +13114,11 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   }
   B.hoverSlot = setHover;
   /** The tile under a pointer event. A press redraws the board (its preview), so the release may
-   *  come retargeted to the field: the tile is then found under the pointer itself. */
+   *  come retargeted to the field: the tile is then found under the pointer itself. A press on a
+   *  screen over the board is that screen's (2026-10-27, user: the click that closes a unit's
+   *  text found the tile under the fading panel and opened that one instead). */
   const tileAt = (e) => {
+    if (e.target && e.target.closest && e.target.closest('.c2-ov')) return null;
     let t = e.target && e.target.closest ? e.target.closest('.tile') : null;
     if (!t && typeof document.elementFromPoint === 'function' && e.clientX != null) {
       const el = document.elementFromPoint(e.clientX, e.clientY);
@@ -13210,7 +13213,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
    *  line of the battle report (what that step added), a general or a formation (its text). */
   function reviewTap(e) {
     const t = e.target;
-    if (!t || !t.closest || t.closest('[data-rv]') || !cb.onDetail || !st) return;
+    if (!t || !t.closest || t.closest('[data-rv], .c2-ov') || !cb.onDetail || !st) return;
     const sc = C.score(st);
     const held = t.closest('.gens .g6, .gens .fdg2, .ftag');
     if (held) { const item = cardItem(held); if (item) cb.onDetail(item); return; }
