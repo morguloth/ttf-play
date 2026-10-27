@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="3ca8316b6a";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="1e2362d3af";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1614,6 +1614,13 @@ noscript p { position: fixed; inset: 40% 0 auto; text-align: center; font: 700 2
 .hand .pick { pointer-events: none; }
 /* the dragged card follows the finger by its transform on its own layer (hand.js, once a frame) */
 .hdrag { position: absolute; z-index: 40; pointer-events: none; transform: translate(-50%, -60%) rotate(-4deg); filter: drop-shadow(0 16px 18px rgba(0, 0, 0, 0.6)); will-change: transform; }
+/* PLAN 59: the dragged card's value coin rides above its top edge, clear of the finger and the card */
+.hdrag .hval { position: absolute; left: 50%; top: -12px; transform: translate(-50%, -100%) rotate(4deg); }
+.hdrag .hval .val { position: relative; right: auto; bottom: auto; transform: none; width: 62px; height: 62px; box-shadow: 0 0 0 2px #3a2508, 0 0 0 5px var(--tc), 0 0 0 6.5px #140a03, 0 0 22px 8px rgba(255, 230, 140, 0.85); }
+.hdrag .hval .val b { font-size: 28px; }
+.hdrag .hval .val b[data-n="3"] { font-size: 23px; }
+.hdrag .hval .val b[data-n="4"] { font-size: 18px; }
+.hdrag .hval .val b[data-n="5"], .hdrag .hval .val b[data-n="6"] { font-size: 15px; }
 
 /* ---- the corner buttons ------------------------------------------------------------------- */
 .cbs { position: absolute; bottom: 16px; display: flex; flex-direction: column; gap: 10px; pointer-events: auto; }
@@ -1771,6 +1778,9 @@ noscript p { position: fixed; inset: 40% 0 auto; text-align: center; font: 700 2
 .dt-t.eng { grid-template-columns: auto; padding: 5px 10px; }
 .dt-t.chg { background: rgba(214, 160, 40, 0.28); box-shadow: inset 0 0 0 2px #8a5c0e; }
 .swtally .dtally { margin-top: 8px; }
+/* 2026-10-27: the spoils on one screen: a rule between the offers and the three that may leave */
+.spoils .outh { margin: 20px auto 0; padding-top: 14px; border-top: 2px solid rgba(122, 82, 15, 0.35); max-width: 760px; }
+.spoils .outs { margin-top: 8px; align-items: flex-start; }
 .dsort + .dsort { margin-top: 8px; }
 .dgrid { display: grid; grid-template-columns: repeat(4, 168px); justify-content: center; gap: 18px 12px; margin: 12px -16px 0; padding: 12px 8px 14px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
 .dgrid .dc { position: relative; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -1889,15 +1899,28 @@ noscript p { position: fixed; inset: 40% 0 auto; text-align: center; font: 700 2
 .gens .fdrow { display: flex; gap: 16px; margin-top: 6px; }
 .gens .fdslot { flex: none; display: flex; justify-content: center; }
 .fdg2 {
-  display: flex; align-items: center; gap: 9px; height: 42px; padding: 0 12px 0 9px; border-radius: 12px; cursor: pointer;
+  display: flex; align-items: center; gap: 7px; height: 42px; padding: 0 10px 0 8px; border-radius: 12px; cursor: pointer;
   background: linear-gradient(180deg, rgba(74, 40, 114, 0.92), rgba(40, 20, 64, 0.94));
   box-shadow: 0 0 0 1.5px #b48ae6, 0 0 0 3px #1c0d2c, 0 4px 8px rgba(0, 0, 0, 0.55);
   -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
   transition: box-shadow 200ms ease, filter 200ms ease;
 }
 .fdg2 .fdots { display: block; flex: none; height: 32px; width: auto; }
+/* PLAN 59: the word on every formation symbol (ANY ORDER: dashed like its loose dots; EXACT SHAPE: framed like its tiles) */
+.fkind { display: inline-block; flex: none; font: 700 14px/1 var(--face-name); letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; padding: 4px 7px 3px; border-radius: 6px; vertical-align: 3px; }
+.fkind.any { color: #fff1c2; box-shadow: inset 0 0 0 1.5px rgba(255, 241, 194, 0.85); background: rgba(255, 241, 194, 0.08); border: 0; outline: 1.5px dashed rgba(255, 241, 194, 0.0); }
+.fkind.exact { color: #2c1a04; background: #e9d49a; box-shadow: inset 0 0 0 1.5px #5e3f0b; }
+.fdg2 .fkind.any { box-shadow: none; outline: 1.5px dashed rgba(255, 241, 194, 0.9); outline-offset: -1.5px; }
+/* 2026-10-27 (user): in a row the word made each pill wider than its general's card and they overlapped:
+   it sits as a tab on the pill's lower edge, so the pill keeps its old width (dots and x only) */
+.fdg2 { position: relative; }
+.fdg2 .fkind { position: absolute; left: 50%; bottom: -11px; transform: translateX(-50%); font-size: 11px; padding: 3px 6px 2px; letter-spacing: 0.05em; }
+.fdg2 .fkind.any { background: #2c1646; }
+.gens .fdrow { padding-bottom: 10px; }
+.bk-f .fkind, .dt-form .fkind { margin-left: 8px; font-size: 13px; }
+.bk-f .fkind.any, .dt-form .fkind.any { color: #5a3a10; background: rgba(122, 82, 15, 0.08); box-shadow: none; outline: 1.5px dashed #7a5a2e; outline-offset: -1.5px; }
 .fdg2 b { font: 900 18px/1 var(--face-title); color: #f3e6ff; text-shadow: 0 1px 2px #000; }
-.fdg2 i { font: 700 17px/1 var(--face-name); font-style: normal; color: #fff1c2; }
+.fdg2 i { font: 700 17px/1 var(--face-name); font-style: normal; color: #fff1c2; white-space: nowrap; }
 .fdg2:not(.on) { filter: saturate(0.75) brightness(0.88); }
 .fdg2.on { box-shadow: 0 0 0 2px #f3dc9a, 0 0 0 3.5px #1c0d2c, 0 0 16px 4px rgba(200, 150, 255, 0.55); }
 .fdg2.flare { animation: fdflare 520ms ease-out; box-shadow: 0 0 0 2px #fff1c2, 0 0 0 3.5px #1c0d2c, 0 0 26px 9px rgba(210, 160, 255, 0.95); }
@@ -2476,6 +2499,35 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   .dkpile { display: none; }
   .gens .g6::before { transition: none; }
 }
+
+/* ---- 2026-10-27 (user): the review after the reveal: the total leaves the board, a tap reads how
+   the score was built, Next battle goes on (board2.js drawNext / reviewTap, cards.js scoreHtml) ---- */
+.rvnext { position: absolute; left: 50%; transform: translateX(-50%); z-index: 6; display: flex; align-items: center; gap: 14px; white-space: nowrap;
+  padding: 6px 6px 6px 16px; border-radius: 14px; background: rgba(28, 16, 6, 0.82); box-shadow: 0 0 0 1.5px #b08a3e, 0 6px 14px rgba(0, 0, 0, 0.55); }
+.rvnext span { font: 600 16px/1.1 var(--face-name); color: #f3e3bd; }
+.rvnext .b4 { margin: 0; }
+.scr[data-mode="reveal"] .vb, .scr[data-mode="reveal"] .stand, .scr[data-mode="reveal"] .ledger .lg { cursor: pointer; }
+.dt .dsc { margin: 4px 0 12px; }
+.dt .dsc ol { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; }
+.dt .dsc li { display: grid; grid-template-columns: 128px 1fr auto; align-items: baseline; gap: 10px; padding: 5px 8px; border-radius: 8px; background: rgba(122, 82, 15, 0.08); }
+.dt .sc-g { font: 700 13px/1.2 var(--face-name); letter-spacing: 0.04em; text-transform: uppercase; color: #7a520f; }
+.dt .sc-x { font-size: 17px; line-height: 1.25; }
+.dt .dsc li b, .dt .sc-l li b { font: 900 20px/1 var(--face-title); color: #3a2508; }
+.dt .sc-f { margin: 8px 0 0; text-align: right; font: 700 18px/1 var(--face-name); color: #3a2508; }
+.dt .sc-f b { font: 900 26px/1 var(--face-title); margin-left: 8px; }
+.dt-rep h3 b { color: #2f6a24; margin-left: 6px; }
+.dt .sc-l { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 5px; max-height: 52vh; overflow-y: auto; }
+.dt .sc-l li { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 6px 10px; border-radius: 8px; background: rgba(122, 82, 15, 0.08); }
+.dt .sc-n { display: flex; flex-direction: column; gap: 2px; font: 700 17px/1.2 var(--face-name); color: #3a2508; }
+.dt .sc-n em { font: 400 15px/1.25 var(--face-body, inherit); font-style: normal; color: #6b5536; }
+
+/* ---- 2026-10-27 (user): the deck view stacks identical cards (screens.js deckView / stackView) ---- */
+.dgrid .dc.stk { padding-top: 6px; }
+.dgrid .dc.stk .c2-card { box-shadow: 5px -5px 0 -1px #e9dcb8, 5px -5px 0 0 #7a520f, 10px -10px 0 -1px #e2d3aa, 10px -10px 0 0 #7a520f, 0 6px 12px rgba(0, 0, 0, 0.35); }
+.dstk-n { position: absolute; top: 96px; right: -10px; z-index: 3; min-width: 44px; padding: 5px 8px 4px; border-radius: 999px; text-align: center;
+  font: 900 22px/1 var(--face-title); color: #fff6dc; background: linear-gradient(180deg, #8a2a1a, #5a160c); box-shadow: 0 0 0 2px #e7bf5c, 0 3px 6px rgba(0, 0, 0, 0.5); }
+.dstk-t { font: 700 16px/1.2 var(--face-name); color: #7a520f; }
+.stackv .dgrid { grid-template-columns: repeat(auto-fit, 168px); }
 </style>
 <!-- Cinzel: the titles and numbers (Google Fonts, the one external file) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap">
@@ -7708,7 +7760,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   // so play data from different rules is never mixed. Bump it with any change to a rule or a
   // number (test/core4-version.test.js fails until the fingerprint is updated); docs/P53-CORE4.md
   // §13 lists every version and the builds that played it.
-  C.RULES_VERSION = 6;
+  C.RULES_VERSION = 9;
 
   C.TUN_DEFAULT = {
     board: { size: 4, minEach: 3, maxEach: 5, tries: 300 },
@@ -7788,9 +7840,12 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       // to 0.05, so a promoted cavalry pool (the user's run) keeps its formation share at <= 50%.
       // 2026-10-23 (§10.5): the easy formations' captains grow least (Line 0.25 -> 0.1, Archers and
       // Combined Arms 0.3 -> 0.15; the harder shapes keep 0.3) and Steward 0.5 -> 0.3 (L4 home x3.4).
-      cpt_line: { base: 0, up: 0.1 }, cpt_horse: { base: 0, up: 0.1 }, cpt_foot: { base: 0, up: 0.15 },
-      cpt_lances: { base: 0, up: 0.15 }, cpt_flanks: { base: 0, up: 0.15 }, cpt_archers: { base: 0, up: 0.15 },
-      cpt_combined: { base: 0, up: 0.15 }, cpt_hammer: { base: 0, up: 0.15 }, cpt_battleline: { base: 0, up: 0.2 },
+      // 2026-10-26 (user: formations must not fade late, through level-ups; §10.18): with the traits
+      // gone nothing grew a formation over a run, so a formation general's level-up step is x3 (and
+      // one offered later in the run joins at a higher level, run.teachOfferLevelAt).
+      cpt_line: { base: 0, up: 0.3 }, cpt_horse: { base: 0, up: 0.3 }, cpt_foot: { base: 0, up: 0.45 },
+      cpt_lances: { base: 0, up: 0.45 }, cpt_flanks: { base: 0, up: 0.45 }, cpt_archers: { base: 0, up: 0.45 },
+      cpt_combined: { base: 0, up: 0.45 }, cpt_hammer: { base: 0, up: 0.45 }, cpt_battleline: { base: 0, up: 0.6 },
       sgt_foot: { base: 3, up: 2 }, master_bows: { base: 3, up: 2 }, master_horse: { base: 3, up: 2 },
       field_sgt: { base: 2, up: 0.75 }, steward: { base: 2.5, up: 0.3 }, drillmaster: { base: 0.4, up: 0.05 },
       quartermaster: { base: 1.4, up: 0.15 }, old_guard: { base: 1.4, up: 0.15 }, colonel: { base: 3, up: 0.5 },
@@ -7816,28 +7871,26 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       veteran: 1
     },
     // The upgrade's traits (the 6 kinds are added to these when it draws, run.js upgradeStep).
-    traitPool: ['sure_footed', 'rally', 'banner', 'champion', 'inspiring', 'versatile', 'fort_trained', 'veteran',
-      'shock', 'steadfast', 'disciplined', 'linchpin', 'standard_bearer'],
+    // PLAN 59 (2026-10-26, user: the clean base): no traits at all; units are a type and a rank.
+    // The trait rules stay in rules.js, idle, for a later return; nothing deals one.
+    traitPool: [],
     // 4 ranks per type. power: base by rank. xp: cumulative XP for rank 2 / 3 / 4.
     ranks: { power: [2, 4, 7, 12], xp: [3, 7, 12] },
     // Officer shapes (rules.js SHAPE_IDS), measured from the officer's slot, clipped at the edge.
     officerShapes: ['cross', 'corners', 'row', 'column', 'left', 'right', 'above', 'below'],
-    // The start deck: 30 plain rank-1 units; the leaders arrive (below) and are added on top.
+    // The start deck. PLAN 59 (2026-10-26, user): one fixed 41-card deck, everything in play from
+    // battle 1 (no arrivals). units: per type, the count at rank 1, 2, 3; officers with their area;
+    // one hero of each type; two engineers.
     startDeck: {
-      units: { inf: 10, arc: 10, cav: 10 },
-      // PLAN 57: one unit of each kind from the start, so units carry placement rules from battle 1
-      kinds: ['pikemen', 'guards', 'longbowmen', 'marksmen', 'light_horse', 'knights'],
-      officers: [],
-      heroes: { always: [], random: 0 },
-      engineers: 0
+      units: { inf: [8, 2, 1], arc: [8, 2, 1], cav: [8, 2, 1] },
+      kinds: [],
+      officers: [{ type: 'inf', shape: 'cross' }, { type: 'arc', shape: 'row' }, { type: 'cav', shape: 'column' }],
+      heroes: { always: ['marshal', 'huntsman', 'vanguard'], random: 0 },
+      engineers: 2
     },
     arrivalsAdd: true,
-    arrivals: [
-      { battle: 2, kind: 'officer', officers: ['inf', 'arc', 'cav'] },
-      { battle: 3, kind: 'hero', heroes: { always: ['marshal', 'vanguard', 'huntsman'], random: 1 } },
-      { battle: 4, kind: 'engineer', engineers: 3 }
-    ],
-    deckSize: 40,
+    arrivals: [],
+    deckSize: 41,
     // Laurels, the run score (§7): per battle won (win + Glory) x bossScale for a boss x retried
     // when it took any retry; Glory = min(gloryCap, round(100 x (total / target - 1))).
     laurels: { win: 20, gloryCap: 100, bossScale: 2, retried: 0.5 },
@@ -7856,17 +7909,23 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       // 2026-10-23 (user, run 4): battles 16-30 +10%, the early game unchanged (lean easy).
       // 2026-10-23 (user): officers take a slot of their own (no tile shared), which cost casual
       // first try 76% -> 69%; every target x0.92 (rounded to 5) brings it back to 77% (§10.8).
-      target: [35, 50, 85, 95, 85, 105, 115, 130, 145, 130, 155, 175, 185, 205, 190, 250, 265, 285, 310, 280,
-        335, 365, 380, 415, 380, 445, 485, 490, 500, 445],
+      // PLAN 59 (2026-10-26): the clean base re-set the same way (casual's 22nd-percentile first
+      // attempt, a boss its 30th / 1.05; 300 runs): the fixed 41-card deck starts strong, and with
+      // no traits the late game grows less, so the curve is flatter (§10.17).
+      target: [100, 100, 105, 110, 95, 115, 125, 130, 145, 125, 165, 180, 185, 195, 175, 215, 230, 240, 260, 225,
+        280, 300, 305, 320, 290, 335, 355, 355, 365, 325],
       offerOptions: 3,           // options in the after-battle offer
       generalChance: 0.25,       // chance an option is a general (rolled first)
       generalMax: 1,             // at most this many generals in one spoils offer (2026-10-22, user)
       generalRarity: { common: 0.70, uncommon: 0.25, rare: 0.05 },
       leaderChance: 0.25,        // else: chance it is a leader
       leaderKinds: ['officer', 'hero', 'hero', 'engineer'],
-      kindChance: 0.5,           // an offered unit comes with a random kind of its type (PLAN 57: 0.2 -> 0.5)
+      kindChance: 0,             // an offered unit's chance of a random kind (PLAN 59: none, the clean base)
       offerRankAt: [6, 12, 20],  // offered units are rank 1 + (battles won >= each entry)
-      upgradeEvery: 3,           // upgrade after battles 3, 6, ..., 27 (never after the last)
+      // 2026-10-26 (user): a formation general offered for battles 1-10 joins at level 1, for
+      // 11-20 at level 2, for 21-30 at level 3 (the battle he first fights; boosters at level 1)
+      teachOfferLevelAt: [11, 21],
+      upgradeEvery: 0,           // upgrade after every n-th battle (PLAN 59: 0, no upgrade step: no traits)
       upgradeOffers: 3,          // the units the upgrade's trait may go to (random eligible ones)
       replaceChoices: 3,         // a taken card replaces one of these random deck cards
       generalReplaceChoices: 3,  // a taken general replaces one of these random pool generals
@@ -7970,9 +8029,10 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   // that a kind trait now owns (Pikeman, Guardsman, Longbowman, Marksman, Knight) were renamed,
   // so one name means one thing.
   C.RANK_NAMES = {
-    inf: ['Spearman', 'Swordsman', 'Halberdier', 'Man-at-arms'],
-    arc: ['Archer', 'Crossbowman', 'Yeoman', 'Sharpshooter'],
-    cav: ['Rider', 'Trooper', 'Lancer', 'Cuirassier']
+    // PLAN 59 (2026-10-26, user): with the kinds gone, the ranks take their names
+    inf: ['Spearman', 'Pikeman', 'Halberdier', 'Guardsman'],
+    arc: ['Archer', 'Crossbowman', 'Longbowman', 'Marksman'],
+    cav: ['Rider', 'Light Horse', 'Lancer', 'Knight']
   };
   /** The rank name of a unit card or piece ({type, rank?}; rank missing = 1). */
   C.rankName = (card) => {
@@ -8027,6 +8087,9 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       desc: 'Cavalry only. Its rank power is ×{kinds.knights}, wherever it stands. A unit holds one kind.' }
   ];
   C.KIND_IDS = C.TRAITS.filter((t) => t.kind === 'unitkind').map((t) => t.id);
+  // PLAN 59 (2026-10-26, user: the clean base): every trait is retired. No deck, offer or upgrade
+  // deals one; their rules stay for a later return, and their names are free for the ranks.
+  for (const t of C.TRAITS) t.retired = true;
   /** Old trait ids of saved runs -> today's. */
   C.TRAIT_RENAMES = { drilled: 'disciplined' };
 
@@ -8038,7 +8101,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   //   placements; art2.js draws the same rows).
   // Every short line says which kind it is. pct in tun.formations.
   const X = ' Their points count ×{mul:formations.ID}: the extra is a bonus on top.';
-  const loose = (id, name, combo, short, what) => ({ id, name, size: (combo.inf || 0) + (combo.arc || 0) + (combo.cav || 0), combo, short: 'Any shape: ' + short,
+  const loose = (id, name, combo, short, what) => ({ id, name, size: (combo.inf || 0) + (combo.arc || 0) + (combo.cav || 0), combo, short: 'Any order: ' + short,
     desc: what + ', touching each other as one group, in any arrangement (a line, an L, a square: anything).' + X.replace('ID', id) });
   const exact = (id, name, shape, short, what) => ({ id, name, size: shape.join('').replace(/\./g, '').length, shape, short: 'Exact shape: ' + short,
     desc: what + ' Exactly as drawn, turned or mirrored any way.' + X.replace('ID', id) });
@@ -8087,7 +8150,8 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     { id: 'steward', name: 'Steward', rarity: 'common', role: 'boost', effect: { kind: 'home' }, step: 'mult',
       short: 'Home ×{N}', desc: 'A unit on its home terrain is ×{N} instead of ×{terrain.mult}.' },
     { id: 'drillmaster', name: 'Drillmaster', rarity: 'common', role: 'boost', effect: { kind: 'formPct' }, step: 'formation',
-      short: 'Formations +{N}×', desc: 'Every live formation counts {N} higher: a ×1.5 formation counts ×{X15}.' },
+      // 2026-10-27 (user: one notation, ×N): his number raises every formation's ×, so it reads "×1.5 → ×1.9"
+      short: 'Formations ×+{N}', desc: 'Every live formation\'s × is {N} higher: a ×1.5 formation counts ×{X15}.' },
     // PLAN 57: the placement boosters, each asking for its own layout (they took the places of
     // the plain "+N to a type" boosters above, which stay defined, `retired`, for saved pools)
     { id: 'marshal_centre', name: 'Marshal of the Centre', rarity: 'common', role: 'boost', effect: { kind: 'zone', zone: 'centre' }, step: 'mult',
@@ -8108,7 +8172,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       short: 'Officers ×{N}', desc: 'Officers give ×{N} at ranks 1-2 and ×{N1} at ranks 3-4, instead of their own factor.' },
     { id: 'siege_master', needs: 'engineer', name: 'Siege Master', rarity: 'uncommon', role: 'boost', effect: { kind: 'fort' }, step: 'mult',
       short: 'Forts ×{N}', desc: 'A unit on a fort is ×{N} instead of ×{fort.mult}.' },
-    { id: 'pike_master', name: 'Pike Master', rarity: 'uncommon', role: 'boost', effect: { kind: 'kinded' }, step: 'mult',
+    { id: 'pike_master', retired: true, name: 'Pike Master', rarity: 'uncommon', role: 'boost', effect: { kind: 'kinded' }, step: 'mult',
       short: 'Kinds ×{N}', desc: 'Every unit with a kind (Pikemen, Guards, Longbowmen, Marksmen, Light Horse, Knights) is ×{N}.' },
     { id: 'lord_horse', name: 'Lord of Horse', rarity: 'uncommon', role: 'boost', effect: { kind: 'typeMult', type: 'cav' }, step: 'mult',
       short: 'Cavalry ×{N}', desc: 'Every Cavalry unit on the board is ×{N}.' },
@@ -8119,7 +8183,9 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       short: 'Big formation: ×{N}', desc: 'The battle total is ×{N} if a live formation holds {generals.warlord.minUnits} or more units.' },
     { id: 'grand_marshal', name: 'Grand Marshal', rarity: 'rare', role: 'boost', effect: { kind: 'allTypes' }, step: 'battle',
       short: 'All arms: ×{N}', desc: 'The battle total is ×{N} if every type has a unit in a live formation.' },
-    { id: 'old_campaigner', name: 'Old Campaigner', rarity: 'rare', role: 'boost', effect: { kind: 'wins' }, step: 'battle',
+    // 2026-10-27 (user): retired: he grew with every battle won in the six, which makes exploring and
+    // pivoting feel bad; without the growth he is the Tactician (a saved pool keeps him as he was)
+    { id: 'old_campaigner', retired: true, name: 'Old Campaigner', rarity: 'rare', role: 'boost', effect: { kind: 'wins' }, step: 'battle',
       short: 'Battle ×{N}, growing', desc: 'The battle total is ×{N} now, and grows by {generals.old_campaigner.perWin} with every battle won while he is in your six.' }
   ];
   C.GENERAL_IDS = C.GENERALS.map((g) => g.id);
@@ -8167,7 +8233,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
 
   // The card kinds' own rules (templates as above).
   C.CARD_DESC = {
-    unit: 'Scores its value: its rank power, ×{terrain.mult} on its home terrain, ×{fort.mult} on a fort, × an officer\'s factor when one of its type reaches it, its traits, and the boosts of the generals in play. Formations taught by your generals add a bonus on top.',
+    unit: 'Scores its value: its rank power, ×{terrain.mult} on its home terrain, ×{fort.mult} on a fort, × an officer\'s factor when one of its type reaches it, and the boosts of the generals in play. Formations taught by your generals add a bonus on top.',
     officer: 'He takes a tile of his own and stands there as a unit of his type. He multiplies his type: every unit of his type in his area is × his factor, never himself. His area is not a formation: the two stack. He earns XP and ranks up.',
     engineer: 'Builds a fort on an empty tile; the tile stays free for a card. A unit standing on a fort is ×{fort.mult}. A fort is never part of a formation.',
     hero: 'A unit of its type that starts at rank {heroes.rank} and grows by itself (its rule). It fills a slot of its type in formations, earns XP and ranks up like a unit.'
@@ -8230,8 +8296,8 @@ var(--p2-cn) left top / 44px 44px no-repeat;
  * ==== API (what the UI may call; docs/P53-CORE4-API.md has the full list) ====================
  * Battle:   createBattle(opts) place(st, pick, slot) canPlace undo playable legalSlots
  *           turnsOf offerSizeOf blockedOf bossOf isHidden hiddenSlots drawPileList
- * Score:    score(st) -> {units: [{slot, kind, type, id?, value, parts, formations}],
- *                         formations: [{id, name, general, level, type?, slots, sum, pct, bonus, parts}],
+ * Score:    score(st) -> {units: [{slot, kind, type, id?, value, share, final, parts, formations}],
+ *                         formations: [{id, name, general, level, type?, slots, sum, pct, bonus, shares, parts}],
  *                         battle: [{id, factor}], unitsTotal, formationsTotal, subtotal, total}
  *           breakdown(st) -> {slot: {kind, type, id?, value, parts, steps: {base, flat, mult}, formations}}
  *           total(st) battleTotal(st) target(st) won(st)
@@ -8876,13 +8942,18 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       mults[i] = m;
       unitsTotal += v;
     }
-    // 4b the bonuses on the final values
+    // 4b the bonuses on the final values. PLAN 59 (2026-10-26, user): each member's share is
+    // rounded on its own (pct x its value x its weight), and an instance's bonus is the sum of its
+    // members' shares, so every point of a bonus belongs to a unit on the board.
     let formationsTotal = 0;
+    const shareOf = new Array(S).fill(0);
     const forms = chosen.map((c) => {
       const sum = c.slots.reduce((a, s) => a + val[s] * weight[s], 0);
-      const bonus = Math.round(c.pct * sum);
+      const shares = c.slots.map((s) => Math.round(c.pct * val[s] * weight[s]));
+      c.slots.forEach((s, k) => { shareOf[s] += shares[k]; });
+      const bonus = shares.reduce((a, b) => a + b, 0);
       formationsTotal += bonus;
-      return Object.assign(c, { sum, bonus });
+      return Object.assign(c, { sum, bonus, shares });
     });
     // 5 the battle generals, in their fixed order
     const subtotal = unitsTotal + formationsTotal, battle = [], gens = X.gens;
@@ -8895,7 +8966,13 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       if (tm === 7) battle.push({ id: 'grand_marshal', factor: gv('grand_marshal') });
     }
     if (gens.old_campaigner) battle.push({ id: 'old_campaigner', factor: gv('old_campaigner') + genNum(T, 'old_campaigner', 'perWin', 0.1) * gens.old_campaigner.wins });
-    const total = battle.length ? Math.round(subtotal * battle.reduce((a, b) => a * b.factor, 1)) : subtotal;
+    // PLAN 59: a unit's final value is its value and its formation shares under the battle
+    // factors, rounded on its own; the battle total is the sum of the final values (what the board
+    // shows adds up to the score)
+    const factor = battle.reduce((a, b) => a * b.factor, 1);
+    const fin = new Array(S).fill(0);
+    let total = 0;
+    for (let i = 0; i < S; i++) if (U[i]) { fin[i] = battle.length ? Math.round((val[i] + shareOf[i]) * factor) : val[i] + shareOf[i]; total += fin[i]; }
     if (!full) return total;
     const units = [];
     for (let i = 0; i < S; i++) {
@@ -8903,7 +8980,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       if (!u) continue;
       const parts = u.baseP.concat(u.flatP, mults[i]).map((x) => Object.assign({}, x));
       const rec = {
-        slot: i, kind: u.kind, type: TYPES[ty[i]], value: val[i], parts,
+        slot: i, kind: u.kind, type: TYPES[ty[i]], value: val[i], share: shareOf[i], final: fin[i], parts,
         steps: { base: u.base, flat: u.base + u.flat, mult: val[i] },
         formations: forms.filter((f) => f.mask & (1 << i)).map((f) => f.live.id)
       };
@@ -8916,7 +8993,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     const formations = forms.map((f) => {
       const r = {
         id: f.live.id, name: formDef(f.live.id).name, general: f.live.general, level: f.live.level,
-        slots: f.slots.slice(), sum: f.sum, pct: f.pct, bonus: f.bonus, parts: f.pparts.map((x) => Object.assign({}, x))
+        slots: f.slots.slice(), sum: f.sum, pct: f.pct, bonus: f.bonus, shares: f.shares.slice(), parts: f.pparts.map((x) => Object.assign({}, x))
       };
       const ts = new Set(f.slots.map((s) => cty[s]));
       if (ts.size === 1) r.type = TYPES[cty[f.slots[0]]];
@@ -9066,7 +9143,11 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     let pool = (T.officerShapes || ['cross']).filter((x) => SHAPES[x]);
     if (!pool.length) pool = ['cross'];
     const shapes = C.RNG.shuffle(C.RNG.seedFrom(seed, 'officerShapes'), pool).value;
-    (D.officers || []).forEach((type, k) => cards.push({ kind: 'officer', type, shape: shapes[k % shapes.length], rank: 1, xp: 0 }));
+    // an officer is a type ('inf'), its area then random; or (PLAN 59) {type, shape}, a fixed area
+    (D.officers || []).forEach((o, k) => {
+      const type = typeof o === 'string' ? o : o.type, shape = typeof o === 'object' && SHAPES[o.shape] ? o.shape : shapes[k % shapes.length];
+      cards.push({ kind: 'officer', type, shape, rank: 1, xp: 0 });
+    });
     const hp = C.HEROES, rule = D.heroes || {};
     const always = (rule.always || []).map((id) => hp.find((h) => h.id === id)).filter(Boolean);
     const rest = hp.filter((h) => always.indexOf(h) < 0);
@@ -9082,7 +9163,12 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     const kinds = Array.isArray(D.kinds) ? D.kinds : [];
     for (const t of TYPES) {
       const mine = kinds.filter((id) => { const d = (C.TRAITS || []).find((x) => x.id === id); return d && d.type === t; });
-      for (let k = 0; k < (D.units[t] || 0); k++) cards.push({ kind: 'unit', type: t, rank: 1, xp: 0, traits: k < mine.length ? [mine[k]] : [] });
+      // units[t]: a count of rank-1 units, or (PLAN 59) the counts at rank 1, 2, 3, ...
+      const byRank = Array.isArray(D.units[t]) ? D.units[t] : [D.units[t] || 0];
+      let k = 0;
+      byRank.forEach((n, r) => {
+        for (let j = 0; j < (n || 0); j++, k++) cards.push({ kind: 'unit', type: t, rank: r + 1, xp: xpAtRank(T, r + 1), traits: k < mine.length ? [mine[k]] : [] });
+      });
     }
     for (const c of leaderCards(seed, T, D)) cards.push(c);
     return cards.map((c, uid) => Object.assign({ uid }, c));
@@ -9254,20 +9340,22 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     let nx;
     try { nx = place(st, pick, slot); } catch (e) { return null; }
     const before = evalState(st), after = evalState(nx);
+    // PLAN 59: the preview speaks in final values (formation shares and battle factors in), the
+    // numbers the board shows
     const bv = {}, av = {};
-    for (const u of before.units) bv[u.slot] = u.value;
+    for (const u of before.units) bv[u.slot] = u.final;
     for (const u of after.units) av[u.slot] = u;
     const deltas = {};
     for (let i = 0; i < S; i++) {
       if (i === slot) continue;
-      const d = (av[i] ? av[i].value : 0) - (bv[i] || 0);
+      const d = (av[i] ? av[i].final : 0) - (bv[i] || 0);
       if (d !== 0) deltas[i] = d;
     }
     const had = {};
     for (const f of before.formations) had[instKey(f)] = 1;
     return {
       slot, card: resolvePick(st, pick).card, totalBefore: before.total, totalAfter: after.total,
-      gain: after.total - before.total, own: av[slot] ? av[slot].value : 0, deltas,
+      gain: after.total - before.total, own: av[slot] ? av[slot].final : 0, deltas,
       breakdown: av[slot] || null, formations: after.formations,
       newFormations: after.formations.filter((f) => !had[instKey(f)])
     };
@@ -9912,7 +10000,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       const genMax = R.generalMax == null ? 1 : R.generalMax;
       if (rnd() < (R.generalChance || 0) && out.filter((o) => o.kind === 'general').length < genMax) {
         const g = drawGeneral();
-        if (g) card = { kind: 'general', id: g.id, level: 1, rarity: g.rarity };
+        if (g) card = { kind: 'general', id: g.id, level: offerLevel(T, g, run.battle), rarity: g.rarity };
       }
       if (!card && rnd() < (R.leaderChance || 0) && leaders.length) {
         const kind = pickOf(leaders);
@@ -9945,9 +10033,18 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     return out;
   }
 
+  /** 2026-10-26 (user: formations keep pace late through level-ups, and a pivot costs nothing): a
+   *  formation general offered in the spoils after battle k joins at level 1 + the entries of
+   *  tun.run.teachOfferLevelAt (the first battles of each stage) at or below battle k + 1, the
+   *  battle he first fights; a booster always joins at level 1. */
+  function offerLevel(T, g, k) {
+    if (!g || g.role !== 'teach') return 1;
+    return 1 + (runTun(T).teachOfferLevelAt || []).filter((b) => k + 1 >= b).length;
+  }
+
   const upgradeDue = (run, k) => {
-    const every = runTun(tunOf(run)).upgradeEvery || 3;
-    return k % every === 0 && k < run.battles;
+    const every = runTun(tunOf(run)).upgradeEvery;
+    return every > 0 && k % every === 0 && k < run.battles;
   };
 
   /**
@@ -10087,7 +10184,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     if (run.generals.some((g) => g.id === opt.id)) throw new Error('general ' + opt.id + ' is already in the pool');
     const out = clone(run);
     const k = out.generals.findIndex((g) => g.id === replaceId);
-    out.generals[k] = { id: opt.id, level: 1, wins: 0 };
+    out.generals[k] = { id: opt.id, level: opt.level || 1, wins: 0 };
     out.log.push({ battle: run.battle, kind: 'general', added: opt.id, removed: replaceId, shown: offerShown(run) });
     return afterOffer(out);
   }
@@ -10193,7 +10290,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     battleSeed, targetFor, startRun, battleFor, endBattle, finishBattle: endBattle,
     pickPromote, refusePromote, pickOffer, pickGeneralOffer, refuseOffer, pickUpgrade, refuseUpgrade,
     upgradeEligible, removableOf, generalReplaceOf, arrivalPending, ackArrival, generalsIntroPending, ackGeneralsIntro, freshOrdersPending, ackFreshOrders,
-    retryBattle, attemptsOf, upgradeDue, upgradeStep, summary, deckList, placedUnitUids, rankForXp, xpForRank, offerRank,
+    retryBattle, attemptsOf, upgradeDue, upgradeStep, offerLevel, summary, deckList, placedUnitUids, rankForXp, xpForRank, offerRank,
     offerOptions, battleStats, isBoss, bossFor, startPool, dealtFor, dealRoundOf, freshDeal, migrate, laurels
   };
   if (typeof module !== 'undefined') module.exports = C.Run;
@@ -10517,8 +10614,43 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   /** The recipe of a kind's miniature (null for an unknown kind). */
   A.kindFigure = (kind) => KIND_REC[kind] || null;
   const kindOfP = (p) => { try { return C && typeof C.kindOf === 'function' ? C.kindOf(p) : null; } catch (e) { return null; } };
-  /** The recipe of hero `id` (card portrait and board figure). */
-  A.heroFigure = (id) => HERO_REC[id] || 'reward_officer_crown';
+  // PLAN 59 (2026-10-26, user): every figure reads as its type, on the cards and on the board:
+  // Cavalry rides a horse, Archers carry a bow, Infantry their weapon. The heroes' portraits and
+  // the officers' board figures get Core 4's own recipes (registered in the kit as 'c4h_<id>' and
+  // 'c4o_<type>'), each crested like the old ones; an officer keeps his banner on his back.
+  const ARMED = {
+    // heroes: Infantry on foot with his weapon, Archers with a bow, Cavalry mounted
+    marshal: { role: 'hero', crest: 'crown', fig: { armour: 'plate', tabard: 1, helmet: 'crowned', beard: 1, hair: '#6a4a2a', weapon: 'sword_up', shield: 'heater', cloak: '#6e1c22' } },
+    spearhead: { role: 'hero', crest: 'chevron', fig: { armour: 'plate', helmet: 'sallet', plume: '#b8322c', weapon: 'spear', shield: 'heater', cloak: '#1d335e' } },
+    bulwark: { role: 'hero', crest: 'tower', fig: { armour: 'plate', helmet: 'great', weapon: 'sword', shield: 'heater', shieldScale: 1.4, cloak: '#3a2c22' } },
+    huntsman: { role: 'hero', crest: 'stag', fig: { armour: 'leather', jerkin: '#5e6a4a', helmet: 'hat', hatCol: '#3f5a44', plume: '#e8e0cc', weapon: 'longbow', cloak: '#3f5a44' } },
+    skirmisher: { role: 'hero', crest: 'bolt', fig: { armour: 'leather', jerkin: '#5d4a2c', helmet: 'cap', weapon: 'bow_draw', cloak: '#5a3a1a' } },
+    dragoon: { role: 'commander', crest: 'dragon', mount: 'horse', coat: '#3a2c22', fig: { armour: 'plate', helmet: 'great', weapon: 'sword_up', cloak: '#3a0f12' } },
+    hussar: { role: 'commander', crest: 'horse', mount: 'horse', coat: '#9a6a44', fig: { armour: 'leather', jerkin: '#2f5391', helmet: 'hat', hatCol: '#2e241c', plume: '#f1e8d2', weapon: 'sword_up', cloak: '#1d335e' } },
+    vanguard: { role: 'commander', crest: 'flame', mount: 'horse', coat: '#86492a', fig: { armour: 'mail', helmet: 'sallet', plume: '#e7bf5c', weapon: 'lance', cloak: '#6e1c22' } }
+  };
+  const OFFICER_ARMED = {
+    inf: { role: 'hero', fig: { armour: 'mail', helmet: 'kettle', weapon: 'spear', pennant: 2 } },
+    arc: { role: 'hero', fig: { armour: 'leather', jerkin: '#5e6a4a', helmet: 'hat', hatCol: '#3f5a44', weapon: 'longbow', pennant: 2 } },
+    cav: { role: 'commander', mount: 'horse', coat: '#6a4128', fig: { armour: 'mail', helmet: 'kettle', weapon: 'lance', pennant: 2 } }
+  };
+  (function registerArmed() {
+    const R = TTF.Figures && TTF.Figures.recipes;
+    if (!R) return;
+    const base = (fig) => Object.assign({ folk: 'human', cloak: 1, pennant: 1, shield: null }, fig);
+    for (const id of Object.keys(ARMED)) {
+      const a = ARMED[id], h = ((C && C.HEROES) || []).find((x) => x.id === id);
+      R['c4h_' + id] = Object.assign({ name: h ? h.name : id, cls: 'hero', power: null }, a, { fig: base(a.fig) });
+    }
+    for (const t of Object.keys(OFFICER_ARMED)) {
+      const a = OFFICER_ARMED[t];
+      R['c4o_' + t] = Object.assign({ name: 'Officer', cls: 'hero', power: null }, a, { fig: base(a.fig) });
+    }
+  })();
+  /** The recipe of hero `id` (card portrait; on the board a hero stands as a unit of his type). */
+  A.heroFigure = (id) => (ARMED[id] && hasRec('c4h_' + id) ? 'c4h_' + id : HERO_REC[id] || 'reward_officer_crown');
+  /** The recipe of an officer's board figure (by the type he commands). */
+  const officerRec = (t) => (hasRec('c4o_' + t) ? 'c4o_' + t : OFFICER_REC);
   // PLAN 50 (H1): every hero is a typed rank-2 unit (docs/P50-HEROES-DRAFT.md §5: 6 infantry, 5
   // archers, 5 cavalry). The engine says which type (TTFCore4.heroType); this table is the
   // fallback for an engine (or a saved card) that does not.
@@ -10557,7 +10689,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   A.figureId = function figureId(p) {
     if (!p) return UNIT_REC.inf[0];
     if (p.kind === 'unit') return A.unitFigure(p.type, p.rank, kindOfP(p));
-    if (p.kind === 'officer' || p.kind === 'post') return OFFICER_REC;
+    if (p.kind === 'officer' || p.kind === 'post') return officerRec(p.kind === 'post' ? (p.officer && p.officer.type) || 'inf' : p.type);
     // PLAN 50: a hero stands as a unit of his type at his rank (his laurel marks him)
     if (p.kind === 'hero' || C.heroAbility(p)) return A.unitFigure(A.heroType(p), A.heroRank(p));
     return UNIT_REC.inf[0];
@@ -10945,7 +11077,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       if (p.officer) {
         const front = rank >= 3, ot = p.officer.type;
         const ox = r1(BCX + rx * (front ? 0.8 : 0.72)), oy = r1(front ? BCY + ry * 0.34 : BCY - ry * 0.55);
-        const op = soloFigures(OFFICER_REC, 'o' + seed, 'post', ox, oy, 0.8, OFFICER_CREST[ot], ot);
+        const op = soloFigures(officerRec(ot), 'o' + seed, 'post', ox, oy, 0.8, OFFICER_CREST[ot], ot);
         const hr = op.geo.rx * 0.92, ring = commandRing(rx, ry);
         const link = linkSvg(BCX + rx * 0.9, BCY + ry * 0.42 + RIM * 0.5, ox - hr * 0.2, oy - 1 + hr * RYK * 0.86 + 2.5);
         // the hex further back is drawn under the unit's base; in front, over it
@@ -10970,7 +11102,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       }
     } else if (kind === 'post') {
       const t = (p.officer && p.officer.type) || p.type;
-      const op = soloFigures(OFFICER_REC, seed, 'post', POST.ox, POST.oy, POST.k, OFFICER_CREST[t], t);
+      const op = soloFigures(officerRec(t), seed, 'post', POST.ox, POST.oy, POST.k, OFFICER_CREST[t], t);
       o.cx = POST.ox; o.cy = op.geo.cy; o.rx = op.geo.rx; o.ry = op.geo.ry;
       o.back = op.base + op.shadow;
       o.figs = op.figures;
@@ -11091,6 +11223,13 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     return open + o + '</svg>';
   };
   A.formationGlyph = A.formationDiagram;
+  /** PLAN 59 (2026-10-26, user): the word every formation symbol carries, ANY ORDER (a touching
+   *  group of the types, arranged any way) or EXACT SHAPE (the shape as drawn, turned or mirrored). */
+  A.formationKindHtml = function formationKindHtml(id) {
+    const f = formOf(id);
+    if (!f) return '';
+    return f.combo ? '<span class="fkind any">Any order</span>' : '<span class="fkind exact">Exact shape</span>';
+  };
   /** PLAN 55: a formation's small diagram under a teaching general (the battle screen): an exact
    *  shape as unit dots on its own tiles; an any-shape one as its loose dots in a dashed outline. */
   A.formationDots = function formationDots(id, cls) {
@@ -11645,7 +11784,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       let body = '<p class="dt-k">' + (d.role === 'teach' ? 'Teaches a formation' : 'Boost') + ' · ' + esc(d.rarity) + ' · level ' + lv + '</p>' + p(C.generalDesc(T, d.id, lv, item.general.wins));
       if (d.role === 'teach') {
         const f = find(C.FORMATIONS, d.effect.teach);
-        if (f) body += '<div class="dt-form">' + (TTF4.Art ? TTF4.Art.formationDiagram(f.id) : '') + '<div><b>' + esc(f.name) + '</b>' + p(fill(f.short + '. ' + f.desc, T)) + '</div></div>';
+        if (f) body += '<div class="dt-form">' + (TTF4.Art ? TTF4.Art.formationDiagram(f.id) : '') + '<div><b>' + esc(f.name) + '</b>' + (TTF4.Art ? TTF4.Art.formationKindHtml(f.id) : '') + p(fill(f.short + '. ' + f.desc, T)) + '</div></div>';
       }
       body += p('Next level: ' + levelLine(T, d.id, lv + 1) + '.');
       return { title: d.name, body };
@@ -11701,13 +11840,27 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     void cells;
     return '<svg class="shp" viewBox="0 0 56 56" aria-hidden="true">' + o + '</svg>';
   }
+  /** A placed unit's score, step by step (Board.unitLedger): each step's sources and the value after it. */
+  function scoreHtml(L) {
+    return '<div class="dsc"><p class="dt-k">How it scored</p><ol>' + L.rows.map((r) => '<li><span class="sc-g">' + esc(r.label) + '</span><span class="sc-x">' + esc(r.lines.join(' · ')) + '</span><b>' + r.v + '</b></li>').join('') +
+      '</ol><p class="sc-f">Final value <b>' + L.final + '</b></p></div>';
+  }
   /** The long-press panel's markup: the item's face (or the general's card) and its full text. */
   function detailHtml(item, opts) {
     const o = opts || {}, T = TUN(o.tun);
+    // 2026-10-27 (user): a line of the battle report, read after the battle: what it added, by whom
+    if (item.report) {
+      const L = item.report, sg = (d) => (d < 0 ? '−' + Math.abs(d) : '+' + d);
+      return '<div class="dt dt-rep"><div class="dt-text"><p class="dt-k">Battle report</p><h3>' + esc(L.label) + ' <b>' + sg(L.total) + '</b></h3>' +
+        (L.rows.length ? '<ul class="sc-l">' + L.rows.map((r) => '<li><span class="sc-n">' + esc(r.name) + (r.lines.length ? '<em>' + esc(r.lines.join(' · ')) + '</em>' : '') + '</span><b>' + sg(r.delta) + '</b></li>').join('') + '</ul>'
+          : '<p>Nothing in this step this battle.</p>') + '</div></div>';
+    }
     // a board tile's reading: its piece, then the officer commanding it, then its fort
     const blocks = [];
     if (item.general || item.formation || item.card) {
       const d = detailParts(item, T);
+      // 2026-10-27 (user): after the battle a placed unit first tells how its final value was built
+      if (item.score && item.card) d.body = scoreHtml(item.score) + d.body;
       const face = item.general ? generalHtml(item.general, { w: 300, tun: T }) : item.card ? faceHtml(item.card, { w: 210, tun: T }) : item.formation && TTF4.Art ? TTF4.Art.formationDiagram(item.formation, 'big') : '';
       blocks.push({ cls: item.general ? ' dt-gen' : '', face, title: d.title, body: d.body });
     }
@@ -11951,10 +12104,27 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     g.className = 'hdrag';
     g.style.left = '0px';
     g.style.top = '0px';
-    g.innerHTML = TTF4.Cards.faceHtml(st.offer[drag.i], { w: Math.round(curW * 0.62), ghost: true, tun: st.tun || C.TUN_DEFAULT });
+    // PLAN 59 (2026-10-26, user: on iPad the finger and the dragged card hid the tile's value
+    // coin): the dragged card carries the coin above its top edge, the value it would have on the
+    // tile under the finger (hidden off the board and for a card with no value of its own)
+    const card = st.offer[drag.i];
+    const ty = card.kind === 'hero' ? (C.heroTypeOf ? C.heroTypeOf(card) : card.type) : card.type;
+    g.innerHTML = TTF4.Cards.faceHtml(card, { w: Math.round(curW * 0.62), ghost: true, tun: st.tun || C.TUN_DEFAULT }) +
+      '<div class="hval" hidden><div class="val" data-type="' + (ty || 'inf') + '"><b data-n="1"></b></div></div>';
     zone.closest('.scr').appendChild(g);
     drag.ghost = g;
-    drag.legal = C.legalSlots(st, st.offer[drag.i]);
+    drag.legal = C.legalSlots(st, card);
+    drag.valSlot = undefined;
+  }
+  /** The dragged card's value coin for the tile under the finger (null: no legal tile). */
+  function dragValue(slot) {
+    const box = drag.ghost && drag.ghost.querySelector('.hval');
+    if (!box || drag.valSlot === slot) return;
+    drag.valSlot = slot;
+    const pr = slot == null ? null : C.predict(st, drag.i, slot);
+    const v = pr ? pr.own : 0;
+    box.hidden = !v;
+    if (v) { const b = box.querySelector('b'); b.textContent = v; b.dataset.n = String(v).length; }
   }
   // perf pass (2026-10-22): a move only notes the finger; once per frame the ghost follows it on
   // its own layer (a transform: no layout, no repaint of the board under it) and the tile under
@@ -11974,6 +12144,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     const legal = slot != null && drag.legal.indexOf(slot) >= 0;
     drag.slot = legal ? slot : null;
     B.hoverSlot(legal ? slot : null);
+    dragValue(drag.slot);
   }
 })();
 </script>
@@ -12027,6 +12198,8 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     swords: '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4.5 4.5 16 16M19.5 4.5 8 16"/><path d="M13.6 18.6 18.6 13.6M5.4 13.6l5 5"/></g></svg>',
     home: '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.2 12 3.5l9 7.7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.6 10v10.5h12.8V10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M10 20.5v-5.5h4v5.5" fill="currentColor"/></svg>',
     kind: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#c2-tr-guards"/></svg>',
+    // PLAN 59: the heroes' step of the battle report (a laurel round a star, as on a hero's medallion)
+    hero: '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 21.6C6 19.6 3.2 15.4 3.6 9.6M13 21.6c5-2 7.8-6.2 7.4-12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><g fill="currentColor"><ellipse cx="9.6" cy="20.2" rx="1.5" ry="3" transform="rotate(-70 9.6 20.2)"/><ellipse cx="6.3" cy="16" rx="1.5" ry="3" transform="rotate(-48 6.3 16)"/><ellipse cx="4.4" cy="11.2" rx="1.5" ry="3" transform="rotate(-20 4.4 11.2)"/><ellipse cx="14.4" cy="20.2" rx="1.5" ry="3" transform="rotate(70 14.4 20.2)"/><ellipse cx="17.7" cy="16" rx="1.5" ry="3" transform="rotate(48 17.7 16)"/><ellipse cx="19.6" cy="11.2" rx="1.5" ry="3" transform="rotate(20 19.6 11.2)"/><path d="M12 5.2 13.3 8l3 .3-2.3 2 .7 3-2.7-1.6-2.7 1.6.7-3-2.3-2 3-.3z"/></g></svg>',
     officer: '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 2.5V22" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M6.4 3.6c3.6-1.8 6.6 2 10.6 0 1.6-.8 3-.6 4 0v10c-1-.6-2.4-.8-4 0-4 2-7-1.8-10.6 0z" fill="currentColor"/></svg>',
     times: '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/></svg>',
     crown: '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18.5h18l-1.4-11-4.6 4.4L12 4.5 9 11.9 4.4 7.5z" fill="currentColor"/><rect x="3" y="19.5" width="18" height="2.2" rx="1" fill="currentColor"/></svg>',
@@ -12173,10 +12346,12 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     return { w, h, left: (Cl - w) / 2, top: foot - h * BASE_FRONT };
   }
   /** The board's markup. o: {skeleton (fit pass: empty stands on every tile), view: {sel card, legal, homes, ghost}} */
-  /** A unit's shown value (the reveal's while it runs) and its reveal pop. */
+  /** A unit's shown value (the reveal's while it runs) and its reveal pop. PLAN 59 (2026-10-26,
+   *  user): at rest it is the unit's final value, its formation shares and the battle factors in,
+   *  so the medallions add up to the score. */
   function standVal(i, bd) {
     const u = bd[i];
-    let v = u ? u.value : '', fire = '';
+    let v = u ? (u.final != null ? u.final : u.value) : '', fire = '';
     if (rv) { v = rv.vals[i] != null ? rv.vals[i] : v; fire = rv.fire[i] || ''; }
     return { v, fire };
   }
@@ -12346,7 +12521,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       const mul = lf ? Number((1 + lf.pct).toFixed(2)) : null;
       const n = formed[id] || 0;
       return '<div class="fdslot" style="width:' + genW() + 'px"><div class="fdg2' + (n ? ' on' : '') + (flare === id ? ' flare' : '') + '" data-gi="' + i + '" data-form="' + esc(id) + '">' +
-        Art.formationDots(id) + (mul != null ? '<b>×' + mul + '</b>' : '') + (n > 1 ? '<i>' + n + ' live</i>' : '') + '</div></div>';
+        Art.formationDots(id) + Art.formationKindHtml(id) + (mul != null ? '<b>×' + mul + '</b>' : '') + (n > 1 ? '<i>' + n + ' live</i>' : '') + '</div></div>';
     }).join('') + '</div>';
   }
 
@@ -12400,6 +12575,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     const bs = fitBoard(field, top, bottom);
     drawBoard(bs);
     if (rv) placeReport();
+    if (rv && rv.review) drawNext();
     // the land plays once: a later redraw (a hover, the next selection) does not drop it again
     if (fresh != null) { const f = fresh; setTimeout(() => { if (fresh === f) fresh = null; if (stage) stage.querySelectorAll('.stand.drop, .vb.drop').forEach((x) => x.classList.remove('drop')); }, 900); }
   };
@@ -12428,7 +12604,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
         try { gp = card.kind === 'engineer' ? null : C.pieceFor(st.pieces[hover] || null, card, st.turn, st.tun || C.TUN_DEFAULT); } catch (e) { gp = null; }
         ghost = { slot: hover, piece: st.pieces[hover] ? null : gp, own: card.kind === 'engineer' ? null : pr.own };
         deltas = Object.assign({}, pr.deltas || {});
-        if (st.pieces[hover] && pr.own != null) deltas[hover] = pr.own - ((lastScore.units.find((u) => u.slot === hover) || {}).value || 0);
+        if (st.pieces[hover] && pr.own != null) deltas[hover] = pr.own - ((lastScore.units.find((u) => u.slot === hover) || {}).final || 0);
         B.preview = pr;
       }
     } else B.preview = null;
@@ -13022,7 +13198,38 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     e.preventDefault();
     if (cb.onDetail) cb.onDetail(item);
   }
+  /** A placed piece in words for the report's lists: "Pikeman, row 2 column 3". */
+  function slotName(slot) {
+    const p = st && st.pieces[slot], side = Math.round(Math.sqrt((st && st.pieces.length) || 16)) || 4;
+    const card = p ? pieceItem(p).card : null;
+    return (card ? TTF4.Cards.nameOf(card) : 'Unit') + ', row ' + (Math.floor(slot / side) + 1) + ' column ' + (slot % side + 1);
+  }
+  /** 2026-10-27 (user): in the review a tap reads how the score was built: a unit (its steps), a
+   *  line of the battle report (what that step added), a general or a formation (its text). */
+  function reviewTap(e) {
+    const t = e.target;
+    if (!t || !t.closest || t.closest('[data-rv]') || !cb.onDetail || !st) return;
+    const sc = C.score(st);
+    const held = t.closest('.gens .g6, .gens .fdg2, .ftag');
+    if (held) { const item = cardItem(held); if (item) cb.onDetail(item); return; }
+    const lg = t.closest('.ledger .lg');
+    if (lg) {
+      const k = Array.prototype.indexOf.call(lg.parentNode.children, lg);
+      const L = GROUPS[k] ? groupLedger(sc, GROUPS[k].id, slotName) : null;
+      if (L) cb.onDetail({ report: L });
+      return;
+    }
+    const on = t.closest('.vb[data-slot], .stand[data-slot]');
+    const slot = on ? +on.dataset.slot : tileAt(e);
+    if (slot == null) return;
+    const item = tileItem(st, slot);
+    if (!item) return;
+    const L = unitLedger(sc, slot);
+    if (L) item.score = L;
+    cb.onDetail(item);
+  }
   function onClick(e) {
+    if (rv && rv.review) { reviewTap(e); return; }
     const a = e.target.closest && e.target.closest('[data-act]');
     if (a && stage.contains(a)) {
       const act = a.dataset.act;
@@ -13054,7 +13261,9 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     { id: 'base', label: 'Base power', icon: 'swords' },
     { id: 'flat', label: 'Flat bonuses', icon: 'boost' },
     { id: 'home', label: 'Home ground', icon: 'home', test: (q) => q.src === 'home' || q.src === 'fort' },
-    { id: 'kinds', label: 'Kinds & traits', icon: 'kind', test: (q) => /^(kind|trait|hero):/.test(q.src) },
+    // PLAN 59: no unit holds a kind or a trait any more, so this step is the heroes' own rules
+    // (a kind or trait on an old saved card still counts here)
+    { id: 'kinds', label: 'Heroes', icon: 'hero', test: (q) => /^(kind|trait|hero):/.test(q.src) },
     { id: 'officers', label: 'Officers', icon: 'officer', test: (q) => q.src === 'officer' },
     { id: 'generals', label: '× Generals', icon: 'times', test: () => true },
     { id: 'forms', label: 'Formations', icon: 'teach' },
@@ -13089,7 +13298,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     });
     const totals = [0, 1, 2, 3, 4, 5].map((k) => Object.keys(units).reduce((a, s) => a + units[s][k], 0));
     let running = totals[5];
-    const forms = sc.formations.map((f, n) => { running += f.bonus; return { n, id: f.id, general: f.general, bonus: f.bonus, running }; });
+    const forms = sc.formations.map((f, n) => { running += f.bonus; return { n, id: f.id, general: f.general, bonus: f.bonus, running, slots: f.slots, shares: f.shares }; });
     let sub = sc.subtotal != null ? sc.subtotal : running, fac = 1;
     const battle = (sc.battle || []).map((b, k, arr) => { fac *= b.factor; return { id: b.id, factor: b.factor, running: k === arr.length - 1 ? sc.total : roundHalfUp(sub * fac) }; });
     return { units, totals, forms, battle, total: sc.total };
@@ -13108,6 +13317,70 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     }));
     return Array.from(ids);
   }
+
+  /** A score part's source in words: "Rank 2", "Home ground (Steward)", "Warden of the Flanks". */
+  function srcName(q) {
+    const word = (src) => {
+      const m = /^(general|hero|kind|trait):(.+)$/.exec(src || '');
+      if (!m) return { rank: 'Rank ' + q.rank, home: 'Home ground', fort: 'Fort', officer: 'Officer' }[src] || src || '';
+      const d = m[1] === 'general' ? C.generalDef(m[2]) : m[1] === 'hero' ? (C.HEROES || []).find((h) => h.id === m[2]) : (C.TRAITS || []).find((t) => t.id === m[2]);
+      return (d && d.name) || m[2];
+    };
+    return word(q.src) + (q.via ? ' (' + word(q.via) + ')' : '');
+  }
+  const num = (v) => String(Number((+v).toFixed(2)));
+  /**
+   * 2026-10-27 (user): how a placed unit's final value was built (pure), in the battle report's
+   * steps: each step's sources in words and the value after it. Steps with nothing for the unit
+   * are left out. -> {rows: [{g, label, lines, v}], final} | null
+   */
+  function unitLedger(sc, slot) {
+    const u = sc.units.find((x) => x.slot === slot);
+    if (!u) return null;
+    const v = steps(sc).units[slot], ps = u.parts || [], rows = [];
+    const row = (g, lines, val) => { if (lines.length) rows.push({ g: GROUPS[g].id, label: GROUPS[g].label, lines, v: val }); };
+    row(0, ps.filter((q) => q.step === 'base').map((q) => (q.op === 'mul' ? '×' + num(q.v) + ' ' : '') + srcName(q)), v[0]);
+    row(1, ps.filter((q) => q.step === 'flat').map((q) => '+' + num(q.v) + ' ' + srcName(q)), v[1]);
+    const mults = ps.filter((q) => q.step === 'mult'), taken = new Set();
+    for (let g = 2; g <= 5; g++) {
+      const lines = [];
+      mults.forEach((q, k) => { if (!taken.has(k) && GROUPS[g].test(q)) { taken.add(k); lines.push('×' + num(q.v) + ' ' + srcName(q)); } });
+      row(g, lines, v[g]);
+    }
+    const fl = [];
+    sc.formations.forEach((f) => { const k = f.slots.indexOf(slot); if (k >= 0) fl.push('+' + (f.shares[k] || 0) + ' ' + f.name + ' (×' + num(1 + f.pct) + ')'); });
+    row(6, fl, u.value + (u.share || 0));
+    row(7, (sc.battle || []).map((b) => '×' + num(b.factor) + ' ' + srcName({ src: 'general:' + b.id })), u.final != null ? u.final : u.value);
+    return { rows, final: u.final != null ? u.final : u.value };
+  }
+  B.unitLedger = unitLedger;
+  /**
+   * 2026-10-27 (user): what one step of the battle report added (pure): each unit's gain in it
+   * with its sources (named by `nameOf(slot)`), each formation's bonus, or each battle general's
+   * factor and gain. -> {label, total, rows: [{name, lines, delta}]}
+   */
+  function groupLedger(sc, gid, nameOf) {
+    const g = GROUPS.findIndex((x) => x.id === gid);
+    if (g < 0) return null;
+    const S = steps(sc), rows = [];
+    let total = 0;
+    if (g <= 5) {
+      sc.units.forEach((u) => {
+        const d = S.units[u.slot][g] - (g ? S.units[u.slot][g - 1] : 0);
+        if (!d) return;
+        const r = (unitLedger(sc, u.slot).rows.find((x) => x.g === gid) || { lines: [] });
+        rows.push({ name: nameOf(u.slot), lines: r.lines, delta: d });
+        total += d;
+      });
+    } else if (g === 6) {
+      sc.formations.forEach((f) => { rows.push({ name: f.name, lines: ['×' + num(1 + f.pct) + ' on its ' + f.slots.length + ' units'], delta: f.bonus }); total += f.bonus; });
+    } else {
+      let prev = S.totals[5] + sc.formations.reduce((a, f) => a + f.bonus, 0);
+      S.battle.forEach((b) => { rows.push({ name: srcName({ src: 'general:' + b.id }), lines: ['×' + num(b.factor) + ' the battle total'], delta: b.running - prev }); total += b.running - prev; prev = b.running; });
+    }
+    return { label: GROUPS[g].label, total, rows };
+  }
+  B.groupLedger = groupLedger;
 
   /**
    * PLAN 55: the reveal's beats (pure). The step order stays (base, flat, the mult groups, the
@@ -13133,18 +13406,28 @@ var(--p2-cn) left top / 44px 44px no-repeat;
         out.push({ kind: 'unit', g, slot: x.slot, from: x.from, to: x.to, delta: x.to - x.from, total, j, of: items.length });
       });
     }
+    // PLAN 59: each formation adds its members' shares to their medallions (vals: the members'
+    // values after it, adds: their shares); each battle factor sets every medallion to its value
+    // under the factors so far (the last one: the final values), the running total their sum
+    const cur = {};
+    slots.forEach((s) => { cur[s] = S.units[s][5]; });
     const forms = S.forms.slice().sort((a, b) => a.bonus - b.bonus || a.n - b.n);
     forms.forEach((f, j) => {
       total += f.bonus;
-      out.push({ kind: 'form', g: 6, n: f.n, id: f.id, general: f.general, delta: f.bonus, total, j, of: forms.length });
+      const vals = {}, adds = {};
+      (f.slots || []).forEach((s, k) => { const d = (f.shares || [])[k] || 0; cur[s] += d; vals[s] = cur[s]; adds[s] = d; });
+      out.push({ kind: 'form', g: 6, n: f.n, id: f.id, general: f.general, delta: f.bonus, total, j, of: forms.length, vals, adds });
     });
-    const sub = sc.subtotal != null ? sc.subtotal : total;
+    const finals = {};
+    sc.units.forEach((u) => { finals[u.slot] = u.final != null ? u.final : u.value; });
     const bat = S.battle.map((b, k) => Object.assign({ k }, b)).sort((a, b) => a.factor - b.factor || a.k - b.k);
     let fac = 1;
     bat.forEach((b, j) => {
       fac *= b.factor;
-      const t = j === bat.length - 1 ? sc.total : roundHalfUp(sub * fac);
-      out.push({ kind: 'battle', g: 7, k: b.k, id: b.id, factor: b.factor, delta: t - total, total: t, j, of: bat.length });
+      const last = j === bat.length - 1, vals = {};
+      slots.forEach((s) => { vals[s] = last ? finals[s] : roundHalfUp(cur[s] * fac); });
+      const t = last ? sc.total : slots.reduce((a, s) => a + vals[s], 0);
+      out.push({ kind: 'battle', g: 7, k: b.k, id: b.id, factor: b.factor, delta: t - total, total: t, j, of: bat.length, vals });
       total = t;
     });
     return { S, beats: out, total: sc.total };
@@ -13224,6 +13507,8 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       hit: !calm && b.delta > 0 ? (b.delta === maxGain ? 'shake' : j === forms.length - 1 ? 'punch' : '') : '',
       do: (fin) => {
         base({ cur: 6, formOn: b.n, formPop: fin ? 0 : b.delta });
+        Object.assign(rv.vals, b.vals || {});
+        if (!fin) Object.keys(b.adds || {}).forEach((s) => { if (b.adds[s]) rv.fire[s] = '+' + b.adds[s]; });
         rv.formDone[b.n] = true;
         rv.total = b.total; rv.delta = b.delta;
         genFired[b.general] = true; rv.genOn = b.general;
@@ -13237,6 +13522,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       ms: calm ? 600 : 700, full: true, tween: true, hit: calm ? '' : b.delta === maxGain ? 'shake' : 'punch',
       do: () => {
         base({ cur: 7, formOn: -1 });
+        Object.assign(rv.vals, b.vals || {});
         rv.total = b.total; rv.delta = b.delta;
         genFired[b.id] = true; rv.genOn = b.id;
         rv.ledger[7].v = fmt(b.total - afterForms);
@@ -13244,7 +13530,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     }));
     if (!bat.length) plan.push({ ms: 0, do: () => { rv.formOn = -1; rv.ledger[7].v = '–'; rv.cur = 7; } });
     // the final slam holds long enough to be seen before the end plate covers it (2026-10-22)
-    plan.push({ ms: calm ? 1200 : 1900, full: true, end: true, do: () => { base({ total: S.total, delta: 0, formOn: -1, cur: 8 }); rv.end = true; } });
+    plan.push({ ms: calm ? 1200 : 1900, full: true, end: true, do: () => { base({ total: S.total, delta: 0, formOn: -1, cur: 8 }); sc.units.forEach((u) => { rv.vals[u.slot] = u.final != null ? u.final : u.value; }); rv.end = true; } });
     // about 4-9 s before the final total, longer with more to show; no beat is squeezed below
     // BEAT_MIN, so each pop can be seen (2026-10-22: the old 4 s cap left 60-130 ms beats). Tap skips.
     const BEAT_MIN = 200;
@@ -13419,13 +13705,28 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       if (stage) stage.removeEventListener('pointerdown', onSkip, true);
       boomEls.forEach((x) => x.remove());
       boomEls = [];
+      if (rv) { rv.review = false; rv.onNext = null; }
+      if (root) root.querySelectorAll('.rvnext').forEach((x) => x.remove());
       resolve();
     }
+    /** 2026-10-27 (user): the tap on the landed total clears it off the board and leaves the
+     *  finished battle to read: a unit, a general or a line of the report tells how the score was
+     *  built (onReviewTap), until Next battle (or Continue, after a loss) goes on to the end plate. */
+    function review() {
+      waiting = false;
+      if (stage) stage.removeEventListener('pointerdown', onSkip, true);
+      boomEls.forEach((x) => x.remove());
+      boomEls = [];
+      Object.assign(rv, { review: true, won, onNext: close });
+      drawNext();
+    }
     // a tap in the count skips to the landed total; a tap on the landed total (once it has had a
-    // moment to land, so the skipping tap's twin does not close it) continues. No timer closes it.
+    // moment to land, so the skipping tap's twin does not close it) clears it for the review; the
+    // keyboard's skip in the review goes on. No timer closes it.
     function tap() {
       if (!ended) finish(false);
-      else if (waiting && performance.now() - landedAt > 600) close();
+      else if (waiting && performance.now() - landedAt > 600) review();
+      else if (rv && rv.review) close();
     }
     function onSkip(e) { if (e.target.closest && e.target.closest('.c2-ov')) return; tap(); }
     stage.addEventListener('pointerdown', onSkip, true);
@@ -13447,6 +13748,21 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       return '<div class="lg ' + l.state + '"><span class="li">' + ICO[g.icon] + '</span><span class="ln">' + esc(g.label) + '</span><b>' + esc(l.v) + '</b>' +
         (l.state === 'done' ? '<span class="ok">' + ICO.check + '</span>' : '') + '</div>';
     }).join('');
+  }
+  /** The review's bar (2026-10-27): its hint and Next battle, in the gap over the board. */
+  function drawNext() {
+    if (!root || !rv || !rv.review) return;
+    root.querySelectorAll('.rvnext').forEach((x) => x.remove());
+    const bar = document.createElement('div');
+    bar.className = 'rvnext';
+    bar.innerHTML = '<span>Tap a unit or a line of the report to see how it scored</span>' +
+      '<button type="button" class="b4 primary" data-rv="next">' + (rv.won ? 'Next battle' : 'Continue') + '</button>';
+    root.appendChild(bar);
+    bar.querySelector('button').addEventListener('click', () => { if (rv && rv.onNext) rv.onNext(); });
+    const rim = stage.querySelector('.rim'), gens = stage.querySelector('.gens');
+    if (!rim || !gens) return;
+    const r = loc(rim.getBoundingClientRect()), g = loc(gens.getBoundingClientRect());
+    bar.style.top = Math.round(Math.max(g.b + 4, (g.b + r.t - bar.offsetHeight) / 2)) + 'px';
   }
   function placeReport() {
     const rim = stage.querySelector('.rim'), rep = stage.querySelector('.report');
@@ -13552,27 +13868,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     });
     setTimeout(() => pile.remove(), 1600);
   }
-  /** Polish round 2: the end plate's total counts up from 0 with the plate's glow, then bumps; at
-   *  rest it is the engine's total. Reduced motion (or a hidden page): shown at once. */
-  function countUp(ov) {
-    const end = ov.querySelector('.end'), b = end && end.querySelector('.tot b');
-    const to = b ? +b.textContent : NaN;
-    if (!b || still() || !(to > 0)) return;
-    b.style.minWidth = b.offsetWidth + 'px';     // the final width, so "of N" never shifts
-    end.classList.add('counting');
-    b.textContent = '0';
-    const t0 = performance.now() + 240, dur = Math.min(900, 420 + to * 4);
-    const step = (t) => {
-      if (!b.isConnected) return;
-      const q = Math.max(0, Math.min(1, (t - t0) / dur));
-      b.textContent = String(Math.round(to * (1 - Math.pow(1 - q, 3))));
-      if (q < 1) { requestAnimationFrame(step); return; }
-      b.textContent = String(to);
-      end.classList.remove('counting');
-      end.classList.add('counted');
-    };
-    requestAnimationFrame(step);
-  }
+
   function close(entry) {
     const k = stack.indexOf(entry);
     if (k < 0) return;
@@ -13702,13 +13998,12 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     const html = '<div class="plate end ' + (r.won ? 'won' : 'lost') + (promos.length >= 4 ? ' wide' : '') + '">' +
       '<p class="kick">' + (r.boss ? 'Boss battle ' : 'Battle ') + r.battle + '</p>' +
       '<h2>' + (r.won ? 'Victory' : 'Defeat') + '</h2>' +
-      '<div class="tot"><b>' + r.total + '</b><span>of ' + r.target + '</span></div>' +
+      // 2026-10-27 (user): no total here: the reveal has just shown it; the plate is the promotions
       (r.won ? '<p class="say">' + (r.xpUnits ? 'Every unit, hero and officer on the field earns XP.' : '') + (r.runWon ? ' The campaign is won!' : '') + '</p>'
         : '<p class="say">' + (r.target - r.total) + ' short. ' + (r.freshNext ? 'Fight it again with fresh orders: the same field, three generals dealt anew, a new shuffle.' : 'Fight it again: the same field, a new shuffle. The same generals for two retries; then fresh orders.') + '</p>') +
       (promos.length ? '<h4>Promoted</h4><div class="prow' + (promos.length >= 4 ? ' two' : '') + '">' + promos.map((p) => Cards().rowHtml(p.card, Object.assign({ tun: T }, promoWords(p)))).join('') + '</div>' : '') +
       '<div class="acts">' + (r.won ? btn('continue', 'Continue', 'primary') : btn('retry', 'Retry the battle', 'primary') + btn('quit', 'Quit campaign', 'quiet')) + '</div></div>';
     const entry = open('end', html);
-    countUp(entry.ov);
     bindLong(entry.ov, '.prow .c4row', (el, i) => (promos[i] ? { card: promos[i].card } : null), T, true);
     onAct(entry, (act) => { close(entry); cb(act); });
     return entry;
@@ -13763,63 +14058,67 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     const C = Core(), R = C.Run, T = tunOf(run);
     const options = (run.offer && run.offer.options) || [];
     const optHtml = (o, i) => '<button type="button" class="pk opt" data-i="' + i + '">' +
-      (o.kind === 'general' ? Cards().generalHtml(o, { w: 210, tun: T }) + '<span class="tagn">New general</span>' : Cards().faceHtml(o, { w: 176, tun: T }) + '<span class="tagn">' + esc(kindWord(o)) + '</span>') + '</button>';
-    const step1 = '<div class="plate wide spoils"><p class="kick">Battle ' + run.battle + ' won</p><h2>Spoils of victory</h2>' +
-      '<p class="say">Take one: a card joins your deck in place of one of yours, or a general joins your six in place of one of them.</p>' +
+      (o.kind === 'general' ? Cards().generalHtml(o, { w: 210, tun: T }) + '<span class="tagn">New general' + ((o.level || 1) > 1 ? ' · level ' + o.level : '') + '</span>' : Cards().faceHtml(o, { w: 176, tun: T }) + '<span class="tagn">' + esc(kindWord(o)) + '</span>') + '</button>';
+    // 2026-10-27 (user, playtest feedback): one screen, not two steps. The offers sit on top and the
+    // three that would make way below them, so the choice is made knowing what leaves: a card offer
+    // shows the deck cards that may leave, a general offer the generals of the six that may leave.
+    const leaving = {
+      card: R.removableOf(run).map((u) => run.deck.find((c) => c.uid === u)).filter(Boolean),
+      general: R.generalReplaceOf(run).map((id) => (run.generals || []).find((g) => g.id === id)).filter(Boolean)
+    };
+    const outHtml = (gen) => (gen ? leaving.general : leaving.card).map((x, k) => '<button type="button" class="pk rp" data-k="' + k + '">' +
+      (gen ? Cards().generalHtml(x, { w: 200, tun: T }) : Cards().faceHtml(x, { w: Cards().MIN_FACE, tun: T }) + xpHtml(x, T)) + '</button>').join('');
+    const outHead = (gen) => gen ? 'One of these generals leaves your six' : 'One of these cards leaves your deck';
+    let gen = options.length > 0 && options.every((o) => o.kind === 'general'), choice = null, repl = null;
+    const html = '<div class="plate wide spoils"><p class="kick">Battle ' + run.battle + ' won</p><h2>Spoils of victory</h2>' +
+      '<p class="say">Take one, and choose which of yours makes way for it.</p>' +
       '<div class="orow">' + options.map(optHtml).join('') + '</div>' +
+      '<h4 class="outh">' + outHead(gen) + '</h4>' +
+      '<div class="grow outs">' + outHtml(gen) + '</div>' +
+      // 2026-10-26 (user): the deck's tally under a card swap; picking both shows the result
+      '<div class="swtally"' + (gen ? ' hidden' : '') + '>' + tallyHtml(C.Run.deckList(run)) + '</div>' +
       '<p class="say small holdhint">Press and hold a card or general to read what it does.</p>' +
-      '<div class="acts">' + btn('refuse', 'Take nothing', 'quiet') + btn('deck', 'Your deck', 'quiet') + '</div></div>';
-    const entry = open('offer', step1, { deal: '.orow > .pk' });
+      '<div class="acts">' + btn('swap', 'Swap', 'primary', true) + btn('refuse', 'Take nothing', 'quiet') + btn('deck', 'Your deck', 'quiet') + '</div></div>';
+    const entry = open('offer', html, { deal: '.orow > .pk' });
     bindLong(entry.ov, '.opt', (el) => { const o = options[+el.dataset.i]; return o.kind === 'general' ? { general: o } : { card: o }; }, T);
-    let step = 1, choice = null, repl = null;
-    function showReplace(i) {
-      step = 2; choice = i; repl = null;
-      const o = options[i], gen = o.kind === 'general';
-      const list = gen ? R.generalReplaceOf(run).map((id) => (run.generals || []).find((g) => g.id === id)).filter(Boolean)
-        : R.removableOf(run).map((u) => run.deck.find((c) => c.uid === u)).filter(Boolean);
-      const items = list.map((x, k) => '<button type="button" class="pk rp" data-k="' + k + '">' + (gen ? Cards().generalHtml(x, { w: 210, tun: T }) : Cards().faceHtml(x, { w: Cards().MIN_FACE, tun: T }) + xpHtml(x, T)) + '</button>').join('');
-      entry.ov.querySelector('.ov-body').innerHTML = '<div class="plate wide spoils rep"><p class="kick">Spoils of victory</p>' +
-        '<div class="taking">' + (gen ? Cards().generalHtml(o, { w: 200, tun: T }) : Cards().faceHtml(o, { w: Cards().MIN_FACE, tun: T })) +
-        '<div><h2>' + (gen ? 'Which general leaves?' : 'Which card leaves?') + '</h2><p class="say">' +
-        (gen ? esc(find(C.GENERALS, o.id).name) + ' joins your six at level 1. One of these three makes way.' : esc(Cards().nameOf(o)) + ' joins your deck. One of these three makes way.') + '</p></div></div>' +
-        '<div class="grow">' + items + '</div>' +
-        // 2026-10-26 (user): the deck's tally under a card swap; picking the card that leaves shows the result
-        (gen ? '' : '<div class="swtally">' + tallyHtml(C.Run.deckList(run)) + '</div>') +
-        '<p class="say small holdhint">Press and hold a card or general to read what it does.</p>' +
-        '<div class="acts">' + btn('swap', 'Swap', 'primary', true) + btn('back', 'Back', 'quiet') + '</div></div>';
-      Cards().fit(entry.ov);
+    bindLong(entry.ov, '.rp', (el) => { const x = (gen ? leaving.general : leaving.card)[+el.dataset.k]; return gen ? { general: x } : { card: x }; }, T);
+    const q = (s) => entry.ov.querySelector(s);
+    function paint() {
+      entry.ov.querySelectorAll('.opt').forEach((x) => x.classList.toggle('is-sel', +x.dataset.i === choice));
+      entry.ov.querySelectorAll('.rp').forEach((x) => x.classList.toggle('is-sel', +x.dataset.k === repl));
+      const ok = q('[data-act="swap"]'), o = choice != null ? options[choice] : null;
+      ok.disabled = !(o && repl != null);
+      ok.textContent = o && repl != null ? 'Take ' + (o.kind === 'general' ? find(C.GENERALS, o.id).name : Cards().nameOf(o)) : 'Swap';
+      const box = q('.swtally');
+      box.hidden = gen;
+      const deck = C.Run.deckList(run);
+      box.innerHTML = !gen && o && repl != null ? tallyHtml(deck, deck.filter((c) => c.uid !== leaving.card[repl].uid).concat([o])) : tallyHtml(deck);
       fitBody(entry.ov);
-      entry.list = list; entry.gen = gen;
     }
-    bindLong(entry.ov, '.rp', (el) => { const x = entry.list[+el.dataset.k]; return entry.gen ? { general: x } : { card: x }; }, T);
-    // PLAN 56: the incoming card at the top of the replace step reads on a hold (or a tap: a tap does nothing else there)
-    bindLong(entry.ov, '.taking > .g6, .taking > .c2-card', () => { const o = choice != null ? options[choice] : null; return !o ? null : o.kind === 'general' ? { general: o } : { card: o }; }, T, true);
-    function backTo1() { step = 1; entry.ov.querySelector('.ov-body').innerHTML = step1; Cards().fit(entry.ov); fitBody(entry.ov); }
     entry.ov.addEventListener('click', (e) => {
       if (e.target.closest('[data-act]')) return;
       const pk = e.target.closest('.pk');
       if (!pk) return;
-      if (step === 1 && pk.classList.contains('opt')) { showReplace(+pk.dataset.i); return; }
-      if (step === 2 && pk.classList.contains('rp')) {
-        repl = +pk.dataset.k;
-        entry.ov.querySelectorAll('.rp').forEach((x) => x.classList.toggle('is-sel', +x.dataset.k === repl));
-        const ok = entry.ov.querySelector('[data-act="swap"]');
-        ok.disabled = false;
-        const box = entry.ov.querySelector('.swtally');
-        if (box) {
-          const deck = C.Run.deckList(run), out = entry.list[repl];
-          box.innerHTML = tallyHtml(deck, deck.filter((c) => c.uid !== out.uid).concat([options[choice]]));
+      if (pk.classList.contains('opt')) {
+        choice = +pk.dataset.i;
+        const g = options[choice].kind === 'general';
+        // a general offer swaps the lower row for the generals that may leave (and back)
+        if (g !== gen) {
+          gen = g; repl = null;
+          q('.outh').textContent = outHead(gen);
+          q('.outs').innerHTML = outHtml(gen);
+          Cards().fit(entry.ov);
+          fitBody(entry.ov);
         }
-      }
+      } else if (pk.classList.contains('rp')) repl = +pk.dataset.k;
+      paint();
     });
     onAct(entry, (act) => {
       if (act === 'refuse') { close(entry); cb({ refuse: true }); }
       else if (act === 'deck') S.deckView(run);
-      else if (act === 'back') backTo1();
-      else if (act === 'swap' && repl != null) {
-        const x = entry.list[repl];
+      else if (act === 'swap' && choice != null && repl != null) {
         close(entry);
-        cb(entry.gen ? { index: choice, replaceId: x.id } : { index: choice, removeUid: x.uid });
+        cb(gen ? { index: choice, replaceId: leaving.general[repl].id } : { index: choice, removeUid: leaving.card[repl].uid });
       }
     });
     return entry;
@@ -13895,10 +14194,15 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   S.deckView = function deckView(run) {
     const C = Core(), T = tunOf(run), K = Cards();
     const list = C.Run.deckList(run);
-    // every card on its own (each copy's XP and traits), identical copies kept side by side
-    const sigs = [];
-    list.forEach((c) => { const sig = K.sigOf(c); if (sigs.indexOf(sig) < 0) sigs.push(sig); });
-    const groups = list.map((c, j) => ({ card: c, n: 1, cards: [c], at: sigs.indexOf(K.sigOf(c)) * 1000 + j }));
+    // 2026-10-27 (user): identical cards (the same type and rank, the same hero, officer shape...)
+    // stack as one face with its count; a tap on a stack shows each copy with its own XP
+    const sigs = [], groups = [];
+    list.forEach((c) => {
+      const sig = K.sigOf(c);
+      let k = sigs.indexOf(sig);
+      if (k < 0) { k = sigs.push(sig) - 1; groups.push({ card: c, n: 0, cards: [], at: k }); }
+      groups[k].cards.push(c); groups[k].n++;
+    });
     let tab = 'cards';
     let sort = SORTS.some((x) => x[0] === prefs.get('deckSort')) ? prefs.get('deckSort') : 'type';
     let look = prefs.get('deckLook') === 'list' ? 'list' : 'cards';
@@ -13910,6 +14214,12 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       const x = K.xpOf(c.kind === 'hero' ? Object.assign({}, c, { rank: c.rank || (T.heroes && T.heroes.rank) || 2 }) : c, T);
       return Object.assign({}, w, { more: [x.next == null ? 'Top rank' : x.text].concat(w.more ? [w.more] : []).join(' · ') });
     };
+    const stackWords = (g) => {
+      const w = deckWords(g.card, T);
+      if (['unit', 'hero', 'officer'].indexOf(g.card.kind) < 0) return w;
+      const xs = g.cards.map((c) => K.xpOf(c.kind === 'hero' ? Object.assign({}, c, { rank: c.rank || (T.heroes && T.heroes.rank) || 2 }) : c, T));
+      return Object.assign({}, w, { more: xs[0].next == null ? 'Top rank' : 'XP ' + xs.map((x) => x.xp + '/' + x.next).join(', ') });
+    };
     const pill = (act, key, on, label) => '<button type="button" class="ds' + (on ? ' on' : '') + '" data-act="' + act + '" data-' + act + '="' + key + '" aria-pressed="' + on + '">' + label + '</button>';
     const frame = () => '<div class="plate wide deckv"><div class="tabs">' +
       '<button type="button" class="tb' + (tab === 'cards' ? ' on' : '') + '" data-act="cards">Your deck · ' + list.length + '</button>' +
@@ -13920,16 +14230,27 @@ var(--p2-cn) left top / 44px 44px no-repeat;
           ((shown = sortGroups(groups, sort, T)), look === 'cards'
             // each card's face at its readable size with its XP under it; the grid scrolls inside
             // the plate (capGrid) rather than the plate shrinking past reading
-            ? '<div class="dgrid">' + shown.map((g, i) => '<div class="dc" data-i="' + i + '">' + K.faceHtml(g.card, { w: K.MIN_FACE, tun: T }) + xpHtml(g.card, T) + '</div>').join('') + '</div>'
-            // or a compact row per card (its portrait and number, its words and XP in full)
-            : '<div class="dlist">' + shown.map((g, i) => K.rowHtml(g.card, Object.assign({ tun: T, attrs: { 'data-i': i } }, rowWords(g.card)))).join('') + '</div>') +
-          '<p class="say small">Press and hold a card to read it.</p>'
+            ? '<div class="dgrid">' + shown.map((g, i) => g.n > 1
+              ? '<div class="dc stk" data-i="' + i + '" data-stk="1">' + K.faceHtml(g.card, { w: K.MIN_FACE, tun: T }) + '<b class="dstk-n">×' + g.n + '</b><span class="dstk-t">Tap to see each</span></div>'
+              : '<div class="dc" data-i="' + i + '">' + K.faceHtml(g.card, { w: K.MIN_FACE, tun: T }) + xpHtml(g.card, T) + '</div>').join('') + '</div>'
+            // or a compact row per card (its portrait and number, its words and XP in full); a stack's
+            // row has its count and every copy's XP
+            : '<div class="dlist">' + shown.map((g, i) => g.n > 1
+              ? K.rowHtml(g.card, Object.assign({ tun: T, n: g.n, attrs: { 'data-i': i, 'data-stk': 1 } }, stackWords(g)))
+              : K.rowHtml(g.card, Object.assign({ tun: T, attrs: { 'data-i': i } }, rowWords(g.card)))).join('') + '</div>') +
+          '<p class="say small">Tap a stack to see each card. Press and hold a card to read it.</p>'
         : '<div class="gpool">' + (run.generals || []).map((g, i) => '<div class="gp" data-g="' + i + '">' + K.generalHtml(g, { w: 216, tun: T }) + '<p>' + esc(C.generalDesc(T, g.id, g.level || 1, g.wins)) + '</p></div>').join('') + '</div>' +
           '<p class="say small">Each battle deals three of them.</p>') +
       '<div class="acts">' + btn('close', 'Close', 'primary') + '</div></div>';
     const entry = open('deck', frame(), { onEsc: () => close(entry) });
     capGrid(entry.ov);
-    bindLong(entry.ov, '.dlist .c4row, .dgrid .dc', (el) => ({ card: shown[+el.dataset.i].card }), T, true);
+    bindLong(entry.ov, '.dlist .c4row:not([data-stk]), .dgrid .dc:not([data-stk])', (el) => ({ card: shown[+el.dataset.i].card }), T, true);
+    // a stack reads its card on a long press; a tap opens it (bindLong swallows the long press's click)
+    bindLong(entry.ov, '.dlist .c4row[data-stk], .dgrid .dc[data-stk]', (el) => ({ card: shown[+el.dataset.i].card }), T, false);
+    entry.ov.addEventListener('click', (e) => {
+      const el = e.target.closest && e.target.closest('[data-stk]');
+      if (el && entry.ov.contains(el) && tab === 'cards') S.stackView(shown[+el.dataset.i].cards, T);
+    });
     bindLong(entry.ov, '.gp', (el) => ({ general: run.generals[+el.dataset.g] }), T, true);
     onAct(entry, (act, el) => {
       if (act === 'sort') { sort = el.dataset.sort; prefs.set('deckSort', sort); }
@@ -13938,6 +14259,19 @@ var(--p2-cn) left top / 44px 44px no-repeat;
       if (act === 'cards' || act === 'generals' || act === 'sort' || act === 'look') { entry.ov.querySelector('.ov-body').innerHTML = frame(); Cards().fit(entry.ov); capGrid(entry.ov); }
     });
     onAct(entry, (act) => { if (act === 'close') close(entry); });
+    return entry;
+  };
+
+  /** 2026-10-27 (user): a stack of identical cards opened from the deck view: each copy with its XP. */
+  S.stackView = function stackView(cards, T) {
+    const K = Cards(), c0 = cards[0];
+    const html = '<div class="plate wide stackv"><p class="kick">Your deck</p><h2>' + esc(K.nameOf(c0)) + ' ×' + cards.length + '</h2>' +
+      '<div class="dgrid">' + cards.map((c, i) => '<div class="dc" data-i="' + i + '">' + K.faceHtml(c, { w: K.MIN_FACE, tun: T }) + xpHtml(c, T) + '</div>').join('') + '</div>' +
+      '<p class="say small">Press and hold a card to read it.</p><div class="acts">' + btn('back', 'Back', 'primary') + '</div></div>';
+    const entry = open('stack', html, { onEsc: () => close(entry) });
+    capGrid(entry.ov);
+    bindLong(entry.ov, '.dgrid .dc', (el) => ({ card: cards[+el.dataset.i] }), T, true);
+    onAct(entry, (act) => { if (act === 'back') close(entry); });
     return entry;
   };
 
@@ -13997,7 +14331,8 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   S.tallyHtml = tallyHtml;
 
   // ---- the deck view's sort and look (remembered per viewer: localStorage 'ttf-core4:prefs') --------
-  const SORTS = [['type', 'Type'], ['power', 'Power'], ['rank', 'Rank'], ['xp', 'Next rank'], ['kind', 'Kind'], ['new', 'Newest']];
+  // PLAN 59: no 'Kind' sort (no unit holds a kind in the clean base; sortGroups still knows it)
+  const SORTS = [['type', 'Type'], ['power', 'Power'], ['rank', 'Rank'], ['xp', 'Next rank'], ['new', 'Newest']];
   S.SORTS = SORTS;
   const prefs = {
     all() { try { const o = JSON.parse(globalThis.localStorage.getItem('ttf-core4:prefs') || '{}'); return o && typeof o === 'object' ? o : {}; } catch (e) { return {}; } },
@@ -14138,7 +14473,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
           const teacher = C.GENERALS.find((g) => g.role === 'teach' && g.effect.teach === f.id);
           const lv = live.indexOf(f.id) >= 0;
           return '<div class="bk-f' + (lv ? ' live' : '') + '" data-f="' + esc(f.id) + '">' + TTF4.Art.formationDiagram(f.id) +
-            '<div><b>' + esc(f.name) + '</b>' + (lv ? '<em>live this battle</em>' : '') + '<p><strong>' + esc(f.short) + '.</strong> ' + esc(C.fillDesc(f.desc, T)) + '</p>' +
+            '<div><b>' + esc(f.name) + '</b>' + TTF4.Art.formationKindHtml(f.id) + (lv ? '<em>live this battle</em>' : '') + '<p><strong>' + esc(f.short) + '.</strong> ' + esc(C.fillDesc(f.desc, T)) + '</p>' +
             '<span class="by">Taught by ' + esc(teacher ? teacher.name : '-') + '</span></div></div>';
         }).join('') + '</div>' +
           '<p class="say small">A formation scores only when one of the battle\'s generals teaches it: its units score as usual and it adds its bonus on top. One unit may serve in several formations.</p>';
@@ -14229,12 +14564,14 @@ var(--p2-cn) left top / 44px 44px no-repeat;
     { id: 'complete', when: (f) => !!(f.completes && f.completes.length), hold: true },
     // (zone waits for a soldier on the board, so the first card held is not a wall of tips)
     { id: 'zone', when: (f) => (f.held === 'unit' || f.held === 'hero') && f.zone && f.placed != null, hold: true },
+    // PLAN 59: with no arrival screens (everything is in the deck from battle 1), the first hero
+    // held gets a tip like the officer and the engineer
+    { id: 'hero', when: (f) => f.held === 'hero', hold: true },
     { id: 'officer', when: (f) => f.held === 'officer', hold: true },
     { id: 'engineer', when: (f) => f.held === 'engineer', hold: true },
     { id: 'fort', when: (f) => !f.held && f.emptyFort != null },
     { id: 'formation', when: (f) => f.formation, hold: true }
-    // no tip for what has its own introduction screen: officers, heroes, engineers and forts
-    // (the arrival screens); "Your generals" opens battle 1 and the tip then points at the row.
+    // "Your generals" opens battle 1 and the tip then points at the row.
   ];
   const SCREENS = ['swap', 'newgeneral', 'upgrade', 'promote'];
   const FIRST = ['drag', 'generals'];
@@ -14486,6 +14823,11 @@ var(--p2-cn) left top / 44px 44px no-repeat;
           lines: ['Amber tiles: ' + g.name + ' gives ×' + Core.generalValue(T, z.id, lv) + ' to any unit there.', 'Any type counts, and it stacks with home ground.']
         };
       }
+      case 'hero':
+        return {
+          target: () => handSlots()[(st.offer || []).indexOf(x.hold)] || fanTarget(), side: ['top', 'right', 'left'],
+          lines: ['A hero: a stronger unit of his type with a rule of his own.', 'Hold his card to read it: he scores most when it holds.']
+        };
       case 'officer':
         return {
           target: () => handSlots()[(st.offer || []).indexOf(x.hold)] || fanTarget(), side: ['top', 'right', 'left'],
@@ -14745,8 +15087,9 @@ var(--p2-cn) left top / 44px 44px no-repeat;
   // once per browser. The best Laurels, the tuning override and the preferences stay.
   // 2026-10-23-p58: after PLAN 57/58, runs and tips. 2026-10-23-officers: officers take a slot of
   // their own, runs only. 2026-10-23-deals: formation trims and the per-battle teacher limits,
-  // runs only.
-  const RESET = { id: '2026-10-23-deals', tips: false };
+  // runs only. 2026-10-26-clean-base: PLAN 59, a saved deck holds kinds and traits the clean
+  // base no longer deals, and its start deck changed; runs only.
+  const RESET = { id: '2026-10-26-clean-base', tips: false };
   function forcedReset() {
     if (store.get('reset') === RESET.id) return;
     store.del('run');
