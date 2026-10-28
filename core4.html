@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="c8ef5b4672";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="ab97a5ca84";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -15961,8 +15961,9 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   function buttonsHtml() {
     const b = (act, icon, label, dis) => '<button type="button" class="cb" data-act="' + act + '"' + (dis ? ' disabled' : '') + '>' + icon + '<span>' + label + '</span></button>';
     const can = cb.canUndo ? cb.canUndo() : false;
+    // 2026-10-28 (user): no Info button on the battle screen (the book it opened stays in book.js, unreached)
     return '<div class="cbs left">' + b('undo', Art.icon('undo'), 'Undo', !can) + b('deck', Art.icon('deck'), 'Deck') + '</div>' +
-      '<div class="cbs right">' + b('book', Art.icon('info'), 'Info') + b('menu', Art.icon('flag'), 'Menu') + '</div>';
+      '<div class="cbs right">' + b('menu', Art.icon('flag'), 'Menu') + '</div>';
   }
 
   // ---- PLAN 60: New hand, Survey, the peek strip, a pending choice ---------------------------------
