@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="47476a3a63";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="3f04d00eb0";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -7968,7 +7968,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // 2026-10-28 (user): 12, a difficulty (score targets x1 / x1.15 / x1.3) and a run length (30 / 40
   // / 50 battles) on the pre-run screen; an Easy 30-battle run plays as rules 11
   // 2026-10-29 (user): 13, steeper b31-b50 targets; a 30-battle run plays as rules 12
-  C.RULES_VERSION = 13;
+  // 2026-10-29 (user): 14, every retry re-deals the generals; spoils officers and heroes rise with the run
+  C.RULES_VERSION = 14;
 
   C.TUN_DEFAULT = {
     board: { size: 4, minEach: 3, maxEach: 5, tries: 300 },
@@ -8438,21 +8439,21 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // (PLAN 54), and grow by themselves (no neighbour boosts). ability.kind = the hero's id (rules.js reads it). step: 'flat' | 'mult'.
   C.HEROES = [
     { id: 'marshal', name: 'Marshal', type: 'inf', ability: { kind: 'marshal' }, step: 'flat', short: '+{heroes.marshal} per Infantry',
-      desc: 'An Infantry unit that starts at rank {heroes.rank}: +{heroes.marshal} power for every other Infantry unit on the board.' },
+      desc: 'An Infantry unit that joins at rank {heroes.rank} or higher: +{heroes.marshal} power for every other Infantry unit on the board.' },
     { id: 'dragoon', name: 'Dragoon', type: 'cav', ability: { kind: 'dragoon' }, step: 'flat', short: '+{heroes.dragoon} per turn left',
-      desc: 'A Cavalry unit that starts at rank {heroes.rank}: +{heroes.dragoon} power for every turn of the battle after the one he is played on.' },
+      desc: 'A Cavalry unit that joins at rank {heroes.rank} or higher: +{heroes.dragoon} power for every turn of the battle after the one he is played on.' },
     { id: 'hussar', name: 'Hussar', type: 'cav', ability: { kind: 'hussar' }, step: 'flat', short: '+{heroes.hussar} per unit in line',
-      desc: 'A Cavalry unit that starts at rank {heroes.rank}: +{heroes.hussar} power for every unit in his row and his column.' },
+      desc: 'A Cavalry unit that joins at rank {heroes.rank} or higher: +{heroes.hussar} power for every unit in his row and his column.' },
     { id: 'bulwark', name: 'Bulwark', type: 'inf', ability: { kind: 'bulwark' }, step: 'mult', short: 'Played last: ×{heroes.bulwark}',
-      desc: 'An Infantry unit that starts at rank {heroes.rank}: ×{heroes.bulwark} if he is played in the last {heroes.lateTurns} turns of the battle.' },
+      desc: 'An Infantry unit that joins at rank {heroes.rank} or higher: ×{heroes.bulwark} if he is played in the last {heroes.lateTurns} turns of the battle.' },
     { id: 'spearhead', name: 'Spearhead', type: 'inf', ability: { kind: 'spearhead' }, step: 'mult', short: 'All three types: ×{heroes.spearhead}',
-      desc: 'An Infantry unit that starts at rank {heroes.rank}: ×{heroes.spearhead} while Infantry, Archers and Cavalry all have a unit on the board.' },
+      desc: 'An Infantry unit that joins at rank {heroes.rank} or higher: ×{heroes.spearhead} while Infantry, Archers and Cavalry all have a unit on the board.' },
     { id: 'huntsman', name: 'Huntsman', type: 'arc', ability: { kind: 'huntsman' }, step: 'mult', short: '×{heroes.huntsman} per formation',
-      desc: 'An Archers unit that starts at rank {heroes.rank}: ×{heroes.huntsman} for every live formation he is part of.' },
+      desc: 'An Archers unit that joins at rank {heroes.rank} or higher: ×{heroes.huntsman} for every live formation he is part of.' },
     { id: 'skirmisher', name: 'Skirmisher', type: 'arc', ability: { kind: 'skirmisher' }, step: 'mult', short: 'No formation: ×{heroes.skirmisher}',
-      desc: 'An Archers unit that starts at rank {heroes.rank}: ×{heroes.skirmisher} while he is part of no live formation.' },
+      desc: 'An Archers unit that joins at rank {heroes.rank} or higher: ×{heroes.skirmisher} while he is part of no live formation.' },
     { id: 'vanguard', name: 'Vanguard', type: 'cav', ability: { kind: 'vanguard' }, step: 'mult', short: 'Played early: ×{heroes.vanguard}',
-      desc: 'A Cavalry unit that starts at rank {heroes.rank}: ×{heroes.vanguard} if he is played in turns 1 to {heroes.earlyTurns} of the battle.' }
+      desc: 'A Cavalry unit that joins at rank {heroes.rank} or higher: ×{heroes.vanguard} if he is played in turns 1 to {heroes.earlyTurns} of the battle.' }
   ];
   /** The unit type of hero `id` ('inf' | 'arc' | 'cav'), or null for an unknown id. */
   C.heroType = (id) => { const h = C.HEROES.find((x) => x.id === id); return h ? h.type : null; };
@@ -8462,7 +8463,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     unit: 'Scores its value: its rank power, ×{terrain.mult} on its home terrain, ×{fort.mult} on a fort, × an officer\'s factor when one of its type reaches it, and the boosts of the generals in play. Formations taught by your generals add a bonus on top.',
     officer: 'He takes a tile of his own and stands there as a unit of his type. He multiplies his type: every unit of his type in his area is × his factor, never himself. His area is not a formation: the two stack. He earns XP and ranks up.',
     engineer: 'Builds a fort on an empty tile; the tile stays free for a card. A unit standing on a fort is ×{fort.mult}. A fort is never part of a formation.',
-    hero: 'A unit of its type that starts at rank {heroes.rank} and grows by itself (its rule). It fills a slot of its type in formations, earns XP and ranks up like a unit.'
+    hero: 'A unit of its type that joins at rank {heroes.rank} or higher and grows by itself (its rule). It fills a slot of its type in formations, earns XP and ranks up like a unit.'
   };
 })();
 </script>
@@ -9281,49 +9282,49 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   // late: an add after the value is rounded (not multiplied by the mult step)
   LIB.hero({ id: 'standard_guard', name: 'Standard Guard', type: 'inf', rarity: 'common', step: 'late',
-    short: '+{heroes.standard_guard} per formation', desc: 'An Infantry hero who starts at rank {heroes.rank}: +{heroes.standard_guard} for every live formation on the board, added after every multiplier.' },
+    short: '+{heroes.standard_guard} per formation', desc: 'An Infantry hero who joins at rank {heroes.rank} or higher: +{heroes.standard_guard} for every live formation on the board, added after every multiplier.' },
   15, {
     late: (L, me, i) => (i === me.slot ? me.N * L.instances.length : 0)
   });
 
   // late: reads L.val (the values after the mult step)
   LIB.hero({ id: 'grand_archer', name: 'Grand Archer', type: 'arc', rarity: 'rare', step: 'late',
-    short: 'Row Archers + his value', desc: 'An Archers hero who starts at rank {heroes.rank}: his value is added to every other Archers piece in his row, after every multiplier.' },
+    short: 'Row Archers + his value', desc: 'An Archers hero who joins at rank {heroes.rank} or higher: his value is added to every other Archers piece in his row, after every multiplier.' },
   0, {
     late: (L, me, i) => (i !== me.slot && L.typeOf(i) === 'arc' && G.rowOf(i) === G.rowOf(me.slot) ? L.val[me.slot] : 0)
   });
 
   // place: a patch when played (§3.2)
   LIB.hero({ id: 'siege_engineer', name: 'Siege Engineer', type: 'inf', rarity: 'rare', step: 'place',
-    short: 'Builds a fort under him', desc: 'An Infantry hero who starts at rank {heroes.rank}. When you play him, a fort is built on his tile.' },
+    short: 'Builds a fort under him', desc: 'An Infantry hero who joins at rank {heroes.rank} or higher. When you play him, a fort is built on his tile.' },
   0, {
     place: (S, me) => ({ forts: [me.slot] })
   });
 
   // join: a general of st.reserve joins the battle while he is on the board
   LIB.hero({ id: 'old_commander', name: 'Old Commander', type: 'arc', rarity: 'rare', step: 'general',
-    short: 'A reserve general joins', desc: 'An Archers hero who starts at rank {heroes.rank}. While he is on the board, the first general of your six who was not dealt this battle joins it.' },
+    short: 'A reserve general joins', desc: 'An Archers hero who joins at rank {heroes.rank} or higher. While he is on the board, the first general of your six who was not dealt this battle joins it.' },
   0, {
     join: (S, me) => (S.st.reserve || []).slice(0, 1)
   });
 
   // ask: a move choice for himself
   LIB.hero({ id: 'wheeling_horse', name: 'Wheeling Horse', type: 'cav', rarity: 'rare', step: 'place',
-    short: 'May move after play', desc: 'A Cavalry hero who starts at rank {heroes.rank}. When you play him he may move to an empty tile touching him.' },
+    short: 'May move after play', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher. When you play him he may move to an empty tile touching him.' },
   0, {
     ask: (S, me) => ({ kind: 'move', from: [me.slot], to: G.cross(me.slot).filter((s) => S.isEmpty(s)) })
   });
 
   // spoils: a run-level hook (Run.endBattle: a won battle's offer has more options)
   LIB.hero({ id: 'herald_victory', name: 'Herald of Victory', type: 'cav', rarity: 'rare', step: 'run',
-    short: 'Win: spoils +{heroes.herald_victory}', desc: 'A Cavalry hero who starts at rank {heroes.rank}. A battle won with him on the board adds {heroes.herald_victory} option to the spoils.' },
+    short: 'Win: spoils +{heroes.herald_victory}', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher. A battle won with him on the board adds {heroes.herald_victory} option to the spoils.' },
   1, {
     spoils: (S, me) => me.N
   });
 
   // copy: the framework copies the other hero that scores best
   LIB.hero({ id: 'mirror_knight', name: 'Mirror Knight', type: 'inf', rarity: 'rare', step: 'copy',
-    short: 'Copies a hero and his type', desc: 'A hero who starts at rank {heroes.rank}, Infantry until he copies. He copies the rule and the type of another hero on the board (an Archers hero copied makes him Archers). The copy is not fixed when he is played: as the board changes he switches to whichever hero makes your total highest.' },
+    short: 'Copies a hero and his type', desc: 'A hero who joins at rank {heroes.rank} or higher, Infantry until he copies. He copies the rule and the type of another hero on the board (an Archers hero copied makes him Archers). The copy is not fixed when he is played: as the board changes he switches to whichever hero makes your total highest.' },
   0, { copy: 'hero' });
 
   // ==== content (the heroes agent appends below; keep the order of §6) =======================
@@ -9348,91 +9349,91 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   const isTeacher = (id) => { const g = (C.GENERALS || []).find((x) => x.id === id); return !!(g && g.role === 'teach'); };
 
   LIB.hero({ id: 'shieldmaiden', name: 'Shieldmaiden', type: 'inf', rarity: 'common', step: 'mult',
-    short: 'Flanked by Infantry: ×{heroes.shieldmaiden.N}', desc: 'An Infantry hero who starts at rank {heroes.rank}: ×{heroes.shieldmaiden.N} if Infantry stand on both sides of her, in her row or in her column.' },
+    short: 'Flanked by Infantry: ×{heroes.shieldmaiden.N}', desc: 'An Infantry hero who joins at rank {heroes.rank} or higher: ×{heroes.shieldmaiden.N} if Infantry stand on both sides of her, in her row or in her column.' },
   { N: 6, up: 0.5 }, {
     mult: own((L, me) => ([sides(me.slot, 1, 0), sides(me.slot, 0, 1)].some((p) => p && p.every((j) => L.typeOf(j) === 'inf')) ? me.N : null))
   });
 
   LIB.hero({ id: 'gatekeeper', name: 'Gatekeeper', type: 'inf', rarity: 'common', step: 'mult',
-    short: 'On a fort: ×{heroes.gatekeeper.N}', desc: 'An Infantry hero who starts at rank {heroes.rank}: ×{heroes.gatekeeper.N} when he stands on a fort.' },
+    short: 'On a fort: ×{heroes.gatekeeper.N}', desc: 'An Infantry hero who joins at rank {heroes.rank} or higher: ×{heroes.gatekeeper.N} when he stands on a fort.' },
   { N: 4, up: 0.5 }, {
     mult: own((L, me) => (L.fort(me.slot) ? me.N : null))
   });
 
   LIB.hero({ id: 'hill_warden', name: 'Hill Warden', type: 'inf', rarity: 'common', step: 'mult',
-    short: 'On hills: ×{heroes.hill_warden.N}', desc: 'An Infantry hero who starts at rank {heroes.rank}: ×{heroes.hill_warden.N} when he stands on hills.' },
+    short: 'On hills: ×{heroes.hill_warden.N}', desc: 'An Infantry hero who joins at rank {heroes.rank} or higher: ×{heroes.hill_warden.N} when he stands on hills.' },
   { N: 4, up: 0.5 }, {
     mult: own((L, me) => (L.terrain(me.slot) === 'hills' ? me.N : null))
   });
 
   LIB.hero({ id: 'drill_veteran', name: 'Grizzled Veteran', type: 'inf', rarity: 'common', step: 'flat',
-    short: '+{heroes.drill_veteran.N} per rank touching', desc: 'An Infantry hero who starts at rank {heroes.rank}: +{heroes.drill_veteran.N} power for every rank of the pieces touching him.' },
+    short: '+{heroes.drill_veteran.N} per rank touching', desc: 'An Infantry hero who joins at rank {heroes.rank} or higher: +{heroes.drill_veteran.N} power for every rank of the pieces touching him.' },
   { N: 2, up: 0.4 }, {
     flat: own((L, me) => me.N * touching(L, me.slot).reduce((a, j) => a + (L.isScored(j) ? L.rankOf[j] || 0 : 0), 0))
   });
 
   LIB.hero({ id: 'last_stand', name: 'Last Stand', type: 'inf', rarity: 'common', step: 'mult',
-    short: '×{heroes.last_stand.N} per empty touching', desc: 'An Infantry hero who starts at rank {heroes.rank}: ×{heroes.last_stand.N} for every empty tile touching him.' },
+    short: '×{heroes.last_stand.N} per empty touching', desc: 'An Infantry hero who joins at rank {heroes.rank} or higher: ×{heroes.last_stand.N} for every empty tile touching him.' },
   { N: 1.5, up: 0.05 }, {
     mult: own((L, me) => pow(me.N, countIn(touching(L, me.slot), (j) => L.isEmpty(j))))
   });
 
   LIB.hero({ id: 'sniper', name: 'Sniper', type: 'arc', rarity: 'common', step: 'mult',
-    short: 'On a corner: ×{heroes.sniper}', desc: 'An Archers hero who starts at rank {heroes.rank}: ×{heroes.sniper} on a corner tile of the board.' },
+    short: 'On a corner: ×{heroes.sniper}', desc: 'An Archers hero who joins at rank {heroes.rank} or higher: ×{heroes.sniper} on a corner tile of the board.' },
   3, {
     mult: own((L, me) => (G.isCorner(me.slot) ? me.N : null))
   });
 
   LIB.hero({ id: 'forest_ranger', name: 'Forest Ranger', type: 'arc', rarity: 'common', step: 'mult',
-    short: 'In forest: ×{heroes.forest_ranger.N}', desc: 'An Archers hero who starts at rank {heroes.rank}: ×{heroes.forest_ranger.N} when he stands in a forest.' },
+    short: 'In forest: ×{heroes.forest_ranger.N}', desc: 'An Archers hero who joins at rank {heroes.rank} or higher: ×{heroes.forest_ranger.N} when he stands in a forest.' },
   { N: 4, up: 0.5 }, {
     mult: own((L, me) => (L.terrain(me.slot) === 'forest' ? me.N : null))
   });
 
   LIB.hero({ id: 'volley_cpt', name: 'Volley Captain', type: 'arc', rarity: 'common', step: 'flat',
-    short: '+{heroes.volley_cpt.N} per Archers', desc: 'An Archers hero who starts at rank {heroes.rank}: +{heroes.volley_cpt.N} power for every other Archers piece on the board.' },
+    short: '+{heroes.volley_cpt.N} per Archers', desc: 'An Archers hero who joins at rank {heroes.rank} or higher: +{heroes.volley_cpt.N} power for every other Archers piece on the board.' },
   { N: 2, up: 0.4 }, {
     flat: own((L, me) => me.N * typeIn(L, ALL.filter((j) => j !== me.slot), 'arc'))
   });
 
   LIB.hero({ id: 'falconer', name: 'Falconer', type: 'arc', rarity: 'common', step: 'mult',
-    short: 'Turn 4 or 5: ×{heroes.falconer}', desc: 'An Archers hero who starts at rank {heroes.rank}: ×{heroes.falconer} if you play him on turn 4 or turn 5.' },
+    short: 'Turn 4 or 5: ×{heroes.falconer}', desc: 'An Archers hero who joins at rank {heroes.rank} or higher: ×{heroes.falconer} if you play him on turn 4 or turn 5.' },
   4, {
     mult: own((L, me) => { const t = placedOf(L, me.slot); return t === 3 || t === 4 ? me.N : null; })
   });
 
   LIB.hero({ id: 'watcher', name: 'Watcher', type: 'arc', rarity: 'common', step: 'flat',
-    short: '+{heroes.watcher.N} per piece in row', desc: 'An Archers hero who starts at rank {heroes.rank}: +{heroes.watcher.N} power for every other piece in his row.' },
+    short: '+{heroes.watcher.N} per piece in row', desc: 'An Archers hero who joins at rank {heroes.rank} or higher: +{heroes.watcher.N} power for every other piece in his row.' },
   { N: 3, up: 0.5 }, {
     flat: own((L, me) => me.N * countIn(G.row(me.slot), (j) => L.isPiece(j)))
   });
 
   LIB.hero({ id: 'crossbow_master', name: 'Crossbow Master', type: 'arc', rarity: 'common', step: 'mult',
-    short: 'Lone Archers: ×{heroes.crossbow_master.N}', desc: 'An Archers hero who starts at rank {heroes.rank}: ×{heroes.crossbow_master.N} if no other Archers stand in his row or his column.' },
+    short: 'Lone Archers: ×{heroes.crossbow_master.N}', desc: 'An Archers hero who joins at rank {heroes.rank} or higher: ×{heroes.crossbow_master.N} if no other Archers stand in his row or his column.' },
   { N: 2.5, up: 0.25 }, {
     mult: own((L, me) => (typeIn(L, G.row(me.slot).concat(G.col(me.slot)), 'arc') === 0 ? me.N : null))
   });
 
   LIB.hero({ id: 'outrider', name: 'Outrider', type: 'cav', rarity: 'common', step: 'mult',
-    short: 'On the edge: ×{heroes.outrider.N}', desc: 'A Cavalry hero who starts at rank {heroes.rank}: ×{heroes.outrider.N} on a tile at the edge of the board.' },
+    short: 'On the edge: ×{heroes.outrider.N}', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher: ×{heroes.outrider.N} on a tile at the edge of the board.' },
   { N: 2.5, up: 0.25 }, {
     mult: own((L, me) => (G.isEdge(me.slot) ? me.N : null))
   });
 
   LIB.hero({ id: 'courser', name: 'Courser', type: 'cav', rarity: 'common', step: 'flat',
-    short: '+{heroes.courser.N} per empty in row', desc: 'A Cavalry hero who starts at rank {heroes.rank}: +{heroes.courser.N} power for every empty tile in his row.' },
+    short: '+{heroes.courser.N} per empty in row', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher: +{heroes.courser.N} power for every empty tile in his row.' },
   { N: 3, up: 0.5 }, {
     flat: own((L, me) => me.N * countIn(G.row(me.slot), (j) => L.isEmpty(j)))
   });
 
   LIB.hero({ id: 'plains_rider', name: 'Plains Rider', type: 'cav', rarity: 'common', step: 'mult',
-    short: 'On plains: ×{heroes.plains_rider.N}', desc: 'A Cavalry hero who starts at rank {heroes.rank}: ×{heroes.plains_rider.N} when he stands on plains.' },
+    short: 'On plains: ×{heroes.plains_rider.N}', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher: ×{heroes.plains_rider.N} when he stands on plains.' },
   { N: 2.5, up: 0.25 }, {
     mult: own((L, me) => (L.terrain(me.slot) === 'plains' ? me.N : null))
   });
 
   LIB.hero({ id: 'charger', name: 'Charger', type: 'cav', rarity: 'common', step: 'mult',
-    short: 'After Cavalry: ×{heroes.charger.N}', desc: 'A Cavalry hero who starts at rank {heroes.rank}: ×{heroes.charger.N} if a Cavalry piece was played on the turn before him.' },
+    short: 'After Cavalry: ×{heroes.charger.N}', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher: ×{heroes.charger.N} if a Cavalry piece was played on the turn before him.' },
   { N: 5, up: 0.5 }, {
     mult: own((L, me) => {
       const t = placedOf(L, me.slot);
@@ -9441,43 +9442,43 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.hero({ id: 'lancer_knight', name: 'Lancer Knight', type: 'cav', rarity: 'common', step: 'flat',
-    short: '+{heroes.lancer_knight.N} per Infantry in column', desc: 'A Cavalry hero who starts at rank {heroes.rank}: +{heroes.lancer_knight.N} power for every Infantry piece in his column.' },
+    short: '+{heroes.lancer_knight.N} per Infantry in column', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher: +{heroes.lancer_knight.N} power for every Infantry piece in his column.' },
   { N: 6, up: 1 }, {
     flat: own((L, me) => me.N * typeIn(L, G.col(me.slot), 'inf'))
   });
 
   LIB.hero({ id: 'iron_duke', name: 'Iron Duke', type: 'inf', rarity: 'uncommon', step: 'mult',
-    short: '×{heroes.iron_duke} per formation', desc: 'An Infantry hero who starts at rank {heroes.rank}: ×{heroes.iron_duke} for every live formation on the board, his or not.' },
+    short: '×{heroes.iron_duke} per formation', desc: 'An Infantry hero who joins at rank {heroes.rank} or higher: ×{heroes.iron_duke} for every live formation on the board, his or not.' },
   1.5, {
     memb: own((L, me) => pow(me.N, (L.instances || []).length))
   });
 
   LIB.hero({ id: 'pikemaster', name: 'Pikemaster', type: 'inf', rarity: 'uncommon', step: 'mult',
-    short: '×{heroes.pikemaster.N} per Cavalry touching', desc: 'An Infantry hero who starts at rank {heroes.rank}: ×{heroes.pikemaster.N} for every Cavalry piece touching him.' },
+    short: '×{heroes.pikemaster.N} per Cavalry touching', desc: 'An Infantry hero who joins at rank {heroes.rank} or higher: ×{heroes.pikemaster.N} for every Cavalry piece touching him.' },
   { N: 1.6, up: 0.1 }, {
     mult: own((L, me) => pow(me.N, typeIn(L, touching(L, me.slot), 'cav')))
   });
 
   LIB.hero({ id: 'twin_brothers', name: 'Twin Brothers', type: 'inf', rarity: 'uncommon', step: 'formation',
-    short: 'Count ×{heroes.twin_brothers.N} in formations', desc: 'An Infantry hero who starts at rank {heroes.rank}: in any formation\'s bonus he counts ×{heroes.twin_brothers.N}.' },
+    short: 'Count ×{heroes.twin_brothers.N} in formations', desc: 'An Infantry hero who joins at rank {heroes.rank} or higher: in any formation\'s bonus he counts ×{heroes.twin_brothers.N}.' },
   { N: 4, up: 0.5 }, {
     share: (L, me, inst, i) => (i === me.slot ? me.N : null)
   });
 
   LIB.hero({ id: 'rearguard', name: 'Rearguard', type: 'inf', rarity: 'uncommon', step: 'mult',
-    short: 'Surrounded: ×{heroes.rearguard}', desc: 'An Infantry hero who starts at rank {heroes.rank}: ×{heroes.rearguard} if every tile touching him holds a piece.' },
+    short: 'Surrounded: ×{heroes.rearguard}', desc: 'An Infantry hero who joins at rank {heroes.rank} or higher: ×{heroes.rearguard} if every tile touching him holds a piece.' },
   3.5, {
     mult: own((L, me) => (touching(L, me.slot).every((j) => L.isPiece(j)) ? me.N : null))
   });
 
   LIB.hero({ id: 'longshot', name: 'Longshot', type: 'arc', rarity: 'uncommon', step: 'mult',
-    short: '×{heroes.longshot} per empty in column', desc: 'An Archers hero who starts at rank {heroes.rank}: ×{heroes.longshot} for every empty tile in his column.' },
+    short: '×{heroes.longshot} per empty in column', desc: 'An Archers hero who joins at rank {heroes.rank} or higher: ×{heroes.longshot} for every empty tile in his column.' },
   1.2, {
     mult: own((L, me) => pow(me.N, countIn(G.col(me.slot), (j) => L.isEmpty(j))))
   });
 
   LIB.hero({ id: 'harrier', name: 'Harrier', type: 'arc', rarity: 'uncommon', step: 'mult',
-    short: 'Touches Inf and Cav: ×{heroes.harrier}', desc: 'An Archers hero who starts at rank {heroes.rank}: ×{heroes.harrier} if he touches Infantry and Cavalry and no Archers.' },
+    short: 'Touches Inf and Cav: ×{heroes.harrier}', desc: 'An Archers hero who joins at rank {heroes.rank} or higher: ×{heroes.harrier} if he touches Infantry and Cavalry and no Archers.' },
   3, {
     mult: own((L, me) => {
       const t = touching(L, me.slot);
@@ -9486,37 +9487,37 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.hero({ id: 'siege_archer', name: 'Siege Archer', type: 'arc', rarity: 'uncommon', step: 'flat',
-    short: '+{heroes.siege_archer.N} per fort', desc: 'An Archers hero who starts at rank {heroes.rank}: +{heroes.siege_archer.N} power for every fort on the board.' },
+    short: '+{heroes.siege_archer.N} per fort', desc: 'An Archers hero who joins at rank {heroes.rank} or higher: +{heroes.siege_archer.N} power for every fort on the board.' },
   { N: 4, up: 0.75 }, {
     flat: own((L, me) => me.N * countIn(ALL, (j) => L.fort(j)))
   });
 
   LIB.hero({ id: 'scout', name: 'Scout', type: 'arc', rarity: 'uncommon', step: 'place',
-    short: 'See the next hand', desc: 'An Archers hero who starts at rank {heroes.rank}. When you play him, you see the next turn\'s cards for the rest of the battle.' },
+    short: 'See the next hand', desc: 'An Archers hero who joins at rank {heroes.rank} or higher. When you play him, you see the next turn\'s cards for the rest of the battle.' },
   0, {
     place: () => ({ peek: true })
   });
 
   LIB.hero({ id: 'mercenary_cpt', name: 'Mercenary Captain', type: 'arc', rarity: 'uncommon', step: 'rank',
-    short: '+1 rank per officer touching', desc: 'An Archers hero who starts at rank {heroes.rank}. He fights one rank higher for every officer touching him, up to rank {TOP}.' },
+    short: '+1 rank per officer touching', desc: 'An Archers hero who joins at rank {heroes.rank} or higher. He fights one rank higher for every officer touching him, up to rank {TOP}.' },
   0, {
     rank: own((L, me) => countIn(touching(L, me.slot), (j) => isOfficer(L, j)))
   });
 
   LIB.hero({ id: 'raider', name: 'Raider', type: 'cav', rarity: 'uncommon', step: 'mult',
-    short: 'Alone on his terrain: ×{heroes.raider.N}', desc: 'A Cavalry hero who starts at rank {heroes.rank}: ×{heroes.raider.N} if no piece touching him stands on his terrain.' },
+    short: 'Alone on his terrain: ×{heroes.raider.N}', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher: ×{heroes.raider.N} if no piece touching him stands on his terrain.' },
   { N: 2, up: 0.25 }, {
     mult: own((L, me) => (touching(L, me.slot).some((j) => L.isPiece(j) && L.terrain(j) === L.terrain(me.slot)) ? null : me.N))
   });
 
   LIB.hero({ id: 'knight_errant', name: 'Knight Errant', type: 'cav', rarity: 'uncommon', step: 'mult',
-    short: 'Only Cavalry: ×{heroes.knight_errant}', desc: 'A Cavalry hero who starts at rank {heroes.rank}: ×{heroes.knight_errant} if he is the only Cavalry piece on the board.' },
+    short: 'Only Cavalry: ×{heroes.knight_errant}', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher: ×{heroes.knight_errant} if he is the only Cavalry piece on the board.' },
   4, {
     mult: own((L, me) => (typeIn(L, ALL.filter((j) => j !== me.slot), 'cav') === 0 ? me.N : null))
   });
 
   LIB.hero({ id: 'late_cpt', name: 'Late Captain', type: 'cav', rarity: 'uncommon', step: 'flat',
-    short: '+{heroes.late_cpt.N} per piece before him', desc: 'A Cavalry hero who starts at rank {heroes.rank}: +{heroes.late_cpt.N} power for every piece already on the board when you play him.' },
+    short: '+{heroes.late_cpt.N} per piece before him', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher: +{heroes.late_cpt.N} power for every piece already on the board when you play him.' },
   { N: 2.5, up: 0.5 }, {
     flat: own((L, me) => {
       const t = placedOf(L, me.slot);
@@ -9525,44 +9526,44 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.hero({ id: 'flanker', name: 'Flanker', type: 'cav', rarity: 'uncommon', step: 'mult',
-    short: 'Outer column: ×{heroes.flanker}', desc: 'A Cavalry hero who starts at rank {heroes.rank}: ×{heroes.flanker} in the left or the right column.' },
+    short: 'Outer column: ×{heroes.flanker}', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher: ×{heroes.flanker} in the left or the right column.' },
   2, {
     mult: own((L, me) => (G.colOf(me.slot) === 0 || G.colOf(me.slot) === G.N - 1 ? me.N : null))
   });
 
   LIB.hero({ id: 'banner_rider', name: 'Banner Rider', type: 'cav', rarity: 'uncommon', step: 'mult',
-    short: '×{heroes.banner_rider} per teacher', desc: 'A Cavalry hero who starts at rank {heroes.rank}: ×{heroes.banner_rider} for every teacher dealt this battle.' },
+    short: '×{heroes.banner_rider} per teacher', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher: ×{heroes.banner_rider} for every teacher dealt this battle.' },
   1.5, {
     mult: own((L, me) => pow(me.N, countIn(Object.keys(L.gens || {}), (id) => !L.gens[id].joined && isTeacher(id))))
   });
 
   LIB.hero({ id: 'courier_rider', name: 'Courier Rider', type: 'cav', rarity: 'uncommon', step: 'mult',
-    short: 'Touches an officer: ×{heroes.courier_rider.N}', desc: 'A Cavalry hero who starts at rank {heroes.rank}: ×{heroes.courier_rider.N} if he touches an officer.' },
+    short: 'Touches an officer: ×{heroes.courier_rider.N}', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher: ×{heroes.courier_rider.N} if he touches an officer.' },
   { N: 2, up: 0.25 }, {
     mult: own((L, me) => (touching(L, me.slot).some((j) => isOfficer(L, j)) ? me.N : null))
   });
 
   LIB.hero({ id: 'warlords_son', name: 'Warlord\'s Son', type: 'inf', rarity: 'rare', step: 'battle',
-    short: 'Battle total, by his rank', desc: 'An Infantry hero who starts at rank {heroes.rank}. The battle total is multiplied by 1 + {heroes.warlords_son} for every rank he has above 1.' },
+    short: 'Battle total, by his rank', desc: 'An Infantry hero who joins at rank {heroes.rank} or higher. The battle total is multiplied by 1 + {heroes.warlords_son} for every rank he has above 1.' },
   0.15, {
     battle: (L, me) => 1 + me.N * Math.max(0, (me.rank || 1) - 1)
   });
 
   LIB.hero({ id: 'banner_saint', name: 'Banner Saint', type: 'inf', rarity: 'rare', step: 'formation',
-    short: 'Her formations count ×{heroes.banner_saint.N}', desc: 'An Infantry hero who starts at rank {heroes.rank}: every member of a formation she is in counts ×{heroes.banner_saint.N} in its bonus.' },
+    short: 'Her formations count ×{heroes.banner_saint.N}', desc: 'An Infantry hero who joins at rank {heroes.rank} or higher: every member of a formation she is in counts ×{heroes.banner_saint.N} in its bonus.' },
   { N: 3, up: 0.25 }, {
     share: (L, me, inst) => (inst.slots.indexOf(me.slot) >= 0 ? me.N : null)
   });
 
   LIB.hero({ id: 'the_twins', name: 'The Twins', type: 'arc', rarity: 'rare', step: 'mult',
-    short: 'Any type, ×{heroes.the_twins}', desc: 'An Archers hero who starts at rank {heroes.rank}: in formations they count as any type, the best one, and they are ×{heroes.the_twins}.' },
+    short: 'Any type, ×{heroes.the_twins}', desc: 'An Archers hero who joins at rank {heroes.rank} or higher: in formations they count as any type, the best one, and they are ×{heroes.the_twins}.' },
   1.5, {
     cty: (L, me) => ({ wild: [me.slot] }),
     mult: own((L, me) => me.N)
   });
 
   LIB.hero({ id: 'kingslayer', name: 'Kingslayer', type: 'cav', rarity: 'rare', step: 'mult',
-    short: 'Boss battle: ×{heroes.kingslayer}', desc: 'A Cavalry hero who starts at rank {heroes.rank}: ×{heroes.kingslayer} in a boss battle.' },
+    short: 'Boss battle: ×{heroes.kingslayer}', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher: ×{heroes.kingslayer} in a boss battle.' },
   10, {
     mult: own((L, me) => (L.st && L.st.boss ? me.N : null))
   });
@@ -11890,7 +11891,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
  *            pickGeneralOffer(run, index, replaceId)   (a general option; pickOffer delegates)
  *            pickUpgrade(run, {uid} | index) refuseUpgrade(run)                  (phase 'upgrade')
  * Generals:  run.generals = [{id, level, wins}] (the pool of 6), dealtFor(run, k?, round?) (the 3 dealt),
- *            dealRoundOf(run, k?) freshDeal(run) (the re-deal after every 2 failed retries, PLAN 55),
+ *            dealRoundOf(run, k?) freshDeal(run) (the re-deal on every retry, PLAN 55; 2026-10-29),
  *            generalReplaceOf(run) (the pool ids a taken general may replace), startPool(seed, T)
  * Intros:    generalsIntroPending(run) / ackGeneralsIntro(run)  ("Your generals", battle 1)
  *            freshOrdersPending(run) / ackFreshOrders(run)  ("Fresh orders", once per battle and attempt)
@@ -11921,13 +11922,12 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
  *    difficulty: 'easy' | 'medium' | 'hard'   (2026-10-28: every target x tun.run.difficulty; missing = easy)
  *    offerPlus?: n                   (PLAN 60: extra spoils options from the last won battle, Herald of Victory)}
  * Boss twists are not stored: bossFor derives them from the run seed. So is the deal: dealtFor
- * reads seedFrom(run seed, 'deal', battle) over the pool, so the first try and the first 2
- * retries keep the same 3 generals; after every 2 more failed retries the battle is re-dealt
- * (PLAN 55: dealRoundOf, seeded by run seed, battle and round; freshDeal on its first attempt).
+ * reads seedFrom(run seed, 'deal', battle) over the pool for the first try; every retry re-deals
+ * (2026-10-29; PLAN 55's dealRoundOf, seeded by run seed, battle and round; freshDeal on a retry).
  * Flow: startRun -> [battleFor -> (place x 8) -> endBattle -> ('promote' after a boss win) ->
  *   'offer' -> ('upgrade' every 3 battles) -> next battle] ... -> 'won' after battle 30. A loss
  *   ('lost') is retried with retryBattle (same board, new shuffle, no XP; the generals are
- *   re-dealt at attempt 4, 6, 8, ...).
+ *   re-dealt on every retry).
  */
 (function () {
   const C = globalThis.TTFCore4 = globalThis.TTFCore4 || {};
@@ -12010,20 +12010,19 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     return a.value.slice(0, nt).concat(b.value.slice(0, nb)).map((id) => ({ id, level: 1, wins: 0 }));
   }
   /**
-   * The deal round of battle k (default the current one), PLAN 55: the first try and the first
-   * 2 retries share round 0; each 2 more failed retries start a new round (attempt 4 is round 1,
-   * attempts 6, 8, ... rounds 2, 3, ...). round = floor(failed retries / 2), where the failed
-   * retries before the current attempt are max(0, retries - 1). It depends only on
+   * The deal round of battle k (default the current one): the first try is round 0 and every
+   * retry a new round (2026-10-29, user; PLAN 55 re-dealt after every 2 failed retries). It is
    * run.attempts[k], so a reload cannot change it.
    */
   function dealRoundOf(run, k) {
-    return Math.floor(Math.max(0, attemptsOf(run, k) - 1) / 2);
+    // 2026-10-29 (user): every retry re-deals (was after every 2 failed retries)
+    return attemptsOf(run, k);
   }
   /** Does the current attempt open a fresh deal (the first attempt of a deal round above 0)? */
   function freshDeal(run) {
     if (!run || run.phase !== 'battle') return false;
     const n = attemptsOf(run);
-    return n >= 3 && n % 2 === 1;
+    return n >= 1;
   }
   /**
    * Is the "Fresh orders" announcement still owed (PLAN 55 V)? freshDeal(run) and not yet
@@ -12080,7 +12079,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   /**
    * The generals dealt for battle k (default the current one): tun.run.dealt (3) of run.generals,
    * listed in pool order. Copies [{id, level, wins}]. Round 0 is chosen by seedFrom(run seed,
-   * 'deal', k); a later deal round (dealRoundOf: after every 2 failed retries) by (run seed, k,
+   * 'deal', k); a later deal round (dealRoundOf: every retry) by (run seed, k,
    * round). `round` defaults to the battle's current round, so for a finished battle it is the
    * deal of the attempt that ended it.
    */
@@ -12376,6 +12375,14 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     const kinds = expanded ? R.leaderKindsExpanded || ['officer', 'hero', 'hero', 'special'] : R.leaderKinds || ['officer', 'hero', 'hero', 'engineer'];
     const inDeck = run.deck.filter((c) => c.kind === 'hero').map((c) => c.id);
     const rank = offerRank(T, run.battle);
+    // 2026-10-29 (user): offered officers rise with the run like units; heroes keep their head start
+    const officerCard = (o) => Object.assign(o, { rank, xp: xpForRank(T, rank) });
+    const heroCard = (h) => {
+      const c = C.heroCard(h, T);
+      c.rank = Math.min(C.maxRank(T), c.rank + rank - 1);
+      c.xp = xpForRank(T, c.rank);
+      return c;
+    };
     const n = (R.offerOptions || 3) + (run.offerPlus > 0 ? run.offerPlus : 0), out = [], seen = {};
     const inPlay = (kind) => !C.kindIntroduced || C.kindIntroduced(T, kind === 'special' ? 'engineer' : kind, run.battle);
     const leaders = kinds.filter(inPlay);
@@ -12413,12 +12420,12 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
           if (t.length) opts.push({ sergeant: true });
           if (!opts.length) continue;
           const pk = pickOf(opts);
-          if (pk.sergeant) return { kind: 'officer', type: pickOf(t), shape: pickOf(shapes), rank: 1, xp: 0 };
-          return { kind: 'officer', id: pk.o.id, type: pk.o.type, rank: 1, xp: 0 };
+          if (pk.sergeant) return officerCard({ kind: 'officer', type: pickOf(t), shape: pickOf(shapes) });
+          return officerCard({ kind: 'officer', id: pk.o.id, type: pk.o.type });
         }
         if (kind === 'hero') {
           const fresh = C.HEROES.filter((h) => (h.rarity || 'common') === r && inDeck.indexOf(h.id) < 0 && !out.some((o) => o.kind === 'hero' && o.id === h.id));
-          if (fresh.length) return C.heroCard(pickOf(fresh), T);
+          if (fresh.length) return heroCard(pickOf(fresh));
           continue;
         }
         const sp = C.SPECIALS.filter((d) => d.rarity === r).map((d) => ({ kind: 'special', id: d.id }));
@@ -12443,11 +12450,11 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
         } else if (kind === 'officer') {
           const t = freeType('officer');
           if (!t) continue;
-          card = { kind: 'officer', type: t, shape: pickOf(shapes), rank: 1, xp: 0 };
+          card = officerCard({ kind: 'officer', type: t, shape: pickOf(shapes) });
         } else if (kind === 'hero') {
           const fresh = C.HEROES.filter((h) => C.inPool(h, 'standard') && inDeck.indexOf(h.id) < 0 && !out.some((o) => o.kind === 'hero' && o.id === h.id));
           if (!fresh.length) continue;
-          card = C.heroCard(pickOf(fresh), T);
+          card = heroCard(pickOf(fresh));
         } else card = { kind: 'engineer' };
       }
       if (!card) {
@@ -12673,7 +12680,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   /**
    * From 'lost' back to 'battle' on the same battle: same board, new shuffle (attempts + 1). The
-   * generals stay for the first 2 retries; retries 3, 5, 7, ... bring a fresh deal (dealRoundOf).
+   * generals are re-dealt (dealRoundOf, 2026-10-29: every retry).
    */
   function retryBattle(run) {
     if (!run || run.phase !== 'lost') throw new Error('run has no lost battle to retry');
@@ -17522,7 +17529,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
  *                                             option, and (2026-10-28) Difficulty and Battles; cb({pool, difficulty, battles})
  *   detail(item, tun)                 a card's / general's / formation's / boss twist's full text
  *   generalsIntro(intro, tun, cb)     "Your generals" (battle 1): the 3 dealt; cb()
- *   freshOrders(st, tun, cb)          PLAN 55: the generals re-dealt after 2 failed retries; cb()
+ *   freshOrders(st, tun, cb)          PLAN 55: the generals re-dealt on a retry (2026-10-29: every one); cb()
  *   arrival(run, cb)                  b2 officers, b3 heroes, b4 engineers have joined; cb()
  *   intro(st, cb)                     the battle's target and boss twist; waits for a tap; cb()
  *   endPlate(result, cb)              won / lost after the reveal: cb('continue' | 'retry' | 'quit')
@@ -17736,7 +17743,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     return entry;
   };
 
-  // ---- "Fresh orders" (PLAN 55): after every 2 failed retries the battle's generals are re-dealt ----
+  // ---- "Fresh orders" (PLAN 55): on every retry (2026-10-29) the battle's generals are re-dealt ----
   S.freshOrders = function freshOrders(st, tun, cb) {
     const C = Core(), T = tun || tunOf(st);
     const gens = (st && st.generals) || [];
@@ -18942,7 +18949,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
  * (Reinforcements, Cartographer) are actions that take no turn and undo like a play.
  *
  * The run flow: start run -> battle k [arrival (b2-b4) -> "Your generals" (b1) -> the battle
- * intro (target, boss twist; waits for a tap; after every 2 failed retries "Fresh orders" before it) -> 8 placements -> the reveal -> the end plate]
+ * intro (target, boss twist; waits for a tap; on every retry "Fresh orders" before it) -> 8 placements -> the reveal -> the end plate]
  * -> after a boss win: promote one of its generals -> the spoils (a card or a general, with its
  * replace choice, or nothing) -> the upgrade (every 3 battles) -> battle k + 1 ... -> the
  * campaign won after battle 30, with Laurels. A loss retries the same board; the same generals for
