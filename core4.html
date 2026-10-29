@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="f0bf961285";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="47476a3a63";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -7967,7 +7967,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // plays as rules 10)
   // 2026-10-28 (user): 12, a difficulty (score targets x1 / x1.15 / x1.3) and a run length (30 / 40
   // / 50 battles) on the pre-run screen; an Easy 30-battle run plays as rules 11
-  C.RULES_VERSION = 12;
+  // 2026-10-29 (user): 13, steeper b31-b50 targets; a 30-battle run plays as rules 12
+  C.RULES_VERSION = 13;
 
   C.TUN_DEFAULT = {
     board: { size: 4, minEach: 3, maxEach: 5, tries: 300 },
@@ -8132,9 +8133,12 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       // suggested 3.5% above them there); the deck grows little past b30, so the curve flattens.
       // 2026-10-28 (rank 5): units keep ranking up past b30, so b31-b50 re-set the same way, x0.9 to
       // join b26-b29 as set (b31-b32 eased in); b1-b30 unchanged.
+      // 2026-10-29 (user, a 50-battle Hard run won at about x3.8 its targets past b30): b31-b50 steeper,
+      // x1.0415 a battle from 385 (b49 about x2.2 b29; a boss x0.9 the battle before it); casual on Easy
+      // still wins 75-90% first try at b31-b40, 56-67% at b44-b50 (200 runs); b1-b30 unchanged.
       target: [100, 100, 105, 110, 95, 115, 125, 130, 145, 125, 165, 180, 185, 195, 175, 215, 230, 240, 260, 225,
         280, 300, 305, 320, 290, 335, 355, 355, 365, 325,
-        385, 405, 425, 445, 410, 470, 495, 510, 525, 495, 530, 535, 540, 560, 515, 560, 565, 565, 565, 505],
+        385, 400, 420, 435, 390, 470, 490, 510, 535, 480, 580, 600, 625, 655, 590, 710, 740, 770, 800, 720],
       offerOptions: 3,           // options in the after-battle offer
       generalChance: 0.25,       // chance an option is a general (rolled first)
       generalMax: 1,             // at most this many generals in one spoils offer (2026-10-22, user)
