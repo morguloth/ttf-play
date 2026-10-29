@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="3352671582";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="0e3cf84a2a";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -8055,7 +8055,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // 2026-10-29 (user): 14, every retry re-deals the generals; spoils officers and heroes rise with the run
   // 2026-10-29 (user): 15, a booster offered later joins at a higher level too; targets re-tuned to
   // rules 13's difficulty
-  C.RULES_VERSION = 15;
+  // 2026-10-29 (user): 16, the expanded pool's own targets (run.targetExpanded); a standard run plays as rules 15
+  C.RULES_VERSION = 16;
 
   C.TUN_DEFAULT = {
     board: { size: 4, minEach: 3, maxEach: 5, tries: 300 },
@@ -8230,6 +8231,12 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       target: [100, 100, 105, 110, 95, 115, 130, 135, 155, 135, 175, 195, 205, 220, 200, 250, 270, 290, 320, 275,
         350, 380, 385, 405, 370, 420, 450, 450, 460, 410,
         485, 505, 530, 550, 490, 585, 600, 615, 650, 580, 695, 710, 735, 775, 705, 845, 880, 910, 950, 855],
+      // 2026-10-29 (user: the two pools tuned independently, expanded as hard as standard): the expanded
+      // pool's own targets (run.js targetFor; a standard run reads target). Each standard target x
+      // casual's expanded / standard total (p25+p50, 7-battle mean; about x1.1 early, x1.17 at b30), then x0.97
+      targetExpanded: [105, 105, 110, 115, 100, 125, 140, 145, 165, 140, 185, 210, 220, 235, 215, 260, 285, 310, 345, 295,
+        380, 420, 425, 450, 410, 470, 505, 510, 520, 465,
+        550, 565, 595, 620, 550, 660, 675, 690, 730, 640, 770, 785, 800, 850, 770, 910, 945, 965, 1005, 900],
       offerOptions: 3,           // options in the after-battle offer
       generalChance: 0.25,       // chance an option is a general (rolled first)
       generalMax: 1,             // at most this many generals in one spoils offer (2026-10-22, user)
@@ -12051,7 +12058,9 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   /** The target of battle k (default: the current one): tun.run.target (past the list, its last
    *  entry) x the difficulty (rounded to 5; 2026-10-28); a boss x tun.bosses.targetMult. */
   function targetFor(run, k) {
-    const T = tunOf(run), list = runTun(T).target || [0], b = k || run.battle;
+    // 2026-10-29 (user): the expanded pool has targets of its own (tun.run.targetExpanded)
+    const T = tunOf(run), R = runTun(T), b = k || run.battle;
+    const list = (run && run.pool === 'expanded' && R.targetExpanded) || R.target || [0];
     const f = difficultyMult(run), b0 = list[Math.min(b, list.length) - 1];
     const base = f === 1 ? b0 : Math.round(b0 * f / 5) * 5;
     return isBoss(run, b) ? Math.round(base * (bossTun(T).targetMult || 1)) : base;
