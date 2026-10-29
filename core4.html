@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="ab97a5ca84";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="f0bf961285";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1663,7 +1663,9 @@ noscript p { position: fixed; inset: 40% 0 auto; text-align: center; font: 700 2
 .scr.rv-lost .band .sc { box-shadow: inset 0 0 0 2px #e0605a, 0 0 30px 8px rgba(224, 87, 74, 0.45); }
 
 /* ---- the screens: layers over the dimmed battle, inside the stage -------------------------- */
-.c2-ov { position: absolute; inset: 0; z-index: 30; display: grid; place-items: center; opacity: 0; transition: opacity 180ms ease; }
+/* 2026-10-28: the row stays the stage's height, so a screen taller than the stage (four spoils) overflows evenly
+   and fitBody's centred scale lands it inside; an auto row grew with it and the scale pushed it down */
+.c2-ov { position: absolute; inset: 0; z-index: 30; display: grid; place-items: center; grid-template-rows: minmax(0, 1fr); opacity: 0; transition: opacity 180ms ease; }
 .c2-ov.is-in { opacity: 1; }
 .c2-ov > .ov-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 70% at 50% 45%, rgba(20, 11, 4, 0.72), rgba(6, 3, 0, 0.9)); backdrop-filter: blur(3px); }
 .c2-ov[data-screen="intro"] > .ov-bg, .c2-ov[data-screen="end"] > .ov-bg, .c2-ov[data-screen="detail"] > .ov-bg { background: rgba(6, 3, 0, 0.62); }
@@ -2540,7 +2542,7 @@ var(--p2-cn) left top / 44px 44px no-repeat;
    core4/css/p60.css - PLAN 60, the expanded library (docs/P60-LIBRARY.md §8): the new card kinds
    (named officers with their crest, the specials in the engineer's timber with a kind ribbon,
    the rarity gem), the board's features, engines and Trebuchet row, the prompt bar of a pending
-   choice, New hand / Survey, the peek strip, the order's Play button and the pre-run screen.
+   choice, New hand / Survey, the peek strip and the pre-run screen (2026-10-28: no orders).
    Loaded after core4.css; nothing here changes a standard card or screen.
    ========================================================================== */
 
@@ -2582,7 +2584,6 @@ var(--p2-cn) left top / 44px 44px no-repeat;
 .c4 > .c4-plate.sp-builder { background: linear-gradient(180deg, #b98a52, #7a522c 60%, #4a2e16); box-shadow: 0 0 0 0.8cqw #2a1606, inset 0 0 0 0.5cqw rgba(231, 191, 92, 0.75), 0 1cqw 2cqw rgba(0, 0, 0, 0.5); }
 .c4 > .c4-plate.sp-obstacle { background: linear-gradient(180deg, #8d8a82, #55524b 60%, #2c2a26); box-shadow: 0 0 0 0.8cqw #17150f, inset 0 0 0 0.5cqw rgba(214, 200, 160, 0.7), 0 1cqw 2cqw rgba(0, 0, 0, 0.5); }
 .c4 > .c4-plate.sp-engine { background: linear-gradient(180deg, #c9a14e, #8a6418 60%, #4e3608); box-shadow: 0 0 0 0.8cqw #2a1a04, inset 0 0 0 0.5cqw rgba(255, 236, 170, 0.75), 0 1cqw 2cqw rgba(0, 0, 0, 0.5); }
-.c4 > .c4-plate.sp-order { background: linear-gradient(180deg, #c94a44, #8e2026 60%, #4a0f12); box-shadow: 0 0 0 0.8cqw #2a0606, inset 0 0 0 0.5cqw rgba(255, 214, 170, 0.7), 0 1cqw 2cqw rgba(0, 0, 0, 0.5); }
 .c4[data-kind="special"] > .c4-val-fort { color: #3a2508; padding: 5.4cqw; }
 .c4row[data-kind="special"] { --tc: #7a522c; }
 .c4row[data-kind="special"][data-type="inf"] { --tc: #8e2b22; }
@@ -2681,17 +2682,6 @@ svg.areas .trow .tl { stroke: #ff9a3c; stroke-width: calc(var(--cell) * 0.024); 
 }
 .pkc:hover { opacity: 0.95; }
 
-/* ---- an order: Play over the raised card; dropped on the field it is played ------------------- */
-.hand .hplay {
-  position: absolute; transform: translateX(-50%); z-index: 9; pointer-events: auto;
-  appearance: none; border: 0; cursor: pointer; min-width: 132px; min-height: 50px; padding: 0 24px; border-radius: 12px;
-  font: 700 21px/1 var(--face-name); font-variant: small-caps; letter-spacing: 0.06em; color: #2a1a06;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.35), transparent 50%), var(--brass-plate);
-  box-shadow: 0 0 0 2px #5e3f0b, 0 4px 0 1px #3a2306, 0 0 22px 6px rgba(255, 214, 110, 0.55), 0 8px 14px rgba(0, 0, 0, 0.5);
-}
-.hand .hplay:active { transform: translateX(-50%) translateY(2px); }
-.hdrag.play { filter: drop-shadow(0 0 18px rgba(255, 214, 110, 0.95)) drop-shadow(0 16px 18px rgba(0, 0, 0, 0.6)); }
-
 /* ---- the detail panel: a tile feature's drawing ---------------------------------------------- */
 .dt-feat { width: 170px; height: 170px; border-radius: 14px; background: radial-gradient(ellipse at 50% 60%, #a3ad62, #5d6a33 70%, #3c4622); box-shadow: 0 0 0 3px #6b4c16, inset 0 0 0 5px rgba(201, 161, 78, 0.6); }
 .dt-feat > svg { display: block; width: 100%; height: 100%; }
@@ -2719,6 +2709,13 @@ svg.areas .trow .tl { stroke: #ff9a3c; stroke-width: calc(var(--cell) * 0.024); 
 .pr-t b { font: 900 24px/1.1 var(--face-title); color: #3a2508; }
 .pr-t i { font: 400 18px/1.25 var(--face-name); font-style: normal; color: var(--ink); }
 .prerun .pr-why { min-height: 2.8em; }
+/* 2026-10-28: Difficulty and Battles, two rows of toggles (the deck view's .ds look) */
+.pr-sets { margin: 18px auto 0; max-width: 470px; }
+.pr-set { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; }
+.pr-l { font: 700 17px/1 var(--face-title); letter-spacing: 0.08em; text-transform: uppercase; color: #7a520f; text-align: left; }
+.pr-seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 340px; }
+.pr-seg .ds { min-width: 96px; min-height: 48px; font-size: 19px; }
+.prerun .pr-dnote { margin-top: 10px; }
 .prerun .acts { margin-top: 16px; }
 .prerun .pr-foot { margin: 18px auto 0; max-width: 520px; font: 400 13px/1.4 var(--face-name); color: var(--ink-dim); }
 .confirm .cf-note { margin-top: 10px; color: var(--ink-dim); }
@@ -2733,6 +2730,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 /* a choice's (or a survey's) tiles: a gold ring that reads on any terrain */
 .tile.legal.ch > .glow { box-shadow: inset 0 0 0 4px #ffd65a, inset 0 0 26px rgba(255, 205, 80, 0.6); background: rgba(255, 214, 90, 0.14); z-index: 2; }
 .tile.legal.ch.hot > .glow { box-shadow: inset 0 0 0 6px #fff3c4, inset 0 0 40px rgba(255, 236, 170, 0.9); background: rgba(255, 240, 190, 0.28); }
+.gens .fdslot.many { gap: 6px; } .gens .fdslot.many .fdg2 { transform: scale(0.82); transform-origin: 50% 0; }
 </style>
 <!-- Cinzel: the titles and numbers (Google Fonts, the one external file) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap">
@@ -7967,7 +7965,9 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // §13 lists every version and the builds that played it.
   // 2026-10-27 (user; PLAN 60): 11, the expanded library behind a pre-run option (a standard run
   // plays as rules 10)
-  C.RULES_VERSION = 11;
+  // 2026-10-28 (user): 12, a difficulty (score targets x1 / x1.15 / x1.3) and a run length (30 / 40
+  // / 50 battles) on the pre-run screen; an Easy 30-battle run plays as rules 11
+  C.RULES_VERSION = 12;
 
   C.TUN_DEFAULT = {
     board: { size: 4, minEach: 3, maxEach: 5, tries: 300 },
@@ -8016,7 +8016,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     // Officer: mult[rank - 1] is the factor he gives the units of his type in his shape and on
     // his own tile (several multiply; never himself). The Colonel general replaces it.
     // PLAN 55: ranks 2-3 give x2.5 (was x2), part of the stronger non-formation side (§10.3).
-    officer: { mult: [2, 2.5, 2.5, 3] },
+    // 2026-10-28 (user: a 5th rank): rank 5 x3.5.
+    officer: { mult: [2, 2.5, 2.5, 3, 3.5] },
     // Kind traits (§2): the power x of Guards / Marksmen / Knights (base step) and the x of the
     // conditional kinds (Pikemen beside Pikemen, Longbowmen untouched, Light Horse on an edge).
     // PLAN 55 (§10.3): every kind but Longbowmen up a step, so units carry more of the score.
@@ -8066,14 +8067,15 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     // steadfast_mult (on fields), sure_footed_mult / inspiring_mult (the home factor they give),
     // fort_trained_mult (the fort factor it gives on every tile; PLAN 54, no longer fort.mult).
     // rally_ranks: the ranks a Rally adds to each touching unit of its type; rally_over: the
-    // powers of ranks 5 and 6, which only a Rally reaches (W1: Core 3's [8, 12] scaled to the
-    // new rank powers). Formation traits (§4.3, pct additions): banner (once per instance),
+    // powers of the two ranks past the top, which only a Rally reaches (W1: Core 3's [8, 12] scaled
+    // to the new rank powers; 2026-10-28: ranks 6 and 7, the top now 5). Formation traits (§4.3,
+    // pct additions): banner (once per instance),
     // disciplined (per Disciplined copy), champion (per unit in the instance, at most
     // champion_units, per Champion copy), standard_bearer (teacher levels per copy), linchpin
     // (its value counts x linchpin in its instances' sums). veteran: extra XP.
     traits: {
       shock_mult: 2, shockTurns: 4, steadfast_mult: 4, sure_footed_mult: 3, inspiring_mult: 2.5, fort_trained_mult: 1.75,
-      rally_ranks: 1, rally_over: [19, 28],
+      rally_ranks: 1, rally_over: [28, 40],
       banner: 0.6, disciplined: 0.5, champion: 0.25, champion_units: 6, linchpin: 4, standard_bearer: 1,
       veteran: 1
     },
@@ -8081,8 +8083,9 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     // PLAN 59 (2026-10-26, user: the clean base): no traits at all; units are a type and a rank.
     // The trait rules stay in rules.js, idle, for a later return; nothing deals one.
     traitPool: [],
-    // 4 ranks per type. power: base by rank. xp: cumulative XP for rank 2 / 3 / 4.
-    ranks: { power: [2, 4, 7, 12], xp: [3, 7, 12] },
+    // 5 ranks per type. power: base by rank. xp: cumulative XP for rank 2 / 3 / 4 / 5.
+    // 2026-10-28 (user: longer runs keep levelling): rank 5, power 19 (the Rally's old rank 5), XP 18.
+    ranks: { power: [2, 4, 7, 12, 19], xp: [3, 7, 12, 18] },
     // Officer shapes (rules.js SHAPE_IDS), measured from the officer's slot, clipped at the edge.
     officerShapes: ['cross', 'corners', 'row', 'column', 'left', 'right', 'above', 'below'],
     // The start deck. PLAN 59 (2026-10-26, user): one fixed 41-card deck, everything in play from
@@ -8108,7 +8111,12 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     },
     run: {
       battles: 30,
-      // One target per battle b1..b30 (past the list, its last entry; a boss x bosses.targetMult).
+      // 2026-10-28 (user): the run lengths the pre-run screen offers (battles 1-30 the same in each)
+      lengths: [30, 40, 50],
+      // 2026-10-28 (user): the difficulty multiplies every battle's target (a boss's too), rounded
+      // to 5; Easy is the targets as set
+      difficulty: { easy: 1, medium: 1.15, hard: 1.3 },
+      // One target per battle b1..b50 (past the list, its last entry; a boss x bosses.targetMult).
       // W3: about the casual policy's 22nd-percentile first-attempt total (a boss: its 30th / 1.05),
       // smoothed and never decreasing over the ordinary battles; b1-b2 lowered for weak deals (§10.1).
       // PLAN 54: b5-b30 re-set the same way after the bigger fort and Combined Arms lifted casual (§10.1).
@@ -8119,8 +8127,14 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       // PLAN 59 (2026-10-26): the clean base re-set the same way (casual's 22nd-percentile first
       // attempt, a boss its 30th / 1.05; 300 runs): the fixed 41-card deck starts strong, and with
       // no traits the late game grows less, so the curve is flatter (§10.17).
+      // 2026-10-28 (user: 40- and 50-battle runs): b31-b50 set the same way (casual's 22nd / a boss
+      // its 30th / 1.05; 300 runs of 50 battles), x0.965 so they join b21-b29 as set (that run
+      // suggested 3.5% above them there); the deck grows little past b30, so the curve flattens.
+      // 2026-10-28 (rank 5): units keep ranking up past b30, so b31-b50 re-set the same way, x0.9 to
+      // join b26-b29 as set (b31-b32 eased in); b1-b30 unchanged.
       target: [100, 100, 105, 110, 95, 115, 125, 130, 145, 125, 165, 180, 185, 195, 175, 215, 230, 240, 260, 225,
-        280, 300, 305, 320, 290, 335, 355, 355, 365, 325],
+        280, 300, 305, 320, 290, 335, 355, 355, 365, 325,
+        385, 405, 425, 445, 410, 470, 495, 510, 525, 495, 530, 535, 540, 560, 515, 560, 565, 565, 565, 505],
       offerOptions: 3,           // options in the after-battle offer
       generalChance: 0.25,       // chance an option is a general (rolled first)
       generalMax: 1,             // at most this many generals in one spoils offer (2026-10-22, user)
@@ -8129,7 +8143,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       leaderChanceExpanded: 0.38, // the same in an expanded run (2026-10-28, user: about half the options plain units)
       leaderKinds: ['officer', 'hero', 'hero', 'engineer'],
       kindChance: 0,             // an offered unit's chance of a random kind (PLAN 59: none, the clean base)
-      offerRankAt: [6, 12, 20],  // offered units are rank 1 + (battles won >= each entry)
+      offerRankAt: [6, 12, 20, 30],  // offered units are rank 1 + (battles won >= each entry); 2026-10-28: rank 5 from b31
       // 2026-10-26 (user): a formation general offered for battles 1-10 joins at level 1, for
       // 11-20 at level 2, for 21-30 at level 3 (the battle he first fights; boosters at level 1)
       teachOfferLevelAt: [11, 21],
@@ -8237,10 +8251,10 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // that a kind trait now owns (Pikeman, Guardsman, Longbowman, Marksman, Knight) were renamed,
   // so one name means one thing.
   C.RANK_NAMES = {
-    // PLAN 59 (2026-10-26, user): with the kinds gone, the ranks take their names
-    inf: ['Spearman', 'Pikeman', 'Halberdier', 'Guardsman'],
-    arc: ['Archer', 'Crossbowman', 'Longbowman', 'Marksman'],
-    cav: ['Rider', 'Light Horse', 'Lancer', 'Knight']
+    // PLAN 59 (2026-10-26, user): with the kinds gone, the ranks take their names; 2026-10-28: rank 5
+    inf: ['Spearman', 'Pikeman', 'Halberdier', 'Guardsman', 'Royal Guard'],
+    arc: ['Archer', 'Crossbowman', 'Longbowman', 'Marksman', 'Sharpshooter'],
+    cav: ['Rider', 'Light Horse', 'Lancer', 'Knight', 'Paladin']
   };
   /** The rank name of a unit card or piece ({type, rank?}; rank missing = 1). */
   C.rankName = (card) => {
@@ -8257,7 +8271,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     { id: 'sure_footed', name: 'Sure-footed', kind: 'home', step: 'mult', short: 'Home everywhere: ×{traits.sure_footed_mult}',
       desc: 'It counts as on its home terrain on every tile: its value is ×{traits.sure_footed_mult}. Home counts once (the larger factor). Copies stack.' },
     { id: 'rally', name: 'Rally', kind: 'aura', step: 'base', short: 'Same-type neighbours: rank +{traits.rally_ranks}',
-      desc: 'Every unit of its own type touching it (above, below, left or right) fights {traits.rally_ranks} ranks higher and uses that rank\'s power. Past rank 4 only a Rally goes on: rank 5 has power {traits.rally_over.0}, rank 6 power {traits.rally_over.1}. Rallies add up, and so do copies.' },
+      desc: 'Every unit of its own type touching it (above, below, left or right) fights {traits.rally_ranks} ranks higher and uses that rank\'s power. Past the top rank ({TOP}) only a Rally goes on: the next rank has power {traits.rally_over.0}, the one after power {traits.rally_over.1}. Rallies add up, and so do copies.' },
     { id: 'inspiring', name: 'Inspiring', kind: 'aura', step: 'mult', short: 'Units beside it: home ×{traits.inspiring_mult}',
       desc: 'The units directly left and right of it count as on their home terrain, whatever their type: their value is ×{traits.inspiring_mult}. Home counts once (the larger factor). Copies stack.' },
     { id: 'fort_trained', name: 'Fort-trained', kind: 'power', step: 'mult', needs: 'engineer', short: 'Fort everywhere: ×{traits.fort_trained_mult}',
@@ -8375,9 +8389,9 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     { id: 'quartermaster', name: 'Quartermaster', rarity: 'uncommon', role: 'boost', effect: { kind: 'loose' }, step: 'mult',
       short: 'Loose units ×{N}', desc: 'Every unit that is in no live formation is ×{N}.' },
     { id: 'old_guard', name: 'Old Guard', rarity: 'uncommon', role: 'boost', effect: { kind: 'ranked' }, step: 'mult',
-      short: 'Ranks 3-4 ×{N}', desc: 'Every unit fighting at rank 3 or higher is ×{N}.' },
+      short: 'Ranks 3-{TOP} ×{N}', desc: 'Every unit fighting at rank 3 or higher is ×{N}.' },
     { id: 'colonel', needs: 'officer', name: 'Colonel', rarity: 'uncommon', role: 'boost', effect: { kind: 'officer' }, step: 'mult',
-      short: 'Officers ×{N}', desc: 'Officers give ×{N} at ranks 1-2 and ×{N1} at ranks 3-4, instead of their own factor.' },
+      short: 'Officers give ×{N}', desc: 'Officers give ×{N} at ranks 1-2 and ×{N1} at ranks 3-{TOP}, instead of their own factor.' },
     { id: 'siege_master', needs: 'engineer', name: 'Siege Master', rarity: 'uncommon', role: 'boost', effect: { kind: 'fort' }, step: 'mult',
       short: 'Forts ×{N}', desc: 'A unit on a fort is ×{N} instead of ×{fort.mult}.' },
     { id: 'pike_master', retired: true, name: 'Pike Master', rarity: 'uncommon', role: 'boost', effect: { kind: 'kinded' }, step: 'mult',
@@ -8574,7 +8588,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       if (h) LIB.register(d.rule, h);
       return d;
     },
-    /** A special (kind 'builder' | 'obstacle' | 'engine' | 'order'): C.SPECIALS; nums into tun.specials[id]. */
+    /** A special (kind 'builder' | 'obstacle' | 'engine'; 2026-10-28: no 'order'): C.SPECIALS; nums into tun.specials[id]. */
     special(def, nums, h) {
       const d = Object.assign({ set: 'expanded' }, def);
       d.rule = d.rule || d.id;
@@ -8786,7 +8800,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   // copy: the framework copies the dealt booster that scores best, at his level
   LIB.general({ id: 'strategist', name: 'Strategist', rarity: 'rare', step: 'copy',
-    short: 'Copies a booster', shortUp: 'Copies, level {L}', desc: 'He copies the rule of another dealt booster general, at his own level: the one that scores best. A general who replaces a number (Steward, Colonel, Siege Master) gives the larger of the two.' },
+    short: 'Copies a booster', shortUp: 'Copies, level {L}', desc: 'He copies the rule of another dealt booster general, at his own level. The copy is not fixed when he is played: as the board changes he switches to whichever booster makes your total highest. A general who replaces a number (Steward, Colonel, Siege Master) gives the larger of the two.' },
   { base: 0, up: 0 }, { copy: 'general' });
 
   // ==== content (the generals agent appends below; keep the order of §4) =====================
@@ -8822,7 +8836,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.general({ id: 'banner_sgt', name: 'Banner Sergeant', rarity: 'common', step: 'mult',
-    short: 'Officers ×{N}', desc: 'Every officer on his post is ×{N} on his own value.' },
+    short: 'Officer pieces ×{N}', desc: 'Every officer on his post is ×{N} on his own value; what he gives the pieces around him is unchanged.' },
   { base: 2.5, up: 0.25 }, {
     mult: (L, me, i) => (isKind(L, i, 'post') ? me.N : 1)
   });
@@ -8921,10 +8935,10 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // ==== exemplars (the framework, W1, 2026-10-27; rules 11) ==================================
 
   // rank: pieces of his type in his area fight N ranks higher (up to the top rank); 2026-10-28
-  // (user): +1 at his ranks 1-2, +2 at ranks 3-4
+  // (user): +1 at his ranks 1-2, +2 at ranks 3-4; +3 at rank 5 (2026-10-28, the 5th rank)
   LIB.officer({ id: 'rallying_officer', name: 'Rallying Officer', type: 'inf', rarity: 'common', area: 'cross',
-    short: 'Cross: Infantry rank +{N}', desc: 'He stands as an Infantry piece. The Infantry pieces in his cross (the 4 tiles touching him) fight at rank +{N}, up to rank 4.' },
-  { base: 1, up: 0, levels: [1, 1, 2, 2] }, {
+    short: 'Cross: Infantry rank +{N}', desc: 'He stands as an Infantry piece. The Infantry pieces in his cross (the 4 tiles touching him) fight at rank +{N}, up to rank {TOP}.' },
+  { base: 1, up: 0, levels: [1, 1, 2, 2, 3] }, {
     rank: (L, me, i) => (inTypedArea(L, me, i) ? me.N : 0)
   });
 
@@ -9305,7 +9319,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   // copy: the framework copies the other hero that scores best
   LIB.hero({ id: 'mirror_knight', name: 'Mirror Knight', type: 'inf', rarity: 'rare', step: 'copy',
-    short: 'Copies another hero', desc: 'An Infantry hero who starts at rank {heroes.rank}. He copies the rule of another hero on the board: the one that scores best.' },
+    short: 'Copies a hero and his type', desc: 'A hero who starts at rank {heroes.rank}, Infantry until he copies. He copies the rule and the type of another hero on the board (an Archers hero copied makes him Archers). The copy is not fixed when he is played: as the board changes he switches to whichever hero makes your total highest.' },
   0, { copy: 'hero' });
 
   // ==== content (the heroes agent appends below; keep the order of §6) =======================
@@ -9480,7 +9494,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.hero({ id: 'mercenary_cpt', name: 'Mercenary Captain', type: 'arc', rarity: 'uncommon', step: 'rank',
-    short: '+1 rank per officer touching', desc: 'An Archers hero who starts at rank {heroes.rank}. He fights one rank higher for every officer touching him, up to rank 4.' },
+    short: '+1 rank per officer touching', desc: 'An Archers hero who starts at rank {heroes.rank}. He fights one rank higher for every officer touching him, up to rank {TOP}.' },
   0, {
     rank: own((L, me) => countIn(touching(L, me.slot), (j) => isOfficer(L, j)))
   });
@@ -9554,12 +9568,12 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 /*
  * core4/js/lib-specials.js - PLAN 60: the special units (docs/P60-LIBRARY.md §7; contract §10).
  * Every entry is one C.LIB.special(def, N, handlers) call: def {id, name, kind: 'builder' |
- * 'obstacle' | 'engine' | 'order', rarity, short, desc, feature? (builders and obstacles: the
+ * 'obstacle' | 'engine', rarity, short, desc, feature? (builders and obstacles: the
  * tile feature they leave), featureName?, onFort? (a builder that builds on a fort tile), type?
  * and rank? (a typed engine)} joins C.SPECIALS (set 'expanded'); N (a number, or {N, M, ...}) is
  * tun.specials[id] (me.N; me.num(key)); the handlers C.LIB.rules[id]. A builder's / obstacle's
- * rule acts through its feature (a 'feature' source on that tile), an engine's through its piece,
- * an order's when played (place / ask). Texts fill by specialShort / specialDesc ({N}, {M}, ...).
+ * rule acts through its feature (a 'feature' source on that tile), an engine's through its piece
+ * and when placed (place / ask; 2026-10-28, user: no orders, every special takes a tile). Texts fill by specialShort / specialDesc ({N}, {M}, ...).
  */
 (function () {
   const C = globalThis.TTFCore4;
@@ -9623,29 +9637,31 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     mult: (L, me, i) => (L.grown(i) ? me.N : 1)
   });
 
-  // place (an order): the next draw has more cards
-  LIB.special({ id: 'spy', name: 'Spy', kind: 'order', rarity: 'common',
-    short: 'Next hand +{N}', desc: 'Play it from your hand (it takes a turn): your next hand has {N} more cards (6 at most).' },
+  // place: the next draw has more cards; 2026-10-28 (user): an engine now (it takes a tile); N stays
+  // (a 3-card hand +3 is already the 6-card cap)
+  LIB.special({ id: 'spy', name: 'Spy', kind: 'engine', rarity: 'common',
+    short: 'Next hand +{N}', desc: 'An engine: it takes a tile and is never a unit. When you play it, your next hand has {N} more cards (6 at most).' },
   3, {
     place: (S, me) => ({ handPlus: me.N })
   });
 
-  // place (an order): extra plays next turn; 2026-10-28: the second play's tile takes his mark
-  // (st.marks): the piece there is ×N
-  LIB.special({ id: 'messenger', name: 'Messenger', kind: 'order', rarity: 'common',
-    short: 'Two plays next turn, ×{N}', desc: 'Play it from your hand (it takes a turn): next turn you play two cards from the same hand, and the piece of your second play is ×{N}.' },
+  // place: extra plays next turn; 2026-10-28: the second play's tile takes his mark
+  // (st.marks): the piece there is ×N. 2026-10-28 (user): an engine now (it takes a tile); N stays
+  LIB.special({ id: 'messenger', name: 'Messenger', kind: 'engine', rarity: 'common',
+    short: 'Two plays next turn, ×{N}', desc: 'An engine: it takes a tile and is never a unit. When you play it, next turn you play two cards from the same hand, and the piece of your second play is ×{N}.' },
   2, {
     place: () => ({ extraPlays: 1, markExtra: 'messenger' }),
     mult: (L, me, i) => (i === me.slot ? me.N : 1)
   });
 
-  // place (an order): the boss twist is cleared (st.unblocked); 2026-10-28: and a battle mark
-  // (st.marks[-1]): every piece +N power this battle
-  LIB.special({ id: 'battering_ram', name: 'Battering Ram', kind: 'order', rarity: 'uncommon',
-    short: 'Clears the twist, +{N}', desc: 'Play it from your hand (it takes a turn): the boss twist is cleared for this battle. Blocked tiles open, homes and terrain come back, a forced march gets its turn back and short supply a full hand. Every piece has +{N} power this battle, before any multiplier.' },
-  1.5, {
-    place: () => ({ unblocked: true, marks: [{ slot: -1, id: 'battering_ram' }] }),
-    flat: (L, me, i) => (me.slot === -1 && L.isScored(i) ? me.N : 0)
+  // place: the boss twist is cleared (st.unblocked); 2026-10-28: and every piece +N power this battle.
+  // 2026-10-28 (user): an engine now (it takes a tile), its +N from its own slot to every other
+  // piece (no battle mark); it costs a tile as well as a turn, so N 1.5 -> 2 (judgement, no sim)
+  LIB.special({ id: 'battering_ram', name: 'Battering Ram', kind: 'engine', rarity: 'uncommon',
+    short: 'Clears the twist, +{N}', desc: 'An engine: it takes a tile and is never a unit. When you play it, the boss twist is cleared for this battle: blocked tiles open, homes and terrain come back, a forced march gets its turn back and short supply a full hand. Every other piece has +{N} power, before any multiplier.' },
+  2, {
+    place: () => ({ unblocked: true }),
+    flat: (L, me, i) => (i !== me.slot && L.isScored(i) ? me.N : 0)
   });
 
   // engine + ask (a row choice) + mult reading the piece's choice (piece.extra.row)
@@ -9659,18 +9675,21 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     }
   });
 
-  // ask (an order): a terrain choice; 2026-10-28: the changed tile takes his mark: its piece ×N (3 -> 2.5, outlier trim)
-  LIB.special({ id: 'earthworks', name: 'Earthworks', kind: 'order', rarity: 'rare',
-    short: 'Change a terrain, ×{N}', desc: 'Play it from your hand (it takes a turn): change one tile to the terrain you pick. A piece on that tile is ×{N} this battle.' },
-  2.5, {
-    ask: (S) => ({ kind: 'terrain', tiles: Array.from({ length: S.S }, (_, i) => i).filter((i) => !S.blocked(i)), terrains: C.TERRAINS.slice(), mark: 'earthworks' }),
+  // ask: a terrain choice; 2026-10-28: the changed tile takes his mark: its piece ×N (3 -> 2.5, outlier trim).
+  // 2026-10-28 (user): an engine now (it takes a tile), the tile one touching it (none open: he just
+  // stands there); a tile and a narrower pick, so N 2.5 -> 3 (judgement, no sim)
+  LIB.special({ id: 'earthworks', name: 'Earthworks', kind: 'engine', rarity: 'rare',
+    short: 'Change a touching tile, ×{N}', desc: 'An engine: it takes a tile and is never a unit. When you play it, pick a tile touching it and a terrain: that tile becomes that terrain, and a piece on it is ×{N} this battle.' },
+  3, {
+    ask: (S, me) => ({ kind: 'terrain', tiles: G.cross(me.slot).filter((i) => !S.blocked(i)), terrains: C.TERRAINS.slice(), mark: 'earthworks' }),
     mult: (L, me, i) => (i === me.slot ? me.N : 1)
   });
 
-  // place (an order) building forts; 2026-10-28 outlier trim: N is how many (the first empty corners
-  // without one, in tile order), and his forts are plain forts (the extra × went)
-  LIB.special({ id: 'royal_architect', name: 'Royal Architect', kind: 'order', rarity: 'rare',
-    short: 'Forts on {N} corners', desc: 'Play it from your hand (it takes a turn): a fort is built on the first {N} empty corner tiles that have none (top left, top right, bottom left, bottom right).' },
+  // place: building forts; 2026-10-28 outlier trim: N is how many (the first empty corners
+  // without one, in tile order), and his forts are plain forts (the extra × went).
+  // 2026-10-28 (user): an engine now (it takes a tile; on a corner, that corner is not empty); N stays
+  LIB.special({ id: 'royal_architect', name: 'Royal Architect', kind: 'engine', rarity: 'rare',
+    short: 'Forts on {N} corners', desc: 'An engine: it takes a tile and is never a unit. When you play it, a fort is built on the first {N} empty corner tiles that have none (top left, top right, bottom left, bottom right).' },
   2, {
     place: (S, me) => ({ forts: G.CORNERS.filter((s) => S.isEmpty(s) && !S.fort(s)).slice(0, Math.max(0, Math.round(me.N))) })
   });
@@ -9805,7 +9824,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
  *           arrivalSwap cardName cardOrder sortCards kindOf traitsOf traitCounts hasTrait
  *           heroAbility heroTypeOf heroRank officerOf officerArea officerMult homeTerrains xpOf
  *           migrateCard migrateState mergeTun (tunables.js) rankPower maxRank pieceFor
- * Library:  (PLAN 60, docs/P60-LIBRARY.md §10) playOrder isOrderCard choices choose skipChoice
+ * Library:  (PLAN 60, docs/P60-LIBRARY.md §10) choices choose skipChoice
  *           bestChoice canRedraw redraw canSurvey survey peekOf peekOn spoilsOf libArea gensOf
  *           redrawsLeft surveysLeft peekCount peekHands
  *           liveOf twistFreeOf; library.js: C.LIB (register, geo, general/officer/hero/special),
@@ -9815,6 +9834,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
  * nearFormations, formationsOf, combosOf, formationLadder, formationMult, levelStep,
  * formationStatus, heroStatus, heroRing, heroFormation, abilityArea, heroArea, musterOf,
  * rationsSlots, rationsUids, hasAbility, valueMap, siegeFortMult, ordersTunOf.
+ * Gone 2026-10-28 (user: no order cards, every special takes a tile): playOrder, isOrderCard.
  * ==============================================================================================
  *
  * Cards:  {uid, kind:'unit', type, rank, xp, traits: [traitId, ...]}   (a kind trait at most once)
@@ -9822,7 +9842,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
  *       | {uid, kind:'hero', id, ability: {kind: id}, type, rank, xp}   (start at rank 2; earn XP)
  *       | {uid, kind:'engineer'}
  *       | {uid, kind:'officer', id, type, rank, xp}  (PLAN 60: a named officer, C.OFFICERS)
- *       | {uid, kind:'special', id}                  (PLAN 60: builder / obstacle / engine / order, C.SPECIALS)
+ *       | {uid, kind:'special', id}                  (PLAN 60: builder / obstacle / engine, C.SPECIALS)
  * Pieces: state.pieces[slot] =
  *         {uid, kind:'unit', type, rank, traits?, placed, officer?}
  *       | {uid, kind:'post', officer}         (an officer alone: a unit of his type)
@@ -9832,8 +9852,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
  *   placed = the 0-based turn the card was played.
  * PLAN 60 state (all optional): features {slot: kind}, pool, reserve [{id, level}], choice,
  *   handPlus, extraPlays, extraNext, redrawn, surveyed, peek, unblocked (docs/P60-LIBRARY.md §1.2);
- *   2026-10-28: marks {slot: [special id]} (an order's lasting part on a tile, -1 the whole
- *   battle: a 'special' source of that order's rule there), markNext / markPlay [special id] (the
+ *   2026-10-28: marks {slot: [special id]} (a special's lasting part on a tile, -1 the whole
+ *   battle: a 'special' source of that special's rule there), markNext / markPlay [special id] (the
  *   Messenger's mark for the last play of his double turn); redrawn / surveyed are counts.
  * Forts:  state.forts = [slot] (sorted). A tile feature, never a unit or a formation member.
  * Run context (all optional): generals [{id, level, wins?}]; boss {id, slot? | type? | row?};
@@ -9951,10 +9971,10 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   /** A unit's base power from its rank: tun.ranks.power[rank - 1] (clamped to the list). */
   function rankPower(T, rank) {
-    const p = (T.ranks && T.ranks.power) || [2, 4, 7, 12];
+    const p = (T.ranks && T.ranks.power) || [2, 4, 7, 12, 19];
     return p[Math.min(Math.max(rank || 1, 1), p.length) - 1];
   }
-  const maxRank = (T) => ((T.ranks && T.ranks.power) || [2, 4, 7, 12]).length;
+  const maxRank = (T) => ((T.ranks && T.ranks.power) || [2, 4, 7, 12, 19]).length;
   /** The factor an officer of `rank` gives (tun.officer.mult[rank - 1], clamped), without a Colonel. */
   function officerMult(T, rank) {
     const m = T.officer && Array.isArray(T.officer.mult) && T.officer.mult.length ? T.officer.mult : [2, 2, 2, 3];
@@ -10152,10 +10172,11 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   function liveFormations(st) {
     const T = tunOf(st), gens = gensOf(st);
     const dm = gens.drillmaster ? generalValue(T, 'drillmaster', gens.drillmaster.level) : 0;
-    return liveOf(st).map((l) => ({
+    // 2026-10-28: a reserve formation (Twin Command) also carries its via and scale, for the board
+    return liveOf(st).map((l) => Object.assign({
       id: l.id, name: formDef(l.id).name, general: l.general, level: l.level,
       pct: formPct(T, l.id) + generalValue(T, l.general, l.level) + dm
-    }));
+    }, l.via ? { via: l.via, scale: l.scale } : {}));
   }
 
   // ---- traits on cards and pieces -----------------------------------------------------
@@ -10466,7 +10487,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     }
     const feats = X.features || null;
     if (feats) for (let i = 0; i < S; i++) { const d = feats[i] && C.LIB.featureDef(feats[i]); if (d && C.LIB.ruleOf(d)) srcs.push(srcFor('feature', d, i, 1, T)); }
-    // 2026-10-28: an order's marks (st.marks): a 'special' source of its rule on that tile (-1: the battle)
+    // 2026-10-28: a special's marks (st.marks): a 'special' source of its rule on that tile (-1: the battle)
     const marks = (X.st && X.st.marks) || null;
     if (marks) for (const k of Object.keys(marks)) for (const id of [].concat(marks[k] || [])) {
       const d = C.specialDef(id);
@@ -10708,7 +10729,9 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
         const o = officerOf(p.officer);
         if (o && TI[o.type] !== undefined) { ty[i] = TI[o.type]; tc[i] = {}; pkind[i] = 'post'; }
       } else if (isHero(p)) {
-        const t = heroTypeOf(p);
+        // 2026-10-28 (user): a copying hero (Mirror Knight) takes the type of the hero he copies
+        const cp = X.copyAs && X.copyAs['hero@' + i], cd = cp ? heroDef(cp) : null;
+        const t = (cd && TI[cd.type] !== undefined ? cd.type : null) || heroTypeOf(p);
         if (t) { ty[i] = TI[t]; tc[i] = {}; hero[i] = (X.heroAs && X.heroAs[i]) || (heroAbility(p) || {}).kind || null; pkind[i] = 'hero'; }
       } else if (p.kind === 'engine') {
         // PLAN 60: a typed engine (Siege Tower) scores and forms as a unit of its type; the rest only take a tile
@@ -11149,8 +11172,6 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   }
   /** PLAN 60: the special def of a card, or null. */
   const specOf = (card) => (card && card.kind === 'special' && C.specialDef ? C.specialDef(card.id) : null);
-  /** Is `card` an order (played with playOrder, on no tile)? */
-  const isOrderCard = (card) => (specOf(card) || {}).kind === 'order';
   const isObstacleAt = (st, i) => !!(st.features && st.features[i] && C.LIB && C.LIB.isObstacle(st.features[i]));
 
   /**
@@ -11160,12 +11181,11 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
    * score as before: newPiece and the scoring keep the commanding officer.) PLAN 60 (§3.1): an
    * empty tile has no piece and no obstacle; a builder takes an empty tile without a feature (the
    * Mason a fort tile without a feature, occupied or not), an obstacle an empty tile without a
-   * fort or feature; an order takes none (C.playOrder).
+   * fort or feature; an engine any empty tile (2026-10-28: every special takes a tile).
    */
   function legalSlots(st, card) {
     if (!st || st.phase !== 'draft' || !card) return [];
     const d = specOf(card);
-    if (d && d.kind === 'order') return [];
     const forts = st.forts || [], blocked = blockedOf(st), fs = st.features || null, out = [];
     for (let i = 0; i < S; i++) {
       if (blocked.indexOf(i) >= 0) continue;
@@ -11204,7 +11224,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // ---- decks and arrivals -------------------------------------------------------------
   /** The XP a card starts with at `rank`: that rank's threshold (tun.ranks.xp; 0 for rank 1). */
   function xpAtRank(T, rank) {
-    const th = (T && T.ranks && T.ranks.xp) || [3, 7, 12];
+    const th = (T && T.ranks && T.ranks.xp) || [3, 7, 12, 18];
     return rank > 1 ? (th[rank - 2] || 0) : 0;
   }
   /**
@@ -11360,8 +11380,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
    * of the deck in their offered order. An engineer builds a fort on `slot` and is spent for this
    * battle. Under 'fog' the slot is revealed. After turnsOf(st) plays the phase is 'done' and the
    * spent cards return to the deck. Throws on anything illegal; never mutates `st`.
-   * PLAN 60: a builder / obstacle puts its feature on `slot` and is spent; an engine is a piece;
-   * an order is played by playOrder (slot ignored). The card's `place` rule then changes the
+   * PLAN 60: a builder / obstacle puts its feature on `slot` and is spent; an engine is a piece
+   * (2026-10-28: no orders, every card takes a tile). The card's `place` rule then changes the
    * state, its `ask` rule may open a choice (phase 'choose', §3.3); else the turn ends (endPlay).
    */
   function place(st, pick, slot) {
@@ -11369,7 +11389,6 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     const pk = resolvePick(st, pick);
     if (!pk) throw new Error('no playable card ' + JSON.stringify(pick));
     const card = pk.card;
-    if (isOrderCard(card)) return playOrder(st, pick);
     if (legalSlots(st, card).indexOf(slot) < 0) throw new Error('illegal slot ' + slot + ' for ' + card.kind);
     const pieces = Object.assign({}, st.pieces), forts = (st.forts || []).slice(), spent = (st.spent || []).slice();
     const d = specOf(card);
@@ -11393,14 +11412,6 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     }
     return afterPlay(Object.assign({}, st, mid), card, slot);
   }
-  /** PLAN 60: play order card `pick` (C.SPECIALS kind 'order'): it is spent, its rule acts, a turn passes. */
-  function playOrder(st, pick) {
-    if (!st || st.phase !== 'draft') throw new Error('not in draft');
-    const pk = resolvePick(st, pick);
-    if (!pk || !isOrderCard(pk.card)) throw new Error('no order card ' + JSON.stringify(pick));
-    const nx = Object.assign({}, st, { spent: (st.spent || []).concat([pk.card]), offer: st.offer.filter((c, k) => k !== pk.index), prev: st, back: false });
-    return afterPlay(nx, pk.card, -1);
-  }
   /** The lib def and source kind of a played card ([def, kind]) or null. */
   function cardSource(card) {
     if (!card || !C.LIB) return null;
@@ -11419,7 +11430,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     if (x.unblocked) out.unblocked = true;
     if (x.peek) out.peek = true;
     if (x.features && typeof x.features === 'object') out.features = Object.assign({}, st.features || {}, x.features);
-    // 2026-10-28: marks [{slot, id}] (an order's lasting part); markExtra: an id for the last play
+    // 2026-10-28: marks [{slot, id}] (a special's lasting part); markExtra: an id for the last play
     // of the coming double turn (the Messenger)
     if (Array.isArray(x.marks) && x.marks.length) out.marks = addMarks(st.marks, x.marks);
     if (x.markExtra) out.markNext = (st.markNext || []).concat([x.markExtra]);
@@ -11808,7 +11819,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   const fmtNum = (v) => String(Number((+v).toFixed(2)));
   /**
    * Fill a caption / desc template (generals.js): {a.b.c} a number of the tunables T,
-   * {pct:a.b.c} that number as a percent, {key} a value of `vars` (checked first).
+   * {pct:a.b.c} that number as a percent, {key} a value of `vars` (checked first), {TOP} the top
+   * rank (maxRank; 2026-10-28).
    */
   function fillDesc(tpl, T0, vars) {
     const T = T0 || C.TUN_DEFAULT, V = vars || {};
@@ -11816,6 +11828,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     return String(tpl).replace(/\{(pct:|mul:)?([A-Za-z0-9_.]+)\}/g, (m, pc, path) => {
       let v;
       if (!pc && Object.prototype.hasOwnProperty.call(V, path)) v = V[path];
+      else if (!pc && path === 'TOP') v = maxRank(T);
       else { v = T; for (const k of path.split('.')) v = v == null ? v : v[k]; }
       if (typeof v !== 'number') return typeof v === 'string' ? v : m;
       return fmtNum(pc === 'pct:' ? v * 100 : pc === 'mul:' ? 1 + v : v);
@@ -11853,7 +11866,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     generalDef, generalValue, inZone, largestGroups, completesAt, liveFormations, candidates, placements, xpAtRank, fillDesc, generalShort, generalDesc,
     cardName, cardOrder, sortCards, drawPileList, orthOf: (i) => ORTH[i].slice(), isEdge, homeMult, fortMult,
     // PLAN 60 (docs/P60-LIBRARY.md §10)
-    playOrder, isOrderCard, choices, choose, skipChoice, bestChoice, canRedraw, redraw, canSurvey, survey, peekOf, peekOn,
+    choices, choose, skipChoice, bestChoice, canRedraw, redraw, canSurvey, survey, peekOf, peekOn,
     redrawsLeft, surveysLeft, peekCount, peekHands,
     spoilsOf, libArea, twistFreeOf, gensOf, liveOf
   });
@@ -11878,7 +11891,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
  * Intros:    generalsIntroPending(run) / ackGeneralsIntro(run)  ("Your generals", battle 1)
  *            freshOrdersPending(run) / ackFreshOrders(run)  ("Fresh orders", once per battle and attempt)
  *            arrivalPending(run) / ackArrival(run)               (b2 officers, b3 heroes, b4 engineers)
- * Views:     targetFor isBoss bossFor battleSeed attemptsOf placedUnitUids removableOf
+ * Views:     targetFor difficultyOf difficultyMult isBoss bossFor battleSeed attemptsOf placedUnitUids removableOf
  *            upgradeEligible deckList summary laurels migrate upgradeDue offerRank
  * Gone since Core 3: stars, orders (orderFor, extraOffer), Drills (pickDrill, drillOptions,
  * formationLevels, the 'drill' phase), heroAllowed / generalAllowed.
@@ -11901,6 +11914,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
  *    freshAck?: {battle, attempt}     (the "Fresh orders" shown for that attempt, PLAN 55 V)
  *    log: [{battle, kind, ...}], tun?,
  *    pool: 'standard' | 'expanded'   (PLAN 60: the card pool; missing = standard, which plays as rules 10)
+ *    difficulty: 'easy' | 'medium' | 'hard'   (2026-10-28: every target x tun.run.difficulty; missing = easy)
  *    offerPlus?: n                   (PLAN 60: extra spoils options from the last won battle, Herald of Victory)}
  * Boss twists are not stored: bossFor derives them from the run seed. So is the deal: dealtFor
  * reads seedFrom(run seed, 'deal', battle) over the pool, so the first try and the first 2
@@ -11933,10 +11947,19 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     const every = bossTun(tunOf(run)).every || 0, b = k || run.battle;
     return every > 0 && b % every === 0;
   }
-  /** The target of battle k (default: the current one): tun.run.target (past the list, its last entry); a boss x tun.bosses.targetMult. */
+  /** 2026-10-28 (user): the run's difficulty ('easy' | 'medium' | 'hard'; missing or unknown = easy). */
+  const difficultyOf = (run) => (run && (run.difficulty === 'medium' || run.difficulty === 'hard') ? run.difficulty : 'easy');
+  /** The factor of the run's difficulty on every target (tun.run.difficulty; Easy x1). */
+  function difficultyMult(run) {
+    const f = (runTun(tunOf(run)).difficulty || {})[difficultyOf(run)];
+    return typeof f === 'number' && f > 0 ? f : 1;
+  }
+  /** The target of battle k (default: the current one): tun.run.target (past the list, its last
+   *  entry) x the difficulty (rounded to 5; 2026-10-28); a boss x tun.bosses.targetMult. */
   function targetFor(run, k) {
     const T = tunOf(run), list = runTun(T).target || [0], b = k || run.battle;
-    const base = list[Math.min(b, list.length) - 1];
+    const f = difficultyMult(run), b0 = list[Math.min(b, list.length) - 1];
+    const base = f === 1 ? b0 : Math.round(b0 * f / 5) * 5;
     return isBoss(run, b) ? Math.round(base * (bossTun(T).targetMult || 1)) : base;
   }
   /** The boss twist of battle k (null when it is not a boss battle), drawn by the run seed. */
@@ -12085,6 +12108,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     if (out.offer && Array.isArray(out.offer.options)) out.offer.options = out.offer.options.map(C.migrateCard);
     if (!Array.isArray(out.generals) || !out.generals.length) out.generals = startPool(out.seed, tunOf(out), out.pool);
     out.pool = out.pool === 'expanded' ? 'expanded' : 'standard';
+    out.difficulty = difficultyOf(out);
+    if (!(out.battles > 0)) out.battles = runTun(tunOf(out)).battles || 30;
     out.generals = out.generals.map((g) => ({ id: g.id, level: Math.max(1, g.level || 1), wins: g.wins > 0 ? g.wins : 0 }));
     delete out.formationLevels;
     delete out.drill;
@@ -12093,18 +12118,22 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     return out;
   }
 
-  /** startRun({seed?, tun?, pool?}) -> run in phase 'battle', battle 1, with the start deck and the
-   *  start pool. PLAN 60: pool 'expanded' deals and offers both sets (the start deck is the same). */
+  /** startRun({seed?, tun?, pool?, difficulty?, battles?}) -> run in phase 'battle', battle 1, with the
+   *  start deck and the start pool. PLAN 60: pool 'expanded' deals and offers both sets (the start
+   *  deck is the same). 2026-10-28: difficulty 'easy' (default) | 'medium' | 'hard'; battles one of
+   *  tun.run.lengths (else tun.run.battles). */
   function startRun(opts) {
     const o = opts || {};
     const seed = o.seed === undefined || o.seed === null || o.seed === '' ? (Math.random() * 4294967296) >>> 0 : o.seed;
     const T = o.tun || C.TUN_DEFAULT;
     const pool = o.pool === 'expanded' ? 'expanded' : 'standard';
     const deck = C.startDeck(seed, T);
+    const battles = (runTun(T).lengths || []).indexOf(o.battles) >= 0 ? o.battles : runTun(T).battles || 30;
     const run = {
-      v: 1, seed, battles: runTun(T).battles || 30, battle: 1, phase: 'battle',
+      v: 1, seed, battles, battle: 1, phase: 'battle',
       deck, nextUid: deck.length, generals: startPool(seed, T, pool), results: [], attempts: {}, promotions: [],
-      promote: null, offer: null, upgrade: null, arrival: null, generalsIntro: { battle: 1, shown: false }, log: [], pool
+      promote: null, offer: null, upgrade: null, arrival: null, generalsIntro: { battle: 1, shown: false }, log: [], pool,
+      difficulty: difficultyOf(o)
     };
     if (o.tun) run.tun = o.tun;
     return arrive(clone(run));
@@ -12255,7 +12284,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
         if (nf !== undefined) { const sp = (b.spent || [])[(b.spent || []).length - 1]; h.took = sp ? sp.uid : 'e'; h.at = nf; }
       }
       if (h.at === undefined) {
-        // PLAN 60: a builder / obstacle (its feature's tile) or an order (no tile)
+        // PLAN 60: a builder / obstacle (its feature's tile) or an order (no tile; none since 2026-10-28, older saves)
         const fa = a.features || {}, fb = b.features || {}, sb = b.spent || [];
         const nf = Object.keys(fb).find((k) => fa[k] !== fb[k]);
         if (nf !== undefined || sb.length > (a.spent || []).length) { const sp = sb[sb.length - 1]; if (sp) h.took = sp.uid; if (nf !== undefined) h.at = +nf; }
@@ -12658,9 +12687,9 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   /** Deck summary for the UI: counts per kind, units per type and rank, the units with traits, hero ids, the pool. */
   function summary(run) {
-    const u = units(run), byType = { inf: 0, arc: 0, cav: 0 }, byRank = [0, 0, 0, 0], kinds = {};
+    const u = units(run), byType = { inf: 0, arc: 0, cav: 0 }, byRank = new Array(C.maxRank(tunOf(run))).fill(0), kinds = {};
     for (const c of run.deck) kinds[c.kind] = (kinds[c.kind] || 0) + 1;
-    for (const c of u) { byType[c.type]++; byRank[Math.min(4, c.rank || 1) - 1]++; }
+    for (const c of u) { byType[c.type]++; byRank[Math.min(byRank.length, c.rank || 1) - 1]++; }
     return {
       size: run.deck.length, kinds, units: byType, ranks: byRank,
       traits: u.filter((c) => C.traitsOf(c).length).map((c) => ({ uid: c.uid, type: c.type, traits: C.traitsOf(c) })),
@@ -12693,7 +12722,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   }
 
   C.Run = {
-    battleSeed, targetFor, startRun, battleFor, endBattle, finishBattle: endBattle,
+    battleSeed, targetFor, difficultyOf, difficultyMult, startRun, battleFor, endBattle, finishBattle: endBattle,
     pickPromote, refusePromote, pickOffer, pickGeneralOffer, refuseOffer, pickUpgrade, refuseUpgrade,
     upgradeEligible, removableOf, generalReplaceOf, arrivalPending, ackArrival, generalsIntroPending, ackGeneralsIntro, freshOrdersPending, ackFreshOrders,
     retryBattle, attemptsOf, upgradeDue, upgradeStep, offerLevel, summary, deckList, placedUnitUids, rankForXp, xpForRank, offerRank,
@@ -12994,6 +13023,25 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     arc: ['troop_hunters', 'troop_crossbows', 'merc_hill_crossbows', 'merc_hill_crossbows'],
     cav: ['merc_border_reivers', 'troop_lancers', 'merc_free_lances', 'reward_cavalry_champion']
   };
+  // 2026-10-28 (user: a 5th rank needs its own art): rank 5 is Core 4's own recipes ('c4u_<type>5',
+  // registered below), the elite step above rank 4: finer plate, a tabard, a gold plume and a
+  // crimson cape trimmed in gold on every one of them (one uniform), Cavalry on a white barded
+  // destrier. Still a crowd on the plain unit base, no crown and no pennant, so never a hero.
+  const RANK5 = {
+    inf: { name: 'Royal Guard', cls: 'infantry', power: 6, music: 'horn', crest: 'crown',
+      fig: { folk: 'human', armour: 'plate', tabard: 1, helmet: 'great', plume: '#e7bf5c', weapon: 'poleaxe', shield: null, cloak: '#6e1c22', cloakTrim: '#e7bf5c' } },
+    arc: { name: 'Sharpshooter', cls: 'archer', power: 6, crest: 'star',
+      fig: { folk: 'human', armour: 'mail', tabard: 1, helmet: 'sallet', plume: '#e7bf5c', weapon: ['bow_draw', 'longbow', 'bow_draw'], pack: 'quiver', shield: null, cloak: '#6e1c22', cloakTrim: '#e7bf5c' } },
+    cav: { name: 'Paladin', cls: 'cavalry', power: 6, mount: 'destrier', coat: '#e6e1d6', music: 'horn', crest: 'cross',
+      fig: { folk: 'human', armour: 'plate', tabard: 1, helmet: 'great', plume: '#e7bf5c', weapon: 'lance', shield: 'heater', device: 'cross', cloak: '#6e1c22', cloakTrim: '#e7bf5c' } }
+  };
+  (function registerRank5() {
+    const R = TTF.Figures && TTF.Figures.recipes;
+    for (const t of Object.keys(RANK5)) {
+      if (R) R['c4u_' + t + '5'] = RANK5[t];
+      UNIT_REC[t].push(R ? 'c4u_' + t + '5' : UNIT_REC[t][3]);
+    }
+  })();
   // the six kinds' own miniatures (the mock's figure mapping, core4-mock/mock.js)
   const KIND_REC = {
     pikemen: 'merc_pike_company', guards: 'reward_infantry_royal',
@@ -13020,7 +13068,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   const ENGINEER_REC = 'troop_sapper';
   const hasRec = (id) => !!(id && TTF.Figures && TTF.Figures.recipes && TTF.Figures.recipes[id]);
   /** The recipe of a unit of `type` at `rank`. */
-  A.unitFigure = (type, rank, kind) => (kind && KIND_REC[kind]) || (UNIT_REC[type] || UNIT_REC.inf)[Math.min(Math.max(rank || 1, 1), 4) - 1];
+  A.unitFigure = (type, rank, kind) => { const L = UNIT_REC[type] || UNIT_REC.inf; return (kind && KIND_REC[kind]) || L[Math.min(Math.max(rank || 1, 1), L.length) - 1]; };
   /** The recipe of a kind's miniature (null for an unknown kind). */
   A.kindFigure = (kind) => KIND_REC[kind] || null;
   const kindOfP = (p) => { try { return C && typeof C.kindOf === 'function' ? C.kindOf(p) : null; } catch (e) { return null; } };
@@ -13100,7 +13148,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     return UNIT_REC[t] ? t : HERO_TYPE[p.id] || 'inf';
   };
   /** A hero's rank (PLAN 50: every hero is rank 2; the engine's piece may say otherwise). */
-  A.heroRank = (p) => Math.min(Math.max((p && p.rank) || 2, 1), 4);
+  A.heroRank = (p) => Math.min(Math.max((p && p.rank) || 2, 1), UNIT_REC.inf.length);
   /** A card / piece read as a unit (PLAN 50: a hero is a unit of his type at his rank, no
    *  traits): a unit as it is, a hero as {kind:'unit', type, rank, traits: []}, else null. */
   A.asUnit = (p) => !p ? null : p.kind === 'unit' ? p : A.isHero(p) ? { kind: 'unit', type: A.heroType(p), rank: A.heroRank(p), traits: [] } : null;
@@ -13490,7 +13538,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     // PLAN 50 (H1): a hero stands as a unit of his type at his rank (2); an officer may command
     // him like any unit
     const hero = kind === 'hero', type = hero ? A.heroType(p) : p.type;
-    const rank = hero ? A.heroRank(p) : Math.min(Math.max(p.rank || 1, 1), 4);
+    const rank = hero ? A.heroRank(p) : Math.min(Math.max(p.rank || 1, 1), UNIT_REC.inf.length);
     const o = { kind, rank, cx: BCX, cy: BCY, rx: 30, ry: bry(30), back: '', figs: '', marks: '', bodies: [] };
     if (kind === 'unit' || hero) {
       const u = unitFigures(A.figureId(p), rank, seed, type);
@@ -13543,13 +13591,21 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     } else if (kind === 'engine') {
       // PLAN 60: an engine stands as its own drawing (TTF4.ArtLib.engineSvg) on a round base
       // ringed in timber (a typed engine, the Siege Tower, in its type's colour); a plain token
-      // when the drawing is missing
+      // when the drawing is missing. 2026-10-28 (no orders): a person-special engine (Spy,
+      // Messenger, Earthworks, Royal Architect) stands as his card's figure (c4s_<id>) on that base;
+      // the Battering Ram's kit ram floats off it, so it keeps its token
       const rx = 40, ry = bry(rx);
       o.rx = rx; o.ry = ry;
       o.back = baseSvg(rx, TRIM[p.type] || '#8b6238', seed, null, null, true);
       const art = A.engineSvg(p.id, { w: 120, h: 120 });
-      o.figs = art ? nest(art, BCX - 60, BCY - 112, 120, 120) : engineToken(p.id, BCX, BCY - 34);
+      const rec = !art && hasRec('c4s_' + p.id) && !(TTF.Figures.recipes['c4s_' + p.id] || {}).engine ? 'c4s_' + p.id : null;
       o.bodies = [{ x: BCX, y: BCY, w: 90, h: 100 }];
+      if (rec) {
+        const op = soloFigures(rec, seed, 'post', BCX, BCY + 1, 1.15);
+        o.back += op.shadow;
+        o.figs = op.figures;
+        o.bodies = op.geo.bodies.slice();
+      } else o.figs = art ? nest(art, BCX - 60, BCY - 112, 120, 120) : engineToken(p.id, BCX, BCY - 34);
       if (p.type) o.marks += '<span class="m2-rk" style="left:' + px(BCX - rx - 15 * 0.45) + ';top:' + py(BCY + 1) + ';width:' + px(15) + '">' + chevronsHtml(Math.min(Math.max(p.rank || 3, 1), 4)) + '</span>';
     }
     return o;
@@ -14512,7 +14568,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
  * }
  * PLAN 60 (docs/P60-LIBRARY.md §8): the expanded library's cards. A named officer stands in the
  * officer's frame with his own portrait, his rule as the foot line and his crest; a special in
- * the engineer's timber with a ribbon of its kind (Builder / Obstacle / Engine / Order); every
+ * the engineer's timber with a ribbon of its kind (Builder / Obstacle / Engine); every
  * expanded card carries a small rarity gem (the generals' rarity colours). setPool(pool) names the
  * Sergeants in an expanded run ("Sergeant of Foot"). The texts come from the engine's helpers
  * (officerShort / officerDesc, heroShort / heroDesc, specialShort / specialDesc).
@@ -14705,10 +14761,9 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     + '<path d="M36,30 L39,18 L44.5,25 L50,14 L55.5,25 L61,18 L64,30 Z" fill="url(#c2-gold)" stroke="#3a2508" stroke-width="1.4" stroke-linejoin="round"/>'
     + '<circle cx="50" cy="14.5" r="2.4" fill="#fff1b8"/></symbol>'
     + '<symbol id="c2-laurel" viewBox="0 0 64 64">' + laurelPath() + '</symbol>'
-    // PLAN 60: the specials' kinds (builder: the hammer above; obstacle: stakes; engine: a wheel; order: a sealed letter)
+    // PLAN 60: the specials' kinds (builder: the hammer above; obstacle: stakes; engine: a wheel; 2026-10-28: no orders)
     + '<symbol id="c2-obstacle" viewBox="0 0 24 24" fill="currentColor"><path d="M3.2 21 6.4 4.6 8.4 4.2 7.6 21zM10.6 21l1.4-17.6 2 0L14.2 21zM16.6 21l1.2-15.8 2 .4L19.8 21z"/><path d="M2 12.5h20v2.2H2z" opacity=".8"/></symbol>'
-    + '<symbol id="c2-engine" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="2.6"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/><path d="M12 3.4v17.2M3.4 12h17.2M5.9 5.9l12.2 12.2M18.1 5.9 5.9 18.1" stroke="currentColor" stroke-width="1.7"/></symbol>'
-    + '<symbol id="c2-order" viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 5.5h19v13h-19z" opacity=".55"/><path d="M2.5 5.5 12 13l9.5-7.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="15.2" r="3.6" fill="#9b2529" stroke="#4a0f12" stroke-width=".8"/></symbol>';
+    + '<symbol id="c2-engine" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="2.6"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/><path d="M12 3.4v17.2M3.4 12h17.2M5.9 5.9l12.2 12.2M18.1 5.9 5.9 18.1" stroke="currentColor" stroke-width="1.7"/></symbol>';
   function laurelPath() {
     let o = '<g fill="url(#c2-gold)" stroke="#4a300a" stroke-width=".9">';
     [-1, 1].forEach((sd) => {
@@ -14815,8 +14870,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     else if (card.kind === 'special') d = specDef(card.id);
     return d && C.setOf(d) === 'expanded' ? d : null;
   }
-  const SPECIAL_KIND = { builder: 'Builder', obstacle: 'Obstacle', engine: 'Engine', order: 'Order' };
-  const SPECIAL_ICON = { builder: 'c2-hammer', obstacle: 'c2-obstacle', engine: 'c2-engine', order: 'c2-order' };
+  const SPECIAL_KIND = { builder: 'Builder', obstacle: 'Obstacle', engine: 'Engine' };
+  const SPECIAL_ICON = { builder: 'c2-hammer', obstacle: 'c2-obstacle', engine: 'c2-engine' };
   const RARITY = { common: 'Common', uncommon: 'Uncommon', rare: 'Rare' };
   /** The small rarity gem of an expanded card (the generals' colours: pewter, gold, ruby). */
   const rarityHtml = (d) => (d && d.rarity ? '<i class="c4-rar" data-rarity="' + esc(d.rarity) + '" title="' + esc(RARITY[d.rarity] || d.rarity) + '" aria-hidden="true"></i>' : '');
@@ -14838,7 +14893,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       return Math.floor(v + 0.5);
     }
     if (card.kind === 'hero') return rankPow(T, card.rank || (T.heroes && T.heroes.rank) || 2);
-    if (card.kind === 'officer') return rankPow(T, officerRank(card));
+    if (card.kind === 'officer') return rankPow(T, officerRank(card, T));
     // PLAN 60: a typed engine (the Siege Tower) fights at its fixed rank
     if (card.kind === 'special') { const d = specDef(card.id); return d && d.type ? rankPow(T, d.rank || 3) : null; }
     return null;
@@ -14848,7 +14903,9 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     const m = T.officer && Array.isArray(T.officer.mult) && T.officer.mult.length ? T.officer.mult : [2, 2, 2, 3];
     return m[Math.min(Math.max(rank || 1, 1), m.length) - 1];
   }
-  const officerRank = (c) => Math.max(1, Math.min(4, (c && typeof c.rank === 'number' && c.rank >= 1) ? c.rank : 1));
+  /** The top rank (C.maxRank; 2026-10-28: 5). */
+  const topRank = (T) => { try { return Core().maxRank(TUN(T)); } catch (e) { return 5; } };
+  const officerRank = (c, T) => Math.max(1, Math.min(topRank(T), (c && typeof c.rank === 'number' && c.rank >= 1) ? c.rank : 1));
   /** A trait's one line, filled ("Power ×1.5", "Its formations +50%"). */
   function traitLine(id, tun) {
     const tr = find(Core().TRAITS, id);
@@ -14861,14 +14918,14 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     const C = Core();
     // 2026-10-28: a lib hero's line at his rank (a scaling hero shows his current value)
     if (card.kind === 'hero') { const h = heroDef(card.id); return h ? (isLibHero(card.id) && C.heroShort ? C.heroShort(T, card.id, heroRank(card, T)) : fill(h.short, T)) : ''; }
-    if (card.kind === 'officer' && offDef(card)) return C.officerShort(T, card.id, officerRank(card));
-    if (card.kind === 'officer') return (SHAPE_NAMES[card.shape] || 'Cross') + ' ×' + officerMult(T, officerRank(card));
+    if (card.kind === 'officer' && offDef(card)) return C.officerShort(T, card.id, officerRank(card, T));
+    if (card.kind === 'officer') return (SHAPE_NAMES[card.shape] || 'Cross') + ' ×' + officerMult(T, officerRank(card, T));
     if (card.kind === 'engineer') return 'Builds a fort';
     if (card.kind === 'special') return specDef(card.id) && C.specialShort ? C.specialShort(T, card.id) : '';
     return '';
   }
   /** A hero's rank: his own, else the start rank (tun.heroes.rank). */
-  const heroRank = (card, T) => Math.max(1, Math.min(4, (card && card.rank) || (T.heroes && T.heroes.rank) || 2));
+  const heroRank = (card, T) => Math.max(1, Math.min(topRank(T), (card && card.rank) || (T.heroes && T.heroes.rank) || 2));
   /** The two names of a promotion (run.promotions entry): a unit's rank names; a hero's own name
    *  with his rank ("Marshal, rank 2" -> "rank 3"); an officer's rank ("Officer, rank 1" -> "rank 2"). */
   function promoNames(p) {
@@ -14883,8 +14940,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   }
   /** A unit card's experience toward its next rank: {xp, next (null at the top rank), text}. */
   function xpOf(card, tun) {
-    const T = TUN(tun), th = [0].concat((T.ranks && T.ranks.xp) || [3, 7, 12]);
-    const rank = Math.max(1, Math.min(4, (card && card.rank) || 1)), xp = (card && card.xp) || 0;
+    const T = TUN(tun), th = [0].concat((T.ranks && T.ranks.xp) || [3, 7, 12, 18]);
+    const rank = Math.max(1, Math.min(topRank(T), (card && card.rank) || 1)), xp = (card && card.xp) || 0;
     const next = th[rank] == null ? null : th[rank];
     return { xp, next, text: next == null ? 'Top rank' : 'XP ' + xp + '/' + next };
   }
@@ -14938,7 +14995,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     if (kind === 'unit') {
       const tseal = others.length ? '<span class="c4-tr" title="' + esc(others.map((x) => traitName(x.id, x.n)).join(', ')) + '">' + useIco('c2-tr-' + (others.length === 1 ? others[0].id : 'multi'), '0 0 64 64') +
         (others.reduce((a, x) => a + x.n, 0) > 1 ? '<b>' + others.reduce((a, x) => a + x.n, 0) + '</b>' : '') + '</span>' : '';
-      foot = '<span class="c4-ty">' + useIco('c2-ty-' + type) + '</span>' + tseal + '<span class="c4-rk">' + chevrons(Math.max(1, Math.min(4, card.rank || 1))) + '</span>';
+      foot = '<span class="c4-ty">' + useIco('c2-ty-' + type) + '</span>' + tseal + '<span class="c4-rk">' + chevrons(Math.max(1, Math.min(topRank(T), card.rank || 1))) + '</span>';
     } else if (kind === 'officer') {
       foot = '<span class="c4-ty">' + useIco('c2-ty-' + type) + '</span><span class="c4-line">' + esc(footLine(card, T)) + '</span>';
     } else if (kind === 'special' && sd && sd.type) {
@@ -15075,18 +15132,18 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       body += '<p class="dt-k">' + esc((TYPE_NAMES[card.type || (h && h.type)] || '') + ' hero · rank ' + heroRank(card, T) + ' · power ' + valueOf(card, T) + ' · ' + xpOf(Object.assign({}, card, { rank: heroRank(card, T) }), T).text + (lib ? ' · ' + RARITY[h.rarity] : '')) + '</p>';
       if (h) body += p(lib && C.heroDesc ? C.heroDesc(T, card.id, heroRank(card, T)) : fill(h.desc, T));
       // 2026-10-28: a hero whose rule grows with his rank says what the next rank gives
-      if (h && lib && C.heroShort && heroRank(card, T) < 4) {
+      if (h && lib && C.heroShort && heroRank(card, T) < topRank(T)) {
         const r = heroRank(card, T), nx = C.heroShort(T, card.id, r + 1);
         if (nx !== C.heroShort(T, card.id, r)) body += p('At rank ' + (r + 1) + ': ' + nx + '.');
       }
       body += p(fill(C.CARD_DESC.hero, T));
     } else if (card.kind === 'officer' && offDef(card)) {
       // PLAN 60: a named officer: his rule at his rank, his area, his crest
-      const d = offDef(card), r = officerRank(card);
+      const d = offDef(card), r = officerRank(card, T);
       body += '<p class="dt-k">' + esc((TYPE_NAMES[card.type || d.type] || '') + ' officer · ' + RARITY[d.rarity] + ' · rank ' + r + ' · power ' + valueOf(card, T) + ' · ' + xpOf(card, T).text) + '</p>';
       body += p(C.officerDesc(T, d.id, r));
       const nx = C.officerShort(T, d.id, r + 1);
-      if (r < 4 && nx && nx !== C.officerShort(T, d.id, r)) body += p('At rank ' + (r + 1) + ': ' + nx + '.');
+      if (r < topRank(T) && nx && nx !== C.officerShort(T, d.id, r)) body += p('At rank ' + (r + 1) + ': ' + nx + '.');
       if (typeof d.area === 'string' && d.area !== 'self') body += '<div class="dt-shape">' + areaDiagram(d.area) + '<span>His area (' + esc(AREA_WORDS[d.area] || d.area) + '): the lit tiles around him. Tap him on the board to see it.</span></div>';
       body += p('He takes a tile of his own and stands there as a piece of his type. He earns XP and ranks up.');
     } else if (card.kind === 'special') {
@@ -15098,7 +15155,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
         if (more) body += p(more);
       }
     } else if (card.kind === 'officer') {
-      const r = officerRank(card);
+      const r = officerRank(card, T);
       body += '<p class="dt-k">' + esc((TYPE_NAMES[card.type] || '') + ' officer · rank ' + r + ' · ' + (SHAPE_NAMES[card.shape] || '') + ' · ×' + officerMult(T, r) + ' · ' + xpOf(card, T).text) + '</p>';
       body += '<div class="dt-shape">' + shapeDiagram(card.shape) + '<span>His area: the lit tiles around him. It is not a formation; the two stack.</span></div>';
       body += p(fill(C.CARD_DESC.officer, T));
@@ -15111,8 +15168,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   const SPECIAL_RULE = {
     builder: (d) => 'It is spent when played: the ' + (d.featureName || 'feature') + ' stays on its tile for the battle, and the tile still takes a card.',
     obstacle: (d) => 'It is spent when played: the ' + (d.featureName || 'obstacle') + ' stays on its tile for the battle, and no card can stand there.',
-    engine: () => '',   // an engine's own text says what it is
-    order: () => 'Tap Play on the card, or drag it onto the board. It takes your turn.'
+    engine: () => ''   // an engine's own text says what it is
   };
   /** A named officer's area (P60 §5 words) as a 5 x 5 diagram, the officer in the middle. */
   function areaDiagram(area) {
@@ -15269,8 +15325,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
  * a card may also be dragged onto a tile. A long press shows its full text.
  * PLAN 60: a hand holds 3 to 6 cards; past 3 the fan closes up (less spread, less tilt) so the
  * whole hand stays between the corner buttons, every card's medallion and the start of its name
- * in view, the selected one raised over its neighbours. An order (C.isOrderCard) has no tile: a
- * "Play" button over the raised card plays it, or the card dropped anywhere on the board.
+ * in view, the selected one raised over its neighbours. (2026-10-28, user: no order cards; every
+ * card takes a tile, so the "Play" button went.)
  *
  * TTF4.Hand = {
  *   render(el, st, {sel, w, H})   the hand of battle state st in its zone (stage space)
@@ -15350,11 +15406,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     lastSel = curSel;
     // the prompt beside the hand, over the left corner buttons (the mock's "Pick one"; over the
     // raised card it would cost the board a row of height)
-    // PLAN 60: an order is played, not placed; a Messenger's turn plays two cards
-    const selCard = curSel != null ? cards[curSel] : null, order = !!(selCard && C.isOrderCard && C.isOrderCard(selCard));
-    const pick = cards.length ? '<h3 class="pick" style="left:' + PICK.x + 'px;top:' + pickTop(curH, cards.length).toFixed(1) + 'px">' + (order ? 'Tap Play' : curSel != null ? 'Tap a lit tile' : s.extraPlays > 0 ? 'Play two' : 'Pick one') + '</h3>' : '';
-    const g0 = curSel != null ? G[curSel] : null;
-    const play = order && g0 ? '<button type="button" class="hplay" data-play="' + curSel + '" style="left:' + (H0.cx + g0.x).toFixed(1) + 'px;top:' + (curH - H0.bottom - H0.raise - curW * 1.4 * 0.5).toFixed(1) + 'px">Play</button>' : '';
+    // PLAN 60: a Messenger's turn plays two cards
+    const pick = cards.length ? '<h3 class="pick" style="left:' + PICK.x + 'px;top:' + pickTop(curH, cards.length).toFixed(1) + 'px">' + (curSel != null ? 'Tap a lit tile' : s.extraPlays > 0 ? 'Play two' : 'Pick one') + '</h3>' : '';
     // perf pass (2026-10-22): a new selection in the same hand keeps the fitted faces; a card
     // whose frame changed is swapped for a copy of itself in the new frame (its lift then plays
     // from the start, as a fresh card's would), and the prompt is redrawn
@@ -15371,12 +15424,9 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       });
       const ph = el.querySelector('.pick');
       if (ph && ph.outerHTML !== pick) ph.outerHTML = pick;
-      const pb = el.querySelector('.hplay');
-      if (pb) pb.remove();
-      if (play) el.insertAdjacentHTML('beforeend', play);
     } else {
       el.innerHTML = cards.map((c, i) => '<div class="' + frames[i].cls + '" style="' + frames[i].style + '" data-i="' + i + '" role="button" tabindex="0">' +
-        TTF4.Cards.faceHtml(c, { w: curW, tun: T }) + '</div>').join('') + pick + play;
+        TTF4.Cards.faceHtml(c, { w: curW, tun: T }) + '</div>').join('') + pick;
       TTF4.Cards.fit(el);
       el.fitKey = fitKey;
       el.fitTun = T;
@@ -15407,13 +15457,6 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   // ---- input: tap to select, drag to a tile, long press to read -------------------------------------
   function bind(el) {
-    // PLAN 60: "Play" over a selected order
-    el.addEventListener('click', (e) => {
-      const b = e.target.closest && e.target.closest('.hplay');
-      if (!b || !st || st.phase !== 'draft') return;
-      e.preventDefault();
-      if (TTF4.Board && TTF4.Board.playOrder) TTF4.Board.playOrder(+b.dataset.play);
-    });
     el.addEventListener('pointerdown', (e) => {
       const hc = e.target.closest('.hc');
       if (!hc || !st || st.phase !== 'draft' || e.button > 0) return;   // a right-click reads it (board2.js onContext)
@@ -15480,7 +15523,6 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     zone.closest('.scr').appendChild(g);
     drag.ghost = g;
     drag.legal = C.legalSlots(st, card);
-    drag.order = !!(C.isOrderCard && C.isOrderCard(card));
     drag.valSlot = undefined;
   }
   /** The dragged card's value coin for the tile under the finger (null: no legal tile). */
@@ -15506,13 +15548,6 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     const p = B.toStage(drag.cx, drag.cy);
     drag.ghost.style.transform = 'translate(' + p.x.toFixed(1) + 'px,' + p.y.toFixed(1) + 'px) translate(-50%, -60%) rotate(-4deg)';
     const under = document.elementFromPoint(drag.cx, drag.cy);
-    // PLAN 60: an order is played wherever it is dropped on the board (slot -1)
-    if (drag.order) {
-      const on = !!(under && under.closest && under.closest('.field'));
-      drag.slot = on ? -1 : null;
-      if (drag.ghost) drag.ghost.classList.toggle('play', on);
-      return;
-    }
     const t = under && under.closest ? under.closest('.tile') : null;
     const slot = t ? +t.dataset.slot : null;
     const legal = slot != null && drag.legal.indexOf(slot) >= 0;
@@ -15550,10 +15585,11 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
  * through TTFCore4.libName.
  *   render(st, {fresh, hand: bool})      the whole battle screen for battle state st
  *   select(index|null)                   the selected hand card (legal tiles light up)
- *   reveal(st, {instant, review}) -> {done: Promise, skip()}   the end-of-battle count-up (P53 §8); review:false skips the review
+ *   reveal(st, {instant, review, count}) -> {done: Promise, skip()}   the end-of-battle count-up (P53 §8); review:false skips the review;
+ *                                                count:false lands on the final total at once (no count-up)
  *   layout()                             re-fit after a resize
  *   slotRect(slot), handRect(), gensRect(), bandRect()   stage-space rects (callouts)
- *   playOrder(index), choiceLit(st), choiceWords(st)   PLAN 60: an order played; a pending choice's lit tiles and words (pure)
+ *   choiceLit(st), choiceWords(st)   PLAN 60: a pending choice's lit tiles and words (pure)
  *   steps(score) -> the reveal's steps (pure; tests)
  *   beats(score) -> the reveal's beats, smallest first within each step (pure; tests; PLAN 55)
  * }
@@ -15940,20 +15976,26 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   }
   function diagramsHtml(gens) {
     const teach = teachersOf(gens);
-    if (!teach.some(Boolean)) return '';
     const live = C.liveFormations(st);
+    // 2026-10-28 (user): a formation taught from the reserve (Twin Command) shows under the general
+    // whose rule makes it live, so it lights like the others
+    const extra = gens.map((g) => live.filter((f) => f.via === 'general:' + g.id));
+    if (!teach.some(Boolean) && !extra.some((x) => x.length)) return '';
     const formed = {};
     // in the reveal a diagram lights as its formations score
     (lastScore ? lastScore.formations : []).forEach((f, n) => { if (!rv || (rv.formDone && rv.formDone[n])) formed[f.id] = (formed[f.id] || 0) + 1; });
     const flare = rv && rv.formOn >= 0 && lastScore && lastScore.formations[rv.formOn] ? lastScore.formations[rv.formOn].id : null;
-    return '<div class="fdrow">' + teach.map((id, i) => {
-      if (!id) return '<div class="fdslot" style="width:' + genW() + 'px"></div>';
-      const lf = live.find((f) => f.id === id && f.general === gens[i].id) || live.find((f) => f.id === id);
+    const badge = (id, lf, i) => {
       // 2026-10-23 (user): every general reads as a x; a formation's share pct shows as x(1 + pct)
-      const mul = lf ? Number((1 + lf.pct).toFixed(2)) : null;
+      const mul = lf ? Number((1 + lf.pct * (lf.scale || 1)).toFixed(2)) : null;
       const n = formed[id] || 0;
-      return '<div class="fdslot" style="width:' + genW() + 'px"><div class="fdg2' + (n ? ' on' : '') + (flare === id ? ' flare' : '') + '" data-gi="' + i + '" data-form="' + esc(id) + '">' +
-        Art.formationDots(id) + Art.formationKindHtml(id) + (mul != null ? '<b>×' + mul + '</b>' : '') + (n > 1 ? '<i>' + n + ' live</i>' : '') + '</div></div>';
+      return '<div class="fdg2' + (n ? ' on' : '') + (flare === id ? ' flare' : '') + '" data-gi="' + i + '" data-form="' + esc(id) + '">' +
+        Art.formationDots(id) + Art.formationKindHtml(id) + (mul != null ? '<b>×' + mul + '</b>' : '') + (n > 1 ? '<i>' + n + ' live</i>' : '') + '</div>';
+    };
+    return '<div class="fdrow">' + teach.map((id, i) => {
+      const inner = id ? badge(id, live.find((f) => f.id === id && f.general === gens[i].id) || live.find((f) => f.id === id), i)
+        : extra[i].map((lf) => badge(lf.id, lf, i)).join('');
+      return '<div class="fdslot' + (!id && extra[i].length > 1 ? ' many' : '') + '" style="width:' + genW() + 'px">' + inner + '</div>';
     }).join('') + '</div>';
   }
 
@@ -16037,7 +16079,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     if (!ch) return { who: '', say: '' };
     const who = C.libName ? C.libName(ch.src) : '';
     const say = ch.kind === 'row' ? 'Tap a row: every piece in it gets its bonus.'
-      : ch.kind === 'terrain' ? (first != null ? 'Pick the new terrain for the lit tile.' : 'Tap the tile whose terrain changes.')
+      : ch.kind === 'terrain' ? (first != null ? 'Pick the new terrain for the lit tile.' : 'Tap a lit tile beside it: its terrain changes.')
       : ch.kind === 'move' ? (first != null ? 'Tap the empty tile it moves to.' : 'Tap the piece to move.')
       : ch.kind === 'swap' ? (first != null ? 'Tap the piece it swaps with.' : 'Tap the first piece to swap.') : '';
     return { who, say };
@@ -16703,22 +16745,12 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     if (cb.onSelect) cb.onSelect(sel);
   };
   B.selected = () => sel;
-  /** Place hand card `pick` on `slot` when legal (the hand's drop). An order (PLAN 60) is played
-   *  wherever it is dropped on the board. */
+  /** Place hand card `pick` on `slot` when legal (the hand's drop). */
   B.place = function place(pick, slot) {
     const card = st && st.phase === 'draft' ? st.offer[pick] : null;
-    if (card && C.isOrderCard && C.isOrderCard(card)) return B.playOrder(pick);
     if (!card || C.legalSlots(st, card).indexOf(slot) < 0) { B.select(pick); return false; }
     sel = null; hover = null;
     if (cb.onPlace) cb.onPlace(pick, slot);
-    return true;
-  };
-  /** PLAN 60: play order card `pick` ("Play" on the card, or the card dropped on the board). */
-  B.playOrder = function playOrder(pick) {
-    const card = st && st.phase === 'draft' ? st.offer[pick] : null;
-    if (!card || !C.isOrderCard || !C.isOrderCard(card)) return false;
-    sel = null; hover = null;
-    if (cb.onPlace) cb.onPlace(pick, null);
     return true;
   };
   B.detail = (item) => { if (cb.onDetail) cb.onDetail(item); };
@@ -17426,7 +17458,9 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     }
     function onSkip(e) { if (e.target.closest && e.target.closest('.c2-ov')) return; tap(e); }
     stage.addEventListener('pointerdown', onSkip, true);
-    if (instant) finish(false); else next();
+    // 2026-10-28 (user): count false (the Menu's count-up off) lands on the total at once; the boom,
+    // the tap and the review follow as after a skip
+    if (instant || o.count === false) finish(false); else next();
     return { done: done.then(() => { /* the still stays up under the plate */ }), skip: tap, waiting: () => waiting };
   };
   /** Leave the reveal (the next battle's render starts clean). */
@@ -17480,7 +17514,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
  *
  * TTF4.Screens = {
  *   mount(stage)
- *   prerun({pool, shared}, cb)                PLAN 60: a new campaign's first screen: the "Expanded pool" option; cb({pool})
+ *   prerun({pool, difficulty, battles, lengths, shared}, cb)   PLAN 60: a new campaign's first screen: the "Expanded pool"
+ *                                             option, and (2026-10-28) Difficulty and Battles; cb({pool, difficulty, battles})
  *   detail(item, tun)                 a card's / general's / formation's / boss twist's full text
  *   generalsIntro(intro, tun, cb)     "Your generals" (battle 1): the 3 dealt; cb()
  *   freshOrders(st, tun, cb)          PLAN 55: the generals re-dealt after 2 failed retries; cb()
@@ -17621,11 +17656,31 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     return (C.GENERALS || []).filter((g) => !g.retired).length + (C.HEROES || []).length + (C.OFFICERS || []).length + 3 + (C.SPECIALS || []).length + 1;
   }
   S.poolCount = poolCount;
+  // 2026-10-28 (user): the difficulty (every score target x tun.run.difficulty) and the run length
+  const DIFFS = [['easy', 'Easy'], ['medium', 'Medium'], ['hard', 'Hard']];
+  const NUMW = { 30: 'Thirty', 40: 'Forty', 50: 'Fifty' };
+  const prerunSay = (n) => (NUMW[n] || n) + ' battles, six generals, a deck of forty cards.';
+  /** The line under the two rows: what the difficulty does (factors as xN). */
+  function prerunDiff(d) {
+    const f = ((Core().TUN_DEFAULT.run || {}).difficulty || {})[d] || 1;
+    return f === 1 ? 'Easy: the score targets as they are.' : (d === 'hard' ? 'Hard' : 'Medium') + ': every score target ×' + f + '.';
+  }
+  S.prerunDiff = prerunDiff;
+  const seg = (act, items, cur) => '<div class="pr-seg" role="group">' + items.map(([v, t]) =>
+    '<button type="button" class="ds' + (String(v) === String(cur) ? ' on' : '') + '" data-act="' + act + '" data-v="' + v + '" aria-pressed="' + (String(v) === String(cur)) + '">' + esc(t) + '</button>').join('') + '</div>';
   S.prerun = function prerun(o, cb) {
     let pool = o && o.pool === 'expanded' ? 'expanded' : 'standard';
+    const lengths = (o && o.lengths && o.lengths.length) ? o.lengths : [30];
+    let difficulty = o && (o.difficulty === 'medium' || o.difficulty === 'hard') ? o.difficulty : 'easy';
+    let battles = o && lengths.indexOf(o.battles) >= 0 ? o.battles : lengths[0];
     const html = '<div class="plate prerun"><svg class="pr-crest" viewBox="0 0 100 120" aria-hidden="true"><use href="#c2-crest"/></svg>' +
       '<p class="kick">A new campaign</p><h2>Take the Field</h2>' +
-      '<p class="say">Thirty battles, six generals, a deck of forty cards.</p>' +
+      '<p class="say pr-say">' + esc(prerunSay(battles)) + '</p>' +
+      '<div class="pr-sets">' +
+        '<div class="pr-set"><span class="pr-l" id="pr-l-diff">Difficulty</span>' + seg('diff', DIFFS, difficulty).replace('role="group"', 'role="group" aria-labelledby="pr-l-diff"') + '</div>' +
+        '<div class="pr-set"><span class="pr-l" id="pr-l-len">Battles</span>' + seg('len', lengths.map((n) => [n, String(n)]), battles).replace('role="group"', 'role="group" aria-labelledby="pr-l-len"') + '</div>' +
+        '<p class="say small pr-dnote">' + esc(prerunDiff(difficulty)) + '</p>' +
+      '</div>' +
       '<label class="pr-opt"><input type="checkbox" data-act="pool"' + (pool === 'expanded' ? ' checked' : '') + '><span class="pr-box" aria-hidden="true"></span>' +
         '<span class="pr-t"><b>Expanded pool</b><i>' + poolCount() + ' generals, officers, heroes and special units</i></span></label>' +
       '<p class="say small pr-why">' + esc(prerunWhy(pool)) + '</p>' +
@@ -17639,13 +17694,22 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       pool = box.checked ? 'expanded' : 'standard';
       entry.ov.querySelector('.pr-why').textContent = prerunWhy(pool);
     });
-    onAct(entry, (act) => { if (act === 'start') { close(entry); cb({ pool }); } });
+    const pick = (act, v) => entry.ov.querySelectorAll('[data-act="' + act + '"]').forEach((b) => {
+      const on = b.dataset.v === String(v);
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-pressed', String(on));
+    });
+    onAct(entry, (act, el) => {
+      if (act === 'diff') { difficulty = el.dataset.v; pick('diff', difficulty); entry.ov.querySelector('.pr-dnote').textContent = prerunDiff(difficulty); }
+      else if (act === 'len') { battles = +el.dataset.v; pick('len', battles); entry.ov.querySelector('.pr-say').textContent = prerunSay(battles); }
+      else if (act === 'start') { close(entry); cb({ pool, difficulty, battles }); }
+    });
     return entry;
   };
   /** The one line under the option: what the pool means. */
   function prerunWhy(pool) {
     return pool === 'expanded'
-      ? 'New generals, named officers, heroes, builders, engines and orders join the spoils. Your start deck stays the same.'
+      ? 'New generals, named officers, heroes, builders and engines join the spoils. Your start deck stays the same.'
       : 'The standard cards only. Tick the box to add the expanded library to the spoils.';
   }
   S.prerunWhy = prerunWhy;
@@ -17879,8 +17943,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     const card = c.kind === 'hero' ? Object.assign({}, c, { rank: c.rank || (T.heroes && T.heroes.rank) || 2 }) : c;
     const x = Cards().xpOf(card, T);
     if (x.next == null) return '<span class="xpl top">Top rank</span>';
-    const th = [0].concat((T.ranks && T.ranks.xp) || [3, 7, 12]);
-    const from = th[Math.max(1, Math.min(4, card.rank || 1)) - 1] || 0;
+    const th = [0].concat((T.ranks && T.ranks.xp) || [3, 7, 12, 18]);
+    const from = th[Math.max(1, Math.min(Core().maxRank(T), card.rank || 1)) - 1] || 0;
     const frac = Math.max(0, Math.min(1, (x.xp - from) / Math.max(1, x.next - from)));
     const left = Math.max(1, x.next - x.xp), near = left <= 1;
     return '<span class="xpl' + (near ? ' near' : '') + '"><span class="xpb"><i style="width:' + Math.round(frac * 100) + '%"></i></span>' +
@@ -18290,8 +18354,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
  * screen appears. Core 4 (P53): orders, Drills and the formation strip are gone, and with them
  * their tips; the officers, heroes and engineers have their arrival screens instead.
  *
- * PLAN 60 (the expanded library): the first named officer, engine, builder or obstacle and order
- * held each get a tip (facts.lib: the held card's library kind); a pending choice (the 'choose'
+ * PLAN 60 (the expanded library): the first named officer, engine, builder or obstacle held
+ * each get a tip (facts.lib: the held card's library kind; 2026-10-28: no orders, their tip went); a pending choice (the 'choose'
  * phase, its prompt bar on screen) gets one, as does the peek strip the first time it shows.
  * While a choice is pending only the choice tip may show.
  *
@@ -18341,7 +18405,6 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     { id: 'named', when: (f) => f.lib === 'named', hold: true },
     { id: 'engine', when: (f) => f.lib === 'engine', hold: true },
     { id: 'builder', when: (f) => f.lib === 'builder' || f.lib === 'obstacle', hold: true },
-    { id: 'orderplay', when: (f) => f.lib === 'order', hold: true },
     { id: 'fort', when: (f) => !f.held && f.emptyFort != null },
     { id: 'formation', when: (f) => f.formation, hold: true },
     // PLAN 60: a card's choice is pending (only this one shows then); the next hand on view
@@ -18645,11 +18708,6 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
           target: () => handSlots()[(st.offer || []).indexOf(x.hold)] || fanTarget(), side: ['top', 'right', 'left'],
           lines: ['It leaves a feature on a tile for the battle, then is spent.', 'An obstacle takes its tile; a built tile still takes a card.']
         };
-      case 'orderplay':
-        return {
-          target: () => handSlots()[(st.offer || []).indexOf(x.hold)] || fanTarget(), side: ['top', 'right', 'left'],
-          lines: ['An order has no tile: tap Play, or drag it onto the field.', 'Playing it takes your turn.']
-        };
       case 'choice':
         return {
           target: () => $('#stage .p60bar'), side: ['top'],
@@ -18892,8 +18950,11 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
  * of the tunables (read only); 'ttf-core4:prefs' = {deckSort, deckLook} the deck view (screens.js);
  * 'ttf-core4:reset' the last forced reset applied (forcedReset, RESET.id); 'ttf-core4:player',
  * 'ttf-core4:outbox', 'ttf-core4:sent' the shared play data (SHARE_URL); prefs.share its switch;
- * prefs.pool ('expanded' | else standard, PLAN 60) the card pool a new campaign starts with.
- * Nothing else is read or written.
+ * prefs.pool ('expanded' | else standard, PLAN 60) the card pool a new campaign starts with;
+ * prefs.review / prefs.plate / prefs.count the Menu's score review, victory screen and count-up (on unless false);
+ * prefs.difficulty ('easy' | 'medium' | 'hard') and prefs.length (30 | 40 | 50) the pre-run screen's
+ * last choices (2026-10-28); 'ttf-core4:best-<difficulty>-<battles>' the best Laurels of every
+ * other setting (Easy over 30 battles keeps 'ttf-core4:best'). Nothing else is read or written.
  */
 (function () {
   'use strict';
@@ -18938,10 +18999,15 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // last keys sent so a reload never sends a battle twice. 'ttf-core4:player' is the random id.
   const SHARE_URL = 'https://script.google.com/macros/s/AKfycbzrzPXwodAuYL_OyNq2V-V2yJ-esqiYEYEFQnoXSEJvnfcbTvZdOA1eA9_P0XtU443_Bw/exec';
   const prefsGet = () => { try { const o = JSON.parse(store.get('prefs') || '{}'); return o && typeof o === 'object' ? o : {}; } catch (e) { return {}; } };
-  // on by default for every run played from the published page (GitHub Pages); never from a
-  // local copy, the LAN server or a test page (2026-10-24, user)
+  // on by default for every run played from the published page (GitHub Pages); 2026-10-28 (user):
+  // and from a local copy (a file:// page, the LAN or localhost preview), its rows tagged "local" in
+  // the build column. Never from 127.0.0.1 (the dev and agent test server), an automated or headless
+  // browser, or the Claude app's own browser pane (where checks run).
   const PUBLISHED = typeof location !== 'undefined' && location.protocol === 'https:' && /\.github\.io$/.test(location.hostname);
-  const shareOn = () => !!SHARE_URL && PUBLISHED && prefsGet().share !== false;
+  const SHAREABLE = typeof location !== 'undefined' && /^(https?|file):$/.test(location.protocol) && location.hostname !== '127.0.0.1' &&
+    !(typeof navigator !== 'undefined' && (navigator.webdriver || /HeadlessChrome| Claude\//.test(navigator.userAgent || '')));
+  const LOCAL = SHAREABLE && !PUBLISHED;
+  const shareOn = () => !!SHARE_URL && SHAREABLE && prefsGet().share !== false;
   function setPref(k, v) { const o = prefsGet(); o[k] = !!v; store.set('prefs', JSON.stringify(o)); }
   function setShare(on) { const o = prefsGet(); o.share = !!on; store.set('prefs', JSON.stringify(o)); }
   function playerId() {
@@ -18952,7 +19018,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   const readList = (k) => { try { const a = JSON.parse(store.get(k) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
   // the sheet's build column reads "rules 3 · <page hash>": the rules version first (§13 of the
   // spec), so rows sort and filter by it; the hash names the exact page
-  const buildName = () => 'rules ' + C.RULES_VERSION + ' · ' + (globalThis.TTF4_BUILD || 'dev');
+  const buildName = () => 'rules ' + C.RULES_VERSION + ' · ' + (globalThis.TTF4_BUILD || 'dev') + (LOCAL ? ' · local' : '');
   function shareBattle(after) {
     if (!shareOn() || !after) return;
     const res = (after.results || [])[(after.results || []).length - 1];
@@ -18973,7 +19039,9 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       attempt, phase: after.phase, pool: (after.generals || []).map((g) => ({ id: g.id, level: g.level || 1, wins: g.wins || 0 })),
       deckSize: (after.deck || []).length, result: r,
       // PLAN 60: the card pool (standard | expanded); `pool` above is the generals' six
-      cardPool: after.pool === 'expanded' ? 'expanded' : 'standard'
+      cardPool: after.pool === 'expanded' ? 'expanded' : 'standard',
+      // 2026-10-28: the run's difficulty and length
+      difficulty: R.difficultyOf(after), battles: after.battles || 30
     };
     store.set('outbox', JSON.stringify(readList('outbox').concat([item]).slice(-40)));
     flushShare();
@@ -19114,32 +19182,54 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   /**
    * A new campaign. PLAN 60: it opens on the pre-run screen (the card pool, remembered in
-   * prefs.pool); `pool` given ('standard' | 'expanded': the debug hook) starts it at once.
+   * prefs.pool); `pool` given ('standard' | 'expanded': the debug hook) starts it at once, with
+   * `set` ({difficulty, battles}, 2026-10-28) or Easy over 30 battles.
    */
-  function newRun(seed, pool) {
+  function newRun(seed, pool, set) {
     epoch++;
     pending = null;
     Screens.closeAll();
     Board.endReveal();
     run = null; st = null;
     mode = 'boot';
-    if (pool === 'standard' || pool === 'expanded') { startRun(seed, pool); return; }
+    if (pool === 'standard' || pool === 'expanded') { startRun(seed, pool, set); return; }
     document.body.dataset.phase = 'prerun';
     Board.clear();
     const my = epoch;
-    Screens.prerun({ pool: prefsGet().pool === 'expanded' ? 'expanded' : 'standard', shared: shareOn() }, (ch) => {
+    const P = runPrefs();
+    Screens.prerun({ pool: P.pool, difficulty: P.difficulty, battles: P.battles, lengths: lengths(), shared: shareOn() }, (ch) => {
       if (my !== epoch) return;
-      setPool(ch.pool);
-      startRun(seed, ch.pool);
+      setRunPrefs(ch);
+      startRun(seed, ch.pool, ch);
     });
   }
-  function setPool(pool) { const o = prefsGet(); o.pool = pool === 'expanded' ? 'expanded' : 'standard'; store.set('prefs', JSON.stringify(o)); }
-  function startRun(seed, pool) {
+  /** The run lengths offered (tun.run.lengths). */
+  const lengths = () => ((tun || C.TUN_DEFAULT).run.lengths || [30]).slice();
+  /** The pre-run screen's remembered choices, each checked (else its default: standard, Easy, 30). */
+  function runPrefs() {
+    const o = prefsGet(), L = lengths();
+    return {
+      pool: o.pool === 'expanded' ? 'expanded' : 'standard',
+      difficulty: R.difficultyOf({ difficulty: o.difficulty }),
+      battles: L.indexOf(o.length) >= 0 ? o.length : (tun || C.TUN_DEFAULT).run.battles || 30
+    };
+  }
+  function setRunPrefs(ch) {
+    const o = prefsGet();
+    o.pool = ch.pool === 'expanded' ? 'expanded' : 'standard';
+    o.difficulty = R.difficultyOf(ch);
+    if (lengths().indexOf(ch.battles) >= 0) o.length = ch.battles;
+    store.set('prefs', JSON.stringify(o));
+  }
+  /** startRun(seed, pool, {difficulty, battles}?): the debug hook's defaults are Easy, 30 battles. */
+  function startRun(seed, pool, set) {
     const o = {};
     if (seed !== undefined && seed !== null) o.seed = seed;
     if (tun) o.tun = tun;
     // a standard campaign plays as rules 10
     if (pool === 'expanded') o.pool = 'expanded';
+    if (set && set.difficulty) o.difficulty = set.difficulty;
+    if (set && set.battles) o.battles = set.battles;
     run = R.startRun(o);
     TTF4.Cards.setPool(run.pool);
     st = null;
@@ -19272,7 +19362,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     const my = epoch;
     mode = 'reveal';
     document.body.dataset.phase = 'reveal';
-    revealH = Board.reveal(st, { instant, review: prefsGet().review !== false });
+    revealH = Board.reveal(st, { instant, review: prefsGet().review !== false, count: prefsGet().count !== false });
     revealH.done.then(() => { revealH = null; if (my === epoch) finishBattle(); });
   }
   function finishBattle() {
@@ -19355,15 +19445,22 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     const retries = res.reduce((s, r) => s + (r.retries || 0), 0);
     const laurels = R.laurels(run);
     let best = null;
-    try { best = JSON.parse(store.get('best') || 'null'); } catch (e) { best = null; }
+    const bk = bestKey(run);
+    try { best = JSON.parse(store.get(bk) || 'null'); } catch (e) { best = null; }
     const isNew = !best || laurels.total > (best.laurels || 0) || (best.seed === run.seed && best.laurels === laurels.total);
-    if (isNew) store.set('best', JSON.stringify({ laurels: laurels.total, seed: run.seed }));
+    if (isNew) store.set(bk, JSON.stringify({ laurels: laurels.total, seed: run.seed }));
     const my = epoch;
     Screens.runWon({ retries, battles: run.battles, laurels, tun: run.tun, best: { laurels: isNew ? laurels.total : best.laurels, isNew } }, () => {
       if (my !== epoch) return;
       store.del('run');
       newRun();
     });
+  }
+
+  /** 2026-10-28: each difficulty x length keeps its own best Laurels; Easy over 30 battles keeps 'best'. */
+  function bestKey(r) {
+    const d = R.difficultyOf(r), n = (r && r.battles) || 30;
+    return d === 'easy' && n === 30 ? 'best' : 'best-' + d + '-' + n;
   }
 
   // ---- buttons ---------------------------------------------------------------------------------------
@@ -19377,16 +19474,21 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     }, { title: 'Quit the campaign?', yes: 'Quit campaign', no: 'Back', note: poolNote(), checks: [
       // 2026-10-28 (user): fewer clicks between battles; both on by default
       { label: 'Score review after a battle', on: prefsGet().review !== false, set: (v) => setPref('review', v) },
-      { label: 'Victory screen after a win', on: prefsGet().plate !== false, set: (v) => setPref('plate', v) }
+      { label: 'Victory screen after a win', on: prefsGet().plate !== false, set: (v) => setPref('plate', v) },
+      // 2026-10-28 (user): off, the reveal lands on the final total at once (the review still follows)
+      { label: 'Score count-up after a battle', on: prefsGet().count !== false, set: (v) => setPref('count', v) }
     ], links: [
       { label: 'Reset tips', done: 'Tips reset', act: () => Tips.reset() },
       { label: 'Copy run data', done: 'Run data copied', fail: 'Could not copy', act: copyRunData }
-    ].concat(SHARE_URL && PUBLISHED ? [shareOn()
+    ].concat(SHARE_URL && SHAREABLE ? [shareOn()
       ? { label: 'Stop sharing anonymous play data', done: 'Sharing stopped', act: () => setShare(false) }
       : { label: 'Share anonymous play data', done: 'Sharing on, thank you', act: () => { setShare(true); flushShare(); } }] : []) });
   }
   /** PLAN 60: the Menu names the run's card pool. */
-  const poolNote = () => (run && run.pool === 'expanded' ? 'Card pool: Expanded (the standard cards and the expanded library).' : 'Card pool: Standard.');
+  // 2026-10-28: and its difficulty and length
+  const DIFF_NAME = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
+  const poolNote = () => (run && run.pool === 'expanded' ? 'Card pool: Expanded (the standard cards and the expanded library).' : 'Card pool: Standard.') +
+    (run ? ' ' + DIFF_NAME[R.difficultyOf(run)] + ', ' + (run.battles || 30) + ' battles.' : '');
   /**
    * 2026-10-24 (user): the whole save (the run with every battle's detail and the losses, and the
    * battle on the board), stamped with the build, onto the clipboard for analysis
@@ -19397,7 +19499,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     let data = store.get('run') || '{}';
     try {
       const o = JSON.parse(data);
-      o.exported = { at: new Date().toISOString(), rules: C.RULES_VERSION, build: buildName(), pool: (o.run && o.run.pool) || 'standard' };
+      o.exported = { at: new Date().toISOString(), rules: C.RULES_VERSION, build: buildName(), pool: (o.run && o.run.pool) || 'standard',
+        difficulty: R.difficultyOf(o.run), battles: (o.run && o.run.battles) || 30 };
       data = JSON.stringify(o);
     } catch (e) { /* the raw save */ }
     const fallback = () => {
@@ -19421,7 +19524,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // ---- debugging / tests ----------------------------------------------------------------------------------
   TTF4.App = {
     get: () => ({ run, st, mode, pending }),
-    newRun, undo, onPlace, openDeck, openBook, onChoose, onSkipChoice, onRedraw, onSurvey,
+    newRun, undo, bestKey, runPrefs, onPlace, openDeck, openBook, onChoose, onSkipChoice, onRedraw, onSurvey,
     /** Test hook (PLAN 60): replace the battle on the board (a state built in the console). */
     setState(s) { st = s; save(); Board.select(null); Board.render(st, { hand: true }); mode = 'battle'; document.body.dataset.phase = 'battle'; },
     /** Test hook: finish the current battle greedily (best total each turn), n placements at most. */
@@ -19434,7 +19537,6 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
             const v = C.totalAfter(st, pl.index, s);
             if (v !== null && (!best || v > best.v)) best = { v, pick: pl.index, s };
           });
-          if (C.isOrderCard && C.isOrderCard(pl.card)) { const v = C.totalAfter(st, pl.index, null); if (v !== null && (!best || v > best.v)) best = { v, pick: pl.index, s: null }; }
         });
         if (!best) break;
         onPlace(best.pick, best.s);
