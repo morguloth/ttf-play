@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="a2fe3a86a7";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="3352671582";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2731,6 +2731,90 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 .tile.legal.ch > .glow { box-shadow: inset 0 0 0 4px #ffd65a, inset 0 0 26px rgba(255, 205, 80, 0.6); background: rgba(255, 214, 90, 0.14); z-index: 2; }
 .tile.legal.ch.hot > .glow { box-shadow: inset 0 0 0 6px #fff3c4, inset 0 0 40px rgba(255, 236, 170, 0.9); background: rgba(255, 240, 190, 0.28); }
 .gens .fdslot.many { gap: 6px; } .gens .fdslot.many .fdg2 { transform: scale(0.82); transform-origin: 50% 0; }
+</style>
+<!-- 2026-10-29: the quick-start guide (help.js) -->
+<style>
+/* core4/css/help.css - the quick-start guide (help.js; 2026-10-29, user). One page at a time on the
+   parchment plate, its illustration above the words, dots and Back / Next below. */
+.helpp { padding-top: 22px; }
+.helpp h2 { margin-bottom: 6px; }
+.helpp .say { text-align: left; max-width: 62ch; }
+.helpp .say + .say { margin-top: 10px; }
+.hp-x { position: absolute; top: 12px; right: 12px; width: 44px; height: 44px; border: 0; border-radius: 50%; cursor: pointer;
+  background: rgba(122, 82, 15, 0.1); color: #5c3d0c; display: grid; place-items: center; }
+.hp-x svg { width: 22px; height: 22px; }
+.hp-x:hover { background: rgba(122, 82, 15, 0.2); }
+
+/* the illustration band: a fixed height, so the page never jumps as you turn it */
+.hp-art { height: 268px; margin: 8px 0 14px; display: flex; align-items: center; justify-content: center; gap: 22px; }
+.hp-c { display: flex; }
+.hp-t { width: 64px; height: 64px; border-radius: 8px; background-size: cover; background-position: center;
+  box-shadow: inset 0 0 0 1px rgba(40, 24, 6, 0.45), 0 2px 4px rgba(0, 0, 0, 0.25); position: relative; }
+.hp-t.big { width: 120px; height: 120px; }
+.hp-t span { position: absolute; right: 4px; bottom: 4px; padding: 3px 7px; border-radius: 8px; background: rgba(28, 17, 4, 0.82);
+  color: #f7e2a8; font: 700 17px/1 var(--face-title); }
+
+/* 1: the field and the target */
+.hp-board { display: grid; grid-template-columns: repeat(4, 58px); gap: 4px; padding: 8px; border-radius: 12px; background: #5b4423;
+  box-shadow: 0 0 0 2px #3a2a12, 0 6px 14px rgba(0, 0, 0, 0.35); }
+.hp-board .hp-t { width: 58px; height: 58px; }
+.hp-goal { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 18px 26px; border-radius: 14px;
+  background: rgba(122, 82, 15, 0.1); box-shadow: inset 0 0 0 2px rgba(122, 82, 15, 0.35); color: #3a2508; }
+.hp-goal span { font: 700 16px/1 var(--face-title); letter-spacing: 0.1em; text-transform: uppercase; color: #7a520f; }
+.hp-goal b { font: 900 52px/1 var(--face-title); }
+.hp-goal i { width: 34px; height: 34px; color: #7a520f; }
+.hp-goal i svg { width: 100%; height: 100%; }
+
+/* 2: three drawn, one played */
+.hp-hand { display: flex; gap: 14px; align-items: flex-end; }
+.hp-arrow { font: 900 54px/1 var(--face-title); color: #7a520f; }
+
+/* 3: each type on its home tile */
+.hp-homes { display: flex; gap: 30px; align-items: flex-end; }
+.hp-home { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+
+/* 4: an amber and a violet general */
+.hp-gens { display: flex; gap: 28px; align-items: flex-start; }
+.hp-g { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.hp-role { font: 700 16px/1 var(--face-title); letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 12px; border-radius: 10px; color: #fff4dc; }
+.hp-role.boost { background: #a86a12; }
+.hp-role.teach { background: #5d3b8c; }
+
+/* 5: formation symbols */
+.hp-forms { display: flex; gap: 26px; align-items: flex-start; }
+.hp-f { width: 190px; display: flex; flex-direction: column; align-items: center; gap: 8px; color: #3a2508; }
+.hp-f b { font: 700 20px/1.1 var(--face-title); }
+.hp-f span { font: 400 16px/1.3 var(--face-name); color: var(--ink-dim); text-align: center; }
+
+/* 7: the multiplication */
+.hp-art:has(.hp-sum) { flex-direction: column; gap: 14px; }
+.hp-sum { display: grid; grid-auto-flow: column; grid-template-rows: auto auto; align-items: end; justify-items: center; column-gap: 14px; row-gap: 6px; color: #3a2508; }
+.hp-sum b, .hp-sum i, .hp-sum em { font: 900 44px/1 var(--face-title); font-style: normal; }
+.hp-sum i { color: #7a520f; }
+.hp-sum em { grid-row: 1 / span 2; align-self: start; color: #24561a; }
+.hp-sum span { font: 700 14px/1 var(--face-title); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-dim); }
+.hp-note { margin: 0; font: 400 17px/1.3 var(--face-name); color: var(--ink-dim); }
+
+/* 8: between battles */
+.hp-icons { display: flex; gap: 34px; }
+.hp-icons div { display: flex; flex-direction: column; align-items: center; gap: 10px; color: #7a520f; }
+.hp-icons svg { width: 72px; height: 72px; }
+.hp-icons span { font: 700 18px/1 var(--face-title); letter-spacing: 0.06em; color: #3a2508; }
+
+.hp-dots { display: flex; justify-content: center; gap: 10px; margin-top: 18px; }
+.hp-d { width: 14px; height: 14px; padding: 0; border: 0; border-radius: 50%; cursor: pointer; background: rgba(122, 82, 15, 0.28); }
+.hp-d.on { background: #7a520f; transform: scale(1.25); }
+
+/* the game's cards are never narrower than 168 px (cards.js MIN_FACE): the guide shows them smaller */
+.hp-hand .hp-c { zoom: 0.74; }
+.hp-homes .hp-c { zoom: 0.7; }
+.hp-home em { font: 700 15px/1 var(--face-title); font-style: normal; letter-spacing: 0.08em; text-transform: uppercase; color: #7a520f; }
+.hp-art:has(.hp-key) { flex-direction: column; gap: 16px; }
+.hp-key { display: flex; gap: 22px; font: 700 16px/1 var(--face-name); color: #3a2508; }
+.hp-key span { display: flex; align-items: center; gap: 7px; }
+.hp-key i { width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35); }
+.hp-row { display: flex; align-items: center; gap: 26px; }
+.hp-row .hp-c { zoom: 0.74; }
 </style>
 <!-- Cinzel: the titles and numbers (Google Fonts, the one external file) -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap">
@@ -12831,6 +12915,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     star: '<path d="M12 1.8 15 8.3l7.1.8-5.3 4.8 1.5 7-6.3-3.6-6.3 3.6 1.5-7-5.3-4.8 7.1-.8z"/>',
     skull: '<path fill-rule="evenodd" d="M12 2.5c5 0 8.5 3.4 8.5 8 0 2.6-1.2 4.4-2.8 5.4V19a1.5 1.5 0 0 1-1.5 1.5H15V18h-1.5v2.5h-3V18H9v2.5H7.8A1.5 1.5 0 0 1 6.3 19v-3.1c-1.6-1-2.8-2.8-2.8-5.4 0-4.6 3.5-8 8.5-8zM8.4 9.6a2.2 2.2 0 1 0 0 4.4 2.2 2.2 0 0 0 0-4.4zm7.2 0a2.2 2.2 0 1 0 0 4.4 2.2 2.2 0 0 0 0-4.4zM12 13.6l-1.3 2.4h2.6z"/>',
     swords: '<g' + ST + ' stroke-width="2.1"><path d="M4.5 4.5 16 16M19.5 4.5 8 16"/><path d="M13.6 18.6 18.6 13.6M5.4 13.6l5 5"/></g><circle cx="19.4" cy="19.4" r="1.9"/><circle cx="4.6" cy="19.4" r="1.9"/>',
+    help: '<circle cx="12" cy="12" r="9.6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M9.2 9.4a2.9 2.9 0 1 1 4.3 2.5c-.9.5-1.5 1.1-1.5 2.2v.6" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><circle cx="12" cy="17.6" r="1.4"/>',
     info: '<circle cx="12" cy="6.6" r="1.9"/><path d="M9.6 10h3.6v8.2h1.6V20H9.4v-1.8H11v-6.4H9.6z"/>',
     // order marks
     hills: '<path d="M1.5 20Q8 6 14.5 20z" opacity=".75"/><path d="M8.5 20Q15.5 9 22.5 20z"/>',
@@ -15592,7 +15677,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
  * the hand and the corner buttons (it is sized for a full board, so it never jumps mid-battle).
  *
  * TTF4.Board = {
- *   mount(stage, {onPlace(pick, slot), onDetail(item), onUndo(), onDeck(), onBook(), onMenu(), canUndo(),
+ *   mount(stage, {onPlace(pick, slot), onDetail(item), onUndo(), onDeck(), onBook(), onHelp(), onMenu(), canUndo(),
  *                 onChoose(answer), onSkipChoice(), onRedraw(), onSurvey(a, b)})   (the last four: PLAN 60)
  * PLAN 60 (docs/P60-LIBRARY.md §8): tile features (TTF4.Art.featureSvg), engines on their own
  * bases, named officers with their crest and area, the Trebuchet's row marked; a pending choice
@@ -16020,9 +16105,10 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   function buttonsHtml() {
     const b = (act, icon, label, dis) => '<button type="button" class="cb" data-act="' + act + '"' + (dis ? ' disabled' : '') + '>' + icon + '<span>' + label + '</span></button>';
     const can = cb.canUndo ? cb.canUndo() : false;
-    // 2026-10-28 (user): no Info button on the battle screen (the book it opened stays in book.js, unreached)
+    // 2026-10-28 (user): no Info button on the battle screen (the book it opened stays in book.js, unreached);
+    // 2026-10-29 (user): Help in its place, the quick-start guide (help.js)
     return '<div class="cbs left">' + b('undo', Art.icon('undo'), 'Undo', !can) + b('deck', Art.icon('deck'), 'Deck') + '</div>' +
-      '<div class="cbs right">' + b('menu', Art.icon('flag'), 'Menu') + '</div>';
+      '<div class="cbs right">' + b('help', Art.icon('help'), 'Help') + b('menu', Art.icon('flag'), 'Menu') + '</div>';
   }
 
   // ---- PLAN 60: New hand, Survey, the peek strip, a pending choice ---------------------------------
@@ -16924,7 +17010,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       if (a.disabled) return;
       if (modeAct(act, a)) return;   // PLAN 60: the choice bar, New hand, Survey
       if (act === 'boss') { const b = st && C.bossOf(st); if (b && cb.onDetail) cb.onDetail({ boss: b }); return; }
-      const fn = { undo: cb.onUndo, deck: cb.onDeck, book: cb.onBook, menu: cb.onMenu }[act];
+      const fn = { undo: cb.onUndo, deck: cb.onDeck, book: cb.onBook, help: cb.onHelp, menu: cb.onMenu }[act];
       if (fn) fn();
       return;
     }
@@ -18352,6 +18438,153 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 </script>
 <script>
 /*
+ * core4/js/help.js - TTF4.Help: the quick-start guide (2026-10-29, user: "a sort of illustrated
+ * quick start guide that will explain how to play the game for new players"), opened from the
+ * battle screen's Help corner button (where Info was until 2026-10-28).
+ *
+ * Eight pages, one idea each, turned with Back / Next or the dots (and the arrow keys): the goal,
+ * a turn, units and home ground, generals, formations, officers / heroes / engineers, the score,
+ * between battles. Every illustration is the game's own art (real cards, painted tiles, formation
+ * symbols), and every number is read from the tunables, so the guide follows the rules as tuned.
+ *
+ * TTF4.Help = {
+ *   open(tun?) -> screen entry
+ *   pages(tun) -> [{title, say: [lines]}]   the words alone (pure; tests)
+ * }
+ * Built on TTF4.Screens' overlay stack (screens.js loads first).
+ */
+(function () {
+  'use strict';
+  const TTF4 = globalThis.TTF4 = globalThis.TTF4 || {};
+  const Core = () => globalThis.TTFCore4 || {};
+  const TYPE = { inf: 'Infantry', arc: 'Archers', cav: 'Cavalry' };
+  const TER = { forest: 'forest', hills: 'hills', plains: 'plains', fields: 'fields' };
+  const x = (v) => '×' + (Math.round(v * 100) / 100);
+
+  /** The words of each page, filled from the tunables. */
+  function pages(T0) {
+    const C = Core(), T = T0 || C.TUN_DEFAULT;
+    const P = T.ranks.power, home = T.terrain.home, R = T.run || {};
+    const lens = (R.lengths || [30]).join(', ').replace(/, (\d+)$/, ' or $1');
+    const om = (T.officer && T.officer.mult) || [2];
+    const every = (R.bosses || T.bosses || {}).every || 5;
+    return [
+      { title: 'The goal', say: [
+        'Each battle is fought on a field of 4 × 4 tiles. You have ' + T.turns + ' turns to place ' + T.turns + ' pieces.',
+        'Beat the battle\'s target score to win it. Win every battle of the campaign (' + lens + ') to win the campaign.'] },
+      { title: 'A turn', say: [
+        'Each turn you draw ' + T.offerSize + ' cards and play one of them onto an empty tile. The others go back under your deck.',
+        'Drag a card onto the field, or tap it and then tap a tile. Undo takes back your last placement.'] },
+      { title: 'Units and home ground', say: [
+        'Infantry, Archers and Cavalry. A unit\'s number is its power: rank 1 is ' + P[0] + ', rank 2 is ' + P[1] + ', up to ' + P[P.length - 1] + ' at rank ' + P.length + '. Units that fight in a won battle earn XP and rank up.',
+        'On its home ground a unit is ' + x(T.terrain.mult) + ': ' + TYPE.inf + ' in the ' + TER[home.inf] + ', ' + TYPE.arc + ' on the ' + TER[home.arc] + ', ' + TYPE.cav + ' on the ' + TER[home.cav] + '. Fields are nobody\'s home.'] },
+      { title: 'Generals', say: [
+        'You command six generals, and ' + (R.dealt || 3) + ' of them lead each battle (above the field). Amber generals boost your pieces or tiles. Violet generals teach a formation.',
+        'Press and hold any card, general or tile to read it in full.'] },
+      { title: 'Formations', say: [
+        'A violet general teaches a formation: place units in its pattern and they score a bonus on top of their own value.',
+        '"Any order" formations only need the units touching. "Exact shape" ones must match the symbol, turned or mirrored any way. One unit can serve in several formations.'] },
+      { title: 'Officers, heroes, engineers', say: [
+        'An officer takes a tile of his own and lights an area around him: units of his type in it are ' + x(om[0]) + ' (more as he ranks up).',
+        'A hero is a unit with a rule of his own that grows. An engineer builds a fort on an empty tile: the unit you stand on it later is ' + x(T.fort.mult) + '.'] },
+      { title: 'The score', say: [
+        'When the last piece is down the battle is counted: each piece\'s power times every factor it earns (home ground, fort, officers, generals), then the formation bonuses.',
+        'Factors multiply each other, so stacking them on your strongest pieces pays the most.'] },
+      { title: 'Between battles', say: [
+        'Win, and pick one of the spoils: a unit, a leader or a general joins you in place of one of yours. Every ' + every + 'th battle is a boss with a twist; beat it and one of its generals rises a level.',
+        'Lose, and fight it again: the same field, a new shuffle and three new generals. Your Laurels (the campaign\'s score) are halved for a battle that took a retry.'] }
+    ];
+  }
+
+  /** Each page's illustration, from the game's own art. */
+  function art(i, T) {
+    const C = Core(), K = TTF4.Cards, A = TTF4.Art;
+    const card = (c, w) => '<div class="hp-c">' + K.faceHtml(c, { w: w || 118, tun: T }) + '</div>';
+    const unit = (type, rank) => ({ kind: 'unit', type, rank: rank || 1, xp: 0, traits: [] });
+    const tile = (t, inner, cls) => '<div class="hp-t' + (cls ? ' ' + cls : '') + '" style="background-image:' + A.tileBg(t, 0).replace(/"/g, "'") + '">' + (inner || '') + '</div>';
+    if (i === 0) {
+      const lay = ['forest', 'hills', 'plains', 'fields', 'plains', 'forest', 'fields', 'hills', 'hills', 'fields', 'forest', 'plains', 'fields', 'plains', 'hills', 'forest'];
+      return '<div class="hp-board">' + lay.map((t) => tile(t)).join('') + '</div>' +
+        '<div class="hp-goal"><span>Target</span><b>' + ((T.run && T.run.target && T.run.target[0]) || 100) + '</b><i>' + A.icon('swords') + '</i><span>' + T.turns + ' turns</span></div>';
+    }
+    if (i === 1) {
+      return '<div class="hp-hand">' + card(unit('inf'), 108) + card(unit('arc'), 108) + card(unit('cav'), 108) + '</div>' +
+        '<div class="hp-arrow">→</div><div class="hp-one">' + tile('forest', '', 'big') + '</div>';
+    }
+    if (i === 2) {
+      const h = T.terrain.home;
+      return '<div class="hp-homes">' + ['inf', 'arc', 'cav'].map((t, k) =>
+        '<div class="hp-home">' + card(unit(t, k + 1), 112) + tile(h[t], '<span>' + x(T.terrain.mult) + '</span>') + '<em>' + TER[h[t]] + '</em></div>').join('') + '</div>';
+    }
+    if (i === 3) {
+      const boost = C.GENERALS.find((g) => g.id === 'lord_hills') || C.GENERALS.find((g) => g.role === 'boost' && !g.retired);
+      const teach = C.GENERALS.find((g) => g.id === 'cpt_archers') || C.GENERALS.find((g) => g.role === 'teach');
+      return '<div class="hp-gens">' + [boost, teach].map((g) => '<div class="hp-g">' + K.generalHtml({ id: g.id, level: 1 }, { w: 230, tun: T }) +
+        '<span class="hp-role ' + g.role + '">' + (g.role === 'teach' ? 'Teaches' : 'Boosts') + '</span></div>').join('') + '</div>';
+    }
+    if (i === 4) {
+      return '<div class="hp-forms">' + ['triad', 'shield_wall', 'covered_archers'].map((id) => {
+        const f = C.FORMATIONS.find((q) => q.id === id);
+        return f ? '<div class="hp-f">' + A.formationDiagram(id) + '<b>' + f.name + '</b><span>' + f.short + '</span></div>' : '';
+      }).join('') + '</div><div class="hp-key">' + ['inf', 'arc', 'cav'].map((t) => '<span><i style="background:' + A.TYPE_COL[t] + '"></i>' + TYPE[t] + '</span>').join('') + '</div>';
+    }
+    if (i === 5) {
+      const hero = (C.HEROES || []).find((h) => h.id === 'vanguard') || (C.HEROES || [])[0];
+      return '<div class="hp-hand">' + card({ kind: 'officer', type: 'inf', shape: 'cross', rank: 1, xp: 0 }) +
+        (hero ? card(C.heroCard(hero, T)) : '') + card({ kind: 'engineer' }) + '</div>';
+    }
+    if (i === 6) {
+      const p = T.ranks.power[1];
+      const tot = Math.round(p * T.terrain.mult * T.fort.mult * T.officer.mult[0]);
+      return '<div class="hp-row">' + card(unit('inf', 2)) + '<div class="hp-sum"><b>' + p + '</b><span>power</span><i>' + x(T.terrain.mult) + '</i><span>home</span><i>' + x(T.fort.mult) +
+        '</i><span>fort</span><i>' + x(T.officer.mult[0]) + '</i><span>officer</span><em>= ' + tot + '</em></div></div>' +
+        '<p class="hp-note">One rank 2 unit on home ground, on a fort, in an officer\'s area.</p>';
+    }
+    return '<div class="hp-icons"><div>' + A.icon('star') + '<span>Spoils</span></div><div>' + A.icon('crown') + '<span>Bosses</span></div><div>' +
+      A.icon('undo') + '<span>Retry</span></div><div>' + A.icon('flag') + '<span>Laurels</span></div></div>';
+  }
+
+  function open(tun) {
+    const S = TTF4.Screens, C = Core(), K = TTF4.Cards, esc = S._esc;
+    if (S.top() === 'help') return null;   // a second tap while it opens
+    const T = tun || C.TUN_DEFAULT, P = pages(T), n = P.length;
+    let at = 0;
+    const frame = () => {
+      const p = P[at];
+      return '<div class="plate wide helpp"><button type="button" class="hp-x" data-act="close" aria-label="Close">' + TTF4.Art.icon('close') + '</button>' +
+        '<p class="kick">How to play · ' + (at + 1) + ' of ' + n + '</p><h2>' + esc(p.title) + '</h2>' +
+        '<div class="hp-art">' + art(at, T) + '</div>' +
+        p.say.map((s) => '<p class="say">' + esc(s) + '</p>').join('') +
+        '<div class="hp-dots">' + P.map((_, k) => '<button type="button" class="hp-d' + (k === at ? ' on' : '') + '" data-act="go" data-k="' + k + '" aria-label="Page ' + (k + 1) + '"></button>').join('') + '</div>' +
+        '<div class="acts">' + S._btn('back', 'Back', 'quiet', at === 0) + S._btn(at === n - 1 ? 'close' : 'next', at === n - 1 ? 'To battle' : 'Next', 'primary') + '</div></div>';
+    };
+    const draw = () => {
+      entry.ov.querySelector('.ov-body').innerHTML = frame();
+      K.fit(entry.ov);
+      S._fit(entry.ov);
+    };
+    const entry = S._open('help', frame(), { onEsc: () => done() });
+    const key = (e) => {
+      if (e.key === 'ArrowRight' && at < n - 1) { at++; draw(); }
+      else if (e.key === 'ArrowLeft' && at > 0) { at--; draw(); }
+    };
+    const done = () => { document.removeEventListener('keydown', key); S._close(entry); };
+    document.addEventListener('keydown', key);
+    S._onAct(entry, (act, el) => {
+      if (act === 'close') { done(); return; }
+      if (act === 'next' && at < n - 1) at++;
+      else if (act === 'back' && at > 0) at--;
+      else if (act === 'go') at = +el.dataset.k || 0;
+      else return;
+      draw();
+    });
+    return entry;
+  }
+  TTF4.Help = { open, pages };
+})();
+</script>
+<script>
+/*
  * core4/js/callouts.js - TTF4.Callouts: first-seen tips, the game's only onboarding
  * (PLAN 46 decision "callouts only"; docs/P46-UI.md §8).
  *
@@ -19182,7 +19415,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     const stage = $('stage');
     Screens.mount(stage);
     Board.mount(stage, {
-      onPlace, onUndo: undo, onDeck: openDeck, onBook: openBook, onMenu: quit,
+      onPlace, onUndo: undo, onDeck: openDeck, onBook: openBook, onHelp: openHelp, onMenu: quit,
       onDetail: (item) => Screens.detail(withXp(item), (st && st.tun) || tun || C.TUN_DEFAULT),
       canUndo: () => mode === 'battle' && C.canUndo(st),
       onChoose, onSkipChoice, onRedraw, onSurvey,
@@ -19483,6 +19716,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // ---- buttons ---------------------------------------------------------------------------------------
   function openDeck() { if (run) Screens.deckView(run); }
   function openBook() { if (run) Screens.book(st, run); }
+  function openHelp() { if (TTF4.Help) TTF4.Help.open((st && st.tun) || (run && run.tun)); }
   function quit() {
     Screens.confirm('Its battles and spoils are lost.', (yes) => {
       if (!yes) return;
