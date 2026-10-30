@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="e0c5d40444";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="7de8850151";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -8139,7 +8139,9 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // 2026-10-30 (PLAN 61): 20, Medium/Hard targets ramp up over the first 15/20 battles; bosses ×1.15 with a
   // general in their spoils; four twists that change what scores; the Colonel reaches named officers; the
   // standard heroes read the board; 17 pieces retired, the self-only heroes touch a neighbour; targets re-set
-  C.RULES_VERSION = 20;
+  // 2026-10-30 (user): 21, the cards you do not pick are discarded for the battle (never offered again);
+  // Reinforcements shuffles its hand back into the pile; an empty pile reshuffles the discard under it
+  C.RULES_VERSION = 21;
 
   C.TUN_DEFAULT = {
     board: { size: 4, minEach: 3, maxEach: 5, tries: 300 },
@@ -8931,11 +8933,12 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     return a;
   };
   /** The army of a battle state: st.army (createBattle), else counted from its cards (draw pile,
-   *  hand, spent, the cards standing on the board), else zeros. */
+   *  hand, discard, spent, the cards standing on the board), else zeros. */
   C.armyOfSt = function armyOfSt(st) {
     if (!st) return C.armyOf([]);
     if (st.army && typeof st.army === 'object') return st.army;
-    const cards = [].concat(st.deck || [], st.offer || [], st.spent || []);
+    // 2026-10-30 (user): the discarded cards still count (Muster reads the battle's whole deck)
+    const cards = [].concat(st.deck || [], st.offer || [], st.discard || [], st.spent || []);
     const P = st.pieces || {};
     for (const k of Object.keys(P)) {
       const p = P[k];
@@ -11026,7 +11029,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   function migrateState(st) {
     if (!st || typeof st !== 'object') return st;
     const out = Object.assign({}, st);
-    for (const k of ['deck', 'offer', 'spent']) if (Array.isArray(st[k])) out[k] = st[k].map(migrateCard);
+    for (const k of ['deck', 'offer', 'spent', 'discard']) if (Array.isArray(st[k])) out[k] = st[k].map(migrateCard);
     if (st.pieces) {
       out.pieces = {};
       for (const k of Object.keys(st.pieces)) out.pieces[k] = migrateCard(st.pieces[k]);
@@ -12006,6 +12009,19 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     const d = deck.slice();
     return { offer: d.splice(0, n), deck: d };
   }
+  /** 2026-10-30 (user): a seen card you did not pick is discarded for the battle (st.discard), never
+   *  offered again. Draw a hand of n from `deck` (the pile, top first); only when the pile holds
+   *  fewer than n cards is the discard shuffled (seeded by the battle and the turn) and put under
+   *  it first, so a battle never runs dry. -> {deck, offer, discard}. Pure. */
+  function drawHand(st, deck, discard, n) {
+    let pile = deck || [], dis = discard || [];
+    if (pile.length < n && dis.length) {
+      pile = pile.concat(C.RNG.shuffle(C.RNG.seedFrom(st.seed, 'reshuffle', st.turn || 0), dis.slice()).value);
+      dis = [];
+    }
+    const d = drawOffer(pile, n);
+    return { deck: d.deck, offer: d.offer, discard: dis.slice() };
+  }
   /** The cards playable this turn: every offer card. -> [{from:'offer', index, card}] */
   function playable(st) {
     if (!st || st.phase !== 'draft') return [];
@@ -12150,7 +12166,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     const seed = o.seed === undefined || o.seed === null || o.seed === '' ? (Math.random() * 4294967296) >>> 0 : o.seed;
     const cards = clone(o.cards || startDeck(seed, T)).map(migrateCard);
     const sh = o.attempt > 0 ? C.RNG.seedFrom(seed, 'retry', o.attempt) : C.RNG.seedFrom(seed, 'deck');
-    const st = { phase: 'draft', seed, board: C.generateBoard(seed, T), forts: [], pieces: {}, deck: [], offer: [], spent: [], turn: 0, prev: null };
+    const st = { phase: 'draft', seed, board: C.generateBoard(seed, T), forts: [], pieces: {}, deck: [], offer: [], spent: [], discard: [], turn: 0, prev: null };
     if (o.tun) st.tun = o.tun;
     if (typeof o.target === 'number') st.target = o.target;
     if (typeof o.battle === 'number') st.battle = o.battle;
@@ -12179,14 +12195,14 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   }
   /** The same draft state with its deck replaced by `cards` (top first) and the offer redrawn. */
   function redeal(st, cards) {
-    const d = drawOffer(cards, offerSizeOf(st));
-    return Object.assign({}, st, { deck: d.deck, offer: d.offer });
+    const d = drawHand(st, cards, st.discard, offerSizeOf(st));
+    return Object.assign({}, st, d);
   }
   /**
-   * Play a card. pick: an offer index, {offer: k} or {uid}. Unpicked offer cards go to the bottom
-   * of the deck in their offered order. An engineer builds a fort on `slot` and is spent for this
+   * Play a card. pick: an offer index, {offer: k} or {uid}. Unpicked offer cards are discarded
+   * for the battle (st.discard; 2026-10-30 user) when the turn ends. An engineer builds a fort on `slot` and is spent for this
    * battle. Under 'fog' the slot is revealed. After turnsOf(st) plays the phase is 'done' and the
-   * spent cards return to the deck. Throws on anything illegal; never mutates `st`.
+   * discarded and spent cards return to the deck. Throws on anything illegal; never mutates `st`.
    * PLAN 60: a builder / obstacle puts its feature on `slot` and is spent; an engine is a piece
    * (2026-10-28: no orders, every card takes a tile). The card's `place` rule then changes the
    * state, its `ask` rule may open a choice (phase 'choose', §3.3); else the turn ends (endPlay).
@@ -12282,8 +12298,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   }
   /**
    * The end of a play (PLAN 60): with an extra play left (Messenger) the turn goes on with the
-   * rest of the hand; else the rest goes to the bottom of the deck, the turn passes and the next
-   * hand is drawn (offerSizeOf, with st.handPlus once), or the battle is done.
+   * rest of the hand; else the rest is discarded (st.discard; 2026-10-30 user), the turn passes and
+   * the next hand is drawn (drawHand: offerSizeOf, with st.handPlus once), or the battle is done.
    */
   function endPlay(mid) {
     const out = Object.assign({}, mid, { phase: 'draft' });
@@ -12293,16 +12309,15 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     delete out.markPlay;
     if (mid.markNext) { if (mid.extraNext > 0) out.markPlay = mid.markNext; delete out.markNext; }
     if (mid.extraNext > 0) { out.extraPlays = mid.extraNext; delete out.extraNext; } else if ('extraPlays' in out) delete out.extraPlays;
-    const deck = mid.deck.concat(mid.offer);
+    // 2026-10-30 (user): the unpicked hand is discarded, never offered again this battle
+    const discard = (mid.discard || []).concat(mid.offer);
     out.turn = mid.turn + 1;
     if (out.turn >= turnsOf(out)) {
-      Object.assign(out, { phase: 'done', deck: deck.concat(mid.spent), offer: [], spent: [] });
+      Object.assign(out, { phase: 'done', deck: mid.deck.concat(discard, mid.spent), offer: [], spent: [], discard: [] });
       delete out.handPlus;
       return out;
     }
-    const d = drawOffer(deck, offerSizeOf(out));
-    out.deck = d.deck;
-    out.offer = d.offer;
+    Object.assign(out, drawHand(out, mid.deck, discard, offerSizeOf(out)));
     if ('handPlus' in out) delete out.handPlus;
     return out;
   }
@@ -12403,11 +12418,15 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   const surveysLeft = (st) => (st ? Math.max(0, usesOf(st, 'survey') - usedOf(st, 'surveyed')) : 0);
   /** Can the dealt generals' `redraw` rule (Reinforcements) be used now (his level's times a battle)? */
   const canRedraw = (st) => !!(st && st.phase === 'draft' && st.offer && st.offer.length && redrawsLeft(st) > 0);
-  /** Throw back the hand (to the bottom of the deck) and draw as many new cards; not a turn. */
+  /** Throw back the hand and draw as many new cards; not a turn. 2026-10-30 (user): the hand is
+   *  shuffled back into the draw pile (seeded by the battle, the turn and the use), not discarded,
+   *  so a new hand never runs the pile dry. */
   function redraw(st) {
     if (!canRedraw(st)) throw new Error('no redraw');
-    const d = drawOffer(st.deck.concat(st.offer), st.offer.length);
-    return Object.assign({}, st, { deck: d.deck, offer: d.offer, redrawn: usedOf(st, 'redrawn') + 1, prev: st, back: false });
+    const used = usedOf(st, 'redrawn');
+    const pile = C.RNG.shuffle(C.RNG.seedFrom(st.seed, 'redraw', st.turn || 0, used), st.deck.concat(st.offer)).value;
+    const d = drawHand(st, pile, st.discard, st.offer.length);
+    return Object.assign({}, st, d, { redrawn: used + 1, prev: st, back: false });
   }
   /** Can the dealt generals' `survey` rule (Cartographer) be used now (his level's times a battle)? */
   const canSurvey = (st) => !!(st && st.phase === 'draft' && surveysLeft(st) > 0);
@@ -12438,8 +12457,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   const peekOn = (st) => peekCount(st) > 0;
   /** The coming hands while peek is on, read-only: [next hand, the hand after, ...] (peekCount of
    *  them). The next hand is the deck's top offerSizeOf cards; each later one the deck cards after
-   *  it (without st.handPlus, a one-draw add), only as far as the deck goes (past it a hand takes
-   *  the cards you do not play now, which nobody knows yet). [] when off or not drafting. */
+   *  it (without st.handPlus, a one-draw add), only as far as the draw pile goes (past it the
+   *  discard is reshuffled under it, in an order nobody knows yet). [] when off or not drafting. */
   function peekHands(st) {
     const k = st && st.phase === 'draft' ? peekCount(st) : 0, out = [];
     let at = 0;
@@ -19281,13 +19300,16 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   /** 2026-10-30 (PLAN 61): the draw pile, from the band's deck count during a battle: the cards still to
    *  be drawn (C.drawPileList: sorted, so no order is given away), stacked like the deck view and in
-   *  its remembered look (cards or list), under the count. o: {battle, tun}. */
+   *  its remembered look (cards or list), under the count. o: {battle, tun, discarded}.
+   *  2026-10-30 (user): the unpicked cards are discarded; o.discarded (their count) shows small. */
   S.pile = function pile(list, o) {
     const K = Cards(), T = (o && o.tun) || Core().TUN_DEFAULT, cards = list || [];
+    const dn = o && o.discarded > 0 ? Math.floor(o.discarded) : 0;
     const groups = groupCards(cards);
     const look = prefs.get('deckLook') === 'list' ? 'list' : 'cards';
     const html = '<div class="plate wide deckv pilep"><p class="kick">Battle ' + ((o && o.battle) || 1) + '</p><h2>Draw pile <span>' + cards.length + ' card' + (cards.length === 1 ? '' : 's') + '</span></h2>' +
-      '<p class="say small">Still to be drawn this battle, shown in deck order, not the order they come. The cards you did not pick go back under the deck.</p>' +
+      '<p class="say small">Still to be drawn this battle, in deck order, not the order they come. The cards you did not pick are discarded.</p>' +
+      '<p class="say small pile-dis">Discarded: ' + dn + '</p>' +
       (cards.length ? (look === 'cards'
         ? '<div class="dgrid">' + groups.map((g, i) => '<div class="dc' + (g.n > 1 ? ' stk' : '') + '" data-i="' + i + '">' + K.faceHtml(g.card, { w: K.MIN_FACE, tun: T }) + (g.n > 1 ? '<b class="dstk-n">×' + g.n + '</b>' : '') + '</div>').join('') + '</div>'
         : '<div class="dlist">' + groups.map((g, i) => K.rowHtml(g.card, Object.assign({ tun: T, n: g.n, attrs: { 'data-i': i } }, deckWords(g.card, T)))).join('') + '</div>')
@@ -19632,7 +19654,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
         'Each battle is fought on a field of 4 × 4 tiles. You have ' + T.turns + ' turns to place ' + T.turns + ' pieces.',
         'Beat the battle\'s target score to win it. Win every battle of the campaign (' + lens + ') to win the campaign.'] },
       { title: 'A turn', say: [
-        'Each turn you draw ' + T.offerSize + ' cards and play one of them onto an empty tile. The others go back under your deck.',
+        'Each turn you draw ' + T.offerSize + ' cards and play one of them onto an empty tile. The others are discarded until the next battle.',
         'Drag a card onto the field, or tap it and then tap a tile. Undo takes back your last placement.'] },
       { title: 'Units and home ground', say: [
         'Infantry, Archers and Cavalry. A unit\'s number is its power: rank 1 is ' + P[0] + ', rank 2 is ' + P[1] + ', up to ' + P[P.length - 1] + ' at rank ' + P.length + '. Units that fight in a won battle earn XP and rank up.',
@@ -20178,7 +20200,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
           lines: ['One undo a turn.', 'Undo reshuffles the draw pile.']
         };
       case 'bottom':
-        return { target: fanTarget, side: ['top'], lines: ['The cards you did not pick go under your deck, not away.'] };
+        return { target: fanTarget, side: ['top'], lines: ["The cards you did not pick are discarded: you won't see them again this battle."] };
       case 'fort': {
         const slot = (st.forts || []).find((k) => !st.pieces[k] && !Core.isHidden(st, k));
         return {
@@ -21115,7 +21137,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   function openBook() { if (run) Screens.book(st, run); }
   function openHelp() { if (TTF4.Help) TTF4.Help.open((st && st.tun) || (run && run.tun), { st, run }); }
   /** 2026-10-30 (PLAN 61): the band's deck count opens the draw pile, during a battle only. */
-  function openPile() { if (mode === 'battle' && st && st.phase === 'draft') Screens.pile(C.drawPileList(st), { battle: st.battle, tun: st.tun || tun }); }
+  function openPile() { if (mode === 'battle' && st && st.phase === 'draft') Screens.pile(C.drawPileList(st), { battle: st.battle, tun: st.tun || tun, discarded: (st.discard || []).length }); }
   /** 2026-10-30 (PLAN 61): the Menu corner button opens a plate: Resume / Settings / Help / Quit campaign. */
   function menu() {
     Screens.menu({ note: poolNote() }, (act) => {
