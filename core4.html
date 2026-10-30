@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="7d6bae5d71";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="6afdaf37e7";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2611,6 +2611,46 @@ var(--p2-cn) left top / 44px 44px no-repeat;
 .pcs-gen .dt-form svg.fdg { width: 80px; }
 .pcs-gen .dt-form b { font-size: 18px; }
 .pcs-gen .dt-muster { color: #24561a; }
+
+/* ==========================================================================
+   2026-10-30 (PLAN 62): the landscape layout. app.js (stageGeom) turns it on for a touch screen held
+   sideways that is not a phone: body.land, a stage 880 px wide and 860-1000 tall, and the card panel
+   (#side, app.js Side) at its right. board2.js lays the battle out (fieldX, handLayout): the band
+   across the top, the generals in a column at the left, each formation tag under its general, Undo
+   and Deck in one row at the column's foot, the field and the hand beside them. Every selector
+   below is body.land (or the panel's foot, shown only there): portrait, phone and PC are untouched.
+   ========================================================================== */
+body.land .scr .gens { transform: none; display: flex; flex-direction: column; gap: 8px; }
+body.land .scr .gens .row, body.land .scr .gens .fdrow { display: contents; }
+body.land .gens .row > :nth-child(1) { order: 1; }
+body.land .gens .fdrow > :nth-child(1) { order: 2; }
+body.land .gens .row > :nth-child(2) { order: 3; }
+body.land .gens .fdrow > :nth-child(2) { order: 4; }
+body.land .gens .row > :nth-child(3) { order: 5; }
+body.land .gens .fdrow > :nth-child(3) { order: 6; }
+body.land .gens .fdslot:empty { display: none; }
+body.land .gens .fdslot { margin: 2px 0 6px; }
+body.land .cbs.left { flex-direction: row; gap: 12px; }
+/* New hand and Survey over "Pick one", which stands over the one row of corner buttons (hand.js pickTop) */
+body.land .p60acts { bottom: 168px; }
+/* the choice prompt centred over the field (fieldX: 16 + 228 + 16 = 260 px in, 604 wide) */
+body.land .p60bar { left: 562px; }
+/* the card panel: the parchment, then Help and Menu at its foot */
+.pcs-foot { display: none; }
+body.land #side { display: flex; flex-direction: column; gap: 14px; }
+body.land #side[hidden] { display: none; }
+body.land #side .plate.pcs { flex: 1 1 auto; height: auto; min-height: 0; }
+body.land .pcs-run { display: none; }
+/* the generals' text takes more of the narrower panel (fitIn shrinks what still does not fit) */
+body.land .pcs-dt { flex: 0 0 auto; max-height: 50%; }
+body.land .pcs-gens { flex: 1 1 0; max-height: none; }
+body.land .pcs-foot { display: flex; flex: none; gap: 12px; justify-content: flex-end; }
+/* the generals' list keeps each formation's name and shape; its full description reads on a tap */
+body.land .pcs-gen .dt-form p { display: none; }
+body.land .pcs-gen .dt-form { align-items: center; margin-top: 4px; }
+body.land .pcs-gen .dt-form svg.fdg { width: 44px; }
+/* the peek strip in the field's bottom right corner; the fan moves left to clear it (board2.js handLayout) */
+body.land:not(.land-np) .peek { right: 16px; bottom: 16px; }
 </style>
 <!-- PLAN 60: the expanded library (new card kinds, board features, choices, the pre-run screen) -->
 <style>
@@ -16422,17 +16462,25 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   const PICK = { x: 76, w: 120 };
   // (PLAN 60: from 4 cards the fan reaches the left column, so the prompt stands higher; QA
   // 2026-10-27: a 4-card hand's left card covered "Pick one" and New hand)
-  const pickTop = (Hs, n) => Hs - 16 - 2 * 70 - 12 - 62 - (n > 3 ? 72 : 0);
+  const pickTop = (Hs, n) => L.land ? Hs - 16 - 70 - 12 - 62 : Hs - 16 - 2 * 70 - 12 - 62 - (n > 3 ? 72 : 0);
+  // 2026-10-30 (PLAN 62): where the fan stands. Portrait: the stage's centre, inside the corner
+  // buttons. The landscape layout (board2.js setLayout): under the board, inside the field, the
+  // prompt over the one row of corner buttons (Undo, Deck) in the left column.
+  const L = { cx: H0.cx, half: H0.cx - 16 - 70 - 8, land: false };
+  Hd.setLayout = function setLayout(o) {
+    L.cx = o && o.cx != null ? o.cx : H0.cx;
+    L.half = o && o.half != null ? o.half : H0.cx - 16 - 70 - 8;
+    L.land = !!(o && o.land);
+  };
 
   // PLAN 60: the fan's half-width past 4 cards: it stays inside the corner buttons (16 + 70 px
-  // each side, 8 px clear)
-  const HALF = H0.cx - 16 - 70 - 8;
+  // each side, 8 px clear; L.half)
   /** The fan's spread and tilt for n cards of width w: today's for up to 4, closer past that. */
   function fanOf(n, w) {
     // (QA 2026-10-27: from 4 cards; a 4-card fan at today's tilt swung its outer corners over the corner buttons)
     if (n <= 3) return { spread: H0.spread, tilt: H0.tilt };
     const kmax = (n - 1) / 2, tilt = 2, swing = w * 1.4 * Math.sin(kmax * tilt * Math.PI / 180);
-    const spread = Math.min(H0.spread, (HALF - w / 2 - swing - 2) / (kmax * w));
+    const spread = Math.min(H0.spread, (L.half - w / 2 - swing - 2) / (kmax * w));
     return { spread, tilt };
   }
   Hd.fanOf = fanOf;
@@ -16443,7 +16491,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       const k = i - (n - 1) / 2, on = i === sel;
       const x = k * w * F.spread, y = on ? -H0.raise : 0, rot = on ? 0 : k * F.tilt, sc = on ? 1.03 : 1;
       const poly = (yy, rr, ss) => {
-        const a = rr * Math.PI / 180, ox = H0.cx + x, oy = Hs - H0.bottom + yy;
+        const a = rr * Math.PI / 180, ox = L.cx + x, oy = Hs - H0.bottom + yy;
         return [[-w / 2, -h], [w / 2, -h], [w / 2, 0], [-w / 2, 0]].map(([px, py]) =>
           [ox + ss * (px * Math.cos(a) - py * Math.sin(a)), oy + ss * (px * Math.sin(a) + py * Math.cos(a))]);
       };
@@ -16476,7 +16524,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       else if (on && prevSel !== i) { cls += ' lift'; st0 = '--from:' + tf(g.x, 0, g.k * g.tilt, 1) + ';'; }
       else if (!on && prevSel === i) { cls += ' lift'; st0 = '--from:' + tf(g.x, -H0.raise, 0, 1.03) + ';'; }
       // (QA 2026-10-27: the raised card stands over every neighbour, in a hand of 5 or 6 too; Play, z 9, over it)
-      return { cls, style: st0 + 'left:' + (H0.cx - curW / 2).toFixed(1) + 'px;bottom:' + H0.bottom + 'px;z-index:' + (on ? Math.max(5, 2 + cards.length) : 2 + i) + ';transform:' + tf(g.x, g.y, g.rot, on ? 1.03 : 1) };
+      return { cls, style: st0 + 'left:' + (L.cx - curW / 2).toFixed(1) + 'px;bottom:' + H0.bottom + 'px;z-index:' + (on ? Math.max(5, 2 + cards.length) : 2 + i) + ';transform:' + tf(g.x, g.y, g.rot, on ? 1.03 : 1) };
     });
     lastKey = key;
     lastSel = curSel;
@@ -16694,6 +16742,22 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // 2026-10-28: the reveal leaves this much room between the generals and the board for the
   // review's bar (drawNext), so the bar never covers the top row's heads and banners
   const RV_BAR = 58;
+  // 2026-10-30 (PLAN 62): the landscape layout (app.js stageGeom, body.land): a wider, shorter stage;
+  // the band across its top, the generals in a column at the left (the formation tags under them,
+  // Undo and Deck at its foot), the field and the hand beside them; Help and Menu sit in the card
+  // panel right of the stage (app.js Side). Portrait is untouched: every branch below asks landOn().
+  const landOn = () => typeof document !== 'undefined' && document.body.classList.contains('land');
+  // the card panel is a Settings switch, off by default (body.land-np): Help and Menu then stand in a
+  // narrow column at the stage's right (LAND_RAIL), as portrait's corner buttons do
+  const landPanel = () => landOn() && !document.body.classList.contains('land-np');
+  const LAND_RAIL = 100;
+  /** The field's box across the stage: under the generals (portrait) or right of their column (landscape). */
+  function fieldX() {
+    const sw = (stage && stage.offsetWidth) || W;
+    if (!landOn()) return { l: 16, w: sw - 32 };
+    const l = 16 + genW() + 16;
+    return { l, w: sw - l - 16 - (landPanel() ? 0 : LAND_RAIL) };
+  }
 
   const ICO = {
     teach: '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 5.4c3.3-1.5 6.6-1.3 9.2.8v14.6c-2.6-1.9-5.9-2.1-9.2-.8z" fill="currentColor"/><path d="M22 5.4c-3.3-1.5-6.6-1.3-9.2.8v14.6c2.6-1.9 5.9-2.1 9.2-.8z" fill="currentColor" opacity=".78"/></svg>',
@@ -17095,8 +17159,9 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     const can = cb.canUndo ? cb.canUndo() : false;
     // 2026-10-28 (user): no Info button on the battle screen (the book it opened stays in book.js, unreached);
     // 2026-10-29 (user): Help in its place, the quick-start guide (help.js)
+    // PLAN 62: in landscape Help and Menu stand in the card panel (app.js Side)
     return '<div class="cbs left">' + b('undo', Art.icon('undo'), 'Undo', !can) + b('deck', Art.icon('deck'), 'Deck') + '</div>' +
-      '<div class="cbs right">' + b('help', Art.icon('help'), 'Help') + b('menu', Art.icon('flag'), 'Menu') + '</div>';
+      (landPanel() ? '' : '<div class="cbs right">' + b('help', Art.icon('help'), 'Help') + b('menu', Art.icon('flag'), 'Menu') + '</div>');
   }
 
   // ---- PLAN 60: New hand, Survey, the peek strip, a pending choice ---------------------------------
@@ -17120,7 +17185,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     const live = st.phase === 'draft';
     const b = (act, label, on, title) => '<button type="button" class="b5" data-act="' + act + '"' + (on ? '' : ' disabled') + ' title="' + esc(title) + '">' + label + '</button>';
     // from 4 cards the fan reaches the left column: the buttons stand higher (hand.js pickTop)
-    return '<div class="p60acts"' + (handN() > 3 ? ' style="bottom:314px"' : '') + '>' +
+    return '<div class="p60acts"' + (handN() > 3 && !landOn() ? ' style="bottom:314px"' : '') + '>' +
       (f.redraw ? b('redraw', redrawWord(), live && C.canRedraw(st), 'Reinforcements: ' + timesWord(useCount('redraw')) + ' a battle, throw back your hand and draw a new one. It is not a turn.') : '') +
       (f.survey ? b('survey', surveying ? 'Cancel survey' : surveyWord(), live && (C.canSurvey(st) || surveying), 'Cartographer: ' + timesWord(useCount('survey')) + ' a battle, swap the terrain of two tiles. It is not a turn.') : '') + '</div>';
   }
@@ -17272,10 +17337,10 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     if (st !== pickSt) { pickSt = st; picked = null; armed = null; if (!(surveying && st.phase === 'draft' && C.canSurvey(st))) surveying = false; }
     lastScore = C.score(st);
     root.innerHTML = '<div class="scr" data-mode="' + (rv ? 'reveal' : 'battle') + '">' +
-      '<section class="band" style="left:' + BAND.x + 'px;top:' + BAND.y + 'px;width:' + BAND.w + 'px"></section>' +
+      '<section class="band" style="left:' + BAND.x + 'px;top:' + BAND.y + 'px;width:' + (((stage.offsetWidth || W) - 2 * BAND.x) || BAND.w) + 'px"></section>' +
       '<section class="gens"></section>' +
       '<section class="field"></section>' +
-      (rv ? '<section class="report" style="left:16px;width:788px"><h3>Battle report</h3><div class="ledger"></div></section>'
+      (rv ? '<section class="report" style="left:' + fieldX().l + 'px;width:' + fieldX().w + 'px"><h3>Battle report</h3><div class="ledger"></div></section>'
         : '<section class="handzone">' + buttonsHtml() + actsHtml() + peekHtml() + choiceHtml() + '<div class="hand"></div></section>') +
       '</div>';
     drawBand();
@@ -17287,12 +17352,15 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     gensKeep = { key: gk, el: stage.querySelector('.gens') };
     const band = loc(stage.querySelector('.band').getBoundingClientRect());
     const gens = stage.querySelector('.gens');
-    gens.style.cssText = 'left:' + CX + 'px;top:' + Math.round(band.b + 26) + 'px';
+    const land = landOn(), fx = fieldX();
+    gens.style.cssText = land ? 'left:16px;top:' + Math.round(band.b + 14) + 'px' : 'left:' + CX + 'px;top:' + Math.round(band.b + 26) + 'px';
     const gb = loc(gens.getBoundingClientRect());
-    const top = Math.round(gb.b + 12 + (rv ? RV_BAR : 0));
+    // PLAN 62: in landscape the field starts under the band, beside the generals
+    const top = Math.round((land ? band.b : gb.b) + 12 + (rv ? RV_BAR : 0));
     const bottom = rv ? H - REPORT_H - 8 : H - 4;
     const field = stage.querySelector('.field');
-    field.style.cssText = 'left:16px;top:' + top + 'px;width:788px;height:' + (bottom - top) + 'px';
+    field.style.cssText = 'left:' + fx.l + 'px;top:' + top + 'px;width:' + fx.w + 'px;height:' + (bottom - top) + 'px';
+    handLayout();
     if (!rv && handOn) TTF4.Hand.render(stage.querySelector('.hand'), st, { sel, w: handW(), H });
     const bs = fitBoard(field, top, bottom);
     drawBoard(bs);
@@ -17304,6 +17372,22 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // a shorter stage (768 x 1024, 1024 x 1366: 820 x ~1094) gives the board room from the cards
   const handW = () => (H < 1150 ? TTF4.Cards.MIN_FACE : 172);   // a face is never narrower than its text needs
   const genW = () => (H < 1150 ? 228 : GW);
+  /** PLAN 62: the hand's fan centred under the field (landscape), else the stage's centre as before. */
+  function handLayout() {
+    if (!TTF4.Hand.setLayout) return;
+    if (!landOn()) { TTF4.Hand.setLayout(null); return; }
+    const fx = fieldX(), half = fx.w / 2 - 8;
+    let cx = fx.l + fx.w / 2;
+    // the peek strip (Scout Master) stands in the field's bottom right corner (core4.css): the fan
+    // moves left to clear it, into the gutter beside the left column's buttons if it must
+    const pk = landPanel() && stage && stage.querySelector('.handzone .peek'), n = handN();
+    if (pk && n) {
+      TTF4.Hand.setLayout({ cx: 0, half, land: true });
+      const ext = Math.max.apply(null, TTF4.Hand.polysFor(n, handW(), H).slice(0, 2 * n).map((P) => Math.max.apply(null, P.map((q) => q[0]))));
+      cx = Math.min(cx, fx.l + fx.w - pk.offsetWidth - 12 - ext);
+    }
+    TTF4.Hand.setLayout({ cx, half, land: true });
+  }
   let curBs = 0;
   let drawn = null;   // what the field shows: {st, bs, sel, keep} (patchBoard updates it in place)
   /** The held card's legal tiles, and those of them that are its home. */
@@ -17466,7 +17550,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // is capped CAP_GAP under the cards: each stand near them clips its miniature at that line.
   const REACH = 0.04, CAP_GAP = 8, TALLEST = 0.3;
   function capFigures(field, only) {
-    const cards = Array.from(stage.querySelectorAll('.gens .g6, .gens .fdg2'));
+    // PLAN 62: in landscape nothing stands over the field but the band
+    const cards = Array.from(stage.querySelectorAll(landOn() ? '.band' : '.gens .g6, .gens .fdg2'));
     if (!cards.length) return;
     const limit = Math.max.apply(null, cards.map((g) => loc(g.getBoundingClientRect()).b)) + CAP_GAP;
     // every read first, then every write (perf pass: one layout, not one per miniature)
@@ -17801,7 +17886,9 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
    *  the corner buttons (a skeleton full board is measured, so the size never changes mid-battle). */
   function fitBoard(field, top, bottom) {
     // the hand is fitted for whether or not it is dealt yet, so the board never jumps
+    handLayout();
     const hand = !rv ? TTF4.Hand.polysFor(handN(), handW(), H) : [];
+    const fw = fieldX().w;
     const extra = rv ? '' : Array.from(stage.querySelectorAll('.handzone .p60acts, .handzone .peek')).map((e) => e.className + e.childElementCount).join(',');
     const key = [stage.offsetWidth, H, top, bottom, rv ? 'r' : 'b', hand.length, handW(), extra].join(':');
     if (fitCache.key === key) return fitCache.bs;
@@ -17813,7 +17900,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       return P.some(([x, y]) => x > r.l && x < r.r && y > r.t && y < r.b);
     };
     const cos = Math.cos(TILT * Math.PI / 180);
-    let bs = Math.floor(Math.min(788 * 0.98, (bottom - top) / (cos + 0.12)));
+    let bs = Math.floor(Math.min(fw * 0.98, (bottom - top) / (cos + 0.12)));
     let lift = 0;
     for (let n = 0; n < 50; n++) {
       field.innerHTML = boardHtml(bs, { skeleton: true });
@@ -17826,7 +17913,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       lift = top + 4 - minTop;
       t.style.top = (bs / 2 + lift) + 'px';
       const rim = loc(field.querySelector('.rim').getBoundingClientRect());
-      let ok = rim.b <= bottom && rim.r - rim.l <= 788;
+      let ok = rim.b <= bottom && rim.r - rim.l <= fw;
       if (ok && polys.length) {
         const prot = [];
         field.querySelectorAll('.stand').forEach((s) => {
@@ -18639,8 +18726,11 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     const gens = stage.querySelector('.gens');
     if (!gens) return;
     // centred in the room the reveal left over the board (RV_BAR): the pieces stand from top + 4
-    const g = loc(gens.getBoundingClientRect()), top = Math.round(g.b + 12 + RV_BAR) + 4;
+    // PLAN 62: in landscape the bar sits under the band, centred over the field
+    const land = landOn(), fx = fieldX();
+    const g = loc((land ? stage.querySelector('.band') : gens).getBoundingClientRect()), top = Math.round(g.b + 12 + RV_BAR) + 4;
     bar.style.top = Math.round(Math.max(g.b + 4, (g.b + top - bar.offsetHeight) / 2)) + 'px';
+    if (land) bar.style.left = Math.round(fx.l + fx.w / 2) + 'px';
   }
   function placeReport() {
     const rim = stage.querySelector('.rim'), rep = stage.querySelector('.report');
@@ -18719,13 +18809,16 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     requestAnimationFrame(() => ov.classList.add('is-in'));
     return entry;
   }
+  /** 2026-10-30 (PLAN 62): the landscape stage is short, so a plate fitted to it leaves room for its
+   *  seal and ribbon above its top edge; portrait keeps its 24 px. */
+  const padY = () => (typeof document !== 'undefined' && document.body.classList.contains('land') ? 64 : 24);
   /** A tall screen is scaled down to fit the stage (never scrolled). */
   function fitBody(ov) {
     const body = ov.querySelector('.ov-body');
     if (!body) return;
     body.style.transform = '';
     const H = host().offsetHeight, h = body.scrollHeight, W = host().offsetWidth, w = body.scrollWidth;
-    const k = Math.min(1, (H - 24) / Math.max(1, h), (W - 16) / Math.max(1, w));
+    const k = Math.min(1, (H - padY()) / Math.max(1, h), (W - 16) / Math.max(1, w));
     if (k < 1) body.style.transform = 'scale(' + k.toFixed(3) + ')';
   }
   S.refit = () => stack.forEach((e) => capGrid(e.ov));
@@ -19360,7 +19453,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     if (g && body) {
       g.style.maxHeight = '';
       body.style.transform = '';
-      const spare = host().offsetHeight - 24 - body.scrollHeight;
+      const spare = host().offsetHeight - padY() - body.scrollHeight;
       if (spare < 0) g.style.maxHeight = Math.max(260, g.offsetHeight + spare) + 'px';
     }
     fitBody(ov);
@@ -20642,11 +20735,15 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   const W = 820;
   const forceTouch = /[?&]ipad\b/.test(location.search);
   function coarse() { try { return forceTouch || matchMedia('(pointer: coarse)').matches; } catch (e) { return forceTouch; } }
+  /** PLAN 62: a touch screen that is not a phone (the landscape layout's switch shows there). */
+  function tablet() { return coarse() && Math.min(innerWidth, innerHeight) >= 600; }
   // 2026-10-30 (PLAN 61, J): a fine pointer (a mouse or trackpad; never under ?ipad) is what makes a PC
   function fine() { try { return !forceTouch && matchMedia('(pointer: fine)').matches; } catch (e) { return false; } }
   /** The PC side panel: its width and its gap to the column in stage pixels (it shares the stage's
    *  scale), and the narrowest window that gets it. */
   const SIDE = { w: 540, gap: 20, min: 1280 };
+  /** 2026-10-30 (PLAN 62): the landscape layout's stage width, its height range, and its card panel's width and gap. */
+  const LAND = { w: 880, hMin: 860, hMax: 1000, side: 360, gap: 16, rail: 100 };
   /**
    * 2026-10-30 (PLAN 61, J): the stage's geometry for a window of vw x vh. o.coarse / o.fine: the
    * pointer (coarse(), fine()). The PC layout (pc: true) holds only when all hold: the pointer is
@@ -20658,6 +20755,22 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
    */
   function stageGeom(vw, vh, o) {
     const isCoarse = !!(o && o.coarse);
+    // 2026-10-30 (PLAN 62): a touch screen held sideways that is not a phone plays in the
+    // landscape layout (body.land): a wider, shorter stage (LAND.w; its height follows the
+    // window's shape) and the card panel at its right, at the same scale. A phone keeps the rotate screen.
+    // 2026-10-30 (user): the panel is a Settings switch, off by default (o.landSide); off, the stage
+    // keeps a narrow column at its right (LAND.rail) for Help and Menu, and is centred alone.
+    if (isCoarse && vw > vh && Math.min(vw, vh) >= 600) {
+      const panel = !!(o && o.landSide);
+      const Wl = panel ? LAND.w : LAND.w + LAND.rail;
+      const T = Wl + LAND.gap + (panel ? LAND.side + LAND.gap : 0);
+      const Hl = Math.max(LAND.hMin, Math.min(LAND.hMax, Math.round(T * vh / vw)));
+      const kl = Math.min(vw / T, vh / Hl), x0 = (vw - T * kl) / 2;
+      return { pc: false, land: true, landPanel: panel, turn: false, phone: false, W: Wl, H: Hl, k: kl,
+        left: panel ? x0 + Wl * kl / 2 : vw / 2,
+        // the panel lines up with the band's top (12) and the corner buttons' foot (16)
+        side: panel ? { x: x0 + (LAND.w + LAND.gap) * kl, y: (vh - Hl * kl) / 2 + 12 * kl, w: LAND.side, h: Hl - 28 } : null };
+    }
     const turn = vw > vh && isCoarse;
     // the column follows the window's shape. A desktop window in landscape gets the column that
     // shows 16 px text at 15 px (1920 x 1080: 1152), between 1024 and 1180: a short window keeps
@@ -20677,23 +20790,26 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     const x0 = (vw - T * k) / 2;
     return { pc, turn, phone, W, H, k, left: x0 + W * k / 2, side: { x: x0 + (W + SIDE.gap) * k, y: (vh - H * k) / 2, w: SIDE.w, h: H } };
   }
-  let stageH = 1180;
+  let stageH = 1180, stageW = W;
   function fitStage() {
     const vw = innerWidth, vh = innerHeight;
-    const g = stageGeom(vw, vh, { coarse: coarse(), fine: fine(), side: prefsGet().side !== false });
+    const g = stageGeom(vw, vh, { coarse: coarse(), fine: fine(), side: prefsGet().side !== false, landSide: prefsGet().landSide === true });
     document.body.classList.toggle('turn', g.turn);
     document.body.classList.toggle('phone', g.phone);
     document.body.classList.toggle('pc', g.pc);   // PLAN 61 (J): never set off a PC
+    document.body.classList.toggle('land', !!g.land);   // PLAN 62: the landscape layout
+    document.body.classList.toggle('land-np', !!g.land && !g.landPanel);   // ... without the card panel (the default)
     const stage = $('stage');
-    stage.style.width = W + 'px';
+    stage.style.width = g.W + 'px';
     stage.style.height = g.H + 'px';
     stage.style.transform = 'translate(-50%, -50%) scale(' + g.k.toFixed(4) + ')';
     // PLAN 61 (J): the PC layout moves the column's centre left to make room for the side panel;
     // off a PC the inline left stays unset (core4.css #stage: 50%), as before
-    stage.style.left = g.pc ? g.left.toFixed(1) + 'px' : '';
+    stage.style.left = g.pc || g.land ? g.left.toFixed(1) + 'px' : '';
     Side.fit(g);
-    const changed = g.H !== stageH;
+    const changed = g.H !== stageH || g.W !== stageW;
     stageH = g.H;
+    stageW = g.W;
     return changed;
   }
 
@@ -20709,7 +20825,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
    * on the first PC fit and hidden when the window leaves the PC layout: no other screen holds it.
    */
   const Side = (() => {
-    let el = null, on = false, raf = 0, hoverItem = null, hoverKey = '', lastKey = '';
+    let el = null, on = false, land = false, tapAt = '', raf = 0, hoverItem = null, hoverKey = '', lastKey = '';
     const cache = {};
     const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
     function make() {
@@ -20718,16 +20834,20 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       el.className = 'pc-side';
       el.setAttribute('aria-label', 'Campaign and card text');
       // 2026-10-30 (user): text only, no scrolling: each section's content shrinks to fit its box (fitIn)
-      el.innerHTML = '<div class="plate pcs"><div class="pcs-run"></div><div class="pcs-dt"><div class="pcs-in"></div></div><div class="pcs-gens"><div class="pcs-in"></div></div></div>';
+      // PLAN 62: the landscape layout's panel ends in Help and Menu (the stage's corner has no room for them)
+      el.innerHTML = '<div class="plate pcs"><div class="pcs-run"></div><div class="pcs-dt"><div class="pcs-in"></div></div><div class="pcs-gens"><div class="pcs-in"></div></div></div>' +
+        '<div class="pcs-foot"><button type="button" class="cb" data-act="help">' + Art.icon('help') + '<span>Help</span></button>' +
+        '<button type="button" class="cb" data-act="menu">' + Art.icon('flag') + '<span>Menu</span></button></div>';
       $('viewport').appendChild(el);
       el.addEventListener('click', (e) => {
         const a = e.target.closest && e.target.closest('[data-act]');
         if (!a || a.disabled) return;
-        const fn = { deck: openDeck, pile: openPile }[a.dataset.act];
+        const fn = { deck: openDeck, pile: openPile, help: openHelp, menu }[a.dataset.act];
         if (fn) fn();
       });
       const stage = $('stage');
       stage.addEventListener('pointermove', onMove);
+      stage.addEventListener('pointerdown', onTap);
       stage.addEventListener('pointerleave', () => setHover(null, ''));
       new MutationObserver(schedule).observe(stage, { childList: true, subtree: true });
     }
@@ -20741,13 +20861,25 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       if (tile) { const item = Board.tileItem(st, +tile.dataset.slot); setHover(item, item ? 't' + tile.dataset.slot : ''); return; }
       setHover(null, '');
     }
+    /** PLAN 62: on a touch screen (the landscape layout) a tap on a tile with something on it reads in the panel. */
+    function onTap(e) {
+      if (!on || e.pointerType === 'mouse' || !st) return;
+      const t = e.target && e.target.closest ? e.target : null;
+      if (!t || t.closest('.c2-ov')) return;
+      const tile = t.closest('.tile[data-slot]');
+      if (tile) { const item = Board.tileItem(st, +tile.dataset.slot); if (item) { tapAt = st.battle + ':' + st.turn; setHover(item, 't' + tile.dataset.slot + ':' + tapAt); } return; }
+      // a general (or its formation tag): its full text, with its formation and next level
+      const g = t.closest('.gens .g6[data-gi], .gens .fdg2[data-gi]'), gen = g && (st.generals || [])[+g.dataset.gi];
+      if (gen) { tapAt = st.battle + ':' + st.turn; setHover({ general: gen }, 'g' + g.dataset.gi + ':' + tapAt); return; }
+      if (t.closest('.hand [data-i]')) setHover(null, '');
+    }
     function setHover(item, key) { if (key === hoverKey) return; hoverItem = item; hoverKey = key; schedule(); }
     function schedule() { if (!on || raf) return; raf = requestAnimationFrame(refresh); }
     /** What the panel depends on: a redraw that changes none of it (an animation frame) is skipped. */
     function keyOf() {
       const sel = st && mode === 'battle' ? Board.selected() : null;
       return [mode, run && run.battle, run && run.phase, run && run.deck.length, run && (run.results || []).length,
-        st && st.battle, st && st.turn, st && st.phase, st && st.deck.length, sel, hoverKey].join('|');
+        st && st.battle, st && st.attempt, st && st.turn, st && st.phase, st && st.deck.length, st && (st.generals || []).map((g) => g.id + g.level).join(','), sel, hoverKey, !!$('stage').querySelector('.c2-ov')].join('|');
     }
     function refresh() {
       raf = 0;
@@ -20757,6 +20889,15 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       lastKey = key;
       const T = (st && st.tun) || (run && run.tun) || tun || C.TUN_DEFAULT;
       put('.pcs-run', runHtml(T));
+      // PLAN 62: Help and Menu as the stage's corner buttons were: on the battle screen, under no plate
+      const free = mode === 'battle' && !!st && !$('stage').querySelector('.c2-ov');
+      el.querySelectorAll('.pcs-foot .cb').forEach((b) => { b.disabled = !free; });
+      if (land) {
+        // PLAN 62: the card text first, as tall as it is; the generals take what it leaves (core4.css)
+        const a = put('.pcs-dt .pcs-in', dtHtml(T)), b = put('.pcs-gens .pcs-in', gensHtml(T));
+        if (a || b) { fitIn(el.querySelector('.pcs-dt')); fitIn(el.querySelector('.pcs-gens')); }
+        return;
+      }
       // the generals first: the card text takes the room they leave
       if (put('.pcs-gens .pcs-in', gensHtml(T))) fitIn(el.querySelector('.pcs-gens'));
       if (put('.pcs-dt .pcs-in', dtHtml(T))) fitIn(el.querySelector('.pcs-dt'));
@@ -20798,8 +20939,10 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     /** (a) the hovered tile's unit or hand card, else the held card, else a hint. */
     function dtHtml(T) {
       let item = hoverItem;
+      // a tapped tile reads until the turn moves on (an undo or a placement may change what stands there)
+      if (item && land && tapAt !== (st && st.battle + ':' + st.turn)) item = null;
       if (!item && mode === 'battle' && st && st.phase === 'draft' && Board.selected() != null) { const c = st.offer[Board.selected()]; if (c) item = { card: c }; }
-      if (!item || !st) return '<p class="kick">Card text</p><p class="say small">Point at a card in your hand or a unit on the field: its full text reads here.</p>';
+      if (!item || !st) return '<p class="kick">Card text</p><p class="say small">' + (land ? 'Tap a card in your hand, a unit on the field or a general' : 'Point at a card in your hand or a unit on the field') + ': its full text reads here.</p>';
       return TTF4.Cards.detailHtml(withXp(item), { tun: T });
     }
     /** (c) the dealt generals' full text (the long-press panel's paragraphs, without the cards). */
@@ -20808,12 +20951,15 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       if (!gens.length) return '';
       return '<p class="kick">Your generals</p>' + gens.map((g) => {
         const d = TTF4.Cards.detailParts({ general: g }, T);
-        return '<div class="pcs-gen"><h3>' + esc(d.title) + '</h3>' + d.body + '</div>';
+        // PLAN 62: the narrower panel lists each general's rule; a tap on one reads all of it above
+        const body = land ? d.body.replace(/<p>Next level: [^<]*<\/p>/, '') : d.body;
+        return '<div class="pcs-gen"><h3>' + esc(d.title) + '</h3>' + body + '</div>';
       }).join('');
     }
     /** Place (or hide) the panel for a geometry from stageGeom. Off a PC nothing is made. */
     function fit(g) {
-      on = !!g.pc;
+      on = !!g.side;
+      land = !!g.land;
       if (!on) { if (el) el.hidden = true; return; }
       if (!el) make();
       el.hidden = false;
@@ -21174,7 +21320,9 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       { label: 'Score count-up after a battle', on: prefsGet().count !== false, set: (v) => setPref('count', v) }
     ].concat(fine() ? [
       // 2026-10-30 (user): the PC card panel beside the board can be switched off
-      { label: 'Card panel beside the board (PC)', on: prefsGet().side !== false, set: (v) => { setPref('side', v); relayout(); } }] : []).concat(SHARE_URL && SHAREABLE ? [
+      { label: 'Card panel beside the board (PC)', on: prefsGet().side !== false, set: (v) => { setPref('side', v); relayout(); } }] : []).concat(tablet() ? [
+      // 2026-10-30 (user, PLAN 62): on an iPad held sideways the panel is off unless switched on
+      { label: 'Card panel beside the board (iPad, sideways)', on: prefsGet().landSide === true, set: (v) => { setPref('landSide', v); relayout(); } }] : []).concat(SHARE_URL && SHAREABLE ? [
       { label: 'Share anonymous play data', on: shareOn(), set: (v) => { setShare(v); if (v) flushShare(); } }] : []), links: [
       { label: 'Reset tips', done: 'Tips reset', act: () => Tips.reset() },
       { label: 'Copy run data', done: 'Run data copied', fail: 'Could not copy', act: copyRunData }
