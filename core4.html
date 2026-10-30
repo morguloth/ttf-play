@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="281d3c536f";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="e0c5d40444";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2591,17 +2591,18 @@ var(--p2-cn) left top / 44px 44px no-repeat;
 .pcs-row b i { font: 700 16px/1 var(--face-name); font-style: normal; color: var(--ink-dim); margin-left: 2px; }
 .pcs-acts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
 .pcs-acts .b4 { font-size: 16px; padding: 8px 14px; }
-/* the card text: the long-press panel's markup (.dt) stacked, the face over its text, scrolling when long */
-.pcs-dt { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding-right: 4px; scrollbar-width: thin; scrollbar-color: #9b7020 transparent; }
-.pcs-dt .dt { flex-direction: column; align-items: center; gap: 12px; }
-.pcs-dt .dt-face { padding-top: 0; }
-.pcs-dt .dt-also .dt-face { width: auto; }
+/* the card text: the long-press panel's markup (.dt), text only (2026-10-30, user: the card is on the
+   board already); app.js fitIn shrinks the content (.pcs-in zoom) to its box, never a scrollbar */
+.pcs-dt { flex: 1 1 auto; min-height: 0; overflow: hidden; }
+.pcs-dt .dt { display: block; }
+.pcs-dt .dt-face { display: none; }
+.pcs-dt .dt + .dt { margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(122, 82, 15, 0.25); }
 .pcs-dt .dt-text { width: 100%; }
 .pcs-dt .dt-text h3 { font-size: 28px; }
 .pcs-dt .dt-text p { font-size: 17px; }
-.pcs-dt .dt .sc-l { max-height: none; }
+.pcs-dt .dt .sc-l { max-height: none; overflow: visible; }
 /* the dealt generals' full text (no cards: the row shows them), under a rule, scrolling when long */
-.pcs-gens { flex: none; max-height: 46%; overflow-y: auto; padding-top: 10px; border-top: 2px solid rgba(122, 82, 15, 0.3); scrollbar-width: thin; scrollbar-color: #9b7020 transparent; }
+.pcs-gens { flex: 0 1 auto; max-height: 52%; min-height: 0; overflow: hidden; padding-top: 10px; border-top: 2px solid rgba(122, 82, 15, 0.3); }
 .pcs-gen { margin-top: 8px; }
 .pcs-gen h3 { margin: 0 0 2px; font: 900 22px/1.1 var(--face-title); color: #3a2508; }
 .pcs-gen p { margin: 4px 0 0; font: 400 16px/1.35 var(--face-name); color: var(--ink); }
@@ -20628,7 +20629,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     // a phone (a window under 600 px on its short side): the rotate screen says "phone", and a
     // phone-sized portrait column widens its corner buttons' touch areas (core4.css body.phone)
     const phone = Math.min(vw, vh) < 600;
-    const pc = !!(o && o.fine) && !isCoarse && vw > vh && vw >= SIDE.min;
+    // 2026-10-30 (user): the Settings switch turns the panel off (o.side === false): the column alone, as before
+    const pc = !!(o && o.fine) && !isCoarse && vw > vh && vw >= SIDE.min && !(o && o.side === false);
     if (!pc) return { pc, turn, phone, W, H, k: Math.min(vw / W, vh / H), left: null, side: null };
     const T = W + SIDE.gap + SIDE.w;
     const k = Math.min(vw / T, vh / H);
@@ -20638,7 +20640,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   let stageH = 1180;
   function fitStage() {
     const vw = innerWidth, vh = innerHeight;
-    const g = stageGeom(vw, vh, { coarse: coarse(), fine: fine() });
+    const g = stageGeom(vw, vh, { coarse: coarse(), fine: fine(), side: prefsGet().side !== false });
     document.body.classList.toggle('turn', g.turn);
     document.body.classList.toggle('phone', g.phone);
     document.body.classList.toggle('pc', g.pc);   // PLAN 61 (J): never set off a PC
@@ -20675,7 +20677,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       el.id = 'side';
       el.className = 'pc-side';
       el.setAttribute('aria-label', 'Campaign and card text');
-      el.innerHTML = '<div class="plate pcs"><div class="pcs-run"></div><div class="pcs-dt"></div><div class="pcs-gens"></div></div>';
+      // 2026-10-30 (user): text only, no scrolling: each section's content shrinks to fit its box (fitIn)
+      el.innerHTML = '<div class="plate pcs"><div class="pcs-run"></div><div class="pcs-dt"><div class="pcs-in"></div></div><div class="pcs-gens"><div class="pcs-in"></div></div></div>';
       $('viewport').appendChild(el);
       el.addEventListener('click', (e) => {
         const a = e.target.closest && e.target.closest('[data-act]');
@@ -20714,16 +20717,27 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       lastKey = key;
       const T = (st && st.tun) || (run && run.tun) || tun || C.TUN_DEFAULT;
       put('.pcs-run', runHtml(T));
-      put('.pcs-dt', dtHtml(T));
-      put('.pcs-gens', gensHtml(T));
+      // the generals first: the card text takes the room they leave
+      if (put('.pcs-gens .pcs-in', gensHtml(T))) fitIn(el.querySelector('.pcs-gens'));
+      if (put('.pcs-dt .pcs-in', dtHtml(T))) fitIn(el.querySelector('.pcs-dt'));
     }
     function put(sel, html) {
-      if (cache[sel] === html) return;
+      if (cache[sel] === html) return false;
       cache[sel] = html;
       const n = el.querySelector(sel);
-      if (!n) return;
+      if (!n) return false;
       n.innerHTML = html;
       if (TTF4.Cards.fit) TTF4.Cards.fit(n);
+      return true;
+    }
+    /** 2026-10-30 (user: no scrolling): shrink a section's content (zoom, down to 0.6) until it fits its box. */
+    function fitIn(box) {
+      const inner = box && box.firstElementChild;
+      if (!inner) return;
+      let z = 1;
+      inner.style.zoom = '';
+      const room = () => box.getBoundingClientRect().height + 0.5;
+      while (z > 0.6 && inner.getBoundingClientRect().height > room()) { z = Math.round((z - 0.05) * 100) / 100; inner.style.zoom = z; }
     }
     const row = (k, v) => '<div class="pcs-row"><span class="pcs-k">' + k + '</span><b>' + v + '</b></div>';
     /** (b) the run strip: battle N/M, the target, Laurels so far, the deck and the draw pile. */
@@ -20769,18 +20783,20 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       el.style.top = g.side.y.toFixed(1) + 'px';
       el.style.transform = 'scale(' + g.k.toFixed(4) + ')';
       lastKey = '';
+      for (const k in cache) delete cache[k];   // a new size re-fits every section
       schedule();
     }
     return { fit, refresh: schedule };
   })();
   let rz = 0;
+  function relayout() {
+    const ch = fitStage();
+    if (ch && st && !Board.revealing()) Board.layout();
+    Screens.refit();
+  }
   window.addEventListener('resize', () => {
     cancelAnimationFrame(rz);
-    rz = requestAnimationFrame(() => {
-      const ch = fitStage();
-      if (ch && st && !Board.revealing()) Board.layout();
-      Screens.refit();
-    });
+    rz = requestAnimationFrame(relayout);
   });
 
   // ---- boot ---------------------------------------------------------------------------------------
@@ -21116,7 +21132,9 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       { label: 'Victory screen after a win', on: prefsGet().plate !== false, set: (v) => setPref('plate', v) },
       // 2026-10-28 (user): off, the reveal lands on the final total at once (the review still follows)
       { label: 'Score count-up after a battle', on: prefsGet().count !== false, set: (v) => setPref('count', v) }
-    ].concat(SHARE_URL && SHAREABLE ? [
+    ].concat(fine() ? [
+      // 2026-10-30 (user): the PC card panel beside the board can be switched off
+      { label: 'Card panel beside the board (PC)', on: prefsGet().side !== false, set: (v) => { setPref('side', v); relayout(); } }] : []).concat(SHARE_URL && SHAREABLE ? [
       { label: 'Share anonymous play data', on: shareOn(), set: (v) => { setShare(v); if (v) flushShare(); } }] : []), links: [
       { label: 'Reset tips', done: 'Tips reset', act: () => Tips.reset() },
       { label: 'Copy run data', done: 'Run data copied', fail: 'Could not copy', act: copyRunData }
