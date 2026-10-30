@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="7de8850151";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="b4d7a5caf6";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -8141,7 +8141,9 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // standard heroes read the board; 17 pieces retired, the self-only heroes touch a neighbour; targets re-set
   // 2026-10-30 (user): 21, the cards you do not pick are discarded for the battle (never offered again);
   // Reinforcements shuffles its hand back into the pile; an empty pile reshuffles the discard under it
-  C.RULES_VERSION = 21;
+  // 2026-10-30 (user): 22, the Marshal of Reserves is +1 turn only at his top level: maxLevel 3, offered
+  // only once spoils generals join at level 3 (was +1 at levels 1-2, +2 from 3, offered any time)
+  C.RULES_VERSION = 22;
 
   C.TUN_DEFAULT = {
     board: { size: 4, minEach: 3, maxEach: 5, tries: 300 },
@@ -9161,9 +9163,11 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   // turns: turns per battle (state level); 2026-10-28 (user): +1 at levels 1-2, +2 from level 3
-  LIB.general({ id: 'marshal_reserves', name: 'Marshal of Reserves', rarity: 'rare', step: 'turns',
+  // 2026-10-30 (user; rules 22): much too strong: +1 only at his top level. maxLevel 3, offered
+  // only once a spoils general joins at level 3 (lateOffer; run.js), and +1 at every level
+  LIB.general({ id: 'marshal_reserves', name: 'Marshal of Reserves', rarity: 'rare', step: 'turns', maxLevel: 3, lateOffer: true,
     short: 'Turns +{N}', desc: 'Every battle has +{N} turns: a card more on the board for each.' },
-  { base: 1, up: 0, levels: [1, 1, 2] }, {
+  { base: 1, up: 0, levels: [1] }, {
     turns: (S, me) => me.N
   });
 
@@ -13279,10 +13283,13 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       for (; k < order.length - 1; k++) { acc += rarity[order[k]] || 0; if (r < acc) break; }
       return k;
     };
+    // 2026-10-30 (user; rules 22): a lateOffer general (the Marshal of Reserves) is offered only
+    // once a spoils general would join at his maxLevel or above
+    const lateOk = (g) => !g.lateOffer || offerLevel(T, {}, run.battle) >= (g.maxLevel || 1);
     const drawGeneral = () => {
       const k = rollRarity(), order = C.RARITIES;
       for (let j = k; j >= 0; j--) {
-        const free = C.GENERALS.filter((g) => g.rarity === order[j] && !g.retired && C.inPool(g, run.pool) && (!g.needs || inPlay(g.needs)) && pool.indexOf(g.id) < 0 && !out.some((o) => o.kind === 'general' && o.id === g.id));
+        const free = C.GENERALS.filter((g) => g.rarity === order[j] && !g.retired && C.inPool(g, run.pool) && lateOk(g) && (!g.needs || inPlay(g.needs)) && pool.indexOf(g.id) < 0 && !out.some((o) => o.kind === 'general' && o.id === g.id));
         if (free.length) return pickOf(free);
       }
       return null;
