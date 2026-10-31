@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="6afdaf37e7";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="808751c82d";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2494,6 +2494,9 @@ var(--p2-cn) left top / 44px 44px no-repeat;
 @keyframes gfire2 { 35% { transform: translateY(-9px) scale(1.04); } 100% { transform: translateY(-2px); } }
 /* the formation pills sit on the dais's lip */
 .gens .fdg2 { box-shadow: 0 0 0 1.5px #b48ae6, 0 0 0 3px #1c0d2c, inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 6px 10px rgba(0, 0, 0, 0.6); }
+/* 2026-10-31 (user): a general who joined from the reserve (Old Commander): his name on the pill */
+.fdg2.fjoin { max-width: 100%; padding: 0 12px; }
+.fdg2.fjoin i { overflow: hidden; text-overflow: ellipsis; }
 
 /* the side-by-side cards of a plate: room between them (no rod, medallion or frame touches) */
 .crow, .orow { column-gap: 26px; }
@@ -2628,6 +2631,7 @@ body.land .gens .row > :nth-child(2) { order: 3; }
 body.land .gens .fdrow > :nth-child(2) { order: 4; }
 body.land .gens .row > :nth-child(3) { order: 5; }
 body.land .gens .fdrow > :nth-child(3) { order: 6; }
+body.land .gens .fdrow > :nth-child(4) { order: 7; }
 body.land .gens .fdslot:empty { display: none; }
 body.land .gens .fdslot { margin: 2px 0 6px; }
 body.land .cbs.left { flex-direction: row; gap: 12px; }
@@ -17134,7 +17138,10 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     // 2026-10-28 (user): a formation taught from the reserve (Twin Command) shows under the general
     // whose rule makes it live, so it lights like the others
     const extra = gens.map((g) => live.filter((f) => f.via === 'general:' + g.id));
-    if (!teach.some(Boolean) && !extra.some((x) => x.length)) return '';
+    // 2026-10-31 (user): a general who joined from the reserve (Old Commander) shows as a chip in the
+    // first empty slot (a fourth slot when none is), so the player sees which one is fighting
+    const joined = joinedOf(gens);
+    if (!teach.some(Boolean) && !extra.some((x) => x.length) && !joined.length) return '';
     const formed = {};
     // in the reveal a diagram lights as its formations score
     (lastScore ? lastScore.formations : []).forEach((f, n) => { if (!rv || (rv.formDone && rv.formDone[n])) formed[f.id] = (formed[f.id] || 0) + 1; });
@@ -17146,11 +17153,27 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       return '<div class="fdg2' + (n ? ' on' : '') + (flare === id ? ' flare' : '') + '" data-gi="' + i + '" data-form="' + esc(id) + '">' +
         Art.formationDots(id) + Art.formationKindHtml(id) + (mul != null ? '<b>×' + mul + '</b>' : '') + (n > 1 ? '<i>' + n + ' live</i>' : '') + '</div>';
     };
-    return '<div class="fdrow">' + teach.map((id, i) => {
-      const inner = id ? badge(id, live.find((f) => f.id === id && f.general === gens[i].id) || live.find((f) => f.id === id), i)
-        : extra[i].map((lf) => badge(lf.id, lf, i)).join('');
-      return '<div class="fdslot' + (!id && extra[i].length > 1 ? ' many' : '') + '" style="width:' + genW() + 'px">' + inner + '</div>';
-    }).join('') + '</div>';
+    const inners = teach.map((id, i) => id ? badge(id, live.find((f) => f.id === id && f.general === gens[i].id) || live.find((f) => f.id === id), i)
+      : extra[i].map((lf) => badge(lf.id, lf, i)).join(''));
+    const chips = joined.map(joinChip).join('');
+    const free = inners.indexOf('');
+    if (chips && free >= 0) inners[free] = chips;
+    else if (chips) inners.push(chips);
+    return '<div class="fdrow">' + inners.map((inner, i) =>
+      '<div class="fdslot' + (i < teach.length && !teach[i] && extra[i].length > 1 ? ' many' : '') + '" style="width:' + genW() + 'px">' + inner + '</div>').join('') + '</div>';
+  }
+  /** The generals a piece's `join` rule (Old Commander) brought in: [{id, level}], not the dealt ones. */
+  function joinedOf(gens) {
+    if (!C.gensOf) return [];
+    let all = {};
+    try { all = C.gensOf(st) || {}; } catch (e) { all = {}; }
+    return Object.keys(all).filter((id) => all[id].joined && !gens.some((g) => g && g.id === id)).map((id) => all[id]);
+  }
+  function joinChip(g) {
+    const d = C.generalDef(g.id);
+    const fired = rv && rv.genFired && rv.genFired[g.id];
+    return '<div class="fdg2 fjoin' + (!rv || fired ? ' on' : '') + (rv && rv.genOn === g.id ? ' flare' : '') + '" data-join="' + esc(g.id) + '" data-lv="' + g.level + '">' +
+      '<i>+ ' + esc(d ? d.name : g.id) + '</i><span class="fkind any">Joined</span></div>';
   }
 
   // ---- the corner buttons ----------------------------------------------------------------------------
@@ -17387,6 +17410,23 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       cx = Math.min(cx, fx.l + fx.w - pk.offsetWidth - 12 - ext);
     }
     TTF4.Hand.setLayout({ cx, half, land: true });
+  }
+  /** 2026-10-31 (user): the peek strip (Scout Master) over the right corner buttons rises clear of
+   *  the hand at rest: a wide strip (two or three hands) reached over the fan's right cards. With the
+   *  card panel the fan moves aside instead (handLayout). */
+  function placePeek() {
+    const pk = stage && stage.querySelector('.handzone .peek'), n = handN();
+    if (!pk || landPanel()) return;
+    pk.style.bottom = '';
+    if (!n) return;
+    const r = stage.offsetWidth - parseFloat(getComputedStyle(pk).right || 0), l = r - pk.offsetWidth;
+    let top = H;
+    TTF4.Hand.polysFor(n, handW(), H).slice(0, 2 * n).filter((P, i) => i % 2 === 0).forEach((P) => {
+      const xs = P.map((q) => q[0]);
+      if (Math.max.apply(null, xs) > l && Math.min.apply(null, xs) < r) top = Math.min(top, Math.min.apply(null, P.map((q) => q[1])));
+    });
+    const base = parseFloat(getComputedStyle(pk).bottom) || 0;
+    if (top < H && H - top + 10 > base) pk.style.bottom = Math.round(H - top + 10) + 'px';
   }
   let curBs = 0;
   let drawn = null;   // what the field shows: {st, bs, sel, keep} (patchBoard updates it in place)
@@ -17887,6 +17927,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   function fitBoard(field, top, bottom) {
     // the hand is fitted for whether or not it is dealt yet, so the board never jumps
     handLayout();
+    placePeek();
     const hand = !rv ? TTF4.Hand.polysFor(handN(), handW(), H) : [];
     const fw = fieldX().w;
     const extra = rv ? '' : Array.from(stage.querySelectorAll('.handzone .p60acts, .handzone .peek')).map((e) => e.className + e.childElementCount).join(',');
@@ -17984,6 +18025,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     if (!el || !st) return null;
     if (el.classList.contains('pkc')) { const c = (C.peekOf(st) || [])[+el.dataset.i]; return c ? { card: c } : null; }
     if (el.classList.contains('g6')) { const g = st.generals[+el.dataset.gi]; return g ? { general: g } : null; }
+    if (el.dataset.join) return { general: { id: el.dataset.join, level: +el.dataset.lv || 1 } };
     if (el.classList.contains('fdg2')) return el.dataset.form ? { formation: el.dataset.form } : null;
     const f = lastScore && lastScore.formations[+el.dataset.f];
     return f ? { formation: f.id } : null;
