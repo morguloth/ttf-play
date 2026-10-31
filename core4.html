@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="808751c82d";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="aa120f73fa";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2494,7 +2494,9 @@ var(--p2-cn) left top / 44px 44px no-repeat;
 @keyframes gfire2 { 35% { transform: translateY(-9px) scale(1.04); } 100% { transform: translateY(-2px); } }
 /* the formation pills sit on the dais's lip */
 .gens .fdg2 { box-shadow: 0 0 0 1.5px #b48ae6, 0 0 0 3px #1c0d2c, inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 6px 10px rgba(0, 0, 0, 0.6); }
-/* 2026-10-31 (user): a general who joined from the reserve (Old Commander): his name on the pill */
+/* 2026-10-31 (user): a general who joined from the reserve (Old Commander): his name on the pill;
+   with no empty slot under the generals, the chips stand on a line of their own (never a fourth slot) */
+.gens .fdextra { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 16px; margin-top: 2px; padding-bottom: 10px; }
 .fdg2.fjoin { max-width: 100%; padding: 0 12px; }
 .fdg2.fjoin i { overflow: hidden; text-overflow: ellipsis; }
 
@@ -2631,7 +2633,7 @@ body.land .gens .row > :nth-child(2) { order: 3; }
 body.land .gens .fdrow > :nth-child(2) { order: 4; }
 body.land .gens .row > :nth-child(3) { order: 5; }
 body.land .gens .fdrow > :nth-child(3) { order: 6; }
-body.land .gens .fdrow > :nth-child(4) { order: 7; }
+body.land .gens .fdextra { order: 7; flex-direction: column; align-items: center; }
 body.land .gens .fdslot:empty { display: none; }
 body.land .gens .fdslot { margin: 2px 0 6px; }
 body.land .cbs.left { flex-direction: row; gap: 12px; }
@@ -17158,9 +17160,11 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     const chips = joined.map(joinChip).join('');
     const free = inners.indexOf('');
     if (chips && free >= 0) inners[free] = chips;
-    else if (chips) inners.push(chips);
+    // 2026-10-31 (user): with no empty slot the chip goes on a line of its own under the pills (a
+    // fourth slot widened the row and pushed the generals off centre)
+    const over = chips && free < 0 ? '<div class="fdextra">' + chips + '</div>' : '';
     return '<div class="fdrow">' + inners.map((inner, i) =>
-      '<div class="fdslot' + (i < teach.length && !teach[i] && extra[i].length > 1 ? ' many' : '') + '" style="width:' + genW() + 'px">' + inner + '</div>').join('') + '</div>';
+      '<div class="fdslot' + (i < teach.length && !teach[i] && extra[i].length > 1 ? ' many' : '') + '" style="width:' + genW() + 'px">' + inner + '</div>').join('') + '</div>' + over;
   }
   /** The generals a piece's `join` rule (Old Commander) brought in: [{id, level}], not the dealt ones. */
   function joinedOf(gens) {
