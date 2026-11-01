@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="765182697a";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="bb7100aa83";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1152,6 +1152,7 @@ svg.areas path { fill: none; stroke-linejoin: round; stroke-linecap: round; }
 .ar.inf, .af.inf { --ac: color-mix(in srgb, #e2bd6e 50%, var(--inf-lit)); }
 .ar.arc, .af.arc { --ac: color-mix(in srgb, #e2bd6e 50%, var(--arc-lit)); }
 .ar.cav, .af.cav { --ac: color-mix(in srgb, #e2bd6e 50%, var(--cav-lit)); }
+.ar.eng, .af.eng { --ac: #e2bd6e; }   /* 2026-11-01: an engine's ring (the Map Table) in plain brass */
 .ar .ao { stroke: rgba(10, 6, 2, 0.6); stroke-width: calc(var(--cell) * 0.04); }
 /* PLAN 57: a placement general's tiles: a quiet amber long dash, lit where a held card would go */
 .zn .zo { fill: rgba(255, 176, 64, 0.16); stroke: rgba(10, 6, 2, 0.55); stroke-width: calc(var(--cell) * 0.045); }
@@ -9915,6 +9916,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   // late: reads L.val (the values after the mult step)
   LIB.hero({ id: 'grand_archer', name: 'Grand Archer', type: 'arc', rarity: 'rare', step: 'late',
+    area: 'row',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: 'Row Archers + his value', desc: 'An Archers hero who joins at rank {heroes.rank} or higher: his value is added to every other Archers piece in his row, after every multiplier.' },
   0, {
     late: (L, me, i) => (i !== me.slot && L.typeOf(i) === 'arc' && G.rowOf(i) === G.rowOf(me.slot) ? L.val[me.slot] : 0)
@@ -9982,6 +9984,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // defs stay so a saved deck holding one loads and scores; C.inPool never offers them.
 
   LIB.hero({ id: 'shieldmaiden', name: 'Shieldmaiden', type: 'inf', rarity: 'common', step: 'mult',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: 'Flanked by Infantry: ×{heroes.shieldmaiden.N}', desc: 'An Infantry hero who joins at rank {heroes.rank} or higher: ×{heroes.shieldmaiden.N} if Infantry stand on both sides of her, in her row or in her column, and those two Infantry are ×{heroes.shieldmaiden.M}.' },
   { N: 6, up: 0.5, M: 1.25 }, {
     mult: (L, me, i) => {
@@ -9992,6 +9995,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.hero({ id: 'gatekeeper', name: 'Gatekeeper', type: 'inf', rarity: 'common', step: 'mult',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: 'On a fort: ×{heroes.gatekeeper.N}', desc: 'An Infantry hero who joins at rank {heroes.rank} or higher: ×{heroes.gatekeeper.N} when he stands on a fort, and the Infantry touching him are ×{heroes.gatekeeper.M}.' },
   { N: 4, up: 0.5, M: 1.25 }, {
     mult: (L, me, i) => (i === me.slot ? (L.fort(me.slot) ? me.N : null) : touches(L, me, i) && L.typeOf(i) === 'inf' ? me.num('M') : null)
@@ -10004,12 +10008,14 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.hero({ id: 'drill_veteran', name: 'Grizzled Veteran', type: 'inf', rarity: 'common', step: 'flat',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: '+{heroes.drill_veteran.N} per rank touching', desc: 'An Infantry hero who joins at rank {heroes.rank} or higher: +{heroes.drill_veteran.N} power for every rank of the pieces touching him, and each of them has +{heroes.drill_veteran.N} power too.' },
   { N: 2, up: 0.4 }, {
     flat: (L, me, i) => (i === me.slot ? me.N * touching(L, me.slot).reduce((a, j) => a + (L.isScored(j) ? L.rankOf[j] || 0 : 0), 0) : touches(L, me, i) ? me.N : 0)
   });
 
   LIB.hero({ id: 'last_stand', name: 'Last Stand', type: 'inf', rarity: 'common', step: 'mult',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: '×{heroes.last_stand.N} per empty touching', desc: 'An Infantry hero who joins at rank {heroes.rank} or higher: ×{heroes.last_stand.N} for every empty tile touching him, and the piece above him is ×{heroes.last_stand.M}.' },
   { N: 1.5, up: 0.05, M: 1.3 }, {
     mult: (L, me, i) => (i === me.slot ? pow(me.N, countIn(touching(L, me.slot), (j) => L.isEmpty(j))) : i === above(me.slot) ? me.num('M') : null)
@@ -10028,6 +10034,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.hero({ id: 'volley_cpt', name: 'Volley Captain', type: 'arc', rarity: 'common', step: 'flat',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: '+{heroes.volley_cpt.N} per Archers', desc: 'An Archers hero who joins at rank {heroes.rank} or higher: +{heroes.volley_cpt.N} power for every other Archers piece on the board, and each Archers piece touching him has +{heroes.volley_cpt.N} power too.' },
   { N: 2, up: 0.4 }, {
     flat: (L, me, i) => (i === me.slot ? me.N * typeIn(L, ALL.filter((j) => j !== me.slot), 'arc') : touches(L, me, i) && L.typeOf(i) === 'arc' ? me.N : 0)
@@ -10044,12 +10051,14 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.hero({ id: 'watcher', retired: true, name: 'Watcher', type: 'arc', rarity: 'common', step: 'flat',
+    area: 'row',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: '+{heroes.watcher.N} per piece in row', desc: 'An Archers hero who joins at rank {heroes.rank} or higher: +{heroes.watcher.N} power for every other piece in his row.' },
   { N: 3, up: 0.5 }, {
     flat: own((L, me) => me.N * countIn(G.row(me.slot), (j) => L.isPiece(j)))
   });
 
   LIB.hero({ id: 'crossbow_master', name: 'Crossbow Master', type: 'arc', rarity: 'common', step: 'mult',
+    area: ['cross', 'row', 'col'],   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: 'Lone Archers: ×{heroes.crossbow_master.N}', desc: 'An Archers hero who joins at rank {heroes.rank} or higher: ×{heroes.crossbow_master.N} if no other Archers stand in his row or his column, and the Infantry touching him are ×{heroes.crossbow_master.M}.' },
   { N: 2.5, up: 0.25, M: 1.25 }, {
     mult: (L, me, i) => (i === me.slot ? (typeIn(L, G.row(me.slot).concat(G.col(me.slot)), 'arc') === 0 ? me.N : null) : touches(L, me, i) && L.typeOf(i) === 'inf' ? me.num('M') : null)
@@ -10062,12 +10071,14 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.hero({ id: 'courser', retired: true, name: 'Courser', type: 'cav', rarity: 'common', step: 'flat',
+    area: 'row',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: '+{heroes.courser.N} per empty in row', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher: +{heroes.courser.N} power for every empty tile in his row.' },
   { N: 3, up: 0.5 }, {
     flat: own((L, me) => me.N * countIn(G.row(me.slot), (j) => L.isEmpty(j)))
   });
 
   LIB.hero({ id: 'plains_rider', name: 'Plains Rider', type: 'cav', rarity: 'common', step: 'mult',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: 'On plains: ×{heroes.plains_rider.N}', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher: ×{heroes.plains_rider.N} when he stands on plains, and a Cavalry piece touching him on plains is ×{heroes.plains_rider.M}.' },
   { N: 2.5, up: 0.25, M: 1.25 }, {
     mult: (L, me, i) => (i === me.slot ? (L.terrain(me.slot) === 'plains' ? me.N : null) : touches(L, me, i) && L.typeOf(i) === 'cav' && L.terrain(i) === 'plains' ? me.num('M') : null)
@@ -10085,18 +10096,21 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.hero({ id: 'lancer_knight', name: 'Lancer Knight', type: 'cav', rarity: 'common', step: 'flat',
+    area: 'col',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: '+{heroes.lancer_knight.N} per Infantry in column', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher: +{heroes.lancer_knight.N} power for every Infantry piece in his column, and each of them has +{heroes.lancer_knight.M} power.' },
   { N: 6, up: 1, M: 3 }, {
     flat: (L, me, i) => (i === me.slot ? me.N * typeIn(L, G.col(me.slot), 'inf') : G.col(me.slot).indexOf(i) >= 0 && L.typeOf(i) === 'inf' ? me.num('M') : 0)
   });
 
   LIB.hero({ id: 'iron_duke', name: 'Iron Duke', type: 'inf', rarity: 'uncommon', step: 'mult',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: '×{heroes.iron_duke.N} per formation', desc: 'An Infantry hero who joins at rank {heroes.rank} or higher: ×{heroes.iron_duke.N} for every live formation on the board, his or not, and the pieces touching him that are in a formation are ×{heroes.iron_duke.M}.' },
   { N: 1.5, M: 1.2 }, {
     memb: (L, me, i) => (i === me.slot ? pow(me.N, (L.instances || []).length) : touches(L, me, i) && L.member[i] > 0 ? me.num('M') : null)
   });
 
   LIB.hero({ id: 'pikemaster', name: 'Pikemaster', type: 'inf', rarity: 'uncommon', step: 'mult',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: '×{heroes.pikemaster.N} per Cavalry touching', desc: 'An Infantry hero who joins at rank {heroes.rank} or higher: ×{heroes.pikemaster.N} for every Cavalry piece touching him, and each of those Cavalry is ×{heroes.pikemaster.M}.' },
   { N: 1.6, up: 0.1, M: 1.2 }, {
     mult: (L, me, i) => (i === me.slot ? pow(me.N, typeIn(L, touching(L, me.slot), 'cav')) : touches(L, me, i) && L.typeOf(i) === 'cav' ? me.num('M') : null)
@@ -10110,6 +10124,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.hero({ id: 'rearguard', name: 'Rearguard', type: 'inf', rarity: 'uncommon', step: 'mult',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: 'Surrounded: ×{heroes.rearguard.N}', desc: 'An Infantry hero who joins at rank {heroes.rank} or higher: ×{heroes.rearguard.N} if every tile touching him holds a piece, and then those pieces are ×{heroes.rearguard.M}.' },
   { N: 3.5, M: 1.2 }, {
     mult: (L, me, i) => {
@@ -10120,12 +10135,14 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.hero({ id: 'longshot', name: 'Longshot', type: 'arc', rarity: 'uncommon', step: 'mult',
+    area: 'col',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: '×{heroes.longshot.N} per empty in column', desc: 'An Archers hero who joins at rank {heroes.rank} or higher: ×{heroes.longshot.N} for every empty tile in his column, and the other Archers in his column are ×{heroes.longshot.M}.' },
   { N: 1.2, M: 1.25 }, {
     mult: (L, me, i) => (i === me.slot ? pow(me.N, countIn(G.col(me.slot), (j) => L.isEmpty(j))) : G.col(me.slot).indexOf(i) >= 0 && L.typeOf(i) === 'arc' ? me.num('M') : null)
   });
 
   LIB.hero({ id: 'harrier', name: 'Harrier', type: 'arc', rarity: 'uncommon', step: 'mult',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: 'Touches Inf and Cav: ×{heroes.harrier.N}', desc: 'An Archers hero who joins at rank {heroes.rank} or higher: ×{heroes.harrier.N} if he touches Infantry and Cavalry and no Archers, and then those pieces are ×{heroes.harrier.M}.' },
   { N: 3, M: 1.25 }, {
     mult: (L, me, i) => {
@@ -10148,6 +10165,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.hero({ id: 'mercenary_cpt', name: 'Mercenary Captain', type: 'arc', rarity: 'uncommon', step: 'rank',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: '+1 rank per officer touching', desc: 'An Archers hero who joins at rank {heroes.rank} or higher. He fights one rank higher for every officer touching him, up to rank {TOP}, and those officers are ×{heroes.mercenary_cpt.M}.' },
   { N: 0, M: 1.25 }, {
     rank: own((L, me) => countIn(touching(L, me.slot), (j) => isOfficer(L, j))),
@@ -10155,6 +10173,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.hero({ id: 'raider', name: 'Raider', type: 'cav', rarity: 'uncommon', step: 'mult',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: 'Alone on his terrain: ×{heroes.raider.N}', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher: ×{heroes.raider.N} if no piece touching him stands on his terrain, and the pieces touching him on another terrain are ×{heroes.raider.M}.' },
   { N: 2, up: 0.25, M: 1.2 }, {
     mult: (L, me, i) => (i === me.slot ? (touching(L, me.slot).some((j) => L.isPiece(j) && L.terrain(j) === L.terrain(me.slot)) ? null : me.N)
@@ -10162,6 +10181,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.hero({ id: 'knight_errant', name: 'Knight Errant', type: 'cav', rarity: 'uncommon', step: 'mult',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: 'Only Cavalry: ×{heroes.knight_errant.N}', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher: ×{heroes.knight_errant.N} if he is the only Cavalry piece on the board, and the pieces touching him have +{heroes.knight_errant.M} power.' },
   { N: 4, M: 3 }, {
     mult: own((L, me) => (typeIn(L, ALL.filter((j) => j !== me.slot), 'cav') === 0 ? me.N : null)),
@@ -10191,6 +10211,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.hero({ id: 'courier_rider', name: 'Courier Rider', type: 'cav', rarity: 'uncommon', step: 'mult',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: 'Touches an officer: ×{heroes.courier_rider.N}', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher: ×{heroes.courier_rider.N} if he touches an officer, and that officer is ×{heroes.courier_rider.M}.' },
   { N: 2, up: 0.25, M: 1.3 }, {
     mult: (L, me, i) => (i === me.slot ? (touching(L, me.slot).some((j) => isOfficer(L, j)) ? me.N : null) : touches(L, me, i) && isOfficer(L, i) ? me.num('M') : null)
@@ -10236,6 +10257,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   // more is better
   LIB.hero({ id: 'company_archer', name: 'Company Archer', type: 'arc', rarity: 'common', step: 'flat',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: '+{heroes.company_archer.N} per Archers card', desc: 'An Archers hero who joins at rank {heroes.rank} or higher: +{heroes.company_archer.N} power for each Archers card in your deck (its units, heroes and officers, him included), before any multiplier, and each Archers piece touching him has half of that.',
     muster: M.perAdd('hero', 'company_archer', (a) => a.arc, 'Archers cards in your deck') },
   { N: 0.5, up: 0.1 }, {
@@ -10281,6 +10303,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   { N: 1.3, up: 0.05, M: 1.25 }, ownFactor((L, me, i) => i === below(me.slot)));
 
   LIB.hero({ id: 'staff_rider', name: 'Staff Rider', type: 'cav', rarity: 'common', step: 'flat',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: '+{heroes.staff_rider.N} per general level', desc: 'A Cavalry hero who joins at rank {heroes.rank} or higher: +{heroes.staff_rider.N} power for each level among your six generals (their levels added), before any multiplier, and the Cavalry touching him have +{heroes.staff_rider.M} power.',
     muster: M.perAdd('hero', 'staff_rider', (a, six, x) => x.levels, 'Levels among your six') },
   { N: 1, up: 0.25, M: 3 }, {
@@ -10325,6 +10348,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   // obstacle: a feature that takes no piece (mult on the pieces touching it)
   LIB.special({ id: 'palisade', name: 'Palisade Builder', kind: 'obstacle', rarity: 'common', feature: 'palisade', featureName: 'Palisade',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: 'Touching pieces ×{N}', desc: 'Builds a palisade on an empty tile without a fort or a feature; the tile takes no card. Every piece touching it is ×{N}.' },
   1.7, {
     mult: (L, me, i) => (G.cross(me.slot).indexOf(i) >= 0 ? me.N : 1)
@@ -10339,6 +10363,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     return out;
   };
   LIB.special({ id: 'bridge_builder', name: 'Bridge Builder', kind: 'obstacle', rarity: 'common', feature: 'bridge', featureName: 'Bridge',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: 'Links both sides, ×{N}', desc: 'Builds a bridge on an empty tile without a fort or a feature; the tile takes no card. The pieces on its opposite sides (left and right, above and below) count as touching, and a piece on a linked side is ×{N}.' },
   1.75, {
     link: (L, me) => bridgePairs(me.slot),
@@ -10347,6 +10372,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   // engine + score: an entry that scores on its own
   LIB.special({ id: 'ballista', name: 'Ballista', kind: 'engine', rarity: 'common',
+    area: ['row', 'col'],   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: '+{N} per piece in line', desc: 'An engine: it takes a tile and is never a unit. It scores {N} for every piece in its row and its column.' },
   18, {
     score: (L, me) => {
@@ -10445,6 +10471,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   // engine + flat: the pieces around it
   LIB.special({ id: 'supply_wagon', name: 'Supply Wagon', kind: 'engine', rarity: 'common',
+    area: 'ring',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: 'Ring +{N}', desc: 'An engine: it takes a tile and is never a unit. Every piece in the 8 tiles around it has +{N} power, before any multiplier.' },
   3.5, {
     flat: (L, me, i) => (G.ring(me.slot).indexOf(i) >= 0 ? me.N : 0)
@@ -10452,6 +10479,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   // obstacle: Infantry touching it
   LIB.special({ id: 'sapper', name: 'Sapper', kind: 'obstacle', rarity: 'common', feature: 'trench', featureName: 'Trench',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: 'Touching Infantry ×{N}', desc: 'Digs a trench on an empty tile without a fort or a feature; the tile takes no card. Every Infantry piece touching it is ×{N}.' },
   2.5, {
     mult: (L, me, i) => (L.typeOf(i) === 'inf' && G.cross(me.slot).indexOf(i) >= 0 ? me.N : 1)
@@ -10459,6 +10487,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   // builder + pct: a formation with a member on or touching the standard
   LIB.special({ id: 'banner_raiser', name: 'Banner Raiser', kind: 'builder', rarity: 'uncommon', feature: 'standard', featureName: 'Standard',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: 'Standard: formations ×+{N}', desc: 'Raises a standard on an empty tile without a feature; the tile stays free for a card. A live formation with a piece on it or touching it counts {N} higher (its × goes up by {N}).' },
   1.5, {
     pct: (L, me, inst) => (inst.slots.some((s) => s === me.slot || G.cross(me.slot).indexOf(s) >= 0) ? me.N : 0)
@@ -10473,6 +10502,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   // engine + mult: its row and column, 2 or more tiles away
   LIB.special({ id: 'catapult', name: 'Catapult', kind: 'engine', rarity: 'uncommon',
+    area: ['row', 'col'],   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: 'Far in line ×{N}', desc: 'An engine: it takes a tile and is never a unit. Every piece in its row or its column, 2 or more tiles away from it, is ×{N}.' },
   1.6, {
     mult: (L, me, i) => ((G.row(me.slot).indexOf(i) >= 0 || G.col(me.slot).indexOf(i) >= 0) && G.dist(me.slot, i) >= 2 ? me.N : 1)
@@ -10512,6 +10542,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // (PLAN 61 item 19): the text at half its length; the tie order stays in the code (the live
   // Muster line names the type it picked)
   LIB.special({ id: 'one_banner', name: 'One Banner Standard', kind: 'builder', rarity: 'rare', feature: 'colours', featureName: 'One Banner',
+    area: 'cross',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: 'Largest type touching ×{N}', desc: 'Plants one banner on an empty tile without a feature; the tile stays free for a card. Pieces of your largest type (by cards in your deck) touching it are ×{N}, less {step} for each card of another type; never below ×1.',
     muster: (T, army) => {
       const N = C.specialNum(T, 'one_banner'), step = M.mKey('special', 'one_banner', T, 'step', 0.08);
@@ -10530,6 +10561,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   // engine + mult: the pieces in its ring, ×N for each booster in your six
   LIB.special({ id: 'map_table', name: 'Map Table', kind: 'engine', rarity: 'uncommon',
+    area: 'ring',   // 2026-11-01 (user): the tiles its rule reads, drawn on the board (board2 defCells)
     short: 'Ring ×{N3} per booster', desc: 'An engine: it takes a tile and is never a unit. Every piece in the 8 tiles around it is ×{N3} for each booster general in your six (dealt or not), multiplied.',
     muster: M.per('special', 'map_table', (a, six, x) => x.boost, 'Boosters in your six') },
   1.075, {
@@ -17675,7 +17707,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // his tile; with a card held, the areas its target tile lies in light up, and a held officer
   // shows his own area on the target tile. The areas lie on the table under the medallions'
   // flat layer, so they never cover a number; the reveal hides them.
-  const TI = { inf: 0, arc: 1, cav: 2 };
+  const TI = { inf: 0, arc: 1, cav: 2, eng: 3 };
   /** [{slot, type, cells}] for every placed officer (on a post, or commanding a unit); cells are
    *  his shape clipped at the board's edge, with his own tile (pure; tests). */
   function areaList(state) {
@@ -17683,6 +17715,11 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     for (let i = 0; i < 16; i++) {
       const p = state && state.pieces ? state.pieces[i] : null;
       if (p && p.officer) out.push({ slot: i, type: p.officer.type || 'inf', cells: areaCellsOf(state, i), named: !!p.officer.id });
+      // 2026-11-01 (user): every piece whose rule reads the tiles around it (an engine, a hero) and every
+      // feature that acts on its neighbours shows those tiles as an officer's area does
+      else if (p && defCells(i, defOf(p))) out.push({ slot: i, type: typeOf(p), cells: defCells(i, defOf(p)), named: true });
+      const ft = state && state.features && !C.isHidden(state, i) ? state.features[i] : null;
+      if (ft && C.LIB && defCells(i, C.LIB.featureDef(ft))) out.push({ slot: i, type: 'eng', cells: defCells(i, C.LIB.featureDef(ft)), named: true });
     }
     return out;
   }
@@ -17691,6 +17728,18 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     if (cells.indexOf(slot) < 0) cells.push(slot);
     return cells.sort((a, b) => a - b);
   };
+  /** The library def of a piece or card whose rule may read an area (an engine / special, a hero), or null. */
+  const defOf = (x) => (!x || !C.libDef ? null : x.kind === 'engine' || x.kind === 'special' ? C.libDef('special', x.id) : x.kind === 'hero' ? C.libDef('hero', x.id) : null);
+  /** The tiles a def's rule reads from `slot` (its `area`: one name or several) with that tile, or null (pure; tests). */
+  function defCells(slot, d) {
+    if (!d || !d.area || !C.LIB || !C.LIB.geo) return null;
+    const set = {};
+    [].concat(d.area).forEach((n) => C.LIB.geo.area(n, slot).forEach((c) => { set[c] = 1; }));
+    set[slot] = 1;
+    return Object.keys(set).map(Number).filter((c) => c >= 0 && c < 16).sort((x, y) => x - y);
+  }
+  B.defCells = defCells;
+  B.defOf = defOf;
   B.areas = areaList;
   B.areaCells = areaCellsOf;
   /** The areas a tile lies in that would act on `card` there (a unit or hero of their type). */
@@ -17845,6 +17894,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     if (held && held.kind === 'officer' && o.slot != null && !rv) {
       h += strong({ slot: o.slot, type: held.type || 'inf', cells: areaCellsOf(st, o.slot, held) }, 'prev');
     }
+    // 2026-11-01 (user): a held hero or special whose rule reads an area shows it on the target tile
+    if (held && o.slot != null && !rv && defCells(o.slot, defOf(held))) h += strong({ slot: o.slot, type: held.kind === 'hero' ? (held.type || (C.heroType ? C.heroType(held.id) : 'inf')) : 'eng', cells: defCells(o.slot, defOf(held)) }, 'prev');
     svg.innerHTML = h;
     table.classList.toggle('focusing', !!foc);
     table.classList.toggle('holding', !!held);
