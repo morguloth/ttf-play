@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="aa120f73fa";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="765182697a";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -8638,8 +8638,8 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       short: 'Hills ×{N}', desc: 'Every unit on hills, of any type, is ×{N}.' },
     { id: 'master_ranks', name: 'Master of Ranks', rarity: 'common', role: 'boost', effect: { kind: 'massed' }, step: 'mult',
       short: 'Massed ×{N}', desc: 'Every unit in your largest group of touching units is ×{N} (every largest group, when tied).' },
-    teach('cpt_combined', 'Captain of Combined Arms', 'uncommon', 'combined_arms', 'Combined Arms'),
-    teach('cpt_hammer', 'Captain of the Hammer', 'uncommon', 'hammer_anvil', 'Hammer and Anvil'),
+    teach('cpt_combined', 'Captain of Arms', 'uncommon', 'combined_arms', 'Combined Arms'),
+    teach('cpt_hammer', 'Hammer Captain', 'uncommon', 'hammer_anvil', 'Hammer and Anvil'),
     { id: 'quartermaster', name: 'Quartermaster', rarity: 'uncommon', role: 'boost', effect: { kind: 'loose' }, step: 'mult',
       short: 'Loose units ×{N}', desc: 'Every unit that is in no live formation is ×{N}.' },
     { id: 'old_guard', name: 'Old Guard', rarity: 'uncommon', role: 'boost', effect: { kind: 'ranked' }, step: 'mult',
@@ -8653,7 +8653,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       short: 'Kinds ×{N}', desc: 'Every unit with a kind (Pikemen, Guards, Longbowmen, Marksmen, Light Horse, Knights) is ×{N}.' },
     { id: 'lord_horse', name: 'Lord of Horse', rarity: 'uncommon', role: 'boost', effect: { kind: 'typeMult', type: 'cav' }, step: 'mult',
       short: 'Cavalry ×{N}', desc: 'Every Cavalry unit on the board is ×{N}.' },
-    teach('cpt_battleline', 'Captain of the Battle Line', 'rare', 'battle_line', 'Battle Line'),
+    teach('cpt_battleline', 'Battle Captain', 'rare', 'battle_line', 'Battle Line'),
     { id: 'tactician', name: 'Tactician', rarity: 'rare', role: 'boost', effect: { kind: 'battle' }, step: 'battle',
       short: 'Battle ×{N}', desc: 'The whole battle total, formations included, is ×{N}.' },
     { id: 'warlord', name: 'Warlord', rarity: 'rare', role: 'boost', effect: { kind: 'warlord' }, step: 'battle',
@@ -9155,7 +9155,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   // memb: a factor that reads formation membership (L.member, L.instances)
   // 2026-10-30 (PLAN 61 item 17): rare (was uncommon); the Cartographer took his uncommon slot
-  LIB.general({ id: 'banner_general', name: 'Standard-bearer General', rarity: 'rare', step: 'mult',
+  LIB.general({ id: 'banner_general', name: 'Ensign General', rarity: 'rare', step: 'mult',
     short: 'Two formations: ×{N}', desc: 'A piece that is part of two or more live formations at once is ×{N}.' },
   { base: 3.5, up: 0.25 }, {
     memb: (L, me, i) => (L.member[i] >= 2 ? me.N : 1)
@@ -9177,7 +9177,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // battle: a factor on the whole battle total. 2026-10-30 (PLAN 61 item 19): the text at half its
   // length (the code is unchanged: a hero, a named officer, a Sergeant type, an engine, a feature
   // kind and the forts each count once)
-  LIB.general({ id: 'many_banners', name: 'Herald of Many Banners', rarity: 'rare', step: 'battle',
+  LIB.general({ id: 'many_banners', name: 'Herald of Banners', rarity: 'rare', step: 'battle',
     short: 'Leaders: ×{N} each', desc: 'The battle total is ×{N} for every different leader on the board, multiplied: heroes, officers, engines, tile features and the forts.' },
   { base: 1.1, up: 0.02 }, {
     battle: (L, me) => {
@@ -9228,7 +9228,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   { base: 1, up: 1 }, { redraw: true });
 
   // survey: a general action, his value's times a battle (his level; C.canSurvey / C.survey)
-  // 2026-10-30 (PLAN 61 item 17): uncommon (was rare), swapped with the Standard-bearer General
+  // 2026-10-30 (PLAN 61 item 17): uncommon (was rare), swapped with the Ensign General
   LIB.general({ id: 'cartographer', name: 'Cartographer', rarity: 'uncommon', step: 'action',
     short: 'Terrain swap once', shortUp: '{N} terrain swaps', desc: 'You may swap the terrains of two tiles, {TIMES} a battle. It costs no turn.' },
   { base: 1, up: 1 }, { survey: true });
@@ -9251,7 +9251,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // ==== content (the generals agent appends below; keep the order of §4) =====================
   // (2026-10-27, PLAN 60 W2: the §4 generals not among the exemplars, in the table's order)
   // 2026-10-30 (PLAN 61 item 17): the 27 §4 defs by rarity: common 10, uncommon 10 (Cartographer
-  // in, Standard-bearer General out), rare 7 (the reverse). Dealt (not retired): common 10,
+  // in, Ensign General out), rare 7 (the reverse). Dealt (not retired): common 10,
   // uncommon 8 (Lord of Foot, Lord of Bows retired), rare 6 (Champion's Patron retired).
 
   const G = LIB.geo;
@@ -9289,7 +9289,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
     mult: (L, me, i) => (isKind(L, i, 'post') ? me.N : 1)
   });
 
-  LIB.general({ id: 'mixed_ranks', name: 'Captain of Mixed Ranks', rarity: 'common', step: 'mult',
+  LIB.general({ id: 'mixed_ranks', name: 'Motley Captain', rarity: 'common', step: 'mult',
     short: 'Mixed neighbours ×{N}', desc: 'A piece touching a piece of another type is ×{N}.' },
   { base: 1.3, up: 0.1 }, {
     mult: (L, me, i) => (touching(L, i).some((j) => L.isScored(j) && L.typeOf(j) !== L.typeOf(i)) ? me.N : 1)
@@ -16410,6 +16410,10 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
       while (over() && fs > 16 && n++ < 24) { fs = Math.max(16, fs - 1); b.style.fontSize = fs + 'px'; }
       // a general's one line has room for one line only: it drops its laurel sprigs first
       if (over() && host.classList.contains('g6-line')) host.classList.add('bare');
+      // 2026-11-01 (user): a general's scroll and his line under it step on down to 12px on a small card
+      // before they take two lines (two lines covered each other)
+      const floor = host.classList.contains('g6-scroll') || host.classList.contains('g6-line') ? 12 : 16;
+      while (over() && fs > floor && n++ < 24) { fs = Math.max(floor, fs - 1); b.style.fontSize = fs + 'px'; }
       if (over()) b.style.letterSpacing = '0';
       if (over()) b.style.letterSpacing = '-0.02em';
       // (QA 2026-10-27) a general's one line under a two-line scroll has no room for two more: it closes up first
