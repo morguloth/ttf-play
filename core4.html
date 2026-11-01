@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="bb7100aa83";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="edcd283a89";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("core4-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-core4:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -9464,7 +9464,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // rank: pieces of his type in his area fight N ranks higher (up to the top rank); 2026-10-28
   // (user): +1 at his ranks 1-2, +2 at ranks 3-4; +3 at rank 5 (2026-10-28, the 5th rank)
   LIB.officer({ id: 'rallying_officer', name: 'Rallying Officer', type: 'inf', rarity: 'common', area: 'cross',
-    short: 'Cross: Infantry rank +{N}', desc: 'He stands as an Infantry piece. The Infantry pieces in his cross (the 4 tiles touching him) fight at rank +{N}, up to rank {TOP}.' },
+    short: 'Cross: Infantry rank +{N}', desc: 'He stands as an Infantry piece. The Infantry pieces in his cross (the 4 tiles touching him) fight at rank +{N}, up to rank {TOP}. He never boosts himself.' },
   { base: 1, up: 0, levels: [1, 1, 2, 2, 3] }, {
     rank: (L, me, i) => (inTypedArea(L, me, i) ? me.N : 0)
   });
@@ -9472,7 +9472,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // mult over an area. 2026-10-30 (PLAN 61 item 18): retired (a plain line ×, as the Bugler, the
   // Cavalry Captain and the Battery Captain); the def stays so a saved deck holding him loads and scores
   LIB.officer({ id: 'drummer', retired: true, name: 'Drummer', type: 'inf', rarity: 'common', area: 'row',
-    short: 'Row: Infantry ×{N}', desc: 'He stands as an Infantry piece. Every other Infantry piece in his row is ×{N}.' },
+    short: 'Row: Infantry ×{N}', desc: 'He stands as an Infantry piece. Every other Infantry piece in his row is ×{N}. He never boosts himself.' },
   { base: 1.75, up: 0.15 }, {
     mult: (L, me, i) => (inTypedArea(L, me, i) ? me.N : 1)
   });
@@ -9567,40 +9567,40 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   // 2026-10-30 (PLAN 61 item 18): retired (a plain line ×); the def stays for saved decks
   LIB.officer({ id: fx('bugler'), retired: true, name: 'Bugler', type: 'cav', rarity: 'common', area: 'col',
-    short: 'Column: Cavalry ×{N}', desc: 'He stands as a Cavalry piece. Every other Cavalry piece in his column is ×{N}.' },
+    short: 'Column: Cavalry ×{N}', desc: 'He stands as a Cavalry piece. Every other Cavalry piece in his column is ×{N}. He never boosts himself.' },
   { base: 1.75, up: 0.15 }, multOwn(null));
 
   LIB.officer({ id: 'quarter_sgt', name: 'Quarter-sergeant', type: 'inf', rarity: 'common', area: 'ring',
-    short: 'Ring: Infantry +{N}', desc: 'He stands as an Infantry piece. Every Infantry piece in his ring (the 8 tiles around him) has +{N} power, before any multiplier.' },
+    short: 'Ring: Infantry +{N}', desc: 'He stands as an Infantry piece. Every Infantry piece in his ring (the 8 tiles around him) has +{N} power, before any multiplier. He never boosts himself.' },
   { base: 6, up: 1 }, {
     flat: (L, me, i) => (inTypedArea(L, me, i) ? me.N : 0)
   });
 
   LIB.officer({ id: fx('watch_officer'), name: 'Watch Officer', type: 'arc', rarity: 'common', area: 'corners',
-    short: 'Corners: Archers ×{N}', desc: 'He stands as an Archers piece. Every Archers piece on his corners (the 4 tiles touching him diagonally) is ×{N}.' },
+    short: 'Corners: Archers ×{N}', desc: 'He stands as an Archers piece. Every Archers piece on his corners (the 4 tiles touching him diagonally) is ×{N}. He never boosts himself.' },
   { base: 2, up: 0.25 }, multOwn(null));
 
   LIB.officer({ id: fx('provost'), name: 'Provost', type: 'inf', rarity: 'common', area: 'cross',
-    short: 'Rank-1 Infantry ×{N}', desc: 'He stands as an Infantry piece. Every rank-1 Infantry piece in his cross (the 4 tiles touching him) is ×{N}.' },
+    short: 'Rank-1 Infantry ×{N}', desc: 'He stands as an Infantry piece. Every rank-1 Infantry piece in his cross (the 4 tiles touching him) is ×{N}. He never boosts himself.' },
   { base: 7, up: 0.5 }, multOwn((L, me, i) => L.rank0[i] === 1));
 
   LIB.officer({ id: fx('ensign'), name: 'Ensign', type: 'inf', rarity: 'common', area: 'cross',
-    short: 'Infantry in formation ×{N}', desc: 'He stands as an Infantry piece. Every Infantry piece in his cross that is part of a live formation is ×{N}.' },
+    short: 'Infantry in formation ×{N}', desc: 'He stands as an Infantry piece. Every Infantry piece in his cross that is part of a live formation is ×{N}. He never boosts himself.' },
   { base: 4, up: 0.5 }, {
     memb: (L, me, i) => (inTypedArea(L, me, i) && L.member[i] > 0 ? me.N : 1)
   });
 
   LIB.officer({ id: fx('forager'), name: 'Forager', type: 'cav', rarity: 'common', area: 'cross',
-    short: 'Cavalry on fields ×{N}', desc: 'He stands as a Cavalry piece. Every Cavalry piece in his cross that stands on fields is ×{N}.' },
+    short: 'Cavalry on fields ×{N}', desc: 'He stands as a Cavalry piece. Every Cavalry piece in his cross that stands on fields is ×{N}. He never boosts himself.' },
   { base: 4, up: 0.5 }, multOwn((L, me, i) => L.terrain(i) === 'fields'));
 
   LIB.officer({ id: fx('woodward'), name: 'Woodward', type: 'arc', rarity: 'common', area: 'cross',
-    short: 'Archers on forest ×{N}', desc: 'He stands as an Archers piece. Every Archers piece in his cross that stands on forest is ×{N}.' },
+    short: 'Archers on forest ×{N}', desc: 'He stands as an Archers piece. Every Archers piece in his cross that stands on forest is ×{N}. He never boosts himself.' },
   { base: 4, up: 0.5 }, multOwn((L, me, i) => L.terrain(i) === 'forest'));
 
   // xp: the scored pieces of his type in his cross earn +N XP (xpOf counts only on a won battle)
   LIB.officer({ id: 'mentor', name: 'Mentor', type: 'arc', rarity: 'common', area: 'cross',
-    short: 'Cross: Archers +{N} XP', desc: 'He stands as an Archers piece. When the battle is won, every Archers piece in his cross earns +{N} XP.' },
+    short: 'Cross: Archers +{N} XP', desc: 'He stands as an Archers piece. When the battle is won, every Archers piece in his cross earns +{N} XP. He never boosts himself.' },
   { base: 1, up: 1 }, {
     xp: (S, me) => {
       const add = {};
@@ -9614,40 +9614,40 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.officer({ id: fx('gate_captain'), name: 'Gate Captain', type: 'inf', rarity: 'common', area: 'cross',
-    short: 'Infantry on forts ×{N}', desc: 'He stands as an Infantry piece. Every Infantry piece in his cross that stands on a fort is ×{N}.' },
+    short: 'Infantry on forts ×{N}', desc: 'He stands as an Infantry piece. Every Infantry piece in his cross that stands on a fort is ×{N}. He never boosts himself.' },
   { base: 6, up: 0.5 }, multOwn((L, me, i) => L.fort(i)));
 
   LIB.officer({ id: fx('point_officer'), name: 'Point Officer', type: 'cav', rarity: 'common', area: 'cross',
-    short: 'Cavalry after him ×{N}', desc: 'He stands as a Cavalry piece. Every Cavalry piece in his cross placed on a later turn than him is ×{N}.' },
+    short: 'Cavalry after him ×{N}', desc: 'He stands as a Cavalry piece. Every Cavalry piece in his cross placed on a later turn than him is ×{N}. He never boosts himself.' },
   { base: 3.5, up: 0.5 }, multOwn((L, me, i) => placedOf(L, i) !== null && placedOf(L, me.slot) !== null && L.placed[i] > L.placed[me.slot]));
 
   LIB.officer({ id: fx('rear_officer'), name: 'Rear Officer', type: 'inf', rarity: 'common', area: 'cross',
-    short: 'Infantry before him ×{N}', desc: 'He stands as an Infantry piece. Every Infantry piece in his cross placed on an earlier turn than him is ×{N}.' },
+    short: 'Infantry before him ×{N}', desc: 'He stands as an Infantry piece. Every Infantry piece in his cross placed on an earlier turn than him is ×{N}. He never boosts himself.' },
   { base: 2.5, up: 0.25 }, multOwn((L, me, i) => placedOf(L, i) !== null && placedOf(L, me.slot) !== null && L.placed[i] < L.placed[me.slot]));
 
   // a piece in his cross touching another piece of its own type (he himself does not count)
   LIB.officer({ id: fx('pair_sgt'), name: 'Pair Sergeant', type: 'arc', rarity: 'common', area: 'cross',
-    short: 'Archers in pairs ×{N}', desc: 'He stands as an Archers piece. Every Archers piece in his cross that touches another Archers piece (not him) is ×{N}.' },
+    short: 'Archers in pairs ×{N}', desc: 'He stands as an Archers piece. Every Archers piece in his cross that touches another Archers piece (not him) is ×{N}. He never boosts himself.' },
   { base: 3, up: 0.25 }, multOwn((L, me, i) => L.ORTH[i].some((j) => j !== me.slot && L.typeOf(j) === L.typeOf(i))));
 
   LIB.officer({ id: fx('lieutenant'), name: 'Lieutenant', type: 'cav', rarity: 'common', area: rowCol,
-    short: 'Officers in line ×{N}', desc: 'He stands as a Cavalry piece. Every other officer in his row or his column is ×{N}.' },
+    short: 'Officers in line ×{N}', desc: 'He stands as a Cavalry piece. Every other officer in his row or his column is ×{N}. He never boosts himself.' },
   { base: 3, up: 0.5 }, multIf((L, me, i) => isPost(L, i)));
 
   LIB.officer({ id: fx('chaplain'), name: 'Chaplain', type: 'inf', rarity: 'common', area: 'ring',
-    short: 'Ring heroes ×{N}', desc: 'He stands as an Infantry piece. Every hero in his ring (the 8 tiles around him) is ×{N}.' },
+    short: 'Ring heroes ×{N}', desc: 'He stands as an Infantry piece. Every hero in his ring (the 8 tiles around him) is ×{N}. He never boosts himself.' },
   { base: 1.5, up: 0.15 }, multIf((L, me, i) => isHeroAt(L, i)));
 
   LIB.officer({ id: fx('clerk'), name: 'Clerk', type: 'arc', rarity: 'common', area: 'cross',
-    short: 'Archers at home ×{N}', desc: 'He stands as an Archers piece. Every Archers piece in his cross that stands on its home terrain is ×{N}.' },
+    short: 'Archers at home ×{N}', desc: 'He stands as an Archers piece. Every Archers piece in his cross that stands on its home terrain is ×{N}. He never boosts himself.' },
   { base: 1.75, up: 0.15 }, multOwn((L, me, i) => L.homeOf(L.typeOf(i), L.terrain(i))));
 
   LIB.officer({ id: fx('picket_officer'), name: 'Picket Officer', type: 'arc', rarity: 'common', area: 'cross',
-    short: 'Lone Archers ×{N}', desc: 'He stands as an Archers piece. Every Archers piece in his cross that touches no other piece but him is ×{N}.' },
+    short: 'Lone Archers ×{N}', desc: 'He stands as an Archers piece. Every Archers piece in his cross that touches no other piece but him is ×{N}. He never boosts himself.' },
   { base: 3.5, up: 0.5 }, multOwn((L, me, i) => L.ORTH[i].every((j) => j === me.slot || !L.isPiece(j))));
 
   LIB.officer({ id: fx('supply_sgt'), name: 'Supply Sergeant', type: 'cav', rarity: 'common', area: 'cross',
-    short: 'Unformed Cavalry ×{N}', desc: 'He stands as a Cavalry piece. Every Cavalry piece in his cross that is in no live formation is ×{N}.' },
+    short: 'Unformed Cavalry ×{N}', desc: 'He stands as a Cavalry piece. Every Cavalry piece in his cross that is in no live formation is ×{N}. He never boosts himself.' },
   { base: 2.25, up: 0.25 }, {
     memb: (L, me, i) => (inTypedArea(L, me, i) && !L.member[i] ? me.N : 1)
   });
@@ -9655,17 +9655,17 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // 2026-10-30 (PLAN 61 item 18): Battery Captain and Cavalry Captain retired (plain line ×s, as
   // the Drummer and the Bugler); the defs stay for saved decks
   LIB.officer({ id: fx('battery_cpt'), retired: true, name: 'Battery Captain', type: 'arc', rarity: 'uncommon', area: rowCol,
-    short: 'Archers in line ×{N}', desc: 'He stands as an Archers piece. Every other Archers piece in his row or his column is ×{N}.' },
+    short: 'Archers in line ×{N}', desc: 'He stands as an Archers piece. Every other Archers piece in his row or his column is ×{N}. He never boosts himself.' },
   { base: 1.5, up: 0.15 }, multIf((L, me, i) => L.typeOf(i) === 'arc'));
 
   LIB.officer({ id: fx('cavalry_cpt'), retired: true, name: 'Cavalry Captain', type: 'cav', rarity: 'uncommon', area: 'row',
-    short: 'Cavalry in row ×{N}', desc: 'He stands as a Cavalry piece. Every other Cavalry piece in his row is ×{N}.' },
+    short: 'Cavalry in row ×{N}', desc: 'He stands as a Cavalry piece. Every other Cavalry piece in his row is ×{N}. He never boosts himself.' },
   { base: 1.6, up: 0.15 }, multIf((L, me, i) => L.typeOf(i) === 'cav'));
 
   // area: his ring; on hills every tile within 2 steps
   LIB.officer({ id: fx('tower_officer'), name: 'Tower Officer', type: 'arc', rarity: 'uncommon',
     area: (ctx, me) => (ctx.terrain(me.slot) === 'hills' ? G.within2(me.slot) : G.ring(me.slot)),
-    short: 'Ring: Archers ×{N}', desc: 'He stands as an Archers piece. Every Archers piece in his ring (the 8 tiles around him) is ×{N}. On hills his area is every tile within 2 steps of him.' },
+    short: 'Ring: Archers ×{N}', desc: 'He stands as an Archers piece. Every Archers piece in his ring (the 8 tiles around him) is ×{N}. On hills his area is every tile within 2 steps of him. He never boosts himself.' },
   { base: 1.75, up: 0.15 }, multOwn(null));
 
   // place: the next draw has N cards more (6 at most)
@@ -9677,7 +9677,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   // memb: reads L.pre (the values before any membership factor) to find the best piece
   LIB.officer({ id: fx('inspector'), name: 'Inspector', type: 'cav', rarity: 'uncommon', area: 'ring',
-    short: 'Best Cavalry in ring ×{N}', desc: 'He stands as a Cavalry piece. The best Cavalry piece in his ring (the highest value before this ×, the first on a tie) is ×{N}.' },
+    short: 'Best Cavalry in ring ×{N}', desc: 'He stands as a Cavalry piece. The best Cavalry piece in his ring (the highest value before this ×, the first on a tie) is ×{N}. He never boosts himself.' },
   { base: 2, up: 0.25 }, {
     memb: (L, me, i) => {
       if (!inTypedArea(L, me, i)) return 1;
@@ -9688,7 +9688,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.officer({ id: fx('rival_officer'), name: 'Rival Officer', type: 'inf', rarity: 'uncommon', area: 'cross',
-    short: 'Cross ×{N} per type', desc: 'He stands as an Infantry piece. Every piece in his cross is ×{N} for each different type among the pieces there (×{N2} with two types).' },
+    short: 'Cross ×{N} per type', desc: 'He stands as an Infantry piece. Every piece in his cross is ×{N} for each different type among the pieces there (×{N2} with two types). He never boosts himself.' },
   { base: 1.15, up: 0.05 }, {
     mult: (L, me, i) => {
       if (!inArea(L, me, i)) return 1;
@@ -9699,7 +9699,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.officer({ id: fx('iron_sgt'), name: 'Iron Sergeant', type: 'inf', rarity: 'uncommon', area: 'cross',
-    short: 'Weaker Infantry ×{N}', desc: 'He stands as an Infantry piece. Every Infantry piece in his cross worth less than him (before formations) is ×{N}.' },
+    short: 'Weaker Infantry ×{N}', desc: 'He stands as an Infantry piece. Every Infantry piece in his cross worth less than him (before formations) is ×{N}. He never boosts himself.' },
   { base: 3.5, up: 0.25 }, {
     memb: (L, me, i) => (inTypedArea(L, me, i) && L.pre[i] < L.pre[me.slot] ? me.N : 1)
   });
@@ -9707,18 +9707,18 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // area: every other tile of the terrain he stands on
   LIB.officer({ id: fx('signal_officer'), name: 'Signal Officer', type: 'arc', rarity: 'uncommon',
     area: (ctx, me) => { const t = ctx.terrain(me.slot), out = []; for (let s = 0; s < 16; s++) if (s !== me.slot && ctx.terrain(s) === t) out.push(s); return out; },
-    short: 'Archers on his terrain ×{N}', desc: 'He stands as an Archers piece. Every other Archers piece on the terrain he stands on, anywhere on the board, is ×{N}.' },
+    short: 'Archers on his terrain ×{N}', desc: 'He stands as an Archers piece. Every other Archers piece on the terrain he stands on, anywhere on the board, is ×{N}. He never boosts himself.' },
   { base: 1.5, up: 0.1 }, multOwn(null));
 
   // home: his cross counts as at home (the home factor, once)
   LIB.officer({ id: 'ranger_officer', name: 'Ranger Officer', type: 'cav', rarity: 'uncommon', area: 'cross',
-    short: 'Cross: Cavalry at home', desc: 'He stands as a Cavalry piece. Every Cavalry piece in his cross is at home on any terrain.' },
+    short: 'Cross: Cavalry at home', desc: 'He stands as a Cavalry piece. Every Cavalry piece in his cross is at home on any terrain. He never boosts himself.' },
   { base: 0, up: 0 }, {
     home: (L, me, i) => inTypedArea(L, me, i)
   });
 
   LIB.officer({ id: fx('siege_officer'), name: 'Siege Officer', type: 'inf', rarity: 'uncommon', area: 'col',
-    short: 'Infantry ×{N} per fort', desc: 'He stands as an Infantry piece. Every other Infantry piece in his column is ×{N} for each fort in that column.' },
+    short: 'Infantry ×{N} per fort', desc: 'He stands as an Infantry piece. Every other Infantry piece in his column is ×{N} for each fort in that column. He never boosts himself.' },
   { base: 2.5, up: 0.25 }, {
     mult: (L, me, i) => {
       if (!inTypedArea(L, me, i)) return 1;
@@ -9728,7 +9728,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.officer({ id: fx('reserve_cpt'), name: 'Reserve Captain', type: 'cav', rarity: 'uncommon', area: 'ring',
-    short: 'Cavalry ×{N}, late ×{N2}', desc: 'He stands as a Cavalry piece. Every Cavalry piece in his ring is ×{N}, or ×{N2} if you played him in the last 2 turns of the battle.' },
+    short: 'Cavalry ×{N}, late ×{N2}', desc: 'He stands as a Cavalry piece. Every Cavalry piece in his ring is ×{N}, or ×{N2} if you played him in the last 2 turns of the battle. He never boosts himself.' },
   { base: 1.6, up: 0.1 }, {
     mult: (L, me, i) => {
       if (!inTypedArea(L, me, i)) return 1;
@@ -9738,33 +9738,33 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   });
 
   LIB.officer({ id: fx('advance_cpt'), name: 'Advance Captain', type: 'cav', rarity: 'uncommon', area: 'cross',
-    short: 'Next turn\'s Cavalry ×{N}', desc: 'He stands as a Cavalry piece. The Cavalry piece played into his cross on the turn right after him is ×{N}.' },
+    short: 'Next turn\'s Cavalry ×{N}', desc: 'He stands as a Cavalry piece. The Cavalry piece played into his cross on the turn right after him is ×{N}. He never boosts himself.' },
   { base: 4.5, up: 0.5 }, multOwn((L, me, i) => placedOf(L, i) !== null && placedOf(L, me.slot) !== null && L.placed[i] === L.placed[me.slot] + 1));
 
   LIB.officer({ id: fx('diagonal_lancer'), name: 'Diagonal Lancer', type: 'cav', rarity: 'uncommon', area: 'diagonals',
-    short: 'Diagonal Cavalry ×{N}', desc: 'He stands as a Cavalry piece. Every other Cavalry piece on his diagonals (both, to the edge of the board) is ×{N}.' },
+    short: 'Diagonal Cavalry ×{N}', desc: 'He stands as a Cavalry piece. Every other Cavalry piece on his diagonals (both, to the edge of the board) is ×{N}. He never boosts himself.' },
   { base: 1.7, up: 0.15 }, multIf((L, me, i) => L.typeOf(i) === 'cav'));
 
   // flat: +N per officer on the board (he counts himself)
   LIB.officer({ id: 'commissary', name: 'Commissary', type: 'arc', rarity: 'uncommon', area: 'ring',
-    short: 'Ring +{N} per officer', desc: 'He stands as an Archers piece. Every piece in his ring has +{N} power for each officer on the board (him too), before any multiplier.' },
+    short: 'Ring +{N} per officer', desc: 'He stands as an Archers piece. Every piece in his ring has +{N} power for each officer on the board (him too), before any multiplier. He never boosts himself.' },
   { base: 0.5, up: 0.25 }, {
     flat: (L, me, i) => (inArea(L, me, i) ? me.N * L.officers().length : 0)
   });
 
   LIB.officer({ id: fx('surveyor'), name: 'Surveyor', type: 'arc', rarity: 'uncommon', area: 'cross',
-    short: 'Archers off his terrain ×{N}', desc: 'He stands as an Archers piece. Every Archers piece in his cross that stands on another terrain than his tile is ×{N}.' },
+    short: 'Archers off his terrain ×{N}', desc: 'He stands as an Archers piece. Every Archers piece in his cross that stands on another terrain than his tile is ×{N}. He never boosts himself.' },
   { base: 2, up: 0.15 }, multOwn((L, me, i) => L.terrain(i) !== L.terrain(me.slot)));
 
   // area: the whole board but him
   LIB.officer({ id: fx('field_commander'), name: 'Field Commander', type: 'cav', rarity: 'rare',
     area: (ctx, me) => { const out = []; for (let s = 0; s < 16; s++) if (s !== me.slot) out.push(s); return out; },
-    short: 'All Cavalry ×{N}', desc: 'He stands as a Cavalry piece. Every other Cavalry piece on the board is ×{N}.' },
+    short: 'All Cavalry ×{N}', desc: 'He stands as a Cavalry piece. Every other Cavalry piece on the board is ×{N}. He never boosts himself.' },
   { base: 1.25, up: 0.05 }, multIf((L, me, i) => L.typeOf(i) === me.def.type));
 
   // final: the best hero in his ring (by final value, the first on a tie) counts twice
   LIB.officer({ id: 'kingsguard_cpt', name: 'Kingsguard Captain', type: 'inf', rarity: 'rare', area: 'ring',
-    short: 'Best hero ×{N}', desc: 'He stands as an Infantry piece. The final value of the best hero in his ring (the first on a tie) is ×{N}.' },
+    short: 'Best hero ×{N}', desc: 'He stands as an Infantry piece. The final value of the best hero in his ring (the first on a tie) is ×{N}. He never boosts himself.' },
   { base: 1.6, up: 0.2 }, { // 2026-10-28 outlier trim (was 2, 0.25)
     final: (L, me) => {
       let b = -1;
@@ -9777,7 +9777,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
   // and Sergeants) get +N on it. 2026-10-30 (PLAN 61 item 5): the Kingsguard Captain is on the
   // list too; plain text
   LIB.officer({ id: 'captain_general', name: 'Captain-General', type: 'cav', rarity: 'rare', area: rowCol,
-    short: 'Officers in line ×+{N}', desc: 'He stands as a Cavalry piece. Every other officer in his row or column with a × on pieces: that × is {N} higher.' },
+    short: 'Officers in line ×+{N}', desc: 'He stands as a Cavalry piece. Every other officer in his row or column with a × on pieces: that × is {N} higher. He never boosts himself.' },
   { base: 0.5, up: 0.1 }, {
     boost: (L, me, o) => {
       if (!o || o.slot === me.slot || L.area(me).indexOf(o.slot) < 0) return 0;
@@ -9810,12 +9810,12 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   // more is better
   LIB.officer({ id: 'remount_officer', name: 'Remount Officer', type: 'cav', rarity: 'common', area: 'col',
-    short: 'Column: Cavalry ×{N3} per Cavalry', desc: 'He stands as a Cavalry piece. Every other Cavalry piece in his column is ×{N3} for each Cavalry card in your deck (its units, heroes and officers), multiplied.',
+    short: 'Column: Cavalry ×{N3} per Cavalry', desc: 'He stands as a Cavalry piece. Every other Cavalry piece in his column is ×{N3} for each Cavalry card in your deck (its units, heroes and officers), multiplied. He never boosts himself.',
     muster: M.per('officer', 'remount_officer', (a) => a.cav, 'Cavalry cards in your deck') },
   { base: 1.04, up: 0.005 }, musterOwn);
 
   LIB.officer({ id: 'corps_captain', name: 'Corps Captain', type: 'arc', rarity: 'uncommon', area: 'cross',
-    short: 'Cross: Archers ×{N} per officer', desc: 'He stands as an Archers piece. Every Archers piece in his cross is ×{N} for each officer card in your deck (him included), multiplied.',
+    short: 'Cross: Archers ×{N} per officer', desc: 'He stands as an Archers piece. Every Archers piece in his cross is ×{N} for each officer card in your deck (him included), multiplied. He never boosts himself.',
     muster: M.per('officer', 'corps_captain', (a) => a.officer, 'Officer cards in your deck') },
   { base: 1.1, up: 0.02 }, musterOwn);
 
@@ -9832,17 +9832,17 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   // lean is better
   LIB.officer({ id: 'hard_bowmaster', name: 'Hard Bowmaster', type: 'arc', rarity: 'common', area: 'row',
-    short: 'Row: pure Archers ×{N}', desc: 'He stands as an Archers piece. Every other Archers piece in his row is ×{N}, less {step} for each card in your deck that is not Archers; never below ×1.',
+    short: 'Row: pure Archers ×{N}', desc: 'He stands as an Archers piece. Every other Archers piece in his row is ×{N}, less {step} for each card in your deck that is not Archers; never below ×1. He never boosts himself.',
     muster: M.shrink('officer', 'hard_bowmaster', (a) => a.total - a.arc, 'Cards in your deck that are not Archers', 0.04) },
   { base: 3, up: 0.2, step: 0.04 }, musterOwn);
 
   LIB.officer({ id: 'lone_officer', name: 'Lone Officer', type: 'inf', rarity: 'uncommon', area: 'ring',
-    short: 'Ring: Infantry ×{N}, lone', desc: 'He stands as an Infantry piece. Every Infantry piece in his ring is ×{N}, less {step} for each other officer card in your deck; never below ×1.',
+    short: 'Ring: Infantry ×{N}, lone', desc: 'He stands as an Infantry piece. Every Infantry piece in his ring is ×{N}, less {step} for each other officer card in your deck; never below ×1. He never boosts himself.',
     muster: M.shrink('officer', 'lone_officer', (a) => Math.max(0, a.officer - 1), 'Other officer cards in your deck', 0.4) },
   { base: 3, up: 0.25, step: 0.4 }, musterOwn);
 
   LIB.officer({ id: 'master_of_few', name: 'Master of the Few', type: 'arc', rarity: 'rare', area: rowCol,
-    short: 'Line: Archers ×{N} per small type', desc: 'He stands as an Archers piece. Every Archers piece in his row and his column is ×{N} for each type (Infantry, Archers, Cavalry) with {few} or fewer cards in your deck, multiplied.',
+    short: 'Line: Archers ×{N} per small type', desc: 'He stands as an Archers piece. Every Archers piece in his row and his column is ×{N} for each type (Infantry, Archers, Cavalry) with {few} or fewer cards in your deck, multiplied. He never boosts himself.',
     muster: (T, army, six, lv) => {
       const few = M.mKey('officer', 'master_of_few', T, 'few', 6), N = M.mN('officer', 'master_of_few', T, lv);
       const n = ['inf', 'arc', 'cav'].filter((t) => army[t] <= few).length;
@@ -9852,19 +9852,19 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   // shape your six
   LIB.officer({ id: 'aide_de_camp', name: 'Aide-de-camp', type: 'arc', rarity: 'common', area: 'row',
-    short: 'Row: Archers ×{N} per booster', desc: 'He stands as an Archers piece. Every other Archers piece in his row is ×{N} for each booster general in your six (dealt or not), multiplied.',
+    short: 'Row: Archers ×{N} per booster', desc: 'He stands as an Archers piece. Every other Archers piece in his row is ×{N} for each booster general in your six (dealt or not), multiplied. He never boosts himself.',
     muster: M.per('officer', 'aide_de_camp', (a, six, x) => x.boost, 'Boosters in your six') },
   { base: 1.15, up: 0.03 }, musterOwn);
 
   LIB.officer({ id: 'orderly', name: 'Orderly', type: 'cav', rarity: 'common', area: 'col',
-    short: 'Column: Cavalry +{N} per level', desc: 'He stands as a Cavalry piece. Every other Cavalry piece in his column has +{N} power for each level among your six generals (their levels added), before any multiplier.',
+    short: 'Column: Cavalry +{N} per level', desc: 'He stands as a Cavalry piece. Every other Cavalry piece in his column has +{N} power for each level among your six generals (their levels added), before any multiplier. He never boosts himself.',
     muster: M.perAdd('officer', 'orderly', (a, six, x) => x.levels, 'Levels among your six') },
   { base: 1, up: 0.25 }, {
     flat: (L, me, i) => (inTypedArea(L, me, i) ? mv(L, me).add : 0)
   });
 
   LIB.officer({ id: 'reserve_liaison', name: 'Reserve Liaison', type: 'cav', rarity: 'uncommon', area: 'cross',
-    short: 'Cross: Cavalry ×{N} per reserve', desc: 'He stands as a Cavalry piece. Every Cavalry piece in his cross is ×{N} for each booster general of your six who was not dealt this battle, multiplied.',
+    short: 'Cross: Cavalry ×{N} per reserve', desc: 'He stands as a Cavalry piece. Every Cavalry piece in his cross is ×{N} for each booster general of your six who was not dealt this battle, multiplied. He never boosts himself.',
     muster: (T, army, six, lv) => {
       // the boosters C.sixOf marks `reserve` (st.reserve: in your six, not dealt this battle)
       const N = M.mN('officer', 'reserve_liaison', T, lv), n = (six || []).filter((g) => g.role !== 'teach' && g.reserve).length;
@@ -10384,7 +10384,7 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 
   // a typed engine: scores and forms as Infantry at rank 3 (the framework); 2026-10-28: and ×N on itself
   LIB.special({ id: 'siege_tower', name: 'Siege Tower', kind: 'engine', rarity: 'uncommon', type: 'inf', rank: 3,
-    short: 'Infantry rank 3, ×{N}', desc: 'An engine that fights as an Infantry piece at rank 3: it scores and forms as Infantry, and never ranks up. It is ×{N}.' },
+    short: 'Infantry rank 3, itself ×{N}', desc: 'An engine that fights as an Infantry piece at rank 3: it scores and forms as Infantry, and never ranks up. Its own score is ×{N} (it boosts no other piece).' },
   1.5, {
     mult: (L, me, i) => (i === me.slot ? me.N : 1)
   });
