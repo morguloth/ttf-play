@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="0297aeca2d";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("prog001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-prog001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="565ec3381e";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("prog001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-prog001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14611,17 +14611,20 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
     const bv = {}, av = {};
     for (const u of before.units) bv[u.slot] = u.final;
     for (const u of after.units) av[u.slot] = u;
+    // 2026-11-03 (user): a piece that scores on its own (the Ballista) shows its change too
+    const exOf = (sc) => { const o = {}; for (const e of sc.extras || []) o[e.slot] = (o[e.slot] || 0) + e.final; return o; };
+    const bx = exOf(before), ax = exOf(after);
     const deltas = {};
     for (const i of geoOf(st).real) {
       if (i === slot) continue;
-      const d = (av[i] ? av[i].final : 0) - (bv[i] || 0);
+      const d = (av[i] ? av[i].final : 0) + (ax[i] || 0) - (bv[i] || 0) - (bx[i] || 0);
       if (d !== 0) deltas[i] = d;
     }
     const had = {};
     for (const f of before.formations) had[instKey(f)] = 1;
     return {
       slot, card: resolvePick(st, pick).card, totalBefore: before.total, totalAfter: after.total,
-      gain: after.total - before.total, own: (av[slot] ? av[slot].final : 0) + (after.extras || []).filter((e) => e.slot === slot).reduce((a, e) => a + e.final, 0), deltas,
+      gain: after.total - before.total, own: (av[slot] ? av[slot].final : 0) + (ax[slot] || 0), deltas,
       breakdown: av[slot] || null, formations: after.formations,
       newFormations: after.formations.filter((f) => !had[instKey(f)])
     };
@@ -21427,7 +21430,7 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
         try { gp = card.kind === 'engineer' ? null : C.pieceFor(st.pieces[hover] || null, card, st.turn, st.tun || C.TUN_DEFAULT); } catch (e) { gp = null; }
         ghost = { slot: hover, piece: st.pieces[hover] ? null : gp, own: card.kind === 'engineer' ? null : pr.own };
         deltas = Object.assign({}, pr.deltas || {});
-        if (st.pieces[hover] && pr.own != null) deltas[hover] = pr.own - ((lastScore.units.find((u) => u.slot === hover) || {}).final || 0);
+        if (st.pieces[hover] && pr.own != null) deltas[hover] = pr.own - ((lastScore.units.find((u) => u.slot === hover) || {}).final || 0) - (lastScore.extras || []).filter((e) => e.slot === hover).reduce((a, e) => a + e.final, 0);   // 2026-11-03: its own score too (pr.own has it)
         B.preview = pr;
       }
     } else B.preview = null;
