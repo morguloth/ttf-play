@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="3380f71e51";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("prog001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-prog001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="edaceb4d0c";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("prog001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-prog001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -9048,7 +9048,7 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
   // 2026-10-30 (user): 23, Hard's targets x1.2 more past battle 30 (x1 at 30, climbing to x1.2 by
   // battle 40; x1.68 in all); Easy and Medium unchanged
   // prog001 (2026-10-31): the build's own rules count, from 1 (Core 4 stopped at 23)
-  C.RULES_VERSION = 10;   // 2026-11-02: rules 10, Home Ground 5 pieces at home (was all typed pieces at home); rules 9, the orders pass (starter goals that go with the build, Muster for Cavalry Screen, the hand previews an order); rules 8, the Pincer on any whole row or column of 4 or more (the Bridge's row of 5, the Pass's of 6); 2026-11-01: rules 7, the pure-Archer payoffs and the Aide-de-camp toned down (Hermit Bowman, Hard Bowmaster); rules 6, a scenario with a typed objective (Town, Walls, Spearhead) drawn only when the deck holds enough of that type; rules 5, the Pass, the Bridge and the Beachhead authored in the shape shown (no display transpose); rules 4 the scenarios' follow-up (Medium / Hard scenarioMult, obstacles keep objectives possible; rules 3: the Military Scenarios behind their switch, docs/SCENARIOS.md)
+  C.RULES_VERSION = 12;   // 2026-11-03: rules 12, a straight area (row, column, left/right/above/below, diagonals) reaches across a river; rules 11, the Colonel lifts every officer's × by his N (×+0.6, +0.25 a level; was ×3 / ×4 in its place); 2026-11-02: rules 10, Home Ground 5 pieces at home (was all typed pieces at home); rules 9, the orders pass (starter goals that go with the build, Muster for Cavalry Screen, the hand previews an order); rules 8, the Pincer on any whole row or column of 4 or more (the Bridge's row of 5, the Pass's of 6); 2026-11-01: rules 7, the pure-Archer payoffs and the Aide-de-camp toned down (Hermit Bowman, Hard Bowmaster); rules 6, a scenario with a typed objective (Town, Walls, Spearhead) drawn only when the deck holds enough of that type; rules 5, the Pass, the Bridge and the Beachhead authored in the shape shown (no display transpose); rules 4 the scenarios' follow-up (Medium / Hard scenarioMult, obstacles keep objectives possible; rules 3: the Military Scenarios behind their switch, docs/SCENARIOS.md)
   C.BUILD_NAME = 'prog001';
 
   C.TUN_DEFAULT = {
@@ -9139,7 +9139,9 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
       cpt_combined: { base: 0, up: 0.45 }, cpt_hammer: { base: 0, up: 0.45 }, cpt_battleline: { base: 0, up: 0.6 },
       sgt_foot: { base: 3, up: 2 }, master_bows: { base: 3, up: 2 }, master_horse: { base: 3, up: 2 },
       field_sgt: { base: 2, up: 0.75 }, steward: { base: 2.5, up: 0.3 }, drillmaster: { base: 0.4, up: 0.05 },
-      quartermaster: { base: 1.4, up: 0.15 }, old_guard: { base: 1.4, up: 0.15 }, colonel: { base: 3, up: 0.5 },
+      quartermaster: { base: 1.4, up: 0.15 }, old_guard: { base: 1.4, up: 0.15 }, colonel: { base: 0.6, up: 0.25 },
+      // 2026-11-03 (rules 11, user: much too strong): the Colonel lifts each officer's × by N (was ×3 (+0.5)
+      // in its place); probe at L1 vs the median general: b5 13% / 23%, b15 20% / 19%, b25 36% / 17% (was 76%)
       siege_master: { base: 5.5, up: 0.5 }, pike_master: { base: 1.5, up: 0.2 }, lord_horse: { base: 1.4, up: 0.15 },
       // PLAN 57: the placement boosters (§10.6)
       marshal_centre: { base: 1.5, up: 0.25 }, warden_flanks: { base: 1.4, up: 0.15 }, lord_hills: { base: 1.7, up: 0.25 }, master_ranks: { base: 1.3, up: 0.15 },
@@ -9561,7 +9563,8 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
       short: 'Ranks 3-{TOP} ×{N}', desc: 'Every unit fighting at rank 3 or higher is ×{N}.' },
     { id: 'colonel', needs: 'officer', name: 'Colonel', rarity: 'uncommon', role: 'boost', effect: { kind: 'officer' }, step: 'mult',
       // 2026-10-30 (PLAN 61 I, user): he reaches every officer whose rule is a plain ×, named ones too
-      short: 'Officers give ×{N}', desc: 'Every officer whose rule is a plain × on pieces (a Sergeant, or a named officer with a × rule) gives ×{N} at ranks 1-2 and ×{N1} at ranks 3-{TOP}, instead of his own factor.' },
+      // 2026-11-03 (rules 11, user: much too strong): he lifts each officer's own × (was ×{N} / ×{N1} in its place)
+      short: 'Officers ×+{N}', desc: 'Every officer whose rule is a plain × on pieces (a Sergeant, or a named officer with a × rule) has his × {N} higher (×+{N}): a ×2 Sergeant gives ×{X2}.' },
     { id: 'siege_master', needs: 'engineer', name: 'Siege Master', rarity: 'uncommon', role: 'boost', effect: { kind: 'fort' }, step: 'mult',
       short: 'Forts ×{N}', desc: 'A unit on a fort is ×{N} instead of ×{fort.mult}.' },
     { id: 'pike_master', retired: true, name: 'Pike Master', rarity: 'uncommon', role: 'boost', effect: { kind: 'kinded' }, step: 'mult',
@@ -9666,7 +9669,13 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
   //   C.geometry(cols, rows, mask?, opts?)  the geometry of a cols x rows grid (cached; frozen)
   //   C.GEO_DEFAULT                         the standard 4x4 board (every table as before scenarios)
   //   C.geoOf(st)                           a battle's geometry: st.geo (a spec) or the default
-  //   C.geoSpec(spec)                       the geometry of a spec {cols, rows, mask?, centre?}
+  //   C.geoSpec(spec)                       the geometry of a spec {cols, rows, mask?, centre?, river?}
+  //
+  // 2026-11-03 (rules 12, user: an archer officer should work across the river): opts.river lists the
+  // void slots that are river. A straight area (the officer shapes row / column / left / right / above /
+  // below, the library's row / col / diagonals) reaches across a river slot to the bank beyond; every
+  // other void stops it, and touching, formations' lines (LINES, rowLine / colLine), within2 and the
+  // rest never cross.
   //
   // Slots are grid indices (row-major, slot = y * cols + x). A mask (one entry per grid slot, truthy
   // = a real slot; in a string '#' or '0' is void) makes the others void: no tile, never legal, no
@@ -9698,8 +9707,10 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
     return m.every((v) => v) ? null : m;
   }
 
-  function build(cols, rows, mask, centreIn) {
+  function build(cols, rows, mask, centreIn, riverIn) {
     const S = cols * rows;
+    const river = {};
+    (riverIn || []).forEach((s) => { river[s] = 1; });
     const isReal = (i) => i >= 0 && i < S && (!mask || mask[i] === 1);
     const colOf = (s) => s % cols, rowOf = (s) => (s / cols) | 0;
     const at = (x, y) => (x >= 0 && y >= 0 && x < cols && y < rows && isReal(y * cols + x) ? y * cols + x : -1);
@@ -9708,6 +9719,16 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
     const step = (s, dx, dy) => (isReal(s) ? at(colOf(s) + dx, rowOf(s) + dy) : -1);
     /** the real slots from s along (dx, dy) until the edge or a void slot (s excluded) */
     const walk = (s, dx, dy) => { const out = []; for (let j = step(s, dx, dy); j >= 0; j = step(j, dx, dy)) out.push(j); return out; };
+    /** walk, but across river slots (rules 12): the real slots along (dx, dy) until the edge or a void that is not river */
+    const reach = (s, dx, dy) => {
+      const out = [];
+      if (!isReal(s)) return out;
+      for (let x = colOf(s) + dx, y = rowOf(s) + dy; x >= 0 && y >= 0 && x < cols && y < rows; x += dx, y += dy) {
+        const j = y * cols + x;
+        if (isReal(j)) out.push(j); else if (!river[j]) break;
+      }
+      return out;
+    };
     const per = (fn) => { const out = []; for (let i = 0; i < S; i++) out.push(frz(isReal(i) ? fn(i) : [])); return frz(out); };
     const near = (test) => per((i) => real.filter((j) => j !== i && test(colOf(j) - colOf(i), rowOf(j) - rowOf(i))));
 
@@ -9718,16 +9739,16 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
     const colRun = per((i) => asc(walk(i, 0, -1).concat([i], walk(i, 0, 1))));
 
     // officer shapes, measured from the officer's slot: cross / corners clip to real slots, the
-    // straight ones stop at the edge or a void slot
+    // straight ones stop at the edge or a void slot (a river slot they cross, rules 12)
     const SHAPES = {
       cross: per((i) => asc(ORTH[i].slice())),
       corners: near((dx, dy) => Math.abs(dx) === 1 && Math.abs(dy) === 1),
-      row: per((i) => rowRun[i].filter((j) => j !== i)),
-      column: per((i) => colRun[i].filter((j) => j !== i)),
-      left: per((i) => asc(walk(i, -1, 0))),
-      right: per((i) => walk(i, 1, 0)),
-      above: per((i) => asc(walk(i, 0, -1))),
-      below: per((i) => walk(i, 0, 1))
+      row: per((i) => asc(reach(i, -1, 0).concat(reach(i, 1, 0)))),
+      column: per((i) => asc(reach(i, 0, -1).concat(reach(i, 0, 1)))),
+      left: per((i) => asc(reach(i, -1, 0))),
+      right: per((i) => reach(i, 1, 0)),
+      above: per((i) => asc(reach(i, 0, -1))),
+      below: per((i) => reach(i, 0, 1))
     };
     frz(SHAPES);
 
@@ -9770,7 +9791,7 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
       corners: SHAPES.corners,
       row: SHAPES.row,
       col: SHAPES.column,
-      diagonals: per((i) => asc([[-1, -1], [1, -1], [-1, 1], [1, 1]].reduce((a, d) => a.concat(walk(i, d[0], d[1])), []))),
+      diagonals: per((i) => asc([[-1, -1], [1, -1], [-1, 1], [1, 1]].reduce((a, d) => a.concat(reach(i, d[0], d[1])), []))),
       // 2026-11-01 (docs/SCENARIOS.md §1.1): up to 2 orthogonal steps through real slots, so it
       // never reaches across a river or a void corner (the 4x4 board: Manhattan distance <= 2, as before)
       within2: per((i) => {
@@ -9802,7 +9823,7 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
       ring: (s) => A.ring[s],
       /** the 4 diagonal neighbours */
       corners: (s) => A.corners[s],
-      /** the rest of its row / column (the whole line but the tile) */
+      /** the rest of its row / column (the whole line but the tile; across a river, rules 12) */
       row: (s) => A.row[s],
       col: (s) => A.col[s],
       /** both full diagonals to the edge */
@@ -9821,21 +9842,24 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
     return G;
   }
 
-  /** The geometry of a cols x rows grid with `mask` (null: every slot real); opts.centre the centre zone. */
+  /** The geometry of a cols x rows grid with `mask` (null: every slot real); opts.centre the centre zone,
+   *  opts.river the void slots that are river (rules 12: straight areas reach across them). */
   function geometry(cols, rows, mask, opts) {
     const c = Math.max(1, Math.floor(cols || 4)), r = Math.max(1, Math.floor(rows || 4));
     if (c * r > 30) throw new Error('board too large: ' + c + 'x' + r);
     const m = normMask(c * r, mask);
     const centre = opts && Array.isArray(opts.centre) ? asc(opts.centre.filter((s, i, a) => Number.isInteger(s) && a.indexOf(s) === i)) : null;
-    const key = c + 'x' + r + (m ? ':' + m.join('') : '') + (centre ? '|' + centre.join(',') : '');
+    const rv = m && opts && Array.isArray(opts.river) ? asc(opts.river.filter((s, i, a) => Number.isInteger(s) && s >= 0 && s < c * r && !m[s] && a.indexOf(s) === i)) : [];
+    const river = rv.length ? rv : null;
+    const key = c + 'x' + r + (m ? ':' + m.join('') : '') + (centre ? '|' + centre.join(',') : '') + (river ? '~' + river.join(',') : '');
     if (cache[key]) return cache[key];
-    const G = build(c, r, m, centre);
+    const G = build(c, r, m, centre, river);
     G.key = key;
     G.isDefault = key === '4x4';
-    G.spec = frz(Object.assign({ cols: c, rows: r }, m ? { mask: frz(m) } : {}, centre ? { centre: frz(centre) } : {}));
+    G.spec = frz(Object.assign({ cols: c, rows: r }, m ? { mask: frz(m) } : {}, centre ? { centre: frz(centre) } : {}, river ? { river: frz(river) } : {}));
     return (cache[key] = Object.freeze(G));
   }
-  /** The geometry of a spec {cols, rows, mask?, centre?} (null / missing: the default). */
+  /** The geometry of a spec {cols, rows, mask?, centre?, river?} (null / missing: the default). */
   const geoSpec = (spec) => (spec && typeof spec === 'object' ? geometry(spec.cols, spec.rows, spec.mask, spec) : C.GEO_DEFAULT);
 
   C.SHAPE_IDS = SHAPE_IDS;
@@ -10319,7 +10343,7 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
 
   // copy: the framework copies the dealt booster that scores best, at his level
   LIB.general({ id: 'strategist', name: 'Strategist', rarity: 'rare', step: 'copy',
-    short: 'Copies a booster', shortUp: 'Copies, level {L}', desc: 'He copies the rule of another dealt booster general, at his own level. The copy is not fixed when he is played: as the board changes he switches to whichever booster makes your total highest. A general who replaces a number (Steward, Colonel, Siege Master) gives the larger of the two.' },
+    short: 'Copies a booster', shortUp: 'Copies, level {L}', desc: 'He copies the rule of another dealt booster general, at his own level. The copy is not fixed when he is played: as the board changes he switches to whichever booster makes your total highest. A general who replaces or raises a number (Steward, Colonel, Siege Master) gives the larger of the two.' },
   { base: 0, up: 0 }, { copy: 'general' });
 
   // ==== content (the generals agent appends below; keep the order of §4) =====================
@@ -12190,7 +12214,9 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
     if (!d) return null;
     const x = d.build(stream(C.RNG.seedFrom(seed, 'scenario', id)));
     const lay = x.lay, mask = maskOf(lay);
-    const G = C.geometry(lay.cols, lay.rows, mask, x.centre ? { centre: x.centre } : null);
+    // 2026-11-03 (rules 12): the river's slots, so a straight area reaches across it
+    const river = lay.cells.map((c, s) => (c.void && c.water === 'river' ? s : -1)).filter((s) => s >= 0);
+    const G = C.geometry(lay.cols, lay.rows, mask, x.centre || river.length ? Object.assign({}, x.centre ? { centre: x.centre } : {}, river.length ? { river } : {}) : null);
     const board = fillBoard(lay, G, seed, T);
     const forts = G.real.filter((s) => board[s].tile && TILES[board[s].tile].fort);
     const bans = {};
@@ -13180,8 +13206,9 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
     }
     return offFactorSet._set;
   }
-  /** The Colonel's factor for an officer of `rank` (his N at ranks 1-2, N + 1 above), or the officer's own `own`. */
-  const colonelMult = (colonel, rank, own) => (colonel !== null ? (rank <= 2 ? colonel : colonel + 1) : own);
+  /** An officer's factor `own` with the Colonel's lift: own + his N (2026-11-03, rules 11, user: he lifts
+   *  every officer's × instead of replacing it; was his N at ranks 1-2, N + 1 above), or `own` without him. */
+  const colonelMult = (colonel, rank, own) => (colonel !== null ? own + colonel : own);
   /** off: {colonel: the Colonel's N or null, plus: Open ground's +N on every officer's × (0 without it)} */
   function libBegin(board, F, P, X, ty, units, off) {
     if (!C.LIB) return null;
@@ -13233,8 +13260,8 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
       if (d && C.LIB.ruleOf(d)) srcs.push(srcFor('special', d, +k, 1, T));
     }
     if (!srcs.length && !sgtCopies.length) return null;
-    // 2026-10-30 (PLAN 61 I / F): a named officer whose rule is a plain × takes the Colonel's factor
-    // in place of his own, and Open ground lifts every such × by officerPlus (before the boosts, as a Sergeant's)
+    // 2026-10-30 (PLAN 61 I / F): a named officer whose rule is a plain × takes the Colonel's lift
+    // on his own (2026-11-03, rules 11: was his factor in place of his own), and Open ground lifts every such × by officerPlus (before the boosts, as a Sergeant's)
     if (off && (off.colonel !== null || off.plus)) {
       const fset = offFactorSet();
       for (const me of srcs) if (me.kind === 'officer' && fset[me.id]) me.N = colonelMult(off.colonel, me.rank, me.N) + (off.plus || 0);
@@ -13484,13 +13511,13 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
       }
       if (ty[i] >= 0) units |= 1 << i;
     }
-    // the Colonel replaces every plain-× officer's factor (2026-10-30, PLAN 61 I: the named ones
+    // the Colonel lifts every plain-× officer's factor by his N (rules 11; 2026-10-30, PLAN 61 I: the named ones
     // too, libBegin); Open ground (PLAN 61 F) lifts every officer's × by bosses.officerPlus
     const colonel = mx(gv('colonel'), cv('colonel'));
     const offPlus = X.twist === 'open_ground' ? bossTunOf(T).officerPlus || 0 : 0;
     // PLAN 60: the library (null when none of it is in play: the rules-10 path)
     const L = libBegin(board, F, P, X, ty, units, { colonel, plus: offPlus });
-    // officers: x their factor (or the Colonel's) on the units of their type in their area
+    // officers: x their factor (plus the Colonel's lift) on the units of their type in their area
     // (a named officer scores by his own rule instead, PLAN 60)
     const offF = new Array(S).fill(1);
     for (let k = 0; k < S; k++) {
@@ -14806,7 +14833,7 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
     // 2026-10-29 (rules 17): N3, the value to 3 decimals as text (fillDesc prints 2; a Muster per-card factor: ×1.025)
     // 2026-10-30 (bug pass): NH, the value as cards a hand really gains (hands hold 6 at most; Mustering Officer)
     const NH = Math.max(0, Math.min(v, 6 - (T.offerSize || 3)));
-    return { NH, N: r2(v), N3: String(Number(v.toFixed(3))), N1: r2(v + 1), P: r2(share * 100), X: r2(1 + share), X15: r2(1.5 + v), L: Math.max(1, Math.floor(level || 1)), TIMES: n === 1 ? 'once' : n === 2 ? 'twice' : n + ' times' };
+    return { NH, N: r2(v), N3: String(Number(v.toFixed(3))), N1: r2(v + 1), P: r2(share * 100), X: r2(1 + share), X15: r2(1.5 + v), X2: r2(2 + v), L: Math.max(1, Math.floor(level || 1)), TIMES: n === 1 ? 'once' : n === 2 ? 'twice' : n + ' times' };
   }
   /** A general's text template: from level 2 its `shortUp` / `descUp` when it has one (2026-10-28:
    *  a rule that gains a number only from level 2, as Pathfinder's plains ×). */
