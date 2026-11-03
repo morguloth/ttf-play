@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="ea6ca4dcfb";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("prog001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-prog001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="3380f71e51";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("prog001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-prog001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -27180,54 +27180,58 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
     };
     // 2026-10-28 (user): with the Menu's victory screen off, a win goes straight on; the
     // campaign's last win never shows it (the campaign-won screen follows); a loss always does
-    // prog001 §3: the campaign's last win lists its unlocks on the campaign-won plate (runWon) instead
-    if (won && (result.runWon || prefsGet().plate === false)) { afterUnlocks(result.runWon ? null : got, plateDone); return; }
-    showPlate(result, got);
+    // 2026-11-03 (user): what a battle unlocks waits for the campaign's end (endUnlocks), never shown on the way
+    if (won && (result.runWon || prefsGet().plate === false)) { plateDone(); return; }
+    showPlate(result);
   }
-  function showPlate(result, got) {
+  function showPlate(result) {
     const my = epoch;
     Screens.endPlate(result, (act) => {
       if (my !== epoch || !pending) return;
       if (act === 'quit') {
-        Screens.confirm(quitText(), (yes) => { if (yes) abandon(pending); else showPlate(result, got); }, { title: 'Quit the campaign?', yes: 'Quit campaign', no: 'Back', note: poolNote() });
+        Screens.confirm(quitText(), (yes) => { if (yes) abandon(pending); else showPlate(result); }, { title: 'Quit the campaign?', yes: 'Quit campaign', no: 'Back', note: poolNote() });
         return;
       }
-      afterUnlocks(got, plateDone);
+      plateDone();
     });
   }
 
   // ---- prog001 §3 (2026-10-31): unlocks ------------------------------------------------------------------
   /** After finished battle s (r: the run after endBattle): Prog.checkBattle on its result, the profile
-   *  saved, and what it unlocked kept on the run (r.gained, for the campaign-won plate). -> the check. */
+   *  saved, and what it unlocked or earned kept on the run (r.gained, r.gainedAch) for the campaign's
+   *  end (endUnlocks). -> the check. */
   function progressBattle(r, s) {
     const res = (r.results || [])[(r.results || []).length - 1];
     let got = null;
     try { got = Prog.checkBattle(profile, r, res, s); } catch (e) { console.warn('prog001 progress', e); return null; }
     saveProfile(got.profile);
-    if (got.unlocked.length) r.gained = (r.gained || []).concat(got.unlocked);
+    keepGains(r, got);
     return got;
   }
-  /** The "Unlocked!" plate when the check unlocked or earned something, then fn(). */
-  function afterUnlocks(got, fn) {
-    if (!got || !(got.unlocked.length || got.earned.length)) { fn(); return; }
+  /** What check got unlocked and earned, added to run r's lists (r.gained, r.gainedAch). */
+  function keepGains(r, got) {
+    if (got.unlocked.length) r.gained = (r.gained || []).concat(got.unlocked);
+    if (got.earned.length) r.gainedAch = (r.gainedAch || []).concat(got.earned);
+  }
+  /** 2026-11-03 (user): a campaign's end shows everything it unlocked (r.gained) and earned (r.gainedAch)
+   *  on one "Unlocked!" plate, then fn(); nothing gained: fn() at once. */
+  function endUnlocks(r, fn) {
+    const got = { unlocked: (r && r.gained) || [], earned: (r && r.gainedAch) || [], rung: (r && r.rungWon) || null };
+    if (!got.unlocked.length && !got.earned.length) { fn(); return; }
     const my = epoch;
     TTF4.Progress.unlocked(got, { profile: () => profile, tun: tun || C.TUN_DEFAULT }, () => { if (my === epoch) fn(); });
   }
-  /** A campaign ends unwon (Quit): its Laurels are banked (Prog.checkRun, once per run), any milestone
-   *  it reached shows its "Unlocked!" plate, and the pre-run screen opens. */
+  /** A campaign ends unwon (Quit): its Laurels are banked (Prog.checkRun, once per run), everything it
+   *  unlocked shows on its "Unlocked!" plate, and the pre-run screen opens. */
   function abandon(r) {
     let got = null;
     if (r) { try { got = Prog.checkRun(profile, r); } catch (e) { got = null; } }
-    if (got && !got.already) saveProfile(got.profile);
+    if (got && !got.already) { saveProfile(got.profile); keepGains(r, got); }
     store.del('run');
-    if (got && !got.already && (got.unlocked.length || got.earned.length)) {
-      epoch++;
-      Screens.closeAll();
-      const my = epoch;
-      TTF4.Progress.unlocked(got, { profile: () => profile, tun: tun || C.TUN_DEFAULT }, () => { if (my === epoch) newRun(); });
-      return;
-    }
-    newRun();
+    if (!r || !((r.gained || []).length || (r.gainedAch || []).length)) { newRun(); return; }
+    epoch++;
+    Screens.closeAll();
+    endUnlocks(r, newRun);
   }
   /** The quit dialog's words: what is lost, and the Laurels it banks. */
   function quitText() {
@@ -27334,17 +27338,20 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
     try { got = Prog.checkRun(profile, run); } catch (e) { got = null; }
     if (got && !got.already) {
       saveProfile(got.profile);
-      run.gained = (run.gained || []).concat(got.unlocked);
+      keepGains(run, got);
       run.banked = got.banked;
+      run.rungWon = got.rung || null;
       save();
     }
     const my = epoch;
-    Screens.runWon({ retries, battles: run.battles, laurels, tun: run.tun, best: { laurels: isNew ? laurels.total : best.laurels, isNew },
+    // 2026-11-03 (user): the campaign's unlocks are shown here, at its end (none on the way): the
+    // "Unlocked!" plate, then the campaign-won screen (a reload shows both again)
+    endUnlocks(run, () => Screens.runWon({ retries, battles: run.battles, laurels, tun: run.tun, best: { laurels: isNew ? laurels.total : best.laurels, isNew },
       gained: run.gained || [], banked: typeof run.banked === 'number' ? run.banked : undefined, bank: profile.bank }, () => {
       if (my !== epoch) return;
       store.del('run');
       newRun();
-    });
+    }));
   }
 
   /** 2026-10-28: each difficulty x length keeps its own best Laurels; Easy over 30 battles keeps 'best'. */
