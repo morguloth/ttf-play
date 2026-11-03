@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="565ec3381e";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("prog001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-prog001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
+<script>(function(){var B="ea6ca4dcfb";window.TTF4_BUILD=B;if(location.protocol==="file:")return;try{fetch("prog001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-prog001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -15530,9 +15530,12 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
       obj: st.scenario && C.objectives ? C.objectives(st).map((o) => [o.kind, o.met ? 1 : 0]) : undefined,
       turns: st.turn,
       units,
+      // 2026-11-03 (user): the pieces that score on their own (the Ballista, the Muster Captain's
+      // extra) [{s slot, src, v, f final}] (none: no key); sums.ex is their final total
+      ex: (sc.extras || []).length ? sc.extras.map((e) => ({ s: e.slot, src: e.src, v: e.v, f: e.final })) : undefined,
       forms: sc.formations.map((f) => ({ id: f.id, g: f.general, s: f.slots, sum: f.sum, pct: r2(f.pct), b: f.bonus })),
       battle,
-      sums: { units: sc.unitsTotal, forms: sc.formationsTotal, sub: sc.subtotal, total: sc.total },
+      sums: { units: sc.unitsTotal, forms: sc.formationsTotal, sub: sc.subtotal, ex: (sc.extras || []).reduce((a, e) => a + e.final, 0), total: sc.total },
       // 2026-10-31 (prog001 §1): the taken orders [id, level, met 1/0] (none: no key)
       ord: sc.orders ? sc.orders.map((o) => [o.id, o.level, o.met ? 1 : 0]) : undefined
     };
