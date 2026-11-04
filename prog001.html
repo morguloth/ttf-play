@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>(function(){var B="1cfbc3d4ca";window.TTF4_BUILD=B;if(location.protocol==="file:")return;var last=0;function chk(back){var b=document.body;if(back&&b&&(b.classList.contains("tut")||b.dataset.phase==="reveal"))return;if(Date.now()-last<60000)return;last=Date.now();try{fetch("prog001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-prog001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}}chk(false);document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk(true)})})();</script>
+<script>(function(){var B="287e1c4c7a";window.TTF4_BUILD=B;if(location.protocol==="file:")return;var last=0;function chk(back){var b=document.body;if(back&&b&&(b.classList.contains("tut")||b.dataset.phase==="reveal"))return;if(Date.now()-last<60000)return;last=Date.now();try{fetch("prog001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-prog001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}}chk(false);document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk(true)})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3216,16 +3216,25 @@ body[data-phase="prerun"] #stage { background: radial-gradient(ellipse at 50% 40
 .recp .rec-l { max-width: 460px; margin: 14px auto 0; text-align: left; }
 
 /* ---- Unlocked! and the campaign-won plate ------------------------------------------------------------ */
-.unl .unl-grid { display: flex; flex-wrap: wrap; justify-content: center; }
-.unl .unl-by { max-width: 168px; text-align: center; font: 700 14px/1.2 var(--face-name); color: #7a520f; }
+/* 2026-11-04 (user: "messy as hell"): a section per kind, each an even grid of one card shape; the
+   scroll box (.unl-body, capped by S._cap) holds the sections, the tally of roads sits above it */
+.unl .unl-tally { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 8px; max-width: 640px; margin: 8px auto 0; }
+.unl .dgrid.unl-body { display: block; padding: 4px 12px 14px; }
+.unl .unl-sec + .unl-sec { margin-top: 18px; }
+.unl .unl-h { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; font: 700 17px/1 var(--face-title); letter-spacing: 0.08em; text-transform: uppercase; color: #7a520f; }
+.unl .unl-h::before, .unl .unl-h::after { content: ''; flex: 1; height: 2px; background: linear-gradient(90deg, transparent, rgba(122, 82, 15, 0.7)); }
+.unl .unl-h::after { background: linear-gradient(90deg, rgba(122, 82, 15, 0.7), transparent); }
+.unl .unl-h i { font: 700 14px/1 var(--face-name); font-style: normal; letter-spacing: 0; padding: 3px 8px; border-radius: 999px; background: rgba(122, 82, 15, 0.12); }
+.unl .unl-grid { display: grid; grid-template-columns: repeat(auto-fit, 168px); justify-content: center; align-items: start; gap: 18px 14px; }
+.unl .unl-grid.unl-gens { grid-template-columns: repeat(auto-fit, 190px); }
+.unl .unl-by { display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 2.6em; max-width: 168px; text-align: center; }
+.unl .unl-by i { font: 700 12px/1.1 var(--face-name); font-style: normal; letter-spacing: 0.08em; text-transform: uppercase; color: #9a7a3e; }
+.unl .unl-by b { font: 700 15px/1.2 var(--face-name); color: #5a3a08; }
+.unl .achs { margin-top: 0; }
 .won-run .rw-bank { margin-top: 6px; }
-.won-run .rw-gain { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 8px; max-width: 640px; margin: 8px auto 0; }
 .ugc { display: inline-flex; align-items: baseline; gap: 6px; padding: 5px 12px; border-radius: 999px; background: rgba(122, 82, 15, 0.1); box-shadow: inset 0 0 0 1.5px rgba(122, 82, 15, 0.35); }
-.won-run .ugc { cursor: pointer; }
 .ugc b { font: 700 16px/1 var(--face-name); color: #3a2508; }
 .ugc i { font: 400 13px/1 var(--face-name); font-style: normal; color: var(--ink-dim); }
-.ugc.r-uncommon { box-shadow: inset 0 0 0 2px #b8902e; }
-.ugc.r-rare { box-shadow: inset 0 0 0 2px #a3322a; }
 
 /* ---- the start plate's tabs (2026-11-02, user: "crowded and cluttered") ----------------------------
    Campaign / Daily / Progress under the title: underlined words, not pills (the pills are the
@@ -9048,7 +9057,7 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
   // 2026-10-30 (user): 23, Hard's targets x1.2 more past battle 30 (x1 at 30, climbing to x1.2 by
   // battle 40; x1.68 in all); Easy and Medium unchanged
   // prog001 (2026-10-31): the build's own rules count, from 1 (Core 4 stopped at 23)
-  C.RULES_VERSION = 12;   // 2026-11-03: rules 12, a straight area (row, column, left/right/above/below, diagonals) reaches across a river; rules 11, the Colonel lifts every officer's × by his N (×+0.6, +0.25 a level; was ×3 / ×4 in its place); 2026-11-02: rules 10, Home Ground 5 pieces at home (was all typed pieces at home); rules 9, the orders pass (starter goals that go with the build, Muster for Cavalry Screen, the hand previews an order); rules 8, the Pincer on any whole row or column of 4 or more (the Bridge's row of 5, the Pass's of 6); 2026-11-01: rules 7, the pure-Archer payoffs and the Aide-de-camp toned down (Hermit Bowman, Hard Bowmaster); rules 6, a scenario with a typed objective (Town, Walls, Spearhead) drawn only when the deck holds enough of that type; rules 5, the Pass, the Bridge and the Beachhead authored in the shape shown (no display transpose); rules 4 the scenarios' follow-up (Medium / Hard scenarioMult, obstacles keep objectives possible; rules 3: the Military Scenarios behind their switch, docs/SCENARIOS.md)
+  C.RULES_VERSION = 13;   // 2026-11-04: rules 13, the Pincer on any unbroken run of 4 or more in a row or column (was a whole line only); 2026-11-03: rules 12, a straight area (row, column, left/right/above/below, diagonals) reaches across a river; rules 11, the Colonel lifts every officer's × by his N (×+0.6, +0.25 a level; was ×3 / ×4 in its place); 2026-11-02: rules 10, Home Ground 5 pieces at home (was all typed pieces at home); rules 9, the orders pass (starter goals that go with the build, Muster for Cavalry Screen, the hand previews an order); rules 8, the Pincer on any whole row or column of 4 or more (the Bridge's row of 5, the Pass's of 6); 2026-11-01: rules 7, the pure-Archer payoffs and the Aide-de-camp toned down (Hermit Bowman, Hard Bowmaster); rules 6, a scenario with a typed objective (Town, Walls, Spearhead) drawn only when the deck holds enough of that type; rules 5, the Pass, the Bridge and the Beachhead authored in the shape shown (no display transpose); rules 4 the scenarios' follow-up (Medium / Hard scenarioMult, obstacles keep objectives possible; rules 3: the Military Scenarios behind their switch, docs/SCENARIOS.md)
   C.BUILD_NAME = 'prog001';
 
   C.TUN_DEFAULT = {
@@ -9500,14 +9509,15 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
     loose('raiding_party', 'Raiding Party', { cav: 2, arc: 1 }, '2 Cavalry + 1 Archers', 'Two Cavalry and one Archers unit'),
     exact('shield_wall', 'Shield Wall', ['iii'], '3 Infantry in a line', 'Three Infantry units side by side in a straight row or column.'),
     exact('wedge', 'Wedge', ['cc', 'c.'], '3 Cavalry in an L', 'Three Cavalry units filling 3 tiles of a 2x2 block (an L).'),
-    exact('pincer', 'Pincer', ['c??c'], 'Cavalry at both ends', 'A full row or column: Cavalry on both end tiles and a unit of any type on every tile between.'),
+    exact('pincer', 'Pincer', ['c??c'], 'Cavalry at both ends', 'A straight line of 4 or more tiles in a row or column: Cavalry on both its end tiles and a unit of any type on every tile between.'),
     exact('covered_archers', 'Covered Archers', ['aa', 'ii'], '2 Archers by 2 Infantry', 'A 2x2 block: two Archers side by side, with two Infantry side by side directly beside them.'),
     loose('combined_arms', 'Combined Arms', { inf: 2, arc: 2, cav: 2 }, '2 of each', 'Two Infantry, two Archers and two Cavalry units'),
     exact('hammer_anvil', 'Hammer and Anvil', ['c.c', 'iii'], 'wall, Cavalry at ends', 'A Shield Wall (three Infantry in a straight line) with a Cavalry unit beside each end tile, both on the same side.'),
     exact('battle_line', 'Battle Line', ['iii', 'aaa'], 'Infantry row + Archers row', 'Three Infantry in a straight row or column with three Archers in the row or column directly beside them, over the same span (a 2x3 block).')
   ];
   // 2026-11-01 (docs/SCENARIOS.md §4): the Pincer takes a whole line (rules.js placements); since
-  // 2026-11-02 (rules 8) any whole line of 4 or more, its ends the line's ends
+  // 2026-11-02 (rules 8) any whole line of 4 or more, its ends the line's ends; since 2026-11-04
+  // (rules 13) any unbroken run of 4 or more inside a line
   C.FORMATIONS.find((f) => f.id === 'pincer').fullLine = true;
   C.FORMATION_IDS = C.FORMATIONS.map((f) => f.id);
 
@@ -13080,10 +13090,10 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
   const SHAPE_CH = { i: TI.inf, a: TI.arc, c: TI.cav, '?': -1 };
   /** Every placement of an exact-shape formation on the board (8 turns and mirrors, deduplicated).
    *  2026-11-01 (docs/SCENARIOS.md §4): on board G (default the 4x4), never on a void slot; a
-   *  `fullLine` formation (Pincer) on a whole straight line (G.LINES) at least its length: its
-   *  end types on the line's two end tiles, a unit of any type on every tile between (2026-11-02,
-   *  user: "there should be at least one pincer here", the Bridge's 5-tile row; was exactly its
-   *  length). */
+   *  `fullLine` formation (Pincer) on any unbroken straight run (inside G.LINES) at least its
+   *  length: its end types on the run's two end tiles, a unit of any type on every tile between
+   *  (2026-11-02, user: "there should be at least one pincer here", the Bridge's 5-tile row; was
+   *  exactly its length; 2026-11-04, rules 13: any run, was the whole line only). */
   function placements(id, G) {
     G = G || G0;
     const placeCache = G.placeCache;
@@ -13096,8 +13106,13 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
     if (formDef(id).fullLine) {
       const a = cells[0].t, z = cells[cells.length - 1].t;
       const isRow = (l) => G.rowOf(l[0]) === G.rowOf(l[1]);   // the rows, then the columns (the old order)
-      for (const line of G.LINES.filter(isRow).concat(G.LINES.filter((l) => !isRow(l)))) if (line.length >= cells.length) {
-        out.push({ slots: line.slice(), types: line.map((s, j) => (j === 0 ? a : j === line.length - 1 ? z : -1)) });
+      // 2026-11-04 (rules 13, user: not intuitive on the 5-wide Ridge): every unbroken run of at least
+      // its length inside a line, not the whole line only (a row of 5: the row and its two runs of 4)
+      for (const line of G.LINES.filter(isRow).concat(G.LINES.filter((l) => !isRow(l)))) {
+        for (let i = 0; i < line.length; i++) for (let j = i + cells.length; j <= line.length; j++) {
+          const run = line.slice(i, j);
+          out.push({ slots: run, types: run.map((s, k) => (k === 0 ? a : k === run.length - 1 ? z : -1)) });
+        }
       }
       return (placeCache[id] = out);
     }
@@ -23002,8 +23017,8 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
  *   pickSheet(o, cb)                  prog001 §2: the deck (or six) picker for a swap or a service; cb(uid | id)
  *   payLine(pay), storeServices(run), storeHtml(run)   prog001 §2: the pay line, the services' rows, the store plate (pure; tests)
  *   upgrade(run, cb)                  the training every 3 battles: cb({uid} | {refuse})
- *   runWon(sum, cb)                   the campaign won, with Laurels (prog001 §3: sum.gained, the pieces unlocked in
- *                                     it, and sum.banked, the Laurels banked): cb('new')
+ *   runWon(sum, cb)                   the campaign won, with Laurels (prog001 §3: sum.banked, the Laurels banked;
+ *                                     the pieces unlocked show on the Unlocked! plate before it): cb('new')
  *   deckView(run)                     the deck as card faces or rows (copies stacked, sortable: SORTS; both remembered in 'ttf-prog001:prefs') under a tally of each type (deckTally) and, on its second tab, the generals' pool
  *   book(st, run, tab?)               the reference (book.js)
  *   confirm(text, cb, {title, yes, no, link, note})
@@ -23864,27 +23879,15 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
       (sum.best ? (sum.best.isNew ? 'A new best in this browser!' : 'Best in this browser: ' + sum.best.laurels + '.') : '') + '</p>' +
       // 2026-11-01 (docs/SCENARIOS.md §5): the scenario battles' own Laurels line (a run with the switch on)
       (L.scenarios && L.scenarios.won ? '<p class="say small rw-scen">' + L.scenarios.won + ' scenario battle' + (L.scenarios.won === 1 ? '' : 's') + ' won, worth ' + L.scenarios.laurels + ' Laurels.</p>' : '') +
-      // prog001 §3 (2026-10-31): the Laurels banked for the War Office, and every piece this campaign unlocked
+      // prog001 §3 (2026-10-31): the Laurels banked for the War Office (2026-11-04, user: the pieces this
+      // campaign unlocked are no longer listed here; the Unlocked! plate before this one shows them)
       (typeof sum.banked === 'number' ? '<p class="say small rw-bank">' + sum.banked + ' Laurels banked for the War Office' + (typeof sum.bank === 'number' ? ' (now ' + sum.bank + ')' : '') + '.</p>' : '') +
-      gainedHtml(sum.gained) +
       '<p class="say small">Laurels: every won battle scores ' + LT.win + ' plus its glory (how far past the target' + (LT.gloryCap ? ', at most ' + LT.gloryCap : '') + '), ' + (LT.bossScale === 2 ? 'doubled' : '×' + LT.bossScale) + ' for a boss and ' + (LT.retried === 0.5 ? 'halved' : '×' + LT.retried) + ' when it took a retry.</p>' +
       '<div class="acts">' + btn('new', 'New campaign', 'primary') + '</div></div>';
     const entry = open('won', html);
-    // 2026-11-01 (user): a tap on an unlocked chip shows that piece's card (a tap closes it)
-    const P = Core().Prog;
-    if (P) bindLong(entry.ov, '.ugc', (el) => { const c = P.cardOf(el.dataset.key, tunOf(sum)); return c ? (c.general ? { general: c.general } : { card: c.card }) : null; }, tunOf(sum), true);
     onAct(entry, (act) => { close(entry); cb(act); });
     return entry;
   };
-
-  /** prog001 §3 (2026-10-31): the pieces a campaign unlocked, as named chips (pure; tests); a tap on one opens its card. */
-  function gainedHtml(keys) {
-    const P = Core().Prog;
-    if (!P || !keys || !keys.length) return '';
-    const KW = { general: 'General', hero: 'Hero', officer: 'Officer', special: 'Special', order: 'Order' };
-    return '<h4>Unlocked in this campaign</h4><div class="rw-gain">' + keys.map((k) => '<span class="ugc r-' + esc(P.rarityOf(k)) + '" data-key="' + esc(k) + '"><b>' + esc(P.nameOf(k)) + '</b><i>' + esc(KW[P.kindOf(k)] || '') + '</i></span>').join('') + '</div>';
-  }
-  S.gainedHtml = gainedHtml;
 
   // ---- the deck view ----------------------------------------------------------------------------------
   S.deckView = function deckView(run) {
@@ -24833,13 +24836,32 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
     }
     return out;
   }
+  // 2026-11-04 (user: "messy as hell"): the pieces stand in a section per kind (one card shape to a
+  // grid, in the Collection's order), under a tally of what earned them; each card's line is its road
+  // over its name, two lines high, so the rows line up
+  /** "Achievement: First Blood" -> ['Achievement', 'First Blood']; "Easy campaign won" -> ['Easy campaign won', ''] */
+  const byParts = (by) => { const k = by.indexOf(': '); return k < 0 ? [by, ''] : [by.slice(0, k), by.slice(k + 2)]; };
+  const BY_MANY = { Achievement: 'achievements', Milestone: 'milestones', 'War Office crate': 'War Office crates' };
   function unlockedHtml(got, p, T) {
     const rows = entries(got, p), pieces = rows.filter((r) => r.key), achs = rows.filter((r) => r.ach);
+    const roads = [];
+    pieces.forEach((r) => { const l = byParts(r.by)[0], x = roads.find((y) => y.l === l); if (x) x.n++; else roads.push({ l, n: 1 }); });
+    const tally = roads.length > 1 || (roads[0] && roads[0].n > 1)
+      ? '<div class="unl-tally">' + roads.map((x) => '<span class="ugc"><b>' + x.n + '</b><i>' + esc(x.n > 1 && BY_MANY[x.l] ? BY_MANY[x.l] : x.l) + '</i></span>').join('') + '</div>' : '';
+    let i = 0;
+    const cell = (r) => { const [l, n] = byParts(r.by);
+      return '<div class="dc unl-it" data-i="' + (i++) + '" data-key="' + esc(r.key) + '">' + faceOf(r.key, T) +
+        '<span class="unl-by"><i>' + esc(l) + '</i>' + (n ? '<b>' + esc(n) + '</b>' : '') + '</span></div>'; };
+    const secs = KIND_TABS.map(([k, label]) => {
+      const xs = pieces.filter((r) => P().kindOf(r.key) === k);
+      return xs.length ? '<section class="unl-sec"><h3 class="unl-h"><span>' + label + '</span><i>' + xs.length + '</i></h3>' +
+        '<div class="unl-grid' + (k === 'general' ? ' unl-gens' : '') + '">' + xs.map(cell).join('') + '</div></section>' : '';
+    }).join('');
     return '<div class="plate wide unl"><p class="kick">' + (got && got.rung ? P().RUNG_NAME[got.rung] + ' campaign won' : 'New for your campaigns') + '</p><h2>Unlocked!</h2>' +
-      (pieces.length ? '<p class="say">' + (pieces.length === 1 ? 'A new piece joins' : pieces.length + ' new pieces join') + ' every campaign you start from now on.</p>' +
-        '<div class="dgrid unl-grid">' + pieces.map((r, i) => '<div class="dc unl-it" data-i="' + i + '" data-key="' + esc(r.key) + '">' + faceOf(r.key, T) + '<span class="unl-by">' + esc(r.by) + '</span></div>').join('') + '</div>' : '') +
-      (achs.length ? '<div class="achs">' + achs.map((r) => { const a = P().achDef(r.ach); return '<div class="ach got"><div><b>' + esc(a.name) + '</b><span>' + esc(a.feat) + '</span></div><em>' + esc(P().nameOf(a.unlocks)) + ' was already yours</em></div>'; }).join('') + '</div>' : '') +
-      '<p class="say small">' + IN().hold + ' a card to read it.</p><div class="acts">' + btn('go', 'Continue', 'primary') + '</div></div>';
+      (pieces.length ? '<p class="say">' + (pieces.length === 1 ? 'A new piece joins' : pieces.length + ' new pieces join') + ' every campaign you start from now on.</p>' + tally : '') +
+      '<div class="dgrid unl-body">' + secs +
+      (achs.length ? '<section class="unl-sec"><h3 class="unl-h"><span>Also earned</span><i>' + achs.length + '</i></h3><div class="achs">' + achs.map((r) => { const a = P().achDef(r.ach); return '<div class="ach got"><div><b>' + esc(a.name) + '</b><span>' + esc(a.feat) + '</span></div><em>' + esc(P().nameOf(a.unlocks)) + ' was already yours</em></div>'; }).join('') + '</div></section>' : '') +
+      '</div><p class="say small">' + IN().hold + ' a card to read it.</p><div class="acts">' + btn('go', 'Continue', 'primary') + '</div></div>';
   }
   function unlocked(got, o, cb) {
     const T = (o && o.tun) || Core().TUN_DEFAULT, p = o && o.profile ? o.profile() : P().newProfile();
@@ -27377,7 +27399,7 @@ body.tut .hand .pick:not(.opv) { visibility: hidden; }
     // 2026-11-03 (user): the campaign's unlocks are shown here, at its end (none on the way): the
     // "Unlocked!" plate, then the campaign-won screen (a reload shows both again)
     endUnlocks(run, () => Screens.runWon({ retries, battles: run.battles, laurels, tun: run.tun, best: { laurels: isNew ? laurels.total : best.laurels, isNew },
-      gained: run.gained || [], banked: typeof run.banked === 'number' ? run.banked : undefined, bank: profile.bank }, () => {
+      banked: typeof run.banked === 'number' ? run.banked : undefined, bank: profile.bank }, () => {
       if (my !== epoch) return;
       store.del('run');
       newRun();
