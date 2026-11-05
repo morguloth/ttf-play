@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="4">
-<script>(function(){var B="64580c74da";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=4;if(location.protocol==="file:")return;var last=0;function chk(back){var s=document.getElementById("stage");if(back&&s&&s.dataset.screen==="battle")return;if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}}chk(false);document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk(true)})})();</script>
+<script>(function(){var B="576ab134cf";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=4;if(location.protocol==="file:")return;var last=0;function chk(back){var s=document.getElementById("stage");if(back&&s&&s.dataset.screen==="battle")return;if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}}chk(false);document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk(true)})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#000000">
@@ -1244,6 +1244,14 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .h-deck > .mh { display: flex; align-items: center; justify-content: center; gap: 14px; }
 .h-count { display: inline-grid; place-items: center; min-width: 46px; height: 38px; padding: 0 12px; border-radius: 19px; font-size: 22px; color: #2a1d0d;
   background: linear-gradient(180deg, var(--brass1, #f3d58e), var(--brass2, #c99a45) 60%, var(--brass3, #8a6226)); box-shadow: 0 0 0 1.5px #2a1d0d, 0 4px 10px rgba(0,0,0,.5); letter-spacing: 0; }
+.h-tally { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 22px; margin-top: 10px; font-size: 18px; color: #cdbf9f; }
+.h-tally > span { display: inline-flex; align-items: center; gap: 6px; }
+.h-tally .ic { font-size: 20px; }
+.h-tally b { font-family: var(--label, 'Cinzel', serif); font-size: 20px; color: #f1dfb2; }
+.h-tally .t-inf .ic { color: var(--inf1, #c4573f); }
+.h-tally .t-arc .ic { color: var(--arc1, #66a04b); }
+.h-tally .t-cav .ic { color: var(--cav1, #4f7fc2); }
+.h-tally i { font-size: 15px; color: #8d8068; }
 .h-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; margin-top: 14px; padding: 0 8px; }
 .h-chips, .h-sort { display: flex; flex-wrap: wrap; gap: 8px; }
 .h-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 22px; border: 1.5px solid rgba(201,163,92,.45);
@@ -1269,6 +1277,19 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .h-grp.g-officer .lab .ic, .h-grp.g-hero .lab .ic, .h-grp.g-engineer .lab .ic { color: var(--brass1, #f3d58e); }
 .h-cards { display: flex; flex-wrap: wrap; gap: 16px 10px; padding: 12px 0 4px 8px; }
 .h-cards .l1card { cursor: pointer; }
+/* identical cards stacked: two edges behind the top card and a xN badge; laid out: a dashed outline */
+.h-stack { position: relative; display: flex; flex-wrap: wrap; gap: 16px 10px; }
+.h-stack:not(.open) { margin: 4px 14px 0 0; cursor: pointer; }
+.h-stack:not(.open)::before, .h-stack:not(.open)::after { content: ''; position: absolute; inset: 0; border-radius: 10px;
+  background: linear-gradient(180deg, #e9dcbc, #c9b48a); box-shadow: 0 0 0 2px #2a1d0d, 0 4px 10px rgba(0,0,0,.45); z-index: 0; }
+.h-stack:not(.open)::before { transform: translate(14px, -10px); opacity: .75; }
+.h-stack:not(.open)::after { transform: translate(7px, -5px); }
+.h-stack > .l1card { position: relative; z-index: 1; }
+.h-stack.open { padding: 8px 8px 8px 8px; margin: -8px 0; border: 1.5px dashed rgba(243,213,142,.5); border-radius: 14px; }
+.h-n { position: absolute; z-index: 2; right: -12px; top: -16px; min-width: 44px; height: 34px; padding: 0 10px; display: inline-grid; place-items: center;
+  border-radius: 17px; border: 0; font: 700 19px var(--label, 'Cinzel', serif); letter-spacing: 0; color: #2a1d0d; cursor: pointer;
+  background: linear-gradient(180deg, var(--brass1, #f3d58e), var(--brass2, #c99a45) 60%, var(--brass3, #8a6226)); box-shadow: 0 0 0 1.5px #2a1d0d, 0 4px 10px rgba(0,0,0,.5); }
+.h-stack.open > .h-n { right: -14px; top: -18px; }
 .h-empty { width: 100%; padding: 40px 0; text-align: center; font-size: 20px; color: #8d8068; }
 
 /* ---------- reduced motion (the game's setting: .calm-motion on the stage; the system's) ---------- */
@@ -13753,6 +13774,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  *                          list in the same view (battle.js: the battle's draw pile). A bar under
  *                          the title filters to one group (tap again for all) and sorts by kind,
  *                          power or the next rank (closest first); the choice lasts the session.
+ *                          Identical cards (same piece, same rank) stack with ×N; a tap lays the
+ *                          copies out, a tap on their ×N stacks them again. Under the title, the
+ *                          cards of each type, officers and heroes included.
  * Pure helpers (test/loop001-help.test.js): L1Help = {groupDeck, pages, motionState, artState,
  * chainOf, ART, PAGE_IDS, GROUPS}. Storage: none of its own (the settings go through app.js).
  */
@@ -13822,6 +13846,30 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     flat.sort((a, b) => by(a, b) || order.get(a) - order.get(b));
     return flat.length ? [{ key: 'flat', label: '', icon: '', cards: flat }] : [];
   }
+  // identical cards (same piece at the same rank; their pips may differ) stack as one card with xN;
+  // a tap on the stack lays every copy out (2026-11-05, user)
+  const stackSig = (c, T) => (c ? [c.kind, c.id || c.type || '', rankOf(c, T)].join(':') : '');
+  /** The cards as stacks [{sig, cards}], in the order of each stack's first card; within a stack
+   *  the copy closest to its next rank leads. */
+  function stackCards(cards, T0) {
+    const T = T0 || (C && C.TUN_DEFAULT) || {}, out = [], at = {};
+    for (const c of cards || []) {
+      const k = stackSig(c, T);
+      if (at[k] == null) { at[k] = out.length; out.push({ sig: k, cards: [] }); }
+      out[at[k]].cards.push(c);
+    }
+    for (const st of out) st.cards.sort((a, b) => pipsLeft(a, T) - pipsLeft(b, T));
+    return out;
+  }
+  /** Cards of each type, units, officers and heroes together (C.armyOf: what the count-reading
+   *  pieces such as the Horse Marshal read): [{key, label, n}] (2026-11-05, user). */
+  function typeTally(cards) {
+    const a = C && C.armyOf ? C.armyOf(cards || []) : {};
+    return TYPES.map((k) => ({ key: k, label: GROUPS.find((g) => g.key === k).many, n: a[k] || 0 }));
+  }
+  const tallyHtml = (cards) => '<div class="h-tally">' + typeTally(cards).map((t) =>
+    '<span class="t-' + t.key + '">' + icon(t.key) + '<span>' + esc(t.label) + '</span><b>' + t.n + '</b></span>').join('') +
+    '<i>officers and heroes included</i></div>';
   let deckView = { filter: 'all', sort: 'kind' };   // this session's choice, kept between openings
 
   /** Reduced motion as the menu shows it: on (app.reducedMotion()), and forced when the system
@@ -14174,12 +14222,21 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       '<div class="h-sort">' + SORTS.map((x) => '<button class="h-chip' + (deckView.sort === x.key ? ' on' : '') + '" data-s="' + x.key + '">' + esc(x.label) + '</button>').join('') + '</div></div>';
     const body = () => arrangeDeck(cards, deckView.filter, deckView.sort, T).map((g) => '<section class="h-grp g-' + g.key + '">' +
       (g.label ? '<div class="lab">' + icon(g.icon) + '<span>' + esc(g.label) + '</span><b>' + g.cards.length + '</b></div>' : '') +
-      '<div class="h-cards">' + g.cards.map((c) => (K.html ? K.html(c, { T, size: 's' }) : '')).join('') + '</div></section>').join('') || '<div class="h-empty">No cards</div>';
+      '<div class="h-cards">' + stackCards(g.cards, T).map(stackHtml).join('') + '</div></section>').join('') || '<div class="h-empty">No cards</div>';
+    const open = new Set();   // the stacks laid out (by signature), for this opening
+    const card = (c) => (K.html ? K.html(c, { T, size: 's' }) : '');
+    const stackHtml = (st) => {
+      const n = st.cards.length, sig = esc(st.sig);
+      if (n === 1) return card(st.cards[0]);
+      if (open.has(st.sig)) return '<div class="h-stack open" data-sig="' + sig + '">' + st.cards.map(card).join('') +
+        '<button class="h-n" data-unstack="' + sig + '" aria-label="Stack the copies">×' + n + '</button></div>';
+      return '<div class="h-stack" data-sig="' + sig + '" data-n="' + n + '">' + card(st.cards[0]) + '<span class="h-n">×' + n + '</span></div>';
+    };
     const ov = overlay(root, 'l1deck', '<div class="pnl h-deck">' +
       '<button class="h-x" data-h="close" aria-label="Close">' + X_SVG + '</button>' +
       '<div class="mh">' + esc(o.title || 'Your deck') + '<span class="h-count">' + cards.length + '</span></div>' +
       (o.line ? '<div class="ms">' + esc(o.line) + '</div>' : '') +
-      (cards.length ? '<div data-r="bar">' + bar() + '</div>' : '') +
+      (cards.length ? tallyHtml(cards) + '<div data-r="bar">' + bar() + '</div>' : '') +
       '<div class="h-grid" data-r="grid">' + body() + '</div></div>');
     const grid = ov.el.querySelector('[data-r="grid"]'), barEl = ov.el.querySelector('[data-r="bar"]');
     if (barEl) barEl.addEventListener('click', (e) => {
@@ -14191,12 +14248,24 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       grid.innerHTML = body();
       grid.scrollTop = 0;
     });
+    // a tap on a closed stack lays its copies out (before the cards' own tap opens one); its xN stacks
+    // them again. A long-press still opens the top card.
+    grid.addEventListener('click', (e) => {
+      const un = e.target.closest('[data-unstack]'), st = !un && e.target.closest('.h-stack:not(.open)');
+      if (!un && !st) return;
+      if (K.wasLongPress && K.wasLongPress()) return;
+      e.stopPropagation(); e.preventDefault();
+      if (un) open.delete(un.dataset.unstack); else open.add(st.dataset.sig);
+      const top = grid.scrollTop;
+      grid.innerHTML = body();
+      grid.scrollTop = top;
+    }, true);
     centre(ov.el.querySelector('.h-deck'), 34);   // a short deck: the panel fits it
     if (K.bindLongPress) K.bindLongPress(grid, { ctx: () => ({ T, run: (app && app.run) || run }), tap: true });
     return ov.el;
   }
 
-  globalThis.L1Help = { groupDeck, arrangeDeck, SORTS, pages, motionState, artState, chainOf, ART, PAGE_IDS, GROUPS };
+  globalThis.L1Help = { groupDeck, arrangeDeck, stackCards, typeTally, SORTS, pages, motionState, artState, chainOf, ART, PAGE_IDS, GROUPS };
   globalThis.L1Screens = Object.assign(globalThis.L1Screens || {}, { menu, help, deck });
 })();
 </script>
