@@ -4,13 +4,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="4">
-<script>(function(){var B="576ab134cf";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=4;if(location.protocol==="file:")return;var last=0;function chk(back){var s=document.getElementById("stage");if(back&&s&&s.dataset.screen==="battle")return;if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}}chk(false);document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk(true)})})();</script>
+<script>(function(){var B="89f6ea5180";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=4;if(location.protocol==="file:")return;var last=0;function chk(back){var s=document.getElementById("stage");if(back&&s&&s.dataset.screen==="battle")return;if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}}chk(false);document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk(true)})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#000000">
 <title>Take the Field · loop001</title>
 <!--
   loop001 (docs/LOOP001.md, docs/LOOP001-UI.md): short runs. Plain scripts, no build step.
+  It opens on the title screen (ui/s-home.js); the start parameters below go straight to the run.
   URL: ?seed=N starts a run with seed N (a saved run with that seed resumes); ?new=1 discards the
   saved run; ?debugBattle=K (only with ?seed) sets the new run up at battle K through the engine
   (the first draft picks; a dev aid for the bosses and the Siege). Details: ui/app.js.
@@ -1300,6 +1301,41 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   .h-set i, .h-set i::after, .h-dot i { transition: none; }
 }
 .h-cards .l1card.z-s { zoom: .8; }   /* the deck view: names ~11 px on screen at the 1024x768 fit */
+</style>
+<style>
+/*
+ * loop001/css/home.css - the title screen (ui/s-home.js; docs/LOOP001-UI.md "Title screen"): the
+ * name, the furthest battle reached (big, in brass), a row of records, Continue / New run / Help.
+ * Built on the moments' look (css/moments.css: .mo, .mo-glow, .mo-kick, .mo-rise). No top bar, so
+ * the screen takes the whole 1180x820 stage. Every class 'hm-'. Tap targets >= 56 stage px.
+ */
+.mo.hm { top: 0; }
+.hm .mo-glow { top: 44%; }
+.hm .mo-center.hm-col { gap: 0; padding-top: 0; }
+
+.hm-name { font-family: var(--label, 'Cinzel', serif); font-weight: 700; font-size: 54px; letter-spacing: 6px; text-transform: uppercase; line-height: 1;
+  color: #f1dfb2; text-shadow: 0 0 30px rgba(243,213,142,.22), 0 3px 0 #000; }
+
+.hm-best { display: flex; flex-direction: column; align-items: center; margin-top: 50px; }
+.hm-big { margin-top: 12px; font-family: var(--label, 'Cinzel', serif); font-weight: 700; font-size: 128px; letter-spacing: 3px; line-height: 1;
+  color: #ffe7a6; background: linear-gradient(180deg, #fff6d6 10%, #f2c86a 55%, #b9832e 92%); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 30px rgba(243,200,110,.38)) drop-shadow(0 3px 0 #000); }
+.hm-big.won { font-size: 76px; margin-top: 16px; }
+.hm-under { margin-top: 10px; font-size: 24px; letter-spacing: 1px; color: var(--sub, #b9ab8f); }
+.hm-invite { margin-top: 56px; font-size: 26px; color: var(--sub, #b9ab8f); letter-spacing: .5px; }
+
+.hm-recs { display: flex; margin-top: 44px; }
+.hm-rec { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 30px; }
+.hm-rec + .hm-rec { border-left: 1px solid rgba(201,167,100,.35); }
+.hm-rec b { font-family: var(--label, 'Cinzel', serif); font-weight: 700; font-size: 32px; line-height: 1.1; color: #f1dfb2; }
+.hm-rec span { font-size: 15px; letter-spacing: 1.8px; text-transform: uppercase; color: var(--lab, #c9a764); white-space: nowrap; }
+
+.hm-btns { display: flex; flex-direction: column; align-items: center; gap: 18px; margin-top: 50px; }
+.btn-go.mo-go.hm-go { width: 340px; }
+.hm-go small { font-family: var(--body, 'Barlow Condensed', sans-serif); font-size: 19px; font-weight: 600; letter-spacing: 1px; text-transform: none;
+  color: rgba(255,241,220,.78); padding-left: 12px; border-left: 1px solid rgba(255,241,220,.35); }
+.hm-row { display: flex; gap: 16px; }
+.btn.hm-btn { width: 162px; min-height: 56px; }
 </style>
 <!-- shared painted art (figures, props, ground) -->
 <script>
@@ -13330,7 +13366,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  *   draft      Run.draftPick -> app.setRun, app.route (after step 2: battle 1's intro)
  *   intro      app.introDone()            bossIntro  app.bossDone()
  *   levelUp    one moment per run.levelUps record, queued, then app.levelsDone()
- *   won, lost  app.newRun()
+ *   won, lost  app.toHome() (the title screen: the records, then New run)
  * Also L1Screens.levelMoment(root, {run, T, rec, then, index?, count?, reduced?}): one level-up
  * moment over any screen (a Train in the store may use it) -> {el, finish(), destroy()}.
  * Pure helpers (tests): L1Moments.{twistName, twistLine, rankLine, part1Split, part2Left,
@@ -13715,11 +13751,11 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       '<div class="mo-gens mo-rise" style="--d:240ms" data-r="gens">' + run.generals.map((g) => plaque(g, { T, size: 'm' })).join('') + '</div>' +
       '<div class="mo-sec mo-rise" style="--d:300ms">Your deck · ' + n + ' cards</div>' +
       '<div class="mo-rise" style="--d:320ms">' + deckMinis(run, T, deckLayout(n)) + '</div>' +
-      '<div class="mo-foot">' + goBtn('New run', 'new') + '</div></div></div>';
+      '<div class="mo-foot">' + goBtn('Continue', 'home') + '</div></div></div>';
     app.bindTop(root);
     bindDeck(root.querySelector('[data-r="deck"]'), run, T);
     if (Cards().bindLongPress) Cards().bindLongPress(root.querySelector('[data-r="gens"]'), { ctx: () => ({ T, run }), tap: true });
-    on(root, { new: () => app.newRun() });
+    on(root, { home: () => (app.toHome ? app.toHome() : app.newRun()) });
   }
   function lost(root, ctx) {
     const app = ctx.app, run = ctx.run;
@@ -13738,9 +13774,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         '<div class="c"><span class="k">Target</span><b>' + icon('target') + target + '</b></div></div>' +
         '<div class="mo-bar"><i style="width:' + pct.toFixed(1) + '%"></i></div>' +
         '<div class="mo-short">' + (target > total ? (target - total) + ' short' : '') + '</div>' + parts + '</div>' +
-      '<div class="mo-foot">' + goBtn('New run', 'new') + '</div></div></div>';
+      '<div class="mo-foot">' + goBtn('Continue', 'home') + '</div></div></div>';
     app.bindTop(root);
-    on(root, { new: () => app.newRun() });
+    on(root, { home: () => (app.toHome ? app.toHome() : app.newRun()) });
   }
 
   const SCREENS = { draft, intro, bossIntro, levelUp, won, lost, levelMoment };
@@ -13757,11 +13793,13 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  * The contract with app.js (bindTop) is screens.js's: L1Screens.<name>(root, ctx), root the stage
  * (or a screen's own root), ctx = {run, T, app}. Each opens an overlay over whatever screen is up
  * and returns its node; Esc (or a tap on the dimmed screen) closes the top one.
- *   menu(root, ctx)        Resume, Help, Settings (Reduced motion = settings.calm through
- *                          app.setSetting, app.js honours it; Sound = settings.mute, true when off;
+ *   menu(root, ctx)        Resume, Help, Title screen (app.toHome()), Settings (Reduced motion =
+ *                          settings.calm through app.setSetting, app.js honours it; Sound =
+ *                          settings.mute, true when off;
  *                          Share play data = settings.share, false when off, shown only where
  *                          share.js can send),
  *                          New run (asks first: it ends this run; then app.newRun()).
+ *   askNewRun(root, ctx)   that New run question on its own (the title screen's New run).
  *   help(root, ctx, opts?) seven illustrated pages (the goal, a turn, the score, generals and
  *                          formations, officers / heroes / engineers, the store, the run): swipe,
  *                          the arrows, the dots or the arrow keys. Each page draws the real pieces
@@ -14021,6 +14059,23 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     return '<button class="h-set' + (on ? ' on' : '') + (locked ? ' locked' : '') + '" role="switch" aria-checked="' + on + '" data-h="' + id + '">' +
       '<span class="t">' + esc(label) + (note ? '<small>' + esc(note) + '</small>' : '') + '</span><i></i></button>';
   }
+  /** The New run question: where the run in progress ends, Cancel (data-h `cancel`) and New run. */
+  function askHtml(run0, cancel) {
+    const run = run0 || {};
+    // in the store, run.battle is the battle just won: the run stands before the next one
+    const at = run.phase === 'store' ? Math.min(run.battles || 30, run.battle + 1) : run.battle;
+    const where = run.phase === 'battle' || run.phase === 'store' ? 'Your run ends here, at battle ' + at + ' of ' + (run.battles || 30) + '.' : 'Your run ends here.';
+    return '<div class="mh">Start a new run?</div><div class="ms">' + esc(where) + '</div>' +
+      '<div class="mbtns"><button class="btn ghost" data-h="' + cancel + '">Cancel</button><button class="btn red" data-h="yes">New run</button></div>';
+  }
+  /** The menu's New run question on its own (the title screen): yes -> app.newRun(). */
+  function askNewRun(root, ctx) {
+    const app = ctx.app;
+    const ov = overlay(root, 'l1menu', '<div class="pnl h-menu" data-r="pnl">' + askHtml(app.run || ctx.run, 'close') + '</div>');
+    centre(ov.el.querySelector('[data-r="pnl"]'));
+    ov.on({ yes: () => { ov.close(); app.newRun(); } });
+    return ov.el;
+  }
   function menu(root, ctx) {
     const app = ctx.app;
     const ov = overlay(root, 'l1menu', '<div class="pnl h-menu" data-r="pnl"></div>');
@@ -14030,6 +14085,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       pnl.innerHTML = '<div class="mh">Menu</div>' +
         '<button class="btn" data-h="close">Resume</button>' +
         '<button class="btn ghost" data-h="help">' + icon('help') + 'Help</button>' +
+        (app.toHome ? '<button class="btn ghost" data-h="home">' + icon('home') + 'Title screen</button>' : '') +
         '<div class="lab">Settings</div>' +
         toggle('calm', 'Reduced motion', m.on, m.forced ? 'On in your system settings' : '', m.forced) +
         toggle('sound', 'Sound', !mute) +
@@ -14038,12 +14094,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       centre(pnl);
     }
     function ask() {
-      const run = app.run || ctx.run || {};
-      // in the store, run.battle is the battle just won: the run stands before the next one
-      const at = run.phase === 'store' ? Math.min(run.battles || 30, run.battle + 1) : run.battle;
-      const where = run.phase === 'battle' || run.phase === 'store' ? 'Your run ends here, at battle ' + at + ' of ' + (run.battles || 30) + '.' : 'Your run ends here.';
-      pnl.innerHTML = '<div class="mh">Start a new run?</div><div class="ms">' + esc(where) + '</div>' +
-        '<div class="mbtns"><button class="btn ghost" data-h="back">Cancel</button><button class="btn red" data-h="yes">New run</button></div>';
+      pnl.innerHTML = askHtml(app.run || ctx.run, 'back');
       centre(pnl);
     }
     main();
@@ -14052,6 +14103,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       calm: () => { if (motionState(app).forced) return; app.setSetting('calm', !app.setting('calm')); main(); },
       sound: () => { app.setSetting('mute', !app.setting('mute')); main(); },
       share: () => { const on = app.setting('share') === false; app.setSetting('share', on); if (on) L1Share.flush(); main(); },
+      home: () => { ov.close(); app.toHome(); },
       new: ask,
       back: main,
       yes: () => { ov.close(); app.newRun(); }
@@ -14266,7 +14318,161 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   }
 
   globalThis.L1Help = { groupDeck, arrangeDeck, stackCards, typeTally, SORTS, pages, motionState, artState, chainOf, ART, PAGE_IDS, GROUPS };
-  globalThis.L1Screens = Object.assign(globalThis.L1Screens || {}, { menu, help, deck });
+  globalThis.L1Screens = Object.assign(globalThis.L1Screens || {}, { menu, help, deck, askNewRun });
+})();
+</script>
+<script>
+/*
+ * loop001/ui/s-home.js - the title screen and the records (docs/LOOP001-UI.md "Title screen").
+ * The game opens here: the name, the furthest battle ever reached, big (or "The capital fell" and
+ * how many times, once a run is won), a few records under it, and Continue (a run in progress),
+ * New run (asks first when it would end a run in progress) and Help.
+ *
+ * The records (storage ttf-loop001:records, through app.js) are kept by pure helpers, so a reload
+ * or a second call never counts anything twice:
+ *   furthest  the furthest battle reached: the highest battle fought, or the battle marched on to
+ *             after a win (a run standing at battle 7 after six wins reached 7; a loss at battle 10
+ *             reached 10; a run that has fought nothing reached nothing)
+ *   runs      runs played: counted once, when the run ends (lost or won), or when it is abandoned
+ *             for a new run after at least one battle was fought
+ *   wins      runs won (the capital fell)
+ *   bosses    boss battles won (10, 20, 30), over every run
+ *   best      the best single battle score {total, battle} (battle 20: both parts together)
+ *   seen      {seed, n}: the run's results already counted; ended: the seed of the run whose end is
+ *             counted
+ * L1Records = {empty(), norm(rec), update(rec, run), abandon(rec, run), reached(run), view(rec)}
+ *   update   counts the run's new results, its reach and its end (idempotent); with empty records
+ *            this seeds them from the run in progress
+ *   abandon  update, then count the run as played if it was not counted (and it fought a battle),
+ *            and forget it (the next run starts fresh, even with the same seed)
+ *   view     what the title screen shows: {big: null | {kind: 'march', battle, camp} | {kind: 'won',
+ *            times}, lines: [{k, v, sub?}]}
+ * L1Screens.home(root, ctx): the screen (ctx.app.homeContinue / newRun; the menu's New run ask).
+ */
+(function () {
+  'use strict';
+  const G = globalThis;
+  const C = G.TTFCore4;
+  const icon = (n, cls) => (G.L1Icons && G.L1Icons.use ? G.L1Icons.use(n, cls) : '');
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const num = (x) => (typeof x === 'number' && isFinite(x) && x > 0 ? Math.floor(x) : 0);
+
+  // ---- the records (pure) ---------------------------------------------------------------------------
+  const empty = () => ({ v: 1, furthest: 0, runs: 0, wins: 0, bosses: 0, best: null, seen: null, ended: null });
+  /** A stored record made whole (missing or broken fields to their empty values). */
+  function norm(rec) {
+    const r = rec && typeof rec === 'object' ? rec : {};
+    const out = empty();
+    out.furthest = num(r.furthest); out.runs = num(r.runs); out.wins = num(r.wins); out.bosses = num(r.bosses);
+    if (r.best && num(r.best.total)) out.best = { total: num(r.best.total), battle: num(r.best.battle) };
+    if (r.seen && typeof r.seen === 'object') out.seen = { seed: r.seen.seed, n: num(r.seen.n) };
+    if (r.ended !== undefined && r.ended !== null) out.ended = r.ended;
+    return out;
+  }
+  /** The furthest battle run `run` reached (see the header). */
+  function reached(run) {
+    if (!run) return 0;
+    const res = Array.isArray(run.results) ? run.results : [];
+    let b = 0;
+    for (const r of res) if (r) b = Math.max(b, num(r.battle));
+    if (res.length && run.phase === 'battle') b = Math.max(b, num(run.battle));
+    return b;
+  }
+  function update(rec, run) {
+    const out = norm(rec);
+    if (!run) return out;
+    const res = Array.isArray(run.results) ? run.results : [];
+    let from = out.seen && out.seen.seed === run.seed ? out.seen.n : 0;
+    if (from > res.length) from = 0;
+    for (let i = from; i < res.length; i++) {
+      const r = res[i];
+      if (!r) continue;
+      if (r.won && r.boss) out.bosses++;
+      const t = num(r.total);
+      if (t && (!out.best || t > out.best.total)) out.best = { total: t, battle: num(r.battle) };
+    }
+    out.furthest = Math.max(out.furthest, reached(run));
+    out.seen = { seed: run.seed, n: res.length };
+    if ((run.phase === 'won' || run.phase === 'lost') && out.ended !== run.seed) {
+      out.runs++;
+      if (run.phase === 'won') out.wins++;
+      out.ended = run.seed;
+    }
+    return out;
+  }
+  function abandon(rec, run) {
+    const out = update(rec, run);
+    if (run && out.ended !== run.seed && (run.results || []).length) out.runs++;
+    out.seen = null;
+    out.ended = null;
+    return out;
+  }
+  /** What the title screen shows of the records. */
+  function view(rec) {
+    const r = norm(rec);
+    let big = null;
+    if (r.wins) big = { kind: 'won', times: r.wins };
+    else if (r.furthest) {
+      const camp = C && C.campaignOf ? ((C.CAMPAIGNS || [])[C.campaignOf(r.furthest) - 1] || {}).name || '' : '';
+      big = { kind: 'march', battle: r.furthest, camp };
+    }
+    const lines = [];
+    if (r.runs || r.best) {
+      lines.push({ k: 'Runs played', v: r.runs });
+      lines.push({ k: 'Runs won', v: r.wins });
+      lines.push({ k: 'Bosses beaten', v: r.bosses });
+      if (r.best) lines.push({ k: 'Best battle score', v: r.best.total, sub: 'Battle ' + r.best.battle });
+    }
+    return { big, lines };
+  }
+
+  // ---- the screen -------------------------------------------------------------------------------------
+  const TIMES = ['', 'Once', 'Twice'];
+  /** The battle a run in progress stands before (the draft: null). */
+  function standing(run) {
+    if (!run) return null;
+    if (run.phase === 'battle') return run.battle;
+    if (run.phase === 'store') return Math.min(run.battles || 30, run.battle + 1);
+    return null;
+  }
+  const inProgress = (run) => !!run && (run.phase === 'draft' || run.phase === 'battle' || run.phase === 'store');
+
+  function home(root, ctx) {
+    const app = ctx.app, run = app.run, v = view(app.records ? app.records() : null);
+    const live = inProgress(run), at = standing(run);
+    let best;
+    if (v.big && v.big.kind === 'won') {
+      best = '<div class="hm-best mo-rise" style="--d:80ms"><div class="mo-kick">Your record</div>' +
+        '<div class="hm-big won">The capital fell</div><div class="hm-under">' + esc(TIMES[v.big.times] || v.big.times + ' times') + '</div></div>';
+    } else if (v.big) {
+      best = '<div class="hm-best mo-rise" style="--d:80ms"><div class="mo-kick">Furthest you have marched</div>' +
+        '<div class="hm-big">Battle ' + v.big.battle + '</div><div class="hm-under">' + esc(v.big.camp) + '</div></div>';
+    } else {
+      best = '<div class="hm-invite mo-rise" style="--d:80ms">Three campaigns stand between you and the capital.</div>';
+    }
+    const recs = v.lines.length ? '<div class="hm-recs mo-rise" style="--d:160ms">' + v.lines.map((l) =>
+      '<div class="hm-rec"><b>' + l.v + '</b><span>' + esc(l.k) + (l.sub ? ' · ' + esc(l.sub) : '') + '</span></div>').join('') + '</div>' : '';
+    const cont = live ? '<button class="btn-go mo-go hm-go" data-a="continue">Continue<small>' + (at ? 'Battle ' + at : 'The draft') + '</small>' + icon('march') + '</button>' : '';
+    const fresh = live ? '<button class="btn ghost hm-btn" data-a="new">New run</button>' : '<button class="btn-go mo-go hm-go" data-a="new">New run ' + icon('march') + '</button>';
+    root.innerHTML = '<div class="mo hm' + (app.reducedMotion && app.reducedMotion() ? ' still' : '') + '"><div class="mo-glow"></div><div class="mo-center hm-col">' +
+      '<div class="hm-name mo-rise">Take the Field</div>' + best + recs +
+      '<div class="hm-btns mo-rise" style="--d:220ms">' + cont + '<div class="hm-row">' + fresh +
+      '<button class="btn ghost hm-btn" data-a="help">' + icon('help') + 'Help</button></div></div></div></div>';
+    root.addEventListener('click', (e) => {
+      const n = e.target.closest ? e.target.closest('[data-a]') : null;
+      if (!n || !root.contains(n)) return;
+      const a = n.dataset.a;
+      if (a === 'continue') app.homeContinue();
+      else if (a === 'help') G.L1Screens.help(app.stage || root, { run, T: (run && run.tun) || C.TUN_DEFAULT, app });
+      else if (a === 'new') {
+        if (live && G.L1Screens.askNewRun) G.L1Screens.askNewRun(app.stage || root, { run, app });
+        else app.newRun();
+      }
+    });
+  }
+
+  G.L1Records = { empty, norm, update, abandon, reached, view, standing, inProgress };
+  G.L1Screens = Object.assign(G.L1Screens || {}, { home });
 })();
 </script>
 <script>
@@ -14360,8 +14566,10 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 /*
  * loop001/ui/app.js - L1App: boots the game, fits the 1180x820 stage to the window (letterboxed
  * on black, as the mocks' fit()), keeps the run and routes between the screens
- * (docs/LOOP001-UI.md "Shell"): draft -> intro -> battle -> [level-ups] -> store -> battle ...
- * -> won / lost. A boss battle (10, 20 and its part 2, 30) opens with its intro plate.
+ * (docs/LOOP001-UI.md "Shell"): [title screen] -> draft -> intro -> battle -> [level-ups] -> store
+ * -> battle ... -> won / lost -> title screen. A boss battle (10, 20 and its part 2, 30) opens with
+ * its intro plate. The game opens on the title screen (s-home.js; Continue resumes the run in
+ * progress exactly where it stands), except with the URL's start parameters (straight to the run).
  *
  * Storage (only under 'ttf-loop001:'; every access guarded):
  *   ttf-loop001:run       the run (Run API, plain JSON): resumed on reload
@@ -14370,6 +14578,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  *                         shelf {key, gone}: the store's empty recruit slots (s-store.js)
  *   ttf-loop001:settings  {calm: bool, mute: bool, share: bool}: reduced motion, sound off, play data
  *                         off when share === false (s-help.js menu)
+ *   ttf-loop001:records   the records the title screen shows (s-home.js L1Records: updated on
+ *                         every run change, a run abandoned for a new one counts as played;
+ *                         seeded from the run in progress the first time)
  *   ttf-loop001:player, :outbox, :sent   the play-data sender's (share.js)
  * URL: ?seed=N a run with seed N (a saved run with that seed resumes, any other is replaced);
  *      ?new=1 discards the saved run (then dropped from the address, so a reload resumes);
@@ -14380,13 +14591,13 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  * L1App = {run, topbar(opts), bindTop(root, handlers), route(), setRun(run), newRun(seed),
  *          battleDone(run), saveBattle(st), reducedMotion(), setting(k), setSetting(k, v),
  *          toStage(x, y), toast(text), uiSeen(k, v), screen() (the battle controller: st, held,
- *          pv; tests), stage}
+ *          pv; tests), stage, records(), toHome(), homeContinue()}
  */
 (function () {
   'use strict';
   const C = globalThis.TTFCore4, R = C.Run;
   const P = 'ttf-loop001:';
-  const KEY = { run: P + 'run', battle: P + 'battle', ui: P + 'ui', settings: P + 'settings' };
+  const KEY = { run: P + 'run', battle: P + 'battle', ui: P + 'ui', settings: P + 'settings', records: P + 'records' };
   const icon = (n, cls) => (globalThis.L1Icons && L1Icons.use ? L1Icons.use(n, cls) : '');
   const ROMAN = ['I', 'II', 'III', 'IV', 'V'];
 
@@ -14397,7 +14608,15 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   };
 
   const A = globalThis.L1App = {};
-  let stage = null, current = null, ui = {}, settings = {};
+  let stage = null, current = null, ui = {}, settings = {}, records = null;
+  const Rec = () => globalThis.L1Records || null;
+  /** The records after run `run` changed (abandon: it is being left for a new run). */
+  function keepRecords(run, abandon) {
+    const L = Rec();
+    if (!L || !run) return;
+    try { records = L[abandon ? 'abandon' : 'update'](records, run); store.set(KEY.records, records); } catch (e) { /* records only */ }
+  }
+  A.records = () => records;
 
   // ---- the stage -------------------------------------------------------------------------------
   function fit() {
@@ -14469,6 +14688,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     A.run = run;
     store.set(KEY.run, run);
     store.del(KEY.battle);
+    keepRecords(run);
   };
   /** Drop the start parameters from the address, so a reload resumes the run in storage. */
   const plainUrl = () => {
@@ -14476,6 +14696,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     try { history.replaceState(null, '', location.pathname); } catch (e) { /* file:// may refuse */ }
   };
   A.newRun = (seed) => {
+    if (A.run) keepRecords(A.run, true);
     plainUrl();
     store.del(KEY.battle);
     ui = {};
@@ -14539,6 +14760,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   A.introDone = () => { A.uiSeen('intro', A.run.seed); A.route(); };
   A.bossDone = () => { A.uiSeen('boss', battleKey(A.run)); A.route(); };
   A.levelsDone = () => { A.uiSeen('lv', levelKey(A.run)); A.route(); };
+  /** The title screen (the menu's Title screen, the run won / lost plates); Continue routes back. */
+  A.toHome = () => show('home');
+  A.homeContinue = () => A.route();
 
   // ---- boot -----------------------------------------------------------------------------------
   function boot() {
@@ -14553,18 +14777,24 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     const seedQ = q.has('seed') && /^\d+$/.test(q.get('seed')) ? +q.get('seed') : null;
     const fresh = q.get('new') === '1';
     const dbg = seedQ !== null && /^\d+$/.test(q.get('debugBattle') || '') ? +q.get('debugBattle') : 0;
-    let run = fresh ? null : store.get(KEY.run);
-    if (run) { try { run = R.migrate(run); } catch (e) { run = null; } }
+    // the URL's start parameters go straight to the run; otherwise the title screen
+    const direct = fresh || seedQ !== null;
+    records = store.get(KEY.records);
+    let saved = store.get(KEY.run);
+    if (saved) { try { saved = R.migrate(saved); } catch (e) { saved = null; } }
+    let run = fresh ? null : saved;
     if (run && seedQ !== null && run.seed !== seedQ) run = null;
     if (run && dbg && (run.battle !== dbg || (run.results || []).length)) run = null;
-    if (!run) {
+    if (saved && !run) keepRecords(saved, true);
+    if (!run && direct) {
       store.del(KEY.battle);
       ui = {};
       if (dbg) { run = debugRun(seedQ, dbg); ui.intro = run.seed; }
       else run = R.startRun(seedQ !== null ? { seed: seedQ } : {});
       store.set(KEY.ui, ui);
     }
-    A.setRunQuiet(run);
+    if (run) A.setRunQuiet(run);
+    else A.run = null;
     if (fresh && history.replaceState) {
       q.delete('new');
       const s = q.toString();
@@ -14573,10 +14803,10 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     fit();
     addEventListener('resize', fit);
     addEventListener('orientationchange', fit);
-    A.route();
+    if (direct) A.route(); else A.toHome();
     if (globalThis.L1Share) { try { L1Share.flush(); } catch (e) { /* play data only */ } }
   }
-  A.setRunQuiet = (run) => { A.run = run; store.set(KEY.run, run); };
+  A.setRunQuiet = (run) => { A.run = run; store.set(KEY.run, run); keepRecords(run); };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 })();
