@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="6">
-<script>(function(){var B="37ed8d10e7";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=6;if(location.protocol==="file:")return;var last=0;function chk(back){var s=document.getElementById("stage");if(back&&s&&s.dataset.screen==="battle")return;if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}}chk(false);document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk(true)})})();</script>
+<script>(function(){var B="c5cb90e115";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=6;if(location.protocol==="file:")return;var last=0;function chk(back){var s=document.getElementById("stage");if(back&&s&&s.dataset.screen==="battle")return;if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}}chk(false);document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk(true)})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#000000">
@@ -999,6 +999,12 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   .qm-tr.sel .qm-trs i.nx, .qm-trs i.fill, .qm-trs i.fill::after, .qm-it.qm-roll .ge .l1fx { animation: none; }
   .qm-trs i.fill::after, .qm-coin { display: none; }
 }
+/* rules 6: the deck-full notice (tun.store.maxDeck) */
+.qm-full { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.qm-full .qm-mbtns { justify-content: center; }
+.qm-fullv { display: inline-flex; align-items: center; gap: 12px; margin-bottom: 14px; color: #f3d58e; }
+.qm-fullv svg { width: 54px; height: 54px; }
+.qm-fullv b { font-family: var(--label); font-size: 52px; line-height: 1; }
 </style>
 <style>
 /*
@@ -13972,6 +13978,21 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       fly(html, from, 170, 250, dv ? rectOf(dv) : null, () => bump(layer.querySelector('.qm-deck .qm-dv')));
       // the recruit leaves the pop-up as its copy flies (never two of it on screen)
       if (p && !calm() && src && src !== el) (src.closest('.qm-in') || src).style.visibility = 'hidden';
+      // rules 6 (tun.store.maxDeck): the recruit that fills the deck says so, once the card has landed
+      if (!p && R.swapsOf(run)) wait(calm() ? 0 : 700, deckFull);
+    }
+    /** The deck just reached tun.store.maxDeck (rules 6): from now on a recruit replaces a card. */
+    function deckFull() {
+      closePop();
+      const el = document.createElement('div'), w = 600;
+      el.className = 'qm-pop' + (calm() ? '' : ' anim');
+      el.innerHTML = '<div class="qm-scrim" data-p="cancel"></div><div class="pnl qm-modal qm-full" style="left:' + Math.round((1180 - w) / 2) + 'px;width:' + w + 'px">' +
+        '<div class="qm-fullv">' + icon('deck') + '<b>' + run.deck.length + '</b></div>' +
+        '<div class="qm-mh">Your deck is full</div>' +
+        '<div class="qm-ms">From now on, each recruit takes the place of a card you choose.</div>' +
+        '<div class="qm-mbtns"><button class="qm-mb ok" data-p="cancel">Got it</button></div></div>';
+      root.appendChild(el);
+      pop = { el, busy: false };
     }
     /** The swap pick (rules 5, tun.store.swap): the recruit arriving (small, green ring), then the
      *  3 random deck cards (Run.choicesFor(run, 'swap')); the one tapped wears the red ring and
