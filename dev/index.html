@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="4">
-<script>(function(){var B="1b614fc793";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=4;if(location.protocol==="file:")return;var last=0;function chk(back){var s=document.getElementById("stage");if(back&&s&&s.dataset.screen==="battle")return;if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}}chk(false);document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk(true)})})();</script>
+<script>(function(){var B="c5ae8c07d3";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=4;if(location.protocol==="file:")return;var last=0;function chk(back){var s=document.getElementById("stage");if(back&&s&&s.dataset.screen==="battle")return;if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}}chk(false);document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk(true)})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#000000">
@@ -23,7 +23,8 @@
 /*
  * loop001/css/tokens.css - the palette and type of loop001 (docs/LOOP001-UI.md; ported from the
  * mock CSS variables, docs/mocks/loop001/mock.css, final.css, v3.css, keeping their names). Every
- * other loop001 stylesheet reads these; nothing here styles an element but the icon box.
+ * other loop001 stylesheet reads these; nothing here styles an element but the icon box and the
+ * anchored toast's placement (app.toast(text, anchorEl); its look is shell.css's .toast).
  * Owner: cards-ui. Load first.
  */
 :root {
@@ -68,10 +69,37 @@
 
   /* terrain (flat, for glyphs) */
   --forest: #4f7a3a; --hills: #8a9a4a; --plains: #a6b85e; --fields: #c9a24e;
+
+  /* shared highlights (2026-11-05 polish): one source so the board, the help and the moments match.
+     "good here": a held card's home tiles glow in its type colour (no digits); --home-glow is the
+     neutral fallback, the per-type ones are the type colours at glow strength */
+  --home-glow: rgba(243,213,142,.55);
+  --home-inf: rgba(214,104,78,.62); --home-arc: rgba(118,184,88,.62); --home-cav: rgba(96,146,214,.62);
+  /* a number that rose or fell (the pop and the breathe of a changed disc) */
+  --gain: #6fd27a; --gain-glow: rgba(111,210,122,.6);
+  --loss: #e0625a; --loss-glow: rgba(224,98,90,.6);
+  /* the why-badges on a disc: a general's brass plaque, an officer's silver pennant */
+  --badge-general1: #f3d58e; --badge-general2: #8a6226;
+  --badge-officer1: #e8edf2; --badge-officer2: #5c646e;
+  /* the target reached */
+  --reached: #f3d58e; --reached-glow: rgba(243,213,142,.7);
+  /* boss battles: the red ember rim and the red-tinted target */
+  --boss-ember: #e0503a; --boss-ember-glow: rgba(224,80,58,.55); --boss-ember-deep: #5a140e;
+  /* motion: quick and never in the way of play */
+  --t-pop: 220ms; --t-count: 300ms; --t-slide: 200ms;
 }
 
 /* the icon box (loop001/ui/icons.js: L1Icons.use) */
 .ic { width: 1em; height: 1em; display: inline-block; vertical-align: middle; flex: none; }
+
+/* the anchored toast (app.toast(text, anchorEl)): beside the tap, not at the top centre */
+.toast.at { white-space: nowrap; }
+.toast.at.above { transform: translate(-50%, -100%); animation: l1-toast-up var(--t-pop, 220ms) ease-out both; }
+.toast.at.below { transform: translate(-50%, 0); animation: l1-toast-down var(--t-pop, 220ms) ease-out both; }
+@keyframes l1-toast-up { from { opacity: 0; transform: translate(-50%, -80%); } to { opacity: 1; transform: translate(-50%, -100%); } }
+@keyframes l1-toast-down { from { opacity: 0; transform: translate(-50%, -20%); } to { opacity: 1; transform: translate(-50%, 0); } }
+.calm-motion .toast.at { animation: none; }
+@media (prefers-reduced-motion: reduce) { .toast.at { animation: none; } }
 </style>
 <style>
 /*
@@ -356,6 +384,13 @@
 .l1detail .lvlrow i.on { background: linear-gradient(135deg, #fff1b8, #d39a35); }
 .l1detail .lvlrow span { margin-left: 4px; }
 .l1detail .close { margin-top: 26px; font-size: 16px; color: var(--sub, #b9ab8f); letter-spacing: .5px; }
+
+/* ======================================================================= a rank in a general's line: the power gem the cards print */
+.l1pg { position: relative; display: inline-grid; place-items: center; grid-auto-flow: column; width: 1.45em; height: 1.45em; border-radius: 50%; flex: none;
+  font-family: var(--label); font-weight: 700; font-size: 1em; line-height: 1; color: #fff8e6; text-shadow: 0 1px 1px rgba(0,0,0,.7);
+  background: radial-gradient(circle at 38% 32%, #a58a62, #5a4630 72%); box-shadow: 0 0 0 2px #8a6a3a, 0 0 0 3px #120d08; }
+.l1pg small { font-size: .62em; margin-left: .5px; }
+.l1pg.cut::after { content: ''; position: absolute; left: -2px; right: -2px; top: 50%; height: 2px; transform: rotate(-35deg); background: #e0625a; border-radius: 1px; box-shadow: 0 0 0 1px #120d08; }
 </style>
 <style>
 /*
@@ -642,7 +677,147 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   .num, .hand .hc, .dt .gr, .endveil { transition: none; }
 }
 .calm-motion .dt.land .up.unit, .calm-motion .hand .hc.deal, .calm-motion .endplate, .calm-motion .num.rvpop { animation: none; }
-.calm-motion .endveil { transition: none; }
+.calm-motion .endveil, .calm-motion .num, .calm-motion .hand .hc, .calm-motion .dt .gr { transition: none; }
+
+/* =====================================================================================================
+   2026-11-05 polish (clarity first, then flair). Every animation below is off under reduced motion
+   (the system's and the game's .calm-motion): the end of this file.
+   ===================================================================================================== */
+
+/* ---------- a held card: where it is good (no numbers) ---------- */
+/* its home tiles: a soft glow in its type colour and a home glyph in the corner */
+.dio[data-ht="inf"] { --hg: var(--home-inf, rgba(214,104,78,.62)); }
+.dio[data-ht="arc"] { --hg: var(--home-arc, rgba(118,184,88,.62)); }
+.dio[data-ht="cav"] { --hg: var(--home-cav, rgba(96,146,214,.62)); }
+.dt.hhome:not(.pv):not(.best) .gr { box-shadow: inset 0 0 0 3px var(--hg, var(--home-glow, rgba(243,213,142,.55))), inset 0 0 30px var(--hg, var(--home-glow, rgba(243,213,142,.55))); filter: brightness(1.12); }
+.dt .tmark.hg { right: 5px; top: 5px; width: 26px; height: 26px; border-radius: 50%; font-size: 16px; color: #fff;
+  background: var(--hg, rgba(243,213,142,.8)); box-shadow: 0 0 0 1.5px rgba(255,244,214,.9), 0 2px 5px rgba(0,0,0,.5); }
+.siege .dt .tmark.hg { width: 20px; height: 20px; font-size: 12px; right: 3px; top: 3px; }
+/* the tiles it cannot take step back a little (their ground only: a unit's number stays readable) */
+.dt.illegal .gr { filter: brightness(.66) saturate(.7); }
+.dt.illegal:not(.occ) .up.prop { filter: brightness(.8); }
+/* an officer previewed: his area speaks, the home glow steps aside */
+.dio.harea .dt.hhome:not(.pv):not(.best) .gr { box-shadow: inset 0 0 0 1px rgba(0,0,0,.18), inset 0 -10px 18px rgba(0,0,0,.18); filter: none; }
+.dio.harea .dt .tmark.hg { display: none; }
+/* the first hold of a newcomer's battle: the legal tiles shimmer once */
+.dt.shim .gr::after { content: ''; position: absolute; inset: 0; border-radius: 6px; pointer-events: none; opacity: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(255,240,200,.45) 50%, transparent 70%) no-repeat; background-size: 250% 100%;
+  animation: l1-shim .7s ease-out both; }
+@keyframes l1-shim { 0% { opacity: 1; background-position: 120% 0; } 100% { opacity: 1; background-position: -60% 0; } }
+/* the hand waits for a first tap: it bobs gently (battles 1 and 2, after 3 s idle) */
+.hand.bob .hc { animation: l1-bob 1.6s ease-in-out infinite; }
+.hand.bob .hc:nth-child(2) { animation-delay: .18s; } .hand.bob .hc:nth-child(3) { animation-delay: .36s; } .hand.bob .hc:nth-child(4) { animation-delay: .54s; }
+@keyframes l1-bob { 0%, 60%, 100% { transform: none; } 30% { transform: translateY(-12px); } }
+
+/* ---------- an officer's area: whom he boosts, in that type's colour ---------- */
+.dio[data-ot="inf"] { --oa: var(--inf, #b8503a); } .dio[data-ot="arc"] { --oa: var(--arc, #4f8a3a); } .dio[data-ot="cav"] { --oa: var(--cav, #3a68a6); }
+.dt.oarea .gr::before { content: ''; position: absolute; inset: 0; border-radius: 6px; pointer-events: none;
+  background: repeating-linear-gradient(135deg, var(--oa, #c99a45) 0 7px, transparent 7px 15px); opacity: .55; }
+.dt.oarea .gr { box-shadow: inset 0 0 0 4px var(--oa, #c99a45), inset 0 0 0 5.5px rgba(255,244,214,.75), inset 0 0 22px var(--oa, #c99a45); }
+
+/* ---------- a tap the tile cannot take ---------- */
+.dt.nope .gr { box-shadow: inset 0 0 0 4px var(--loss, #e0625a), inset 0 0 22px var(--loss-glow, rgba(224,98,90,.6)); }
+.hand .hc.shake { animation: l1-shake .22s ease-in-out; }
+@keyframes l1-shake { 0%, 100% { transform: none; } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+
+/* ---------- the why-badges: a general's brass plaque, an officer's silver pennant ---------- */
+.num .mk-general { color: #3a2a12; background: linear-gradient(180deg, var(--badge-general1, #f3d58e), var(--badge-general2, #8a6226)); box-shadow: 0 0 0 1.5px #2a1d0d; border-radius: 6px; }
+.num .mk-officer { color: #2b3a52; background: linear-gradient(180deg, var(--badge-officer1, #e8edf2), var(--badge-officer2, #5c646e)); box-shadow: 0 0 0 1.5px #1a1d22; }
+.num .mk-officer .ic { transform: translateY(1px); }
+.num .mk.mkin { animation: l1-mkin .26s cubic-bezier(.3,1.6,.5,1) both; }
+@keyframes l1-mkin { from { transform: scale(0); } to { transform: none; } }
+
+/* ---------- the generals: who feeds the held card (brass), who fed the preview (a gold pulse) ---------- */
+.gens .l1plaque.gact:not(.lit) { box-shadow: inset 0 0 0 1px rgba(255,226,160,.18), 0 0 0 1px #0c0a08, 0 0 0 3px var(--brass1, #f3d58e), 0 0 0 4px #1a140e, 0 0 18px rgba(243,213,142,.35), 0 14px 26px -10px rgba(0,0,0,.95); }
+.gens .l1plaque.gpv:not(.lit) { box-shadow: inset 0 0 0 1px rgba(255,226,160,.18), 0 0 0 1px #0c0a08, 0 0 0 3px #ffe7a6, 0 0 0 4px #1a140e, 0 0 26px rgba(255,214,120,.6), 0 14px 26px -10px rgba(0,0,0,.95); }
+.gens .l1plaque.gpv:not(.lit) .l1fx { animation: l1-chip .45s ease-out both; }
+.gens .l1plaque.gpv:not(.lit)::after { content: ''; position: absolute; inset: -3px; border-radius: 14px; pointer-events: none; animation: l1-gpulse .5s ease-out both; }
+@keyframes l1-gpulse { from { box-shadow: 0 0 0 0 rgba(255,214,120,.85); } to { box-shadow: 0 0 0 14px rgba(255,214,120,0); } }
+@keyframes l1-chip { 0% { transform: none; } 40% { transform: scale(1.28); filter: brightness(1.4); } 100% { transform: none; } }
+/* a formation completed: the general's violet ×N flashes */
+.gens .l1plaque.fdone .l1fx { animation: l1-fchip .5s ease-out both; }
+@keyframes l1-fchip { 0% { transform: none; } 35% { transform: scale(1.4); box-shadow: 0 0 18px 4px rgba(180,147,234,.95); filter: brightness(1.5); } 100% { transform: none; } }
+
+/* ---------- a placement: the numbers that changed pop, the total counts up ---------- */
+.num.bump { animation: l1-bump .26s cubic-bezier(.3,1.5,.5,1) both; }
+.num.bumpl { animation: l1-bumpl .26s cubic-bezier(.3,1.5,.5,1) both; }
+@keyframes l1-bump { 0% { transform: none; } 45% { transform: scale(1.25); box-shadow: 0 0 0 2.5px var(--gain, #6fd27a), 0 0 0 4px #2a1d0d, 0 0 22px var(--gain-glow, rgba(111,210,122,.8)); } 100% { transform: none; } }
+@keyframes l1-bumpl { 0% { transform: none; } 45% { transform: scale(1.25); box-shadow: 0 0 0 2.5px var(--loss, #e0625a), 0 0 0 4px #2a1d0d, 0 0 22px var(--loss-glow, rgba(224,98,90,.8)); } 100% { transform: none; } }
+/* in a preview the changed discs breathe, so the eye finds them */
+.num.chg { animation: l1-breathe 1.2s ease-in-out infinite; }
+@keyframes l1-breathe { 0%, 100% { transform: scale(1.12); } 50% { transform: scale(1.22); } }
+/* the green badge flies into the total */
+.sc-tot .dlt.fly { animation: l1-fly .34s ease-in both; }
+@keyframes l1-fly { 0% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateX(-70px) scale(.5); } }
+.sc-tot.tick [data-r="tot"] { display: inline-block; animation: l1-tick .3s ease-out; }
+@keyframes l1-tick { 40% { transform: scale(1.08); color: #fff; text-shadow: 0 0 26px rgba(243,213,142,.7), 0 2px 0 #000; } }
+
+/* ---------- a formation completed: a violet light runs over it, the members pop in turn ---------- */
+.dt.fsweep .gr::after { content: ''; position: absolute; inset: -2px; border-radius: 8px; pointer-events: none; opacity: 0;
+  box-shadow: inset 0 0 0 4px #e3d2ff, 0 0 20px 4px rgba(180,147,234,.95), inset 0 0 30px rgba(180,147,234,.9);
+  animation: l1-fsweep .42s ease-out var(--d, 0ms) both; }
+@keyframes l1-fsweep { 0% { opacity: 0; } 35% { opacity: 1; } 100% { opacity: 0; } }
+.num.fpop { animation: l1-fpop .3s cubic-bezier(.3,1.6,.5,1) both; }
+@keyframes l1-fpop { 0% { transform: none; } 45% { transform: scale(1.3); box-shadow: 0 0 0 2.5px #e3d2ff, 0 0 0 4px #2a1d0d, 0 0 26px rgba(180,147,234,1); } 100% { transform: none; } }
+
+/* ---------- the target: reached (gold, a check), and a preview that would reach it ---------- */
+.sc-tgt .v { transition: color .2s ease; }
+.sc-tgt.met .v { color: var(--reached, #f3d58e); text-shadow: 0 0 18px var(--reached-glow, rgba(243,213,142,.7)); }
+.sc-tgt.met .v .ic { color: #2a1d0d; background: radial-gradient(circle at 40% 35%, #ffe9a8, #c99a45); border-radius: 50%; padding: 4px; box-shadow: 0 0 0 2px #2a1d0d, 0 0 14px var(--reached-glow, rgba(243,213,142,.7)); }
+.sc-tgt.flip .v { position: relative; animation: l1-met .5s ease-out .15s both; }
+@keyframes l1-met { 0% { transform: none; } 40% { transform: scale(1.12); filter: brightness(1.5); } 100% { transform: none; } }
+.sc-tgt.flip .v::after { content: ''; position: absolute; inset: -4px -10px; pointer-events: none; opacity: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255,246,214,.4) 50%, transparent 70%) no-repeat; background-size: 250% 100%;
+  animation: l1-shim .6s ease-out .2s both; }
+.sc-tot .dlt.cross { box-shadow: 0 0 0 2.5px var(--reached, #f3d58e), 0 0 0 4px #1a140e, 0 0 16px var(--reached-glow, rgba(243,213,142,.7)), 0 3px 8px rgba(0,0,0,.6); }
+/* the Sappers' badge: a fort, not "+0" */
+.sc-tot .dlt.fortd { padding: 0 12px; font-size: 26px; color: #2a1d0d; background: radial-gradient(circle at 40% 30%, var(--bronze1, #f0b98a), var(--bronze2, #a8693a)); box-shadow: 0 0 0 2px #f6e2c8, 0 0 0 3.5px #1a140e, 0 3px 8px rgba(0,0,0,.6); }
+
+/* ---------- the boss twists: an icon chip with a short name; a tap shows its line ---------- */
+.sc-twist { width: 100%; min-height: 52px; padding: 6px 10px 6px 7px; border-radius: 26px; margin-top: 10px; text-align: left; cursor: pointer;
+  background: linear-gradient(180deg, rgba(90,30,22,.55), rgba(40,16,12,.55)); box-shadow: inset 0 0 0 1px rgba(224,80,58,.45); }
+.sc-twist + .sc-twist { margin-top: 8px; }
+.sc-twist b { display: flex; align-items: center; gap: 6px; font-size: 15px; }
+.sc-twist b .ic { font-size: 16px; }
+.sc-twist .tw-line { display: none; font-size: 15px; color: #e6d7b6; margin-top: 2px; font-family: var(--body, 'Barlow Condensed', sans-serif); }
+.sc-twist.open .tw-line { display: block; }
+.sc-twist.open { border-radius: 18px; box-shadow: inset 0 0 0 1.5px rgba(243,213,142,.6); }
+.sc-twist:active { filter: brightness(1.2); }
+
+/* ---------- boss battles: an ember rim, a red-tinted target; the Siege a stone wall ---------- */
+.dio.boss::before { background: radial-gradient(closest-side, rgba(224,80,58,.16), rgba(0,0,0,0)); animation: l1-ember 3.2s ease-in-out infinite alternate; }
+@keyframes l1-ember { from { opacity: .7; } to { opacity: 1; } }
+.dio.boss .plane { background: #2a1712; box-shadow: 0 0 0 3px #7a2c1e, 0 0 0 5px #1a0c08, 0 0 26px 4px var(--boss-ember-glow, rgba(224,80,58,.55)), 0 40px 60px -10px rgba(0,0,0,.9); }
+.dio.boss.siege .plane { background: #3b3833;
+  box-shadow: 0 0 0 4px #77726a, 0 0 0 7px #3f3b35, 0 0 0 9px #1a1714, 0 0 30px 8px var(--boss-ember-glow, rgba(224,80,58,.55)), 0 40px 60px -10px rgba(0,0,0,.9); }
+.dio.boss.siege .plane::before { content: ''; position: absolute; inset: 0; border-radius: 18px; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.35) 0 2px, transparent 2px 13px), repeating-linear-gradient(90deg, rgba(0,0,0,.3) 0 2px, transparent 2px 24px), #5b5750; }
+.scorep.boss .sc-tgt:not(.met) .v { color: #f6c0b2; text-shadow: 0 0 18px var(--boss-ember-glow, rgba(224,80,58,.55)); }
+.scorep.boss .sc-tgt:not(.met) .v .ic { color: var(--boss-ember, #e0503a); }
+/* the Four towers: a corner fort stands as a tower */
+.dt.tower .up.fortp > svg { transform: scale(.82, 1.22); transform-origin: 50% 100%; filter: saturate(.45) brightness(1.08); }
+
+/* ---------- the unplayed cards slide away (set aside); the deck chip ticks ---------- */
+.flyc { position: absolute; z-index: 35; pointer-events: none; transform-origin: 50% 50%; }
+.chip2.bump { animation: l1-chipbump .24s ease-out; }
+@keyframes l1-chipbump { 40% { transform: scale(1.14); box-shadow: inset 0 0 0 1.5px var(--brass1, #f3d58e), 0 0 16px rgba(243,213,142,.5); } }
+.hand.late .hc.deal { animation-delay: .18s; }
+.hand.late .hc.deal:nth-child(2) { animation-delay: .23s; } .hand.late .hc.deal:nth-child(3) { animation-delay: .28s; } .hand.late .hc.deal:nth-child(4) { animation-delay: .33s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .dt.shim .gr::after, .hand.bob .hc, .hand .hc.shake, .num .mk.mkin, .gens .l1plaque .l1fx, .gens .l1plaque.gpv::after, .num.bump, .num.bumpl, .num.chg,
+  .sc-tot .dlt.fly, .sc-tot.tick [data-r="tot"], .dt.fsweep .gr::after, .num.fpop, .sc-tgt.flip .v, .sc-tgt.flip .v::after, .dio.boss::before, .chip2.bump { animation: none !important; }
+  .sc-tot .dlt.fly { visibility: hidden; }
+  .num.chg { transform: scale(1.12); }
+}
+.calm-motion .dt.shim .gr::after, .calm-motion .hand.bob .hc, .calm-motion .hand .hc.shake, .calm-motion .num .mk.mkin, .calm-motion .gens .l1plaque .l1fx,
+.calm-motion .gens .l1plaque.gpv::after, .calm-motion .num.bump, .calm-motion .num.bumpl, .calm-motion .num.chg, .calm-motion .sc-tot .dlt.fly,
+.calm-motion .sc-tot.tick [data-r="tot"], .calm-motion .dt.fsweep .gr::after, .calm-motion .num.fpop, .calm-motion .sc-tgt.flip .v, .calm-motion .sc-tgt.flip .v::after,
+.calm-motion .dio.boss::before, .calm-motion .chip2.bump { animation: none !important; }
+.calm-motion .sc-tot .dlt.fly { visibility: hidden; }
+.calm-motion .num.chg { transform: scale(1.12); }
+.calm-motion .sc-tgt .v { transition: none; }
+@media (prefers-reduced-motion: reduce) { .sc-tgt .v { transition: none; } }
 </style>
 <style>
 /*
@@ -741,7 +916,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .qm-its { display: flex; align-items: center; justify-content: center; gap: 26px; }
 .qm-it { cursor: pointer; border-radius: 14px; }
 .qm-in { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 26px; }
-.qm-in .l1plaque { box-shadow: inset 0 0 0 1px rgba(255,226,160,.12), 0 0 0 3px #9468dc, 0 0 22px rgba(148,104,220,.5), 0 14px 26px -10px rgba(0,0,0,.95); }
+/* the joiner's ring is green ("joins"): violet is the formations' colour only */
+.qm-in .l1plaque { box-shadow: inset 0 0 0 1px rgba(255,226,160,.12), 0 0 0 3px #6fc27a, 0 0 22px rgba(111,194,122,.45), 0 14px 26px -10px rgba(0,0,0,.95); }
+.qm-in .sub { color: #8fd08f; }
 .qm-swap { font-size: 34px; color: #c9a764; display: grid; place-items: center; }
 .qm-mbtns { display: flex; gap: 16px; margin-top: 30px; }
 .qm-mb { display: inline-flex; align-items: center; gap: 12px; height: 56px; padding: 0 26px; border-radius: 10px; font-family: var(--label); font-weight: 700; font-size: 20px;
@@ -782,6 +959,43 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 @media (prefers-reduced-motion: reduce) {
   .qm-gold.spend .qm-gv .n, .qm-bump, .qm-shake, .qm-ware.deal, .qm-hrow.deal, .qm-pop .qm-scrim, .qm-pop .qm-modal, .qm-it.qm-out, .qm-it.qm-glow > * { animation: none; }
   .qm-pill, .qm-ware .l1card, .qm-s .b { transition: none; }
+}
+
+/* ---------- 2026-11-05 polish: affordability, Train studs, coins, the hire's slide, the promote roll ---------- */
+/* an unaffordable ware is greyed whole, not only its price */
+.qm-ware.no .l1card, .qm-hrow.no .l1plaque { filter: saturate(.55) brightness(.78); }
+.qm-ware.no .l1card { box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 0 0 1px #0c0a08, 0 12px 22px -12px rgba(0,0,0,.9); }
+.qm-hrow.no .qm-hside .sub { opacity: .6; }
+
+/* Train: each unit's level studs, large, under its card */
+.qm-it { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.qm-tr { display: flex; align-items: center; justify-content: center; gap: 12px; height: 34px; }
+.qm-trs { display: flex; gap: 10px; }
+.qm-trs i { width: 16px; height: 16px; transform: rotate(45deg); border-radius: 2.5px; background: #2a2015; box-shadow: 0 0 0 1.5px rgba(255,255,255,.22); }
+.qm-trs i.on { background: linear-gradient(135deg, #fff1b8, #d39a35); box-shadow: 0 0 8px rgba(255,210,110,.75); }
+.qm-tr.max .qm-trs i.on { background: linear-gradient(135deg, #ffffff, #b9c6d8); box-shadow: 0 0 8px rgba(205,222,255,.9); }
+.qm-trs i.nx { background: rgba(63,138,79,.35); box-shadow: 0 0 0 1.5px #6fc27a; }
+.qm-tr.sel .qm-trs i.nx { background: linear-gradient(135deg, #b8f0b0, #3f8a4f); box-shadow: 0 0 0 1.5px #d6ffd0, 0 0 14px rgba(120,220,120,.95); animation: qm-nx 1.1s ease-in-out infinite alternate; }
+/* the confirm: the stud fills with a pop and a spark */
+.qm-trs i.fill { position: relative; animation: qm-fill .5s cubic-bezier(.2,1.6,.4,1); }
+.qm-trs i.fill::after { content: ''; position: absolute; inset: -9px; border-radius: 50%; background: radial-gradient(circle, rgba(255,246,208,.95), rgba(255,214,120,0) 70%);
+  animation: qm-spark .5s ease-out forwards; }
+@keyframes qm-nx { from { filter: brightness(.95); } to { filter: brightness(1.35); } }
+@keyframes qm-fill { 0% { transform: rotate(45deg) scale(.4); } 60% { transform: rotate(45deg) scale(1.6); } 100% { transform: rotate(45deg) scale(1); } }
+@keyframes qm-spark { 0% { opacity: 1; transform: scale(.4); } 100% { opacity: 0; transform: scale(1.8); } }
+
+/* coins from the gold to what was bought */
+.qm-coin { position: absolute; z-index: 35; width: 18px; height: 18px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle at 38% 32%, #fff1b8, #e6b54a 55%, #8a6226); box-shadow: 0 0 0 1px #5a3e14, 0 0 8px rgba(255,210,110,.75); }
+/* the promoted badge rolls to its new value */
+.qm-it.qm-roll .ge .l1fx { animation: qm-roll .42s cubic-bezier(.2,.9,.3,1.2); }
+@keyframes qm-roll { 0% { transform: translateY(14px); opacity: 0; filter: blur(2px); } 60% { transform: translateY(-3px); opacity: 1; filter: none; } 100% { transform: none; } }
+
+.calm-motion .qm-tr.sel .qm-trs i.nx, .calm-motion .qm-trs i.fill, .calm-motion .qm-trs i.fill::after, .calm-motion .qm-it.qm-roll .ge .l1fx { animation: none; }
+.calm-motion .qm-trs i.fill::after, .calm-motion .qm-coin { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .qm-tr.sel .qm-trs i.nx, .qm-trs i.fill, .qm-trs i.fill::after, .qm-it.qm-roll .ge .l1fx { animation: none; }
+  .qm-trs i.fill::after, .qm-coin { display: none; }
 }
 </style>
 <style>
@@ -893,7 +1107,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .mo-intro { padding-top: 30px; }
 .mo-intro .mo-title { margin-top: 10px; }
 .mo-road { display: flex; gap: 22px; align-items: flex-start; margin-top: 58px; }
-.mo-roadline { position: absolute; left: 110px; right: 145px; top: 51px; height: 3px; z-index: 0;
+.mo-roadline { position: absolute; left: 110px; right: 150px; top: 51px; height: 3px; z-index: 0;
   background: repeating-linear-gradient(90deg, rgba(201,163,92,.75) 0 12px, transparent 12px 20px); }
 .mo-stn { position: relative; z-index: 1; width: 220px; display: flex; flex-direction: column; align-items: center; text-align: center; }
 .mo-sn { margin-top: 16px; min-height: 50px; display: flex; align-items: center; justify-content: center; font-family: var(--label, 'Cinzel', serif); font-weight: 700;
@@ -1091,6 +1305,83 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   .mo-rise, .mo-bar i, .mo-rays::before { animation: none; }
   .mo-opt, .mo-lv-bg, .mo-lv-k, .mo-lv-line, .mo-lv-hint, .mo-c0 { transition: none; }
 }
+
+/* ---------- 2026-11-05 polish ---------- */
+/* a twist drawn as its board (s-moments.js twistBoard): beside its line, at the row's end */
+.mo-tb4 { flex: none; width: 50px; height: 50px; margin-left: auto; padding: 3px; border-radius: 6px; background: rgba(0,0,0,.4); box-shadow: inset 0 0 0 1px rgba(201,163,92,.3); }
+.mo-tb4 svg { width: 100%; height: 100%; display: block; }
+.mo-row .mo-rt { flex: 1; }
+.mo-stn .mo-tb4 { width: 42px; height: 42px; padding: 2px; }
+
+/* the draft: a picked general lights the starting-deck cards he acts on; a chip counts them */
+.mo-hit { display: inline-flex; align-items: center; gap: 5px; margin-left: 12px; height: 26px; padding: 0 10px 0 7px; border-radius: 13px; opacity: 0;
+  font-family: var(--label, 'Cinzel', serif); font-size: 15px; letter-spacing: 0; color: #2a1d0d; text-transform: none;
+  background: linear-gradient(180deg, var(--brass1, #f3d58e), var(--brass2, #c99a45)); box-shadow: 0 0 12px rgba(243,213,142,.45); transition: opacity .18s ease; }
+.mo-hit .ic { font-size: 15px; }
+.mo-hit.on { opacity: 1; }
+.mo-hit.pop { animation: mo-hitpop .32s cubic-bezier(.2,1.5,.4,1); }
+@keyframes mo-hitpop { from { transform: scale(.6); } }
+.mo-minis .l1mini { transition: opacity .18s ease, filter .18s ease, transform .18s ease, box-shadow .18s ease; }
+.mo-minis.lit .l1mini { opacity: .38; filter: saturate(.4) brightness(.8); }
+.mo-minis.lit .l1mini.hit { opacity: 1; filter: none; transform: translateY(-4px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 0 0 2px #f3d58e, 0 0 14px rgba(243,213,142,.55), 0 8px 14px -6px rgba(0,0,0,.9); }
+
+/* the run intro: the Siege is campaign III's boss, a crest on III's medallion, its panel below */
+.mo-crest { position: absolute; right: -10px; bottom: -6px; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font-size: 26px; color: #fff0e6;
+  background: radial-gradient(circle at 40% 30%, #ec7a6a, #b23a2e 56%, #5e1712);
+  box-shadow: 0 0 0 2.5px #2a0d0a, 0 0 0 5px rgba(224,98,90,.3), 0 0 22px rgba(224,98,90,.55), 0 6px 12px rgba(0,0,0,.7); }
+.mo-stn.siege { width: 330px; padding: 0; }
+.mo-intro .mo-road { margin-top: 44px; }
+.mo-stn.siege::before { display: none; }
+.mo-sgp { position: relative; width: 100%; margin-top: 12px; padding: 10px 12px 12px; border-radius: 14px;
+  background: linear-gradient(180deg, rgba(92,30,22,.55), rgba(40,16,12,.72)); box-shadow: inset 0 0 0 1px rgba(224,98,90,.38), 0 16px 30px -12px rgba(0,0,0,.9); }
+.mo-sgp::before { content: ''; position: absolute; left: 50%; top: -14px; width: 2px; height: 14px; background: rgba(224,98,90,.55); }
+.mo-sgh { display: flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--label, 'Cinzel', serif); font-size: 14px; letter-spacing: 1.6px;
+  text-transform: uppercase; color: #e07a6e; }
+.mo-sgh .ic { font-size: 20px; }
+.mo-sgp .mo-sbd { justify-content: center; margin-top: 8px; }
+
+/* a boss intro: the helmet drops in with a shake and a red pulse, the twists deal in one by one, the
+   target counts up (s-moments.js); the Siege wears the capital's crest and glows a deeper red */
+.mo-boss .mo-emb.big { animation: mo-drop .46s cubic-bezier(.3,1.4,.5,1) .12s backwards; }
+.mo-boss .mo-emb.big::after { content: ''; position: absolute; inset: -6px; border-radius: 50%; pointer-events: none; opacity: 0;
+  box-shadow: 0 0 0 4px rgba(240,96,80,.85), 0 0 40px rgba(240,96,80,.8); animation: mo-pulse .7s ease-out .5s; }
+.mo-boss .mo-plate { animation: mo-rise .4s cubic-bezier(.2,.8,.3,1) backwards, mo-thud .24s ease-out .5s; }
+.mo-deal { animation: mo-deal .34s cubic-bezier(.2,.8,.3,1) var(--d, 0ms) backwards; }
+.mo-emb.crest .ic { font-size: 60px; }
+.mo-boss.siege .mo-glow.red { background: radial-gradient(ellipse at center, rgba(224,82,60,.34) 0%, rgba(140,40,28,.14) 42%, transparent 70%); }
+.mo-boss.siege .mo-plate { box-shadow: inset 0 0 0 1px rgba(255,226,160,.10), 0 0 0 1px #0c0a08, 0 0 0 3px #9a3a2a, 0 0 0 4px #1a140e, 0 0 90px rgba(214,72,56,.38), 0 18px 34px -10px rgba(0,0,0,.95); }
+.mo-boss.siege .mo-emb.big { box-shadow: 0 0 0 3px #2a0d0a, 0 0 0 8px rgba(224,98,90,.38), 0 12px 24px rgba(0,0,0,.7), 0 0 80px rgba(240,96,80,.7), inset 0 2px 3px rgba(255,255,255,.35); }
+.mo-target .v b { font: inherit; }
+@keyframes mo-drop { 0% { opacity: 0; transform: translateY(-70px) scale(1.15); } 60% { opacity: 1; transform: translateY(4px) scale(.98); } 100% { transform: none; } }
+@keyframes mo-pulse { 0% { opacity: 1; transform: scale(.9); } 100% { opacity: 0; transform: scale(1.45); } }
+@keyframes mo-thud { 0%, 100% { transform: none; } 30% { transform: translate(-3px, 2px); } 60% { transform: translate(3px, -1px); } }
+@keyframes mo-deal { from { opacity: 0; transform: translateX(-18px); } }
+
+/* battle 20, part 2: one bar (part 1's gold share of the target), what is still to go, the cards left */
+.mo-p2 { width: 100%; margin-top: 16px; display: flex; flex-direction: column; align-items: center; }
+.mo-p2go { font-size: 22px; color: var(--sub, #b9ab8f); }
+.mo-p2go b { font-family: var(--label, 'Cinzel', serif); font-size: 56px; line-height: 1; color: #fff4dc; margin-right: 6px; text-shadow: 0 0 22px rgba(243,213,142,.3), 0 2px 0 #000; }
+.mo-p2bar { width: 100%; height: 16px; margin-top: 14px; border-radius: 8px; overflow: hidden; background: rgba(0,0,0,.45); box-shadow: inset 0 0 0 1px rgba(201,163,92,.35); }
+.mo-p2bar i { display: block; height: 100%; border-radius: 8px; background: linear-gradient(90deg, #a87a32, #ecca7c); box-shadow: 0 0 12px rgba(243,213,142,.5); }
+.mo-p2l { width: 100%; display: flex; justify-content: space-between; margin-top: 8px; font-size: 18px; color: #e6c98a; }
+.mo-p2l .t { display: flex; align-items: center; gap: 6px; font-family: var(--label, 'Cinzel', serif); font-weight: 700; font-size: 20px; color: #fff4dc; }
+.mo-p2l .t .ic { color: #d2584b; font-size: 20px; }
+.mo-p2 .mo-split { margin-top: 16px; }
+.mo-p2 .mo-sk span { color: #a9c9f2; }
+.mo-p2 .mo-sk span.warn { color: #f29a8f; }
+
+/* the rank-up that renames the card: its old name struck */
+.mo-was { font-size: .62em; color: #a8987a; text-decoration-thickness: 2px; text-decoration-color: rgba(224,98,90,.85); margin-right: 4px; }
+.mo-rk { color: #e6c98a; font-size: .8em; }
+
+.still .mo-deal, .calm-motion .mo-deal, .still .mo-emb.big, .calm-motion .mo-emb.big, .still .mo-emb.big::after, .calm-motion .mo-emb.big::after,
+.still .mo-plate, .calm-motion .mo-plate, .calm-motion .mo-hit.pop { animation: none; }
+.calm-motion .mo-minis .l1mini, .calm-motion .mo-hit { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  .mo-deal, .mo-boss .mo-emb.big, .mo-boss .mo-emb.big::after, .mo-boss .mo-plate, .mo-hit.pop { animation: none; }
+  .mo-minis .l1mini, .mo-hit { transition: none; }
+}
 </style>
 <style>
 /*
@@ -1190,7 +1481,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .h-stop { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 88px; }
 .h-road .camp { width: 58px; height: 58px; font-size: 25px; }
 .h-way { width: 46px; height: 3px; margin-top: 28px; background: linear-gradient(90deg, #c99a45, rgba(201,163,92,.45)); border-radius: 2px; }
-.h-capital { width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; font-size: 32px; color: #fff1dc;
+.h-capital { width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; font-size: 34px; color: #fff1dc;
   background: radial-gradient(circle at 40% 35%, #c2453a, #6e1c16); box-shadow: 0 0 0 2px #f3d58e, 0 0 0 4px #1a130c, 0 0 18px rgba(194,69,58,.5); }
 
 /* 2 a turn: the hand, the board with the preview */
@@ -1198,6 +1489,16 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .h-hc { position: relative; }
 .h-hc.up1 { transform: translateY(-24px); }
 .h-hc > .h-step { position: absolute; left: 50%; top: -46px; transform: translateX(-50%); z-index: 4; }
+.h-handc { position: relative; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.h-pile.chip2 { display: inline-flex; align-items: center; justify-content: center; min-width: 64px; height: 44px; font-size: 24px; cursor: default; }
+/* the two cards not played go back to the pile, then the hand is dealt again (a 4.2 s loop) */
+.h-hc.out { animation: h-out 4.2s ease-in-out infinite; }
+.h-hc.o0 { --dx: 140px; }
+.h-hc.o2 { --dx: -140px; }
+@keyframes h-out { 0%, 38% { opacity: 1; transform: none; } 56%, 74% { opacity: 0; transform: translate(var(--dx), 190px) scale(.3); }
+  75% { opacity: 0; transform: translateY(-20px); } 90%, 100% { opacity: 1; transform: none; } }
+.h-pile.chip2 { animation: h-pile 4.2s ease-out infinite; }
+@keyframes h-pile { 0%, 52% { transform: none; } 58% { transform: scale(1.18); box-shadow: 0 0 0 2px #f3d58e, 0 0 16px rgba(243,213,142,.6); } 66%, 100% { transform: none; } }
 .dt .up.h-tap { left: -14px; right: auto; width: 40px; bottom: 2%; height: 40px; justify-content: flex-start; align-items: flex-end; }
 
 /* 3 the score: one unit's number built, then the board and its total */
@@ -1211,6 +1512,22 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .h-why { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-size: 20px; color: #fff; background: #343a44; box-shadow: 0 0 0 1.5px var(--brass2, #c99a45); }
 .h-eq { font-family: var(--label, 'Cinzel', serif); font-size: 34px; color: #c9a764; }
 .h-chain .h-disc { margin: 0 10px 0 4px; }
+
+/* the homes: type glyph, the home badge, the terrain's swatch */
+.h-homes { display: flex; flex-direction: column; gap: 10px; }
+.h-home { display: flex; align-items: center; gap: 10px; }
+.h-ty { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-size: 24px; color: #fff8e6; box-shadow: 0 0 0 2px #120d08, 0 4px 8px rgba(0,0,0,.5); }
+.h-home.t-inf .h-ty { background: radial-gradient(circle at 38% 32%, var(--inf1, #c4573f), var(--inf2, #7a2e20) 75%); }
+.h-home.t-arc .h-ty { background: radial-gradient(circle at 38% 32%, var(--arc1, #66a04b), var(--arc2, #355f24) 75%); }
+.h-home.t-cav .h-ty { background: radial-gradient(circle at 38% 32%, var(--cav1, #4f7fc2), var(--cav2, #284778) 75%); }
+.h-home .mk { position: static; width: 26px; height: 26px; font-size: 15px; display: grid; place-items: center; }
+.h-terr { width: 52px; height: 38px; border-radius: 7px; display: grid; place-items: center; font-size: 24px; color: rgba(255,250,230,.92);
+  box-shadow: inset 0 0 0 1.5px rgba(0,0,0,.35), 0 0 0 1.5px rgba(201,163,92,.5), 0 4px 8px rgba(0,0,0,.45); }
+.h-terr.tr-forest { background: linear-gradient(160deg, #5f8d44, var(--forest, #4f7a3a) 60%, #34552a); }
+.h-terr.tr-hills { background: linear-gradient(160deg, #9fae58, var(--hills, #8a9a4a) 60%, #66733a); }
+.h-terr.tr-plains { background: linear-gradient(160deg, #b9cb6c, var(--plains, #a6b85e) 60%, #7d8f44); color: #2f3a14; }
+.h-terr.tr-fields { background: linear-gradient(160deg, #dcb760, var(--fields, #c9a24e) 60%, #9a7a34); color: #3a2a0c; }
+.h-tn { font-size: 19px; color: #e6d7b6; font-weight: 600; min-width: 56px; }
 
 /* 4 generals and formations */
 .h-gens { gap: 26px; }
@@ -1298,21 +1615,24 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .h-stack:not(.open)::after { transform: translate(7px, -5px); }
 .h-stack > .l1card { position: relative; z-index: 1; }
 .h-stack.open { align-items: center; padding: 20px 12px 10px 22px; margin: -20px 0 -10px -4px; border: 1.5px dashed rgba(243,213,142,.5); border-radius: 14px; }
-.h-n { position: absolute; z-index: 2; right: -12px; top: -16px; min-width: 44px; height: 34px; padding: 0 10px; display: inline-grid; place-items: center;
-  border-radius: 17px; border: 0; font: 700 19px var(--label, 'Cinzel', serif); letter-spacing: 0; color: #2a1d0d; cursor: pointer;
-  background: linear-gradient(180deg, var(--brass1, #f3d58e), var(--brass2, #c99a45) 60%, var(--brass3, #8a6226)); box-shadow: 0 0 0 1.5px #2a1d0d, 0 4px 10px rgba(0,0,0,.5); }
+.h-n { position: absolute; z-index: 2; right: -14px; top: -18px; min-width: 36px; height: 36px; padding: 0 8px; display: inline-grid; place-items: center;
+  border-radius: 18px; border: 0; font: 700 19px var(--body, 'Barlow Condensed', sans-serif); letter-spacing: 0; color: #f1e6cc; cursor: pointer;
+  background: #2a231c; box-shadow: 0 0 0 2px #cdbf9f, 0 0 0 3.5px #15110d, 0 4px 10px rgba(0,0,0,.55); }   /* a plain count: neutral, never the brass x-N of a multiplier */
 .h-stack.open > .h-n { position: relative; right: auto; top: auto; }   /* the xN that stacks them again: inside the outline, after the copies */
-.h-stack.open > .h-n::after { content: ''; position: absolute; inset: -9px -4px; }
+.h-stack.open > .h-n::after { content: ''; position: absolute; inset: -8px; }
 .h-empty { width: 100%; padding: 40px 0; text-align: center; font-size: 20px; color: #8d8068; }
 
 /* ---------- reduced motion (the game's setting: .calm-motion on the stage; the system's) ---------- */
-.calm-motion .l1ov > .pnl, .calm-motion .h-in.from-r, .calm-motion .h-in.from-l { animation: none; }
+.calm-motion .l1ov > .pnl, .calm-motion .h-in.from-r, .calm-motion .h-in.from-l, .calm-motion .h-hc.out, .calm-motion .h-pile.chip2 { animation: none; }
+.calm-motion .h-hc.out { opacity: .38; }   /* still: the two cards not played shown faded, the pile under them */
 .calm-motion .h-set i, .calm-motion .h-set i::after, .calm-motion .h-dot i { transition: none; }
 @media (prefers-reduced-motion: reduce) {
-  .l1ov > .pnl, .h-in.from-r, .h-in.from-l { animation: none; }
+  .l1ov > .pnl, .h-in.from-r, .h-in.from-l, .h-hc.out, .h-pile.chip2 { animation: none; }
+  .h-hc.out { opacity: .38; }
   .h-set i, .h-set i::after, .h-dot i { transition: none; }
 }
 .h-cards .l1card.z-s { zoom: .8; }   /* the deck view: names ~11 px on screen at the 1024x768 fit */
+.h-pile.chip2 .ic { font-size: 26px; }
 </style>
 <style>
 /*
@@ -1348,6 +1668,12 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   color: rgba(255,241,220,.78); padding-left: 12px; border-left: 1px solid rgba(255,241,220,.35); line-height: 1; position: relative; top: -1px; }   /* its baseline on the label's */
 .hm-row { display: flex; gap: 16px; }
 .btn.hm-btn { width: 162px; min-height: 56px; }
+
+/* a first visit: the name alone, large, over the torchlight; one line under it (2026-11-05, user) */
+.hm-name.first { font-size: 94px; letter-spacing: 7px; line-height: 1.1; text-align: center; white-space: nowrap;
+  background: linear-gradient(180deg, #fff6d6 10%, #f2c86a 55%, #b9832e 92%); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 34px rgba(243,200,110,.35)) drop-shadow(0 4px 0 #000); text-shadow: none; }
+.hm-name.first + .hm-invite { margin-top: 40px; }
 </style>
 <!-- shared painted art (figures, props, ground) -->
 <script>
@@ -10716,6 +11042,11 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     'closed-row': '<rect x="3" y="3" width="18" height="18" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M9 3v18M15 3v18" stroke="currentColor" stroke-width="1.1" opacity=".55"/><rect x="1.6" y="9.2" width="20.8" height="5.6" rx="1.2"/>',
     'open-ground': '<path d="M2 18.5h20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="11" r="4.2"/><path d="M12 2.8v2M5.6 5.4l1.4 1.4M18.4 5.4 17 6.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
     'high-ground': '<path d="M1.8 20.5l7.4-9.6 3 3.2 3.4-4.6 6.6 11z"/><path d="M15.6 9.5V2.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M15.6 2.8h5l-1.6 2 1.6 2h-5z"/>',
+    // battle badges (2026-11-05 polish): a general's plaque, an officer's pennant (his card's
+    // frame), a target met
+    'badge-general': '<path fill-rule="evenodd" d="M4.2 3.5h15.6a2.2 2.2 0 0 1 2.2 2.2v12.6a2.2 2.2 0 0 1-2.2 2.2H4.2A2.2 2.2 0 0 1 2 18.3V5.7a2.2 2.2 0 0 1 2.2-2.2zM12 5.8a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zM6.2 15.2h11.6v2.2H6.2z"/>',
+    'badge-officer': '<path d="M5.5 2.5h13v19.2L12 16.6l-6.5 5.1z"/>',
+    check: '<path d="M4 12.5l5.2 5.2L20.5 6.4" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>',
     towers: '<rect x="5" y="5" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2.2 2"/><rect x="2" y="2" width="7" height="7" rx="1.2"/><rect x="15" y="2" width="7" height="7" rx="1.2"/><rect x="2" y="15" width="7" height="7" rx="1.2"/><rect x="15" y="15" width="7" height="7" rx="1.2"/>'
   };
   S.hourglass = S.turn;
@@ -11300,7 +11631,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       var m = []; for (var r = 0; r < 3; r++) for (var q = 0; q < 3; q++) m.push(['any', r, q]); return pg(3, 3, m);
     }, 'on every unit, by his rank'],
     banner_saint: [null, 'f', function (t) { return pg(3, 3, [['form', [[0, 1], [1, 1], [2, 1]]], ['form', [[1, 0], [1, 1], [1, 2]]], ['any', 0, 1], ['any', 2, 1], ['any', 1, 0], ['any', 1, 2], ['me', 1, 1]], t); }, 'her formations count more'],
-    the_twins: [null, 'x', picPie, 'and they count as any type'],
+    the_twins: [null, 'x', picPie, 'count as any type'],
     kingslayer: ['if', 'x', function () { return picIcon('boss', '#c2453a', 28); }, 'in a boss battle'],
     company_archer: ['per', 'p', function () { return picCard('arc', DISC.arc); }, 'per archers card in your deck'],
     old_comrade: ['per', 'x', function () { return picCard('hero', '#b8862c'); }, 'per hero card in your deck'],
@@ -11431,7 +11762,10 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         var m = s.match(/[×+]\+?\d+(?:\.\d+)?/);
         return { kind: 'cond', glyph: cond(picIcon('hero', '#b8862c', 24)), chip: m ? chip(m[0], false) : '', conn: '', cap: s.replace(/:?\s*[×+]\+?\d+(?:\.\d+)?/, '').trim().toLowerCase() };
       }
-      return { kind: 'cond', glyph: cond(h[2](t)), chip: chipOf(h[1], T, card, NH, nf.rank), conn: conn(h[0]), cap: capOf(h[3], T, card, NH) };
+      var capH = capOf(h[3], T, card, NH);
+      // the PER connector already says "per": the caption does not repeat it ("×1.5 PER [glyph] / empty tile touching him")
+      if (h[0] === 'per') capH = capH.replace(/^per /, '');
+      return { kind: 'cond', glyph: cond(h[2](t)), chip: chipOf(h[1], T, card, NH, nf.rank), conn: conn(h[0]), cap: capH };
     }
     return { kind: 'none', glyph: '', chip: '', conn: '', cap: '' };
   }
@@ -11460,6 +11794,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     for (var s = 0; s < n * n; s++) h += '<i class="' + (lit.indexOf(s) >= 0 ? 'lit' : 'e') + '"></i>';
     return h + '</span>';
   }
+  /** A mini power gem, as the cards print it (top left): "1" (rank 1), "3+" (ranks 3 and up);
+   *  `cut`: struck through (Elite Corps: fewer rank-1 cards). */
+  var pgem = function (n, plus, cut) { return '<span class="l1pg' + (cut ? ' cut' : '') + '">' + n + (plus ? '<small>' + plus + '</small>' : '') + '</span>'; };
   var gi = function (n, col) { return '<span class="l1gi"' + (col ? ' style="color:' + col + '"' : '') + '>' + I(n) + '</span>'; };
   // boost generals: [glyph html, words] (words: what the badge acts on; null: the engine's short)
   var GEN = {
@@ -11470,14 +11807,14 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     lord_hills: [function () { return gi('hills'); }, 'on hills'],
     master_ranks: [function () { return fboard([4, 5, 6, 9, 13]); }, 'largest group'],
     quartermaster: [function () { return fboard([0, 7, 10]); }, 'loose units'],
-    old_guard: [function () { return gi('train'); }, null],
+    old_guard: [function () { return pgem(3, '+'); }, ''],
     colonel: [function () { return gi('officer'); }, 'officers'],
     siege_master: [function () { return gi('fort'); }, 'on forts'],
     lord_horse: [function () { return gi('cav', DISC.cav); }, 'cavalry'],
     tactician: [function () { return fboard([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]); }, 'every unit'],
     warlord: [function () { return fany(['any', 'any', 'any', 'any']); }, 'big formation'],
     grand_marshal: [function () { return fany(['inf', 'arc', 'cav']); }, 'all arms'],
-    sgt_line: [function () { return gi('pip'); }, 'rank 1'],
+    sgt_line: [function () { return pgem(1); }, ''],
     forester: [function () { return gi('forest'); }, 'on forest'],
     banner_general: [function () { return '<span class="l1two"><i></i><i></i></span>'; }, 'in two formations'],
     many_banners: [function () { return gi('hero') + gi('officer'); }, 'per leader'],
@@ -11486,7 +11823,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     marshal_reserves: [function () { return gi('turn'); }, 'turns'],
     reinforcements: [function () { return gi('restock'); }, null],
     cartographer: [function () { return gi('swap'); }, null],
-    strategist: [function () { return gi('general'); }, null],
+    strategist: [function () { return gi('general'); }, 'copies a general'],
     keeper_corners: [function () { return fboard([0, 3, 12, 15]); }, 'corners'],
     treasurer: [function () { return gi('gold', '#e6b54a'); }, 'gold a win'],
     herald: [function () { return gi('turn'); }, 'turn 1'],
@@ -11505,10 +11842,10 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     hero_patron: [function () { return gi('hero'); }, 'per hero card'],
     supply_general: [function () { return gi('card'); }, 'per leader card'],
     foot_purist: [function () { return gi('inf', DISC.inf); }, 'pure infantry'],
-    elite_corps: [function () { return gi('pip'); }, 'few recruits'],
+    elite_corps: [function () { return pgem(1, null, true); }, 'few recruits'],
     lean_column: [function () { return gi('card'); }, 'few leaders'],
-    war_council: [function () { return gi('general', '#b493ea'); }, 'per teacher'],
-    high_command: [function () { return gi('general'); }, 'per booster'],
+    war_council: [function () { return gi('general', '#b493ea'); }, 'per formation general'],
+    high_command: [function () { return gi('general'); }, 'per boost general'],
     grand_council: [function () { return gi('general'); }, 'per level']
   };
   var genDef = function (id) { return C.generalDef(id); };
@@ -11536,8 +11873,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         next: nextL > L ? '×' + fmt(teachX(T, g.id, nextL)) : null };
     }
     var s = C.generalShort(T, g.id, L), m = s.match(NUM_RE), e = GEN[g.id];
-    var words = e && e[1] ? e[1] : s.replace(NUM_RE, '').replace(/[:,]\s*$/, '').replace(/\s+each$/, '').replace(/\s+/g, ' ').trim();
-    if (!(e && e[1])) words = words.charAt(0).toLowerCase() + words.slice(1);
+    // e[1]: the words ('' none: the glyph says it all, the power gem of Sergeant of the Line), null: the engine's
+    var words = e && typeof e[1] === 'string' ? e[1] : s.replace(NUM_RE, '').replace(/[:,]\s*$/, '').replace(/\s+each$/, '').replace(/\s+/g, ' ').trim();
+    if (!(e && typeof e[1] === 'string')) words = words.charAt(0).toLowerCase() + words.slice(1);
     var nx = null;
     if (nextL > L) { var mn = C.generalShort(T, g.id, nextL).match(NUM_RE); nx = mn ? mn[mn.length - 1] : null; }
     return { glyph: e ? e[0]() : gi('general'), words: words, chip: m ? m[m.length - 1] : '', form: d.id === 'drillmaster', next: m ? nx : null };
@@ -11610,7 +11948,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       (ln.next && o.next ? ' up2' : '') + '" data-gid="' + esc(g.id) + '">';
     h += '<span class="lvl">' + pips + '</span><div class="gp">' + portrait(figure(g), 2) + '</div>';
     h += '<div class="gn ' + nameCls(name) + '">' + esc(name) + '</div>';
-    h += '<div class="ge">' + ln.glyph + '<span class="gw">' + esc(ln.words) + '</span>' +
+    h += '<div class="ge">' + ln.glyph + (ln.words ? '<span class="gw">' + esc(ln.words) + '</span>' : '') +
       (ln.chip ? chip(ln.chip, ln.form) : '') + (o.next && ln.next ? '<span class="arr">→</span>' + chip(ln.next, ln.form) : '') + '</div>';
     return h + '</div>';
   }
@@ -11822,6 +12160,16 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  *   slotOf(target)               the slot of the tile an event target is on, or null
  *   tileAt(el, x, y)             the slot under client point (x, y) (the projection inverted), or null
  *   nums(el)                     [{slot, el, value}] of the unit discs in slot order (the reveal)
+ *   hints(el, o)                 a held card's hints (2026-11-05 polish): o = {home: [slots] (its
+ *                                home tiles: a soft glow in type o.type and a home glyph, never a
+ *                                number), illegal: [slots] (dimmed), shim: [slots] (shimmer once)};
+ *                                null clears them
+ *   area(el, slots, type)        an officer's area: those tiles get a faint fill in his boosted
+ *                                type's colour ([] clears it)
+ *   pulse(el, list)              after a placement: [{slot, gain}] discs pop in turn (green / red)
+ *   formFlash(el, slots)         a formation just completed: a violet light runs over its tiles and
+ *                                the members' discs pop in sequence
+ *   nope(el, slot)               a tap the tile cannot take: its edge flashes red
  *   figureFor(p)                 the figure-kit recipe a card / piece stands as
  *   figuresHtml(p, slot)         its standing figures (an SVG string)
  * }
@@ -11918,6 +12266,10 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     if (has(/^general:/) || parts.some((q) => q.step === 'battle')) out.push('general');
     return out.slice(0, 3);
   }
+  // the badge glyphs: a general's plaque and an officer's pennant read apart at 18 px
+  const BADGE_IC = { general: 'badge-general', officer: 'badge-officer' };
+  /** The badge row of a disc; `fresh` lists the badges to pop in (a preview adds them). */
+  const badgeRow = (b, fresh) => (b.length ? '<span class="nmk">' + b.map((m) => '<span class="mk mk-' + m + (fresh && fresh.indexOf(m) >= 0 ? ' mkin' : '') + '" data-m="' + m + '">' + icon(BADGE_IC[m] || m) + '</span>').join('') + '</span>' : '');
   /** A unit's disc: its final value and the badges of why (no badge for what the piece is: its
    *  figure says that). */
   function numHtml(u, type, opts) {
@@ -11925,7 +12277,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     const b = badgesOf(u);
     const form = u && u.formations && u.formations.length;
     return '<span class="num ' + type + (form ? ' form' : '') + (o.cls ? ' ' + o.cls : '') + '" data-v="' + (u ? u.final : '') + '"><b>' + (u ? u.final : '') + '</b>' +
-      (b.length ? '<span class="nmk">' + b.map((m) => '<span class="mk mk-' + m + '">' + icon(m) + '</span>').join('') + '</span>' : '') + '</span>';
+      badgeRow(b) + '</span>';
   }
 
   // ---- the board ---------------------------------------------------------------------------------
@@ -11935,8 +12287,12 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   }
   function marksOf(st) {
     const home = {}, list = C.bossesOf ? C.bossesOf(st) : [];
-    for (const b of list) if (b && b.id === 'high_ground') for (const s of b.slots || []) home[s] = 1;
-    return { home };
+    let towers = false;
+    for (const b of list) {
+      if (b && b.id === 'high_ground') for (const s of b.slots || []) home[s] = 1;
+      if (b && b.id === 'four_towers') towers = true;
+    }
+    return { home, towers };
   }
   function mount(el, st, opts) {
     const o = opts || {};
@@ -11954,7 +12310,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       const p = st.pieces[i] || null, hidden = C.isHidden ? C.isHidden(st, i) : false, isBlocked = blocked.indexOf(i) >= 0;
       const t = hidden ? 'fog' : isBlocked ? 'rubble' : cell.terrain || 'plains', fort = forts.indexOf(i) >= 0;
       const seed = (G.rowOf ? G.rowOf(i) : Math.floor(i / G.cols)) * 7 + (G.colOf ? G.colOf(i) : i % G.cols) * 3 + 1;
-      const cls = 'dt t-' + t + (member[i] ? ' member' : '') + (isBlocked ? ' blocked' : '') + (hidden ? ' hidden' : '') + (fort ? ' fort' : '') + (p ? ' occ' : '') + (o.land === i ? ' land' : '');
+      const cls = 'dt t-' + t + (member[i] ? ' member' : '') + (isBlocked ? ' blocked' : '') + (hidden ? ' hidden' : '') + (fort ? ' fort' : '') + (fort && marks.towers ? ' tower' : '') + (p ? ' occ' : '') + (o.land === i ? ' land' : '');
       h += '<div class="' + cls + '" data-slot="' + i + '" data-seed="' + seed + '" data-t="' + t + '" style="' + tileStyle(G, TS, i) + ';--tilt:' + TILT + 'deg">' +
         '<div class="gr" style="background-image:' + GROUND[t] + '"></div>';
       if (marks.home[i] && !p && !isBlocked) h += '<span class="tmark home">' + icon('home') + '</span>';
@@ -11974,6 +12330,8 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     el.style.height = g.H + 'px';
     el._l1geo = g;
     el.classList.toggle('siege', TS < 98);
+    // a boss battle (10, 20, 30) wears an ember rim; the Siege a stone wall too (battle.css)
+    el.classList.toggle('boss', !!(C.isBossBattle && C.isBossBattle(st)));
     const F = Fig();
     if (F && F.ensureDefs) { try { F.ensureDefs(document); } catch (e) { /* presentation only */ } }
   }
@@ -11988,10 +12346,11 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       n.classList.remove('chg', 'gain', 'loss', 'pform', 'pnoform');
       const b = n.querySelector('b');
       if (b && n.dataset.v !== undefined) b.textContent = n.dataset.v;
+      if (n._nmk !== undefined) { const m = n.querySelector('.nmk'); if (m) m.remove(); if (n._nmk) n.insertAdjacentHTML('beforeend', n._nmk); delete n._nmk; }
     });
     el.querySelectorAll('.up.unit.dimmed').forEach((n) => n.classList.remove('dimmed'));
   }
-  function setNum(el, slot, v) {
+  function setNum(el, slot, v, u) {
     const t = tileEl(el, slot), n = t && t.querySelector('.up.unit:not(.ghostp) .num');
     if (!n) return;
     const b = n.querySelector('b'), was = +n.dataset.v;
@@ -11999,6 +12358,16 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     n.classList.add('chg');
     n.classList.toggle('gain', v > was);
     n.classList.toggle('loss', v < was);
+    // the badges after the placement (a badge it adds pops in); clearPreview puts the old row back
+    if (u) {
+      const m = n.querySelector('.nmk'), had = m ? Array.from(m.children).map((c) => c.dataset.m) : [];
+      const now = badgesOf(u);
+      if (now.join() !== had.join()) {
+        if (n._nmk === undefined) n._nmk = m ? m.outerHTML : '';
+        if (m) m.remove();
+        n.insertAdjacentHTML('beforeend', badgeRow(now, now.filter((x) => had.indexOf(x) < 0)));
+      }
+    }
   }
   // The previewed tile's props step back to the layout a placed piece gets (propHtml busy).
   function busyProps(t) {
@@ -12008,8 +12377,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     const b = propHtml(t.dataset.t, +t.dataset.seed, true);
     if (b) props[props.length - 1].insertAdjacentHTML('afterend', b.replace('class="up prop', 'class="up prop ghostp'));
   }
-  /** A placement preview on the mounted board (see the header). */
-  function setPreview(el, st, pv, card) {
+  /** A placement preview on the mounted board (see the header); `after` ({slot: unit record} after
+   *  the placement, optional: afterU) updates the changed units' badges too. */
+  function setPreview(el, st, pv, card, afterU) {
     clearPreview(el);
     if (!el || !pv) return { generals: [] };
     const slot = pv.slot, t = tileEl(el, slot);
@@ -12028,7 +12398,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     for (const k of Object.keys(pv.values || {})) {
       const s = +k;
       if (s === slot) continue;
-      setNum(el, s, pv.values[k]);
+      setNum(el, s, pv.values[k], afterU ? afterU[s] : null);
     }
     const gens = [];
     const after = {};
@@ -12046,6 +12416,63 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       if (!after[s] && n.classList.contains('form')) n.classList.add('pnoform');
     });
     return { generals: gens };
+  }
+  /** A held card's hints (see the header). */
+  function hints(el, o) {
+    if (!el) return;
+    el.querySelectorAll('.tmark.hg').forEach((n) => n.remove());
+    const x = o || {}, home = {}, ill = {}, shim = {};
+    for (const s of x.home || []) home[s] = 1;
+    for (const s of x.illegal || []) ill[s] = 1;
+    for (const s of x.shim || []) shim[s] = 1;
+    el.dataset.ht = x.type || '';
+    el.querySelectorAll('.dt').forEach((te) => {
+      const s = +te.dataset.slot;
+      te.classList.toggle('hhome', !!home[s]);
+      te.classList.toggle('illegal', !!ill[s]);
+      te.classList.remove('shim');
+      if (shim[s]) { void te.offsetWidth; te.classList.add('shim'); }
+      if (home[s] && !te.querySelector('.tmark.home')) te.insertAdjacentHTML('beforeend', '<span class="tmark hg">' + icon('home') + '</span>');
+    });
+  }
+  /** An officer's area (see the header). */
+  function area(el, slots, type) {
+    if (!el) return;
+    el.dataset.ot = type || '';
+    el.classList.toggle('harea', !!(slots && slots.length));
+    mark(el, 'oarea', slots);
+  }
+  /** Restart a one-shot animation class on a node. */
+  const replay = (n, cls, delay) => {
+    n.classList.remove(cls);
+    void n.offsetWidth;
+    n.style.animationDelay = delay ? delay + 'ms' : '';
+    n.style.setProperty('--d', (delay || 0) + 'ms');
+    n.classList.add(cls);
+  };
+  /** After a placement: the discs whose number changed pop in turn (see the header). */
+  function pulse(el, list) {
+    (list || []).forEach((x, k) => {
+      const t = tileEl(el, x.slot), n = t && t.querySelector('.up.unit .num');
+      if (n) replay(n, x.gain ? 'bump' : 'bumpl', Math.min(k * 60, 180));
+    });
+  }
+  /** A formation just completed (see the header). */
+  function formFlash(el, slots) {
+    (slots || []).slice().sort((a, b) => a - b).forEach((s, k) => {
+      const t = tileEl(el, s);
+      if (!t) return;
+      replay(t, 'fsweep', k * 70);
+      const n = t.querySelector('.up.unit .num');
+      if (n) replay(n, 'fpop', 120 + k * 70);
+    });
+  }
+  /** A tap the tile cannot take (see the header). */
+  function nope(el, slot) {
+    const t = tileEl(el, slot);
+    if (!t) return;
+    replay(t, 'nope');
+    setTimeout(() => t.classList.remove('nope'), 260);
   }
   function mark(el, cls, slots) {
     if (!el) return;
@@ -12085,7 +12512,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     return out.sort((a, b) => a.slot - b.slot);
   }
 
-  globalThis.L1Board = { geom, mount, setPreview, clearPreview, mark, slotOf, tileAt, nums, figureFor, figuresHtml, badgesOf, TILT };
+  globalThis.L1Board = { geom, mount, setPreview, clearPreview, mark, hints, area, pulse, formFlash, nope, slotOf, tileAt, nums, figureFor, figuresHtml, badgesOf, TILT };
 })();
 </script>
 <script>
@@ -12112,6 +12539,17 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  * (move / swap) is answered on the board; Undo, Redraw (Reinforcements), Survey (Cartographer).
  * At the end the score builds unit by unit, then the won / lost plate (tap skips; reduced motion:
  * instant); a tap on the plate scores it (Run.endBattle) and hands the run to the app.
+ * 2026-11-05 polish (clarity first, then flair; every motion off under reduced motion):
+ *   a held card lights its home tiles (its type's glow and a home glyph, no numbers) and dims the
+ *   tiles it cannot take; the generals who feed it get a brass rim, and those who feed a preview's
+ *   numbers pulse gold; an officer's area is filled in his type's colour while he is previewed (or
+ *   when a placed officer is tapped: a second tap opens his view); a tap a tile cannot take flashes
+ *   its edge red and shakes the held card; after a placement the changed numbers pop, the total
+ *   counts up and the badge flies into it, a completed formation flashes; the target turns gold
+ *   with a check once reached (a preview that would reach it gets a gold edge); the Sappers' badge
+ *   is a fort; the boss twists are chips (a tap shows the line); a boss board has an ember rim; the
+ *   deck chip counts the draw pile and ticks down as a hand is dealt, the unplayed cards slide away;
+ *   in battles 1-2 an idle hand bobs after 3 s and the first hold makes the legal tiles shimmer.
  */
 (function () {
   'use strict';
@@ -12121,6 +12559,16 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   const UNDO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 9H15a5 5 0 0 1 0 10H9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path fill="currentColor" d="M2.5 9 9 3.5v11z"/></svg>';
   const BOARD_X = 580, BOARD_Y = 104, HAND_Y = 560, CARD_W = 170, HAND_GAP = 24;
   const LONG_MS = 480, MOVE_PX = 12;
+  // the twist names that are too long for a chip (one or two words)
+  const TWIST_SHORT = { rally: 'Rally', fog: 'Fog' };
+  const TYPES = ['inf', 'arc', 'cav'];
+  /** The general ids in a unit record's parts (its src or via): who feeds that number. */
+  const genIds = (u, acc) => {
+    for (const q of (u && u.parts) || []) for (const x of [q.src, q.via]) { const m = /^general:(.+)$/.exec(x || ''); if (m) acc[m[1]] = 1; }
+    return acc;
+  };
+  /** Restart a one-shot animation class. */
+  const replayCls = (n, cls) => { if (!n) return; n.classList.remove(cls); void n.offsetWidth; n.classList.add(cls); };
 
   function mount(root, ctx) {
     const app = ctx.app, T = ctx.run.tun || C.TUN_DEFAULT;
@@ -12128,7 +12576,8 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       run: ctx.run, st: ctx.st || R.battleFor(ctx.run),
       held: null, pv: null, pvSlot: null, glow: [],
       mode: null,            // {kind: 'choose' | 'survey', first: slot | null}
-      ending: false, timers: [], drag: null, press: null, eatUntil: 0
+      ending: false, timers: [], drag: null, press: null, eatUntil: 0,
+      hint: null, gpv: [], areaSlot: null, twOpen: {}, flyD: 0, metSeen: null, shimmed: false, idleT: null, dtimers: []
     };
     const geo = L1Board.geom(S.st);
     // the Siege's 5x5 board sits a little lower: its top row's discs clear the top bar's shadow
@@ -12143,6 +12592,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       '<div data-r="over"></div>';
     const $ = (r) => root.querySelector('[data-r="' + r + '"]');
     const el = { gens: $('gens'), board: $('board'), score: $('score'), acts: $('acts'), peek: $('peek'), hand: $('hand'), over: $('over') };
+    el.score.classList.toggle('boss', !!(C.isBossBattle && C.isBossBattle(S.st)));
     app.bindTop(root, { deck: openPile });
     const Cards = globalThis.L1Cards;
     if (Cards && Cards.bindLongPress) {
@@ -12153,10 +12603,12 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     }
 
     // ---- reading the state -----------------------------------------------------------------------
-    /** The top bar: the deck chip counts the run's deck (it opens this battle's draw pile). */
+    /** The cards left to draw this battle. */
+    function drawCount() { return (S.st.deck || []).length; }
+    /** The top bar: the deck chip counts the cards left to draw (what it opens: the draw pile). */
     function topInfo() {
       const b = S.run.battle;
-      return { title: 'Battle ' + b, battle: b, deck: (S.run.deck || []).length, deckTitle: 'Draw pile', gold: S.run.gold || 0 };
+      return { title: 'Battle ' + b, battle: b, deck: drawCount(), deckTitle: 'Draw pile', gold: S.run.gold || 0 };
     }
     /** The generals whose formation stands on the board (after the previewed placement, if any). */
     const gensOf = (forms) => { const out = []; for (const f of forms || []) if (f.general && out.indexOf(f.general) < 0) out.push(f.general); return out; };
@@ -12176,10 +12628,114 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     function renderGens() {
       const gs = S.st.generals || S.run.generals || [];
       el.gens.innerHTML = gs.map((g) => (Cards ? Cards.plaque(g, { T, size: 'col', glow: S.glow.indexOf(g.id) >= 0 }) : '')).join('');
+      decorateGens(false);
+    }
+    /** The generals who feed the held card (a brass rim) and the previewed numbers (a gold pulse;
+     *  `again` restarts it). Formation generals keep their violet glow (battle.css). */
+    function decorateGens(again) {
+      const on = S.hint ? S.hint.gens : [];
+      el.gens.querySelectorAll('.l1plaque[data-gid]').forEach((n) => {
+        const id = n.dataset.gid;
+        n.classList.toggle('gact', on.indexOf(id) >= 0);
+        const pv = S.gpv.indexOf(id) >= 0;
+        if (pv && again) replayCls(n, 'gpv');
+        else n.classList.toggle('gpv', pv);
+      });
     }
     function renderBoard(o) {
       L1Board.mount(el.board, S.st, o || {});
       if (S.mode) markMode();
+      applyHints(false);
+      showArea();
+    }
+    /** A held card's hints on the board: its home tiles, the tiles it cannot take (board.js hints). */
+    function hintsFor(i) {
+      const c = S.st.offer[i], legalS = C.legalSlots(S.st, c), home = [], gens = {};
+      for (const s of legalS) {
+        let pv = null;
+        try { pv = C.predict(S.st, i, s); } catch (e) { pv = null; }
+        const u = pv && pv.breakdown;
+        if (!u) continue;
+        if ((u.parts || []).some((q) => q.src === 'home')) home.push(s);
+        genIds(u, gens);
+      }
+      const G = C.geoOf(S.st), illegal = G.real.filter((s) => legalS.indexOf(s) < 0 && !(S.st.board[s] || {}).void);
+      let type = null;
+      try { type = C.cardTypeOf ? C.cardTypeOf(c) : c.type; } catch (e) { type = c.type; }
+      return { i, st: S.st, legal: legalS, home, illegal, gens: Object.keys(gens), type: TYPES.indexOf(type) >= 0 ? type : '' };
+    }
+    function applyHints(shim) {
+      if (S.held === null || S.ending || S.mode || !heldCard()) {
+        S.hint = null;
+        L1Board.hints(el.board, null);
+        decorateGens(false);
+        return;
+      }
+      if (!S.hint || S.hint.i !== S.held || S.hint.st !== S.st) S.hint = hintsFor(S.held);
+      L1Board.hints(el.board, { home: S.hint.home, illegal: S.hint.illegal, type: S.hint.type, shim: shim ? S.hint.legal : [] });
+      decorateGens(false);
+    }
+    /** An officer's area: the previewed officer's, else the tapped placed officer's (S.areaSlot). */
+    function showArea() {
+      const c = S.pv ? heldCard() : null;
+      let cells = [], type = '';
+      if (c && c.kind === 'officer' && S.pvSlot !== null) {
+        try { cells = C.officerArea(S.st, S.pvSlot, c) || []; } catch (e) { cells = []; }
+        cells = cells.filter((x) => x !== S.pvSlot);
+        type = c.type;
+      } else if (S.areaSlot !== null) {
+        const p = S.st.pieces[S.areaSlot];
+        if (p && p.officer) {
+          try { cells = C.officerArea(S.st, S.areaSlot) || []; } catch (e) { cells = []; }
+          cells = cells.filter((x) => x !== S.areaSlot);
+          type = p.officer.type;
+        } else S.areaSlot = null;
+      }
+      L1Board.area(el.board, cells, TYPES.indexOf(type) >= 0 ? type : '');
+    }
+    // ---- the deck chip: the cards left to draw, ticking down as a hand is dealt --------------------
+    const deckChip = () => root.querySelector('.top2 [data-act="deck"]');
+    function setDeck(n) { const c = deckChip(), x = c && c.querySelector('.n'); if (x) x.textContent = n; }
+    function tickDeck(from, to, delay) {
+      S.dtimers.forEach(clearTimeout);
+      S.dtimers = [];
+      if (app.reducedMotion() || from <= to) { setDeck(to); return; }
+      setDeck(from);
+      let v = from, t = delay || 0;
+      while (v > to) {
+        const k = --v;
+        S.dtimers.push(setTimeout(() => { setDeck(k); replayCls(deckChip(), 'bump'); }, t));
+        t += 55;
+      }
+    }
+    /** The unplayed cards of the hand slide down and away (set aside) as the placed one lands. */
+    function flyOut(keep) {
+      if (app.reducedMotion()) return false;
+      let any = false;
+      el.hand.querySelectorAll('.hc[data-i]').forEach((h) => {
+        if (+h.dataset.i === keep || !h.animate) return;
+        const r = h.getBoundingClientRect(), a = app.toStage(r.left, r.top), b = app.toStage(r.right, r.bottom);
+        const n = document.createElement('div');
+        n.className = 'flyc';
+        n.style.cssText = 'left:' + Math.round(a.x) + 'px;top:' + Math.round(a.y) + 'px;width:' + Math.round(b.x - a.x) + 'px;height:' + Math.round(b.y - a.y) + 'px';
+        const c = h.cloneNode(true);
+        c.classList.remove('deal');
+        c.style.animation = 'none';
+        n.appendChild(c);
+        el.over.appendChild(n);
+        const an = n.animate([{ transform: 'none', opacity: 1 }, { transform: 'translateY(150px) scale(.55)', opacity: 0 }], { duration: 200, easing: 'cubic-bezier(.5,0,.9,.6)', fill: 'forwards' });
+        an.onfinish = () => n.remove();
+        setTimeout(() => n.remove(), 420);
+        any = true;
+      });
+      return any;
+    }
+    // ---- the newcomer's cue: in battles 1-2 an idle hand bobs after 3 s ----------------------------
+    function idleCue() {
+      clearTimeout(S.idleT);
+      el.hand.classList.remove('bob');
+      if (S.run.battle > 2 || app.reducedMotion() || !drafting() || S.held !== null || S.mode) return;
+      S.idleT = setTimeout(() => { if (drafting() && S.held === null && !S.mode) el.hand.classList.add('bob'); }, 3000);
     }
     /** The turns this battle can last: C.turnsOf, or fewer when the cards left to play run out
      *  first (battle 20's part 2: one card a turn, the unplayed hand comes back through the
@@ -12197,10 +12753,17 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       const show = S.ending ? S.shown : sd.sum + pd;
       const digits = String(Math.max(show, sd.sum)).length;
       const size = digits <= 2 ? '' : digits === 3 ? 'long' : 'xlong';
-      let dl = '<span class="dlt hide">+0</span>';
+      // the target reached (the running total; the end reveal: the total shown so far)
+      const cur = S.ending ? S.shown : sd.sum, met = cur >= sd.target;
+      const flip = met && S.metSeen === false;
+      S.metSeen = met;
+      let dl = S.flyD > 0 ? '<span class="dlt up fly">+' + S.flyD + '</span>' : '<span class="dlt hide">+0</span>';
       if (S.pv && !S.ending) {
-        const d = pd;
-        dl = '<span class="dlt ' + (d > 0 ? 'up' : d < 0 ? 'down' : 'zero') + '">' + (d < 0 ? '−' + (-d) : '+' + d) + '</span>';
+        const d = pd, hc = heldCard();
+        const cross = !met && d > 0 && sd.sum + d >= sd.target ? ' cross' : '';
+        // the Sappers build a fort: its badge is the fort, not "+0" (engineers show no power)
+        if (hc && hc.kind === 'engineer' && d === 0) dl = '<span class="dlt fortd" aria-label="Builds a fort">' + icon('fort') + '</span>';
+        else dl = '<span class="dlt ' + (d > 0 ? 'up' : d < 0 ? 'down' : 'zero') + cross + '">' + (d < 0 ? '−' + (-d) : '+' + d) + '</span>';
       }
       const M = turnsCap(), done = S.st.phase === 'done', N = done ? Math.min(S.st.turn, M) : Math.min(S.st.turn + 1, M);
       let pips = '';
@@ -12210,9 +12773,12 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       if (sd.part === 2) part = '<div class="sc-part">Part 2 · part 1 scored <b>' + sd.part1 + '</b></div>';
       // the twists in the boss intro's words and glyphs (s-moments.js: twistLine / twistIcon)
       const Mo = globalThis.L1Moments, turns = C.turnsOf(S.st);
-      const tw = (C.bossesOf ? C.bossesOf(S.st) : []).map((b) => '<div class="sc-twist"><span class="tw-ic">' + (Mo && Mo.twistIcon ? Mo.twistIcon(b.id) : icon('boss')) + '</span>' +
-        '<span><b>' + esc(b.name) + '</b>' + esc(Mo && Mo.twistLine ? Mo.twistLine(b, T, turns) : C.fillDesc(b.short || '', T)) + '</span></div>').join('');
-      return '<div class="lab">Target</div><div class="sc-tgt"><span class="v">' + icon('target') + sd.target + '</span></div>' +
+      // each twist is a chip: its glyph and a short name; a tap shows its line
+      const tw = (C.bossesOf ? C.bossesOf(S.st) : []).map((b, k) => '<button class="sc-twist' + (S.twOpen[k] ? ' open' : '') + '" data-a="twist" data-k="' + k + '" aria-label="' + esc(b.name) + '">' +
+        '<span class="tw-ic">' + (Mo && Mo.twistIcon ? Mo.twistIcon(b.id) : icon('boss')) + '</span>' +
+        '<span><b>' + esc(TWIST_SHORT[b.id] || b.name) + (b.id === 'home_off' && TYPES.indexOf(b.type) >= 0 ? icon(b.type) : '') + '</b>' +
+        '<span class="tw-line">' + esc(Mo && Mo.twistLine ? Mo.twistLine(b, T, turns) : C.fillDesc(b.short || '', T)) + '</span></span></button>').join('');
+      return '<div class="lab">Target</div><div class="sc-tgt' + (met ? ' met' : '') + (flip ? ' flip' : '') + '"><span class="v">' + icon(met ? 'check' : 'target') + sd.target + '</span></div>' +
         '<div class="lab" style="margin-top:14px">Score</div>' +
         '<div class="sc-tot ' + size + '"><span data-r="tot">' + show + '</span>' + dl + '</div>' + part +
         '<div class="lab" style="margin-top:16px">Turn ' + N + ' of ' + M + '</div>' +
@@ -12238,8 +12804,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       el.peek.innerHTML = hands.length && Cards && Cards.mini
         ? '<div class="lab">Next hand</div><div class="pk">' + hands[0].map((c) => Cards.mini(c, { T })).join('') + '</div>' : '';
     }
-    function renderHand(deal) {
+    function renderHand(deal, late) {
       const offer = S.ending || S.st.phase !== 'draft' ? [] : S.st.offer || [];
+      el.hand.classList.toggle('late', !!(deal && late));
       const n = offer.length, k = n >= 4 ? 0.86 : 1;
       const w = n * CARD_W * k + Math.max(0, n - 1) * HAND_GAP;
       el.hand.style.left = Math.round(BOARD_X - w / 2) + 'px';
@@ -12257,9 +12824,48 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       renderBoard({ land: oo.land, score: sc });
       renderActs();
       renderScore();
+      S.flyD = 0;
       renderPeek();
-      renderHand(oo.deal);
+      renderHand(oo.deal, oo.late);
       renderPrompt();
+      const dealt = oo.deal && S.st.phase === 'draft' ? (S.st.offer || []).length : 0;
+      tickDeck(drawCount() + dealt, drawCount(), oo.late ? 180 : 0);
+      if (oo.fx) celebrate(oo.fx, sc);
+      idleCue();
+    }
+    /** After a placement: the changed numbers pop, a completed formation flashes, the total counts up. */
+    function celebrate(fx, sc) {
+      if (app.reducedMotion() || S.ending) return;
+      const changed = [];
+      for (const u of sc.units || []) {
+        const b = fx.before[u.slot];
+        if (u.slot !== fx.land && b !== undefined && b !== u.final) changed.push({ slot: u.slot, gain: u.final > b });
+      }
+      L1Board.pulse(el.board, changed);
+      for (const f of sc.formations || []) {
+        if (fx.forms[f.id + ':' + (f.slots || []).join(',')]) continue;
+        L1Board.formFlash(el.board, f.slots);
+        const g = f.general ? el.gens.querySelector('.l1plaque[data-gid="' + f.general + '"]') : null;
+        if (g) replayCls(g, 'fdone');
+      }
+      const sum1 = R.standing(S.run, S.st).sum;
+      if (sum1 !== fx.sum0) countUp(fx.sum0, sum1, 300);
+    }
+    function countUp(a, b, ms) {
+      const tot = el.score.querySelector('[data-r="tot"]'), box = el.score.querySelector('.sc-tot');
+      if (!tot) return;
+      replayCls(box, 'tick');
+      const t0 = performance.now();
+      const tick = (t) => {
+        if (S.ending || !tot.isConnected) return;
+        const f = Math.min(1, (t - t0) / ms), e = 1 - Math.pow(1 - f, 2);
+        tot.textContent = Math.round(a + (b - a) * e);
+        if (f < 1) requestAnimationFrame(tick);
+      };
+      tot.textContent = a;
+      requestAnimationFrame(tick);
+      // frames may be throttled: the total always ends where it belongs
+      S.dtimers.push(setTimeout(() => { if (!S.ending && tot.isConnected) tot.textContent = b; }, ms + 60));
     }
 
     // ---- preview --------------------------------------------------------------------------------
@@ -12275,16 +12881,31 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       if (!pv) { clearPv(); return; }
       S.pv = pv;
       S.pvSlot = slot;
-      L1Board.setPreview(el.board, S.st, pv, heldCard());
+      // the units after the placement: the changed numbers' badges, and the generals who feed them
+      let after = null;
+      try {
+        const nx = C.place(C.playerView ? C.playerView(S.st) : S.st, S.held, slot);
+        after = {};
+        for (const u of C.score(nx).units || []) after[u.slot] = u;
+      } catch (e) { after = null; }
+      L1Board.setPreview(el.board, S.st, pv, heldCard(), after);
+      const g = {};
+      if (after) for (const k of Object.keys(pv.values || {})) genIds(after[+k], g);
+      S.gpv = Object.keys(g);
+      showArea();
       setGlow(liveGlow());
+      decorateGens(true);
       renderScore();
     }
     function clearPv() {
       if (S.pv === null && S.pvSlot === null) return;
       S.pv = null;
       S.pvSlot = null;
+      S.gpv = [];
       L1Board.clearPreview(el.board);
+      showArea();
       setGlow(liveGlow());
+      decorateGens(false);
       renderScore();
     }
     function hold(i) {
@@ -12292,8 +12913,15 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       const c = S.st.offer[i];
       if (!c) return;
       S.held = S.held === i ? null : i;
+      S.areaSlot = null;
       clearPv();
+      showArea();
       renderHand(false);
+      // a newcomer's first hold (battles 1-2): the tiles it can take shimmer once
+      const shim = S.held !== null && !S.shimmed && S.run.battle <= 2 && !app.reducedMotion();
+      if (shim) S.shimmed = true;
+      applyHints(shim);
+      idleCue();
       if (S.held !== null && !C.legalSlots(S.st, c).length) app.toast('No tile can take this card now');
     }
     function release() {
@@ -12301,6 +12929,13 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       S.held = null;
       clearPv();
       renderHand(false);
+      applyHints(false);
+      idleCue();
+    }
+    /** A tap the tile cannot take: its edge flashes red, the held card shakes once. */
+    function refuse(slot) {
+      L1Board.nope(el.board, slot);
+      if (!app.reducedMotion()) replayCls(el.hand.querySelector('.hc[data-i="' + S.held + '"]'), 'shake');
     }
 
     // ---- actions --------------------------------------------------------------------------------
@@ -12310,6 +12945,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       S.pv = null;
       S.pvSlot = null;
       S.glow = [];
+      S.gpv = [];
+      S.hint = null;
+      S.areaSlot = null;
       S.mode = S.st.phase === 'choose' ? { kind: 'choose', first: null } : null;
       app.saveBattle(S.st);
       render(o);
@@ -12317,9 +12955,18 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     }
     function placeAt(slot) {
       if (!drafting() || S.held === null || !legal(slot)) return;
+      // what the board was: the placement's motion shows what it changed (celebrate)
+      const sc0 = C.score(S.st), fx = { before: {}, forms: {}, land: slot, sum0: R.standing(S.run, S.st).sum };
+      for (const u of sc0.units || []) fx.before[u.slot] = u.final;
+      for (const f of sc0.formations || []) fx.forms[f.id + ':' + (f.slots || []).join(',')] = 1;
       let nx;
       try { nx = C.place(S.st, S.held, slot); } catch (e) { app.toast('That card cannot go there'); return; }
-      commit(nx, { land: slot, deal: nx.phase === 'draft' });
+      const late = nx.phase === 'draft' && flyOut(S.held);
+      if (!app.reducedMotion()) {
+        const d = R.standing(S.run, nx).sum - fx.sum0;
+        S.flyD = d > 0 && !R.battleOver(nx) ? d : 0;
+      }
+      commit(nx, { land: slot, deal: nx.phase === 'draft', late, fx });
     }
     function undo() {
       if (!C.canUndo(S.st)) return;
@@ -12424,15 +13071,19 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       if (S.ending) return;
       S.ending = true;
       S.mode = null;
+      clearTimeout(S.idleT);
+      el.hand.classList.remove('bob');
       const sd = R.standing(S.run, S.st);
       S.sd = sd;
       S.shown = sd.part === 2 ? sd.part1 : 0;
+      S.metSeen = null;
       L1Board.mount(el.board, S.st, { hideNums: true });
       renderActs();
       renderPeek();
       renderHand(false);
       renderPrompt();
       renderScore();
+      S.metSeen = S.shown >= sd.target;
       el.over.insertAdjacentHTML('beforeend', '<div class="endveil" data-a="skip-reveal"></div>');
       const list = L1Board.nums(el.board);
       if (app.reducedMotion() || !list.length) { finishReveal(); return; }
@@ -12458,9 +13109,17 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         const f = Math.min(1, (t - t0) / ms);
         S.shown = Math.round(a + (b - a) * f);
         tot.textContent = S.shown;
+        // the running total passes the target: the target flips to gold, as in play
+        if (!S.metSeen && S.sd && S.shown >= S.sd.target) { S.metSeen = true; markMet(); }
         if (f < 1) requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
+    }
+    function markMet() {
+      const t = el.score.querySelector('.sc-tgt'), u = t && t.querySelector('.v .ic use');
+      if (!t) return;
+      t.classList.add('met', 'flip');
+      if (u) u.setAttribute('href', '#i-check');
     }
     function finishReveal() {
       if (S.revealed) return;
@@ -12509,6 +13168,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       if (e.button !== undefined && e.button !== 0 && e.pointerType === 'mouse') return;
       const i = handIndex(e.target);
       const slot = boardSlot(e);
+      idleCue();
       S.press = { x: e.clientX, y: e.clientY, t: Date.now(), i, slot, id: e.pointerId, type: e.pointerType, long: false };
       // a long press on a unit on the board opens its view (the hand and the generals: L1Cards.bindLongPress)
       if (slot !== null && S.st.pieces[slot] && !S.mode) {
@@ -12546,6 +13206,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       if (!card || !C.legalSlots(S.st, card).length) return;
       if (S.held !== pr.i) { S.held = pr.i; clearPv(); }
       renderHand(false);
+      applyHints(false);
       const hc = el.hand.querySelector('.hc[data-i="' + pr.i + '"]');
       if (hc) hc.classList.add('dragging');
       el.over.insertAdjacentHTML('beforeend', '<div class="dragcard">' + (Cards ? Cards.html(card, { T }) : '') + '</div>');
@@ -12580,6 +13241,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       if (act === 'redraw') { redraw(); return; }
       if (act === 'survey') { toggleSurvey(); return; }
       if (act === 'skip') { if (S.st.phase === 'choose') commit(C.skipChoice(S.st), { deal: true }); return; }
+      if (act === 'twist') { const k = +a.dataset.k; S.twOpen[k] = !S.twOpen[k]; renderScore(); return; }
       if (e.target.closest && e.target.closest('.top2, .prompt, .scrim, .modal')) return;
       const i = handIndex(e.target);
       if (i !== null) { if (!S.mode) hold(i); return; }
@@ -12593,11 +13255,26 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
           else preview(slot);
           return;
         }
-        if (S.held === null && S.st.pieces[slot]) { detailOf(cardOfPiece(S.st.pieces[slot])); return; }
+        if (S.held !== null) { refuse(slot); if (S.pv) clearPv(); return; }
+        const p = S.st.pieces[slot];
+        if (p) {
+          // a placed officer: the first tap draws whom he boosts, the second opens his view
+          if (p.officer && S.areaSlot !== slot) {
+            let a = [];
+            try { a = C.officerArea(S.st, slot) || []; } catch (e) { a = []; }
+            if (a.some((x) => x !== slot)) { S.areaSlot = slot; showArea(); return; }
+          }
+          S.areaSlot = null;
+          showArea();
+          detailOf(cardOfPiece(p));
+          return;
+        }
+        if (S.areaSlot !== null) { S.areaSlot = null; showArea(); return; }
         if (S.pv) { clearPv(); return; }
         return;
       }
       // a tap elsewhere: cancel the preview, then let go of the card
+      if (S.areaSlot !== null) { S.areaSlot = null; showArea(); }
       if (S.pv) clearPv();
       else release();
     }
@@ -12617,7 +13294,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     if (R.battleOver(S.st)) startEnd();
 
     return {
-      destroy() { S.timers.forEach(clearTimeout); document.removeEventListener('keydown', onKey); },
+      destroy() { S.timers.forEach(clearTimeout); S.dtimers.forEach(clearTimeout); clearTimeout(S.idleT); document.removeEventListener('keydown', onKey); },
       // for tests and the dev harness: the live state and the actions a tap would take
       get st() { return S.st; },
       get held() { return S.held; },
@@ -12948,9 +13625,17 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  *   (L1Screens.levelMoment; without it L1Screens.levelUp on a run copy whose levelUps is that one
  *   rank-up, its levelsDone returning to the store). Before a campaign boss, a note names it (battle
  *   10: its twist, with the boss intro's glyph and line; 20: the cards part 2 keeps).
- * Feedback: the gold counts down, a recruit flies into the deck, a pick settles before its pop-up
- *   closes, a restock deals the shelves again; all of it skipped under reduced motion
- *   (app.reducedMotion: the setting or prefers-reduced-motion).
+ * Taps: a ware's first tap arms it (its price becomes the Recruit / Hire button); a second tap on it,
+ *   or on that button, buys it, as a second tap places a card in battle (not within 250 ms of the
+ *   first, so a double tap never buys). An unaffordable ware is greyed whole; tapping it shakes its
+ *   price and the top bar's gold, with "Not enough gold" beside the tap (app.toast(text, anchor)).
+ * Train shows each unit's level studs large under it: the pip it would win glows green; on confirm
+ *   the stud fills.
+ * Feedback: coins fly from the gold to what was bought, the gold counts down, a recruit flies into
+ *   the deck, a hired general slides away toward the generals' place (top left) with a brass flash,
+ *   a promoted badge rolls to its new value, a pick settles before its pop-up closes, a restock
+ *   deals the shelves again; all of it skipped under reduced motion (app.reducedMotion: the setting
+ *   or prefers-reduced-motion).
  * UI state: the slots bought from the current stock, app.uiSeen('shelf') = {key, gone}
  *   (ttf-loop001:ui), so a reload keeps the empty slots where they were.
  * Long-press any card or plaque (pop-ups included): its detail view (L1Cards.bindLongPress).
@@ -13143,6 +13828,25 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       ], { duration: 620, easing: 'cubic-bezier(.45,0,.7,.4)', fill: 'forwards' });
       a.onfinish = () => { g.remove(); if (then && !dead) then(); };
     }
+    /** Coins fly from the top bar's gold to `toRect` (what the gold was spent on). */
+    function coins(toRect, n) {
+      const chip = layer.querySelector('.top2 [data-act="gold"] .ic') || layer.querySelector('.top2 [data-act="gold"]');
+      if (calm() || !chip || !toRect || typeof Element === 'undefined' || !Element.prototype.animate) return;
+      const f = rectOf(chip), sx = f.x + f.w / 2, sy = f.y + f.h / 2, tx = toRect.x + toRect.w / 2, ty = toRect.y + toRect.h / 2;
+      for (let k = 0; k < (n || 4); k++) {
+        const c = document.createElement('i');
+        c.className = 'qm-coin';
+        c.style.cssText = 'left:' + (sx - 9) + 'px;top:' + (sy - 9) + 'px';
+        root.appendChild(c);
+        const mx = (tx - sx) * 0.5 + (k - 1.5) * 14, my = Math.min(0, ty - sy) * 0.5 - 50 - k * 8;
+        const a = c.animate([
+          { transform: 'translate(0,0) scale(.6)', opacity: 0 },
+          { transform: 'translate(' + mx + 'px,' + my + 'px) scale(1)', opacity: 1, offset: 0.45 },
+          { transform: 'translate(' + (tx - sx) + 'px,' + (ty - sy) + 'px) scale(.7)', opacity: 0.9 }
+        ], { duration: 380, delay: k * 45, easing: 'cubic-bezier(.4,0,.6,1)', fill: 'backwards' });
+        a.onfinish = () => c.remove();
+      }
+    }
     function bump(el) {
       if (!el || calm()) return;
       el.classList.remove('qm-bump');
@@ -13158,19 +13862,31 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 
     // ---- the shelves ----
     const disarm = () => layer.querySelectorAll('.armed').forEach((x) => x.classList.remove('armed'));
-    function tapWare(n, e) {
+    let armedAt = 0;
+    /** A refused tap: the price and the top bar's gold shake together, the reason beside the tap. */
+    function refuse(why, pillEl) {
+      app.toast(why, pillEl || undefined);
+      shake(pillEl);
+      shake(layer.querySelector('.top2 [data-act="gold"]'));
+    }
+    function tapWare(n) {
       const shelf = n.dataset.shelf, i = +n.dataset.i;
       if (n.classList.contains('armed')) {
-        if (e.target.closest && e.target.closest('.qm-pill')) { if (shelf === 'recruits') buyRecruit(i, n); else hireGeneral(i, n); } else disarm();
+        // a second tap buys, as a second tap places in battle; never within 250 ms (a double tap)
+        if (Date.now() - armedAt < 250) return;
+        if (shelf === 'recruits') buyRecruit(i, n); else hireGeneral(i, n);
         return;
       }
       disarm();
-      if (!R.canBuy(run, shelf, i)) { app.toast('Not enough gold'); shake(n.querySelector('.qm-pill')); return; }
+      if (!R.canBuy(run, shelf, i)) { refuse('Not enough gold', n.querySelector('.qm-pill')); return; }
       if (shelf === 'hire' && R.needsLeave(run)) { openReplace(i); return; }
       n.classList.add('armed');
+      armedAt = Date.now();
     }
     function buyRecruit(i, n) {
       const el = n.querySelector('.l1card'), from = el ? rectOf(el) : null, html = el ? el.outerHTML : '';
+      const pl = n.querySelector('.qm-pill');
+      coins(pl ? rectOf(pl) : from);
       const shown = run.store.recruits.length, gone = goneNow(shown), slot = shelfSlots(shown, gone).find((x) => x.i === i);
       const key = stockKey(), g0 = run.gold || 0;
       const r = R.buy(run, 'recruits', i);
@@ -13179,17 +13895,25 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       const dv = layer.querySelector('.qm-deck .qm-dv');
       fly(html, from, 170, 250, dv ? rectOf(dv) : null, () => bump(layer.querySelector('.qm-deck .qm-dv')));
     }
-    function hireGeneral(i, n, leaveId) {
+    function hireGeneral(i, n, leaveId, paid) {
       const el = n && n.querySelector('.l1plaque'), from = el ? rectOf(el) : null, html = el ? el.outerHTML : '';
+      const pl = n && n.querySelector('.qm-pill');
+      if (!paid) coins(pl ? rectOf(pl) : from);
       const g0 = run.gold || 0;
       set(R.buy(run, 'hire', i, leaveId), { goldFrom: g0 });
       if (from && !calm() && typeof Element !== 'undefined' && Element.prototype.animate) {
+        // he joins your generals: the plaque slides toward their place in battle (the top-left column)
         const g = document.createElement('div');
-        g.className = 'qm-ghost';
+        g.className = 'qm-ghost qm-join';
         g.innerHTML = html;
         g.style.cssText = 'left:' + from.x + 'px;top:' + from.y + 'px;width:' + from.w + 'px;height:' + from.h + 'px';
         root.appendChild(g);
-        g.animate([{ transform: 'none', opacity: 1 }, { transform: 'translateY(-46px) scale(1.06)', opacity: 0 }], { duration: 480, easing: 'ease-out', fill: 'forwards' }).onfinish = () => g.remove();
+        const dx = 30 - from.x, dy = 84 - from.y;
+        g.animate([
+          { transform: 'none', opacity: 1, filter: 'brightness(1)' },
+          { transform: 'translate(' + (dx * 0.12) + 'px,' + (dy * 0.12 - 14) + 'px) scale(1.06)', opacity: 1, filter: 'brightness(1.7) drop-shadow(0 0 22px rgba(243,213,142,.95))', offset: 0.25 },
+          { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(.42)', opacity: 0, filter: 'brightness(1.1)' }
+        ], { duration: 560, easing: 'cubic-bezier(.45,0,.6,1)', fill: 'forwards' }).onfinish = () => g.remove();
       }
     }
 
@@ -13197,8 +13921,8 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     function tapSvc(id, n) {
       const x = services(run).find((s) => s.id === id);
       if (!x) return;
-      if (!x.ok) { app.toast(x.why); shake(n.querySelector('.qm-pill')); return; }
-      if (id === 'restock') { set(R.restock(run), { goldFrom: run.gold || 0, deal: true }); return; }
+      if (!x.ok) { if (x.can) refuse(x.why, n.querySelector('.qm-pill')); else { app.toast(x.why, n.querySelector('.qm-pill') || undefined); shake(n.querySelector('.qm-pill')); } return; }
+      if (id === 'restock') { const pl = n.querySelector('.qm-pill'); coins(pl ? rectOf(pl) : null); set(R.restock(run), { goldFrom: run.gold || 0, deal: true }); return; }
       if (id === 'promote') { openPromote(x.price); return; }
       openPick(id, x.price);
     }
@@ -13229,7 +13953,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
           okB.querySelector('.v').textContent = o.verb(sel);
         },
         item: (k) => el.querySelector('.qm-it[data-k="' + (globalThis.CSS && CSS.escape ? CSS.escape(k) : k) + '"]'),
-        ok() { if (sel === null || pop.busy) return; pop.busy = true; o.ok(sel, pop); }
+        ok() { if (sel === null || pop.busy) return; pop.busy = true; coins(rectOf(okB.querySelector('.qm-mp') || okB)); o.ok(sel, pop); }
       };
       return pop;
     }
@@ -13242,6 +13966,21 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       wait(ms, () => { if (pop === p) closePop(); if (then) then(); });
     }
     const byUid = (uid) => (run.deck || []).find((c) => String(c.uid) === String(uid));
+    /** A unit's level studs, large, under its card in the Train pick: the pip a Train wins glows
+     *  green (bright when picked). fill: the pip just won (the confirm), drawn filled with a pop and a spark. */
+    function trainRow(c, sel, fill) {
+      const nf = Cards().info ? Cards().info(c, T) : null;
+      if (!nf || nf.rank == null) return '';
+      if (nf.max) return '<div class="qm-tr max"><span class="qm-trs">' + '<i class="on"></i>'.repeat(Math.max(1, nf.per)) + '</span></div>';
+      let h = '';
+      for (let k = 1; k <= nf.per; k++) {
+        const won = k === nf.pips + 1;
+        h += '<i class="' + (k <= nf.pips ? 'on' : won ? (fill ? 'on fill' : 'nx') : '') + '"></i>';
+      }
+      // (2026-11-05, user: the "1 → 2" rank gem told nothing; a Train that ranks the card up plays
+      // the level-up moment instead)
+      return '<div class="qm-tr' + (sel ? ' sel' : '') + '"><span class="qm-trs">' + h + '</span></div>';
+    }
     function openPick(what, price) {
       const ids = R.choicesFor(run, what);
       if (!ids.length) return;
@@ -13250,15 +13989,16 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         w: Math.max(560, ids.length * 170 + (ids.length - 1) * 26 + 140),
         title: train ? 'Train a unit' : 'Remove a card',
         line: train ? 'One level pip, as if it had won a battle.' : 'It leaves your deck for good.',
-        items: ids.map((uid) => ({ key: uid, html: (sel) => card(byUid(uid), { T, mark: sel ? (train ? 'train' : 'leave') : null }) })),
+        items: ids.map((uid) => ({ key: uid, html: (sel) => card(byUid(uid), { T, mark: sel ? (train ? 'train' : 'leave') : null }) + (train ? trainRow(byUid(uid), sel) : '') })),
         verb: () => (train ? 'Train' : 'Remove'), price, danger: !train,
         ok: (k, p) => {
           const uid = +k, g0 = run.gold || 0;
           if (train) {
+            const before = byUid(uid);
             const r = R.trainCard(run, uid), e = (r.store.bought || [])[r.store.bought.length - 1] || {};
             set(r, { goldFrom: g0 });
             const it = p.item(k), c = byUid(uid);
-            if (it && c && !calm()) it.innerHTML = card(c, { T, mark: 'pick' });
+            if (it && c && !calm()) it.innerHTML = card(c, { T, mark: 'pick' }) + (before ? trainRow(before, true, true) : '');
             settle(p, 'qm-glow', 560, () => { if (e.rankUp) rankUpMoment(e.rankUp); });
           } else {
             set(R.removeCard(run, uid), { goldFrom: g0 });
@@ -13280,7 +14020,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
           const g0 = run.gold || 0;
           set(R.promoteGeneral(run, id), { goldFrom: g0 });
           const it = p.item(id), g = gen(id);
-          if (it && g && !calm()) it.innerHTML = plaque(g, { T, size: 'm', mark: 'pick' });
+          if (it && g && !calm()) { it.innerHTML = plaque(g, { T, size: 'm', mark: 'pick' }); it.classList.add('qm-roll'); }
           settle(p, 'qm-glow', 560);
         }
       });
@@ -13301,7 +14041,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         items: run.generals.map((x) => ({ key: x.id, html: (sel) => plaque(x, { T, size: 'm', mark: sel ? 'leave' : null }) })),
         verb: (sel) => (sel === null ? 'Replace' : 'Replace ' + leaveName(sel, g.id)), price,
         ok: (id, p) => {
-          hireGeneral(i, null, id);
+          hireGeneral(i, p.el.querySelector('.qm-in'), id, true);
           settle(p, 'qm-out', 420);
         }
       });
@@ -13349,7 +14089,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       const n = t.closest('[data-a]');
       const a = n && layer.contains(n) ? n.dataset.a : null;
       if (a !== 'ware') disarm();
-      if (a === 'ware') tapWare(n, e);
+      if (a === 'ware') tapWare(n);
       else if (a === 'svc') tapSvc(n.dataset.s, n);
       else if (a === 'deck') openDeck();
       else if (a === 'march') march();
@@ -13416,6 +14156,47 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   const svg = (inner) => '<svg class="ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' + inner + '</svg>';
   const twistIcon = (id) => (G.L1Icons && G.L1Icons.twist ? G.L1Icons.twist(id) : icon('boss'));
   const CHECK = svg('<path d="M4.5 12.5l4.6 4.6L19.5 6.8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>');
+  /** The capital's crest (the Siege, battle 30): a gatehouse between two towers, so the final boss
+   *  never wears the campaign bosses' helmet. */
+  const siegeCrest = () => svg('<path d="M3 21V5h1.4v1.6h1.2V5H7v4h2V7.4h1.4V9h1.2V7.4H13V9h1.2V7.4h1.4V9H17V5h1.4v1.6h1.2V5H21v16h-6.5v-4.5a2.5 2.5 0 0 0-5 0V21z"/>');
+  /**
+   * A twist drawn as the board it makes: a little 4x4 board (the idea, on any board) - the rubble tile, the
+   * closed row, the fog, the corner towers, the centre home, a type's lost ground, an even field.
+   * '' for a twist that is not a board shape (Short supply, Forced march, Rally). n: the board's side.
+   */
+  const BOARD_TW = { blocked_tile: 1, home_off: 1, fog: 1, row_closed: 1, open_ground: 1, high_ground: 1, four_towers: 1 };
+  const TYPE_COL = { inf: '#c4573f', arc: '#5c9443', cav: '#4673b2' };
+  function twistBoard(t, n) {
+    if (!t || !BOARD_TW[t.id]) return '';
+    n = 4;
+    const cs = 34 / n, sz = cs - 1.1, out = [];
+    const home = { 0: 'forest', 3: 'hills', 5: 'plains', 6: 'forest', 9: 'hills', 10: 'plains', 12: 'plains', 15: 'forest' };
+    const terr = { forest: '#5d9a45', hills: '#b39a57', plains: '#c4bd6a' };
+    const typeHome = { inf: 'forest', arc: 'hills', cav: 'plains' };
+    const f2 = (v) => v.toFixed(2);
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+      const i = r * n + c, x = 1 + c * cs + 0.55, y = 1 + r * cs + 0.55, corner = (r === 0 || r === n - 1) && (c === 0 || c === n - 1);
+      const mid = n === 5 ? r === 2 && c === 2 : (r === 1 || r === 2) && (c === 1 || c === 2);
+      // a quiet field; the twist's own tiles stand out
+      let fill = '#6f6852', extra = '', op = 1;
+      switch (t.id) {
+        case 'fog': fill = i === 5 ? terr.forest : '#9a978f'; op = i === 5 ? 1 : 0.55; break;
+        case 'open_ground': fill = terr.plains; break;
+        case 'high_ground': fill = mid ? '#f0c95e' : '#6f6852'; break;
+        case 'row_closed': if (r === (t.row || 0) % n) { fill = '#2a2420'; extra = 'x'; } break;
+        case 'blocked_tile': if (i === ((t.slot == null ? 5 : t.slot) % (n * n))) { fill = '#3a332c'; extra = 'rock'; } break;
+        case 'home_off': if (home[i % 16] === typeHome[t.type]) { fill = TYPE_COL[t.type] || '#888'; op = 0.45; extra = 'x'; } break;
+        case 'four_towers': if (corner) { fill = '#d9c9a2'; extra = 'tower'; } break;
+        default: break;
+      }
+      out.push('<rect x="' + f2(x) + '" y="' + f2(y) + '" width="' + f2(sz) + '" height="' + f2(sz) + '" rx="1.2" fill="' + fill + '"' + (op < 1 ? ' fill-opacity="' + op + '"' : '') + '/>');
+      const cx = x + sz / 2, cy = y + sz / 2, a = sz * 0.3;
+      if (extra === 'x') out.push('<path d="M' + f2(cx - a) + ' ' + f2(cy - a) + 'L' + f2(cx + a) + ' ' + f2(cy + a) + 'M' + f2(cx + a) + ' ' + f2(cy - a) + 'L' + f2(cx - a) + ' ' + f2(cy + a) + '" stroke="#e0625a" stroke-width="1.5" stroke-linecap="round"/>');
+      if (extra === 'rock') out.push('<path d="M' + f2(x + sz * 0.15) + ' ' + f2(y + sz * 0.8) + 'l' + f2(sz * 0.2) + ' -' + f2(sz * 0.45) + 'l' + f2(sz * 0.25) + ' ' + f2(sz * 0.15) + 'l' + f2(sz * 0.2) + ' -' + f2(sz * 0.25) + 'l' + f2(sz * 0.05) + ' ' + f2(sz * 0.55) + 'z" fill="#9a8f80"/>');
+      if (extra === 'tower') out.push('<path d="M' + f2(x + sz * 0.2) + ' ' + f2(y + sz * 0.9) + 'V' + f2(y + sz * 0.15) + 'h' + f2(sz * 0.18) + 'v' + f2(sz * 0.16) + 'h' + f2(sz * 0.24) + 'v-' + f2(sz * 0.16) + 'h' + f2(sz * 0.18) + 'V' + f2(y + sz * 0.9) + 'z" fill="#4a3a26"/>');
+    }
+    return '<span class="mo-tb4" aria-hidden="true"><svg viewBox="0 0 36 36">' + out.join('') + '</svg></span>';
+  }
 
   // ---- pure helpers -------------------------------------------------------------------------------
   const twistDef = (id) => ((C && C.BOSSES) || []).find((x) => x.id === id) || null;
@@ -13446,6 +14227,36 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   }
   /** The level-up line: "Pikeman reaches rank 2" ("The Twins reach rank 3"). */
   const rankLine = (name, rec) => String(name) + (rec && PLURAL[rec.id] ? ' reach' : ' reaches') + ' rank ' + ((rec && rec.to) || 1);
+  /** A rank-up that renames the card: "Archer becomes Crossbowman · rank 2"; the same name: rankLine. */
+  const renameLine = (was, name, rec) => (was && was !== name ? String(was) + ' becomes ' + name + ' · rank ' + ((rec && rec.to) || 1) : rankLine(name, rec));
+  /**
+   * The cards of `deck` a general acts on, as the draft lights them: a formation general's types
+   * (the letters of his shape or combo), a boost general's target (officers, heroes, rank-1 pieces,
+   * a type), every typed piece for a placement or terrain boost; null when he acts on no card (gold,
+   * the hand, other generals). -> the uids, or null.
+   */
+  const LIGHT = {
+    paymaster: (c) => c.kind === 'hero', banner_sgt: (c) => c.kind === 'officer', colonel: (c) => c.kind === 'officer',
+    levy_marshal: (c) => c.type === 'inf', foot_purist: (c) => c.type === 'inf', lord_horse: (c) => c.type === 'cav',
+    sgt_line: (c, nf) => c.kind !== 'engineer' && nf.rank === 1, old_guard: (c, nf) => c.kind === 'unit' && nf.rank >= 3, elite_corps: (c) => c.kind === 'unit',
+    treasurer: null, mustering: null, high_command: null, war_council: null, grand_council: null, strategist: null,
+    reinforcements: null, cartographer: null, scout_master: null, marshal_reserves: null
+  };
+  function generalCards(id, deck, T) {
+    const d = C.generalDef ? C.generalDef(id) : null, info = Cards().info;
+    if (!d) return null;
+    let test;
+    if (d.role === 'teach') {
+      const f = ((C.FORMATIONS || []).find((x) => x.id === (d.effect || {}).teach)) || {};
+      const ts = {};
+      if (f.combo) Object.keys(f.combo).forEach((t) => { if (f.combo[t]) ts[t] = 1; });
+      if (f.shape) f.shape.join('').split('').forEach((ch) => { const t = { i: 'inf', a: 'arc', r: 'arc', c: 'cav' }[ch]; if (t) ts[t] = 1; });
+      test = (c, nf) => !!ts[nf.type];
+    } else if (Object.prototype.hasOwnProperty.call(LIGHT, id)) test = LIGHT[id];
+    else test = (c, nf) => c.kind !== 'engineer' && nf.type !== 'neutral';
+    if (!test) return null;
+    return (deck || []).filter((c) => { const nf = info ? info(c, T) : { type: c.type, rank: c.rank || 1 }; return test(c, nf); }).map((c) => c.uid);
+  }
   /** Battle 20 before part 1: {deck, turns, part1, left} (part 1 places a card a turn; part 2 gets the rest). */
   function part1Split(run, turns) {
     const deck = ((run && run.deck) || []).length, t = Math.max(1, turns || (C && C.TUN_DEFAULT && C.TUN_DEFAULT.turns) || 7), p1 = Math.min(deck, t);
@@ -13523,7 +14334,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       const reached = st.slice(g * 10, g * 10 + 10).some((s) => s !== 'todo');
       h += '<div class="mo-tg" style="--fill:' + trackFill(st, g) + '%"><span class="mo-seal' + (reached ? ' on' : '') + '">' + ROMAN[g] + '</span>';
       for (let k = 0; k < 9; k++) h += '<i class="mo-st ' + st[g * 10 + k] + '"></i>';
-      h += '<span class="mo-tb ' + st[g * 10 + 9] + '">' + icon('boss') + '</span></div>';
+      // the last campaign's boss is the capital: its crest, never the campaign bosses' helmet
+      const fin = (g + 1) * 10 === ((run && run.battles) || 30) && R.finalBoss && (() => { try { return !!R.finalBoss(run); } catch (e) { return false; } })();
+      h += '<span class="mo-tb ' + st[g * 10 + 9] + '">' + (fin ? siegeCrest() : icon('boss')) + '</span></div>';
     }
     return h + '</div>';
   }
@@ -13548,7 +14361,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       '<div class="mo-opts" data-r="opts">' + opts.map((o, i) => '<div class="mo-opt mo-rise" style="--d:' + (110 + i * 70) + 'ms" data-a="pick" data-id="' + esc(o.id) + '" role="button" aria-label="' + esc(genName(o.id)) + '">' +
         plaque(o, { T, size: 'big' }) + '</div>').join('') + '</div>' +
       '<div class="mo-confirm"><button class="btn mo-ok off" data-a="ok">Confirm</button></div>' +
-      '<div class="pnl mo-deck mo-rise" style="--d:260ms"><div class="lab">Your starting deck<span class="mo-n">' + run.deck.length + ' cards</span></div>' + deckMinis(run, T) + '</div>' +
+      '<div class="pnl mo-deck mo-rise" style="--d:260ms"><div class="lab">Your starting deck<span class="mo-n">' + run.deck.length + ' cards</span><span class="mo-hit" data-r="hit"></span></div>' + deckMinis(run, T) + '</div>' +
       '</div>';
     app.bindTop(root);
     const optsEl = root.querySelector('[data-r="opts"]');
@@ -13565,6 +14378,17 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
           if (p) p.classList.toggle('sel', me);
         });
         root.querySelector('[data-a="ok"]').classList.remove('off');
+        // the cards he acts on light up, the rest dim; a chip counts them
+        const hit = generalCards(sel, run.deck, T), minis = root.querySelector('[data-r="deck"]'), chip = root.querySelector('[data-r="hit"]');
+        if (minis) {
+          minis.classList.toggle('lit', !!hit);
+          minis.querySelectorAll('.l1mini').forEach((m) => m.classList.toggle('hit', !!hit && hit.some((u) => String(u) === m.dataset.uid)));
+        }
+        if (chip) {
+          chip.innerHTML = hit ? icon('general') + '<b>' + hit.length + '</b>' : '';
+          chip.classList.toggle('on', !!hit);
+          if (hit && !reduced(ctx)) { chip.classList.remove('pop'); void chip.offsetWidth; chip.classList.add('pop'); }
+        }
       },
       ok: () => {
         if (!sel) return;
@@ -13580,9 +14404,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   const CAMP_LINE = { twist: 'A boss with a twist ends it', twoPart: 'Ends with a battle in two parts', siege: 'Ends at the capital\'s walls' };
   /** A twist as icon + name + one line (bare: no name; the plate's title already says it; turns:
    *  the battle's real turns, for 'short'). */
-  function twistRow(t, T, bare, turns) {
-    return '<div class="mo-row' + (bare ? ' bare' : '') + '"><span class="mo-ico">' + twistIcon(t.id) + '</span><span class="mo-rt">' + (bare ? '' : '<b>' + esc(twistName(t.id)) + '</b>') +
-      '<span>' + esc(twistLine(t, T, turns)) + '</span></span></div>';
+  function twistRow(t, T, bare, turns, n, d) {
+    return '<div class="mo-row' + (bare ? ' bare' : '') + (d != null ? ' mo-deal" style="--d:' + d + 'ms' : '') + '"><span class="mo-ico">' + twistIcon(t.id) + '</span><span class="mo-rt">' + (bare ? '' : '<b>' + esc(twistName(t.id)) + '</b>') +
+      '<span>' + esc(twistLine(t, T, turns)) + '</span></span>' + twistBoard(t, n) + '</div>';
   }
   const boardGlyph = (cols, rows) => {
     let h = '<span class="mo-bg" style="grid-template-columns:repeat(' + cols + ',1fr)">';
@@ -13592,23 +14416,24 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   function intro(root, ctx) {
     const app = ctx.app, run = ctx.run, T = ctx.T, fb = R.finalBoss(run);
     const camps = C.CAMPAIGNS || [];
+    // the last campaign ends at the capital: the Siege hangs from its medallion as its boss stud (a
+    // crest), its board and twists below it; never a fourth station that reads like a battle 31
     const stations = camps.map((c, i) => {
-      const kind = R.bossKind(run, c.last);
-      return '<div class="mo-stn mo-rise" style="--d:' + (80 + i * 90) + 'ms"><span class="mo-emb">' + (ROMAN[c.n - 1] || c.n) + '</span>' +
+      const kind = R.bossKind(run, c.last), sg = fb && fb.battle === c.last;
+      return '<div class="mo-stn mo-rise' + (sg ? ' siege' : '') + '" style="--d:' + (80 + i * 90) + 'ms"><span class="mo-emb">' + (ROMAN[c.n - 1] || c.n) +
+        (sg ? '<span class="mo-crest">' + siegeCrest() + '</span>' : '') + '</span>' +
         '<div class="mo-sn">' + esc(c.name) + '</div><div class="mo-sb">Battles ' + c.first + '–' + c.last + '</div>' +
-        '<div class="mo-sl">' + esc(CAMP_LINE[kind] || 'A boss ends it') + '</div></div>';
+        (sg ? '<div class="mo-sgp"><div class="mo-sgh">' + siegeCrest() + '<span>The Siege · Battle ' + fb.battle + '</span></div>' +
+          '<div class="mo-sbd">' + boardGlyph(fb.geo.cols, fb.geo.rows) + '<span>' + fb.geo.cols + '×' + fb.geo.rows + ' board · ' + fb.turns + ' turns</span></div>' +
+          '<div class="mo-tws">' + fb.twists.map((t) => twistRow(t, T, false, 0)).join('') + '</div></div>'
+          : '<div class="mo-sl">' + esc(CAMP_LINE[kind] || 'A boss ends it') + '</div>') + '</div>';
     }).join('');
-    const siege = fb ? '<div class="mo-stn siege mo-rise" style="--d:' + (80 + camps.length * 90) + 'ms"><span class="mo-emb red">' + icon('boss') + '</span>' +
-      '<div class="mo-sn">' + esc(((C.BOSS_KINDS || {}).siege || {}).name || 'The Siege of the Capital') + '</div>' +
-      '<div class="mo-sb">Battle ' + fb.battle + ' · the final boss</div>' +
-      '<div class="mo-sbd">' + boardGlyph(fb.geo.cols, fb.geo.rows) + '<span>' + fb.geo.cols + '×' + fb.geo.rows + ' board · ' + fb.turns + ' turns</span></div>' +
-      '<div class="mo-tws">' + fb.twists.map((t) => twistRow(t, T)).join('') + '</div></div>' : '';
     root.innerHTML = app.topbar({ title: 'The campaign', battle: 1 }) +
       '<div class="mo mo-intro' + (reduced(ctx) ? ' still' : '') + '"><div class="mo-glow"></div>' +
       '<div class="mo-kick mo-rise">Before battle 1</div>' +
       '<div class="mo-title mo-rise" style="--d:40ms">The road to the capital</div>' +
       '<div class="mo-sub mo-rise" style="--d:60ms">' + run.battles + ' battles. Miss a target and the run ends.</div>' +
-      '<div class="mo-road"><span class="mo-roadline"></span>' + stations + siege + '</div>' +
+      '<div class="mo-road"><span class="mo-roadline"></span>' + stations + '</div>' +
       '<div class="mo-foot">' + goBtn('March', 'go') + '</div></div>';
     app.bindTop(root);
     on(root, { go: () => app.introDone() });
@@ -13623,7 +14448,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       title = b.twists.length ? twistName(b.twists[0].id) : b.name;
       let turns = 0;
       try { turns = C.turnsOf(R.battleFor(run)); } catch (e) { /* the tunables' turns */ }
-      body = '<div class="mo-rows">' + b.twists.map((t) => twistRow(t, T, b.twists.length === 1, turns)).join('') + '</div>';
+      body = '<div class="mo-rows">' + b.twists.map((t, i) => twistRow(t, T, b.twists.length === 1, turns, 4, 380 + i * 140)).join('') + '</div>';
     } else if (b.kind === 'twoPart') {
       title = 'A battle in two parts';
       tl = 'Target for both parts';
@@ -13631,12 +14456,17 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       try { turns = C.turnsOf(R.battleFor(run)); } catch (e) { /* the tunables' turns */ }
       kick += ' · Part ' + (part || 1);
       if (part === 2) {
+        // one bar: part 1's gold share of the target, what is still to go, the cards part 2 keeps
         const left = part2Left(run), p1 = (run.part1 || {}).total || 0, need = Math.max(0, b.target - p1);
-        body = '<div class="mo-stats">' +
-          '<div class="mo-stat"><span class="k">Part 1 scored</span><b>' + p1 + '</b></div>' +
-          '<div class="mo-stat hot' + (left < turns ? ' warn' : '') + '"><span class="k">Cards left</span><b>' + left + '</b><span class="s">' +
-            (left <= 0 ? 'nothing left to play' : left < turns ? 'part 2 ends after ' + left + ' turn' + (left === 1 ? '' : 's') : 'a full ' + turns + ' turns') + '</span></div>' +
-          '<div class="mo-stat"><span class="k">Still needed</span><b>' + need + '</b></div></div>';
+        const pct = b.target > 0 ? Math.max(1.5, Math.min(100, (p1 / b.target) * 100)) : 0;
+        let sq = '';
+        for (let i = 0; i < left; i++) sq += '<i class="p2"></i>';
+        body = '<div class="mo-p2 mo-deal" style="--d:300ms"><div class="mo-p2go"><b data-count="' + need + '">' + need + '</b> to go</div>' +
+          '<div class="mo-p2bar"><i style="width:' + pct.toFixed(1) + '%"></i></div>' +
+          '<div class="mo-p2l"><span>Part 1 · ' + p1 + '</span><span class="t">' + icon('target') + b.target + '</span></div>' +
+          '<div class="mo-split"><div class="mo-sc">' + sq + '</div><div class="mo-sk"><span class="' + (left < turns ? 'warn' : '') + '">' +
+            (left <= 0 ? 'No cards left to play' : left + ' card' + (left === 1 ? '' : 's') + ' left' + (left < turns ? ' · part 2 ends after ' + left + ' turn' + (left === 1 ? '' : 's') : '')) + '</span></div></div></div>';
+        tl = '';
       } else {
         const sp = part1Split(run, turns);
         let cards = '';
@@ -13649,17 +14479,37 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       }
     } else if (b.kind === 'siege') {
       kick = 'The final battle · Battle ' + run.battle;
-      body = '<div class="mo-rows"><div class="mo-row"><span class="mo-ico">' + boardGlyph(b.geo.cols, b.geo.rows) + '</span><span class="mo-rt"><b>The capital</b><span>' +
-        b.geo.cols + '×' + b.geo.rows + ' board · ' + b.turns + ' turns</span></span></div>' + b.twists.map((t) => twistRow(t, T)).join('') + '</div>';
+      body = '<div class="mo-rows"><div class="mo-row mo-deal" style="--d:380ms"><span class="mo-ico">' + boardGlyph(b.geo.cols, b.geo.rows) + '</span><span class="mo-rt"><b>The capital</b><span>' +
+        b.geo.cols + '×' + b.geo.rows + ' board · ' + b.turns + ' turns</span></span></div>' + b.twists.map((t, i) => twistRow(t, T, false, 0, 4, 520 + i * 140)).join('') + '</div>';
     }
+    const sg = b.kind === 'siege', p2 = b.kind === 'twoPart' && part === 2;
     root.innerHTML = app.topbar({ title: 'Battle ' + run.battle }) +
-      '<div class="mo mo-boss' + (reduced(ctx) ? ' still' : '') + '"><div class="mo-glow red"></div><div class="mo-center">' +
-      '<div class="pnl mo-plate mo-rise"><span class="mo-emb red big">' + icon('boss') + '</span>' +
+      '<div class="mo mo-boss' + (sg ? ' siege' : '') + (reduced(ctx) ? ' still' : '') + '"><div class="mo-glow red"></div><div class="mo-center">' +
+      '<div class="pnl mo-plate mo-rise"><span class="mo-emb red big' + (sg ? ' crest' : '') + '">' + (sg ? siegeCrest() : icon('boss')) + '</span>' +
       '<div class="mo-kick">' + esc(kick) + '</div><div class="mo-title">' + esc(title) + '</div>' + body +
-      '<div class="mo-target"><span class="v">' + icon('target') + b.target + '</span><span class="k">' + tl + '</span></div></div>' +
+      (p2 ? '' : '<div class="mo-target mo-deal" style="--d:' + (sg ? 640 : 480) + 'ms"><span class="v">' + icon('target') + '<b data-count="' + b.target + '">' + b.target + '</b></span><span class="k">' + tl + '</span></div>') + '</div>' +
       goBtn('To battle', 'go', 'mo-rise') + '</div></div>';
     app.bindTop(root);
     on(root, { go: () => app.bossDone() });
+    // the target counts up from 0 as it deals in (~600 ms); reduced motion: shown at once
+    const timers = [];
+    let raf = 0;
+    if (!reduced(ctx) && typeof requestAnimationFrame === 'function') {
+      root.querySelectorAll('[data-count]').forEach((n) => {
+        const to = +n.dataset.count, dl = (parseFloat((n.closest('.mo-deal') || { style: { getPropertyValue: () => '' } }).style.getPropertyValue('--d')) || 0) + 80;
+        n.textContent = '0';
+        timers.push(setTimeout(() => {
+          const t0 = performance.now();
+          const step = (t) => {
+            const k = Math.min(1, (t - t0) / 600), e = 1 - Math.pow(1 - k, 3);
+            if (n.isConnected) n.textContent = String(Math.round(to * e));
+            if (k < 1 && n.isConnected) raf = requestAnimationFrame(step);
+          };
+          raf = requestAnimationFrame(step);
+        }, dl));
+      });
+    }
+    return { destroy: () => { timers.forEach(clearTimeout); if (typeof cancelAnimationFrame === 'function') cancelAnimationFrame(raf); } };
   }
 
   // ---- the level-up moment -----------------------------------------------------------------------------
@@ -13670,6 +14520,11 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
    * motion: shown settled at once. o: {run, T, rec ({uid, kind, type, id?, from, to}), then,
    * index, count (the queue: dots), reduced}. -> {el, finish, destroy}.
    */
+  /** The level-up line as html: a renamed card shows its old name struck. */
+  function lvLine(was, name, rec) {
+    if (!was || was === name) return esc(rankLine(name, rec));
+    return '<s class="mo-was">' + esc(was) + '</s> becomes ' + esc(name) + '<span class="mo-rk"> · rank ' + esc((rec && rec.to) || 1) + '</span>';
+  }
   function levelMoment(root, o) {
     const T = o.T || C.TUN_DEFAULT, run = o.run || {}, rec = o.rec || {};
     const html = Cards().html || (() => '');
@@ -13695,7 +14550,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       '<div class="mo-kick mo-lv-k">Rank up</div>' +
       '<div class="mo-cardz"><div class="mo-c0">' + html(was, { T, size: 'l' }) + '</div><div class="mo-c1">' + html(now, { T, size: 'l' }) + '</div>' +
       '<div class="mo-flash"></div><div class="mo-pts">' + pts + '</div></div>' +
-      '<div class="mo-lv-line">' + esc(rankLine(name, rec)) + '</div>' +
+      '<div class="mo-lv-line">' + lvLine(C.cardName(was), name, rec) + '</div>' +
       '<div class="mo-lv-hint">' + dots + '<span>Tap to continue</span></div>';
     root.appendChild(el);
     el.querySelectorAll('.mo-c1 .studs:not(.max) i').forEach((st, k) => { if (k >= wasN) { st.classList.add('mo-grow'); st.style.setProperty('--gk', String(k - wasN)); } });
@@ -13800,7 +14655,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   }
 
   const SCREENS = { draft, intro, bossIntro, levelUp, won, lost, levelMoment };
-  G.L1Moments = { twistName, twistLine, twistIcon, rankLine, part1Split, part2Left, trackStates, trackFill, deckZoom, deckLayout, roleLabel, SCREENS: Object.keys(SCREENS) };
+  G.L1Moments = { twistName, twistLine, twistIcon, twistBoard, siegeCrest, renameLine, generalCards, rankLine, part1Split, part2Left, trackStates, trackFill, deckZoom, deckLayout, roleLabel, SCREENS: Object.keys(SCREENS) };
   G.L1Screens = Object.assign(G.L1Screens || {}, SCREENS);
 })();
 </script>
@@ -13832,9 +14687,10 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  *                          list in the same view (battle.js: the battle's draw pile). A bar under
  *                          the title filters to one group (tap again for all) and sorts by kind,
  *                          power or the next rank (closest first); the choice lasts the session.
- *                          Identical cards (same piece, same rank) stack with ×N; a tap lays the
- *                          copies out, a tap on their ×N stacks them again. Under the title, the
- *                          cards of each type, officers and heroes included.
+ *                          Identical cards (same piece, same rank) stack as an offset pile with
+ *                          ×N (the user's ask, 2026-11-05); a tap lays the copies out, a tap on
+ *                          their ×N stacks them again. Under the title, the cards of each type,
+ *                          officers and heroes included (the user's ask; the chips count groups).
  * Pure helpers (test/loop001-help.test.js): L1Help = {groupDeck, pages, motionState, artState,
  * chainOf, ART, PAGE_IDS, GROUPS}. Storage: none of its own (the settings go through app.js).
  */
@@ -13976,6 +14832,23 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     form: (T) => ({ cols: 2, rows: 2, terrain: ['plains', 'plains', 'fields', 'plains'],
       put: [[0, unit(31, 'cav', 1)], [1, unit(32, 'cav', 1)], [3, unit(33, 'cav', 2)]], generals: [{ id: 'cpt_lances', level: 1 }] })
   };
+  /** Mount ART[key]'s board into box (a .h-board with a .dio): the engine state and its score, sized
+   *  to the leaned plane. -> the state's total, or null when the board cannot be drawn. */
+  function mountArt(box, key, T) {
+    const B = Board(), a = ART[key] && ART[key](T);
+    if (!B || !C || !a || !box) return null;
+    const st = artState(T, a), dio = box.querySelector('.dio');
+    const g = B.geom(st), sc = C.score(st);
+    B.mount(dio, st, { score: sc });
+    // the plane leans back 44 deg about its top edge: about 0.66 of its height shows, and the
+    // top row's figures stand above it
+    const top = Math.round(g.TS * 0.62);
+    box.style.width = g.W + 'px';
+    box.style.height = Math.round(g.H * 0.68 + top + 12) + 'px';
+    dio.style.left = '0px';
+    dio.style.top = top + 'px';
+    return { st, a, total: sc.total };
+  }
   /**
    * The score page's chain: how one unit's number is built (its power, then each × that lands on
    * it): {type, power, steps: [{icon, chip}], final}. Read from the engine's own parts for the
@@ -14132,8 +15005,11 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   }
 
   // ==== help: the art ================================================================================
+  // the why-badges as the board draws them (board.js): a general's brass plaque, an officer's pennant
+  const BADGE_IC = { general: 'badge-general', officer: 'badge-officer' };
+  const why = (m) => icon(BADGE_IC[m] || m);
   const disc = (v, type, badges, cls) => '<span class="h-disc"><span class="num ' + (type || 'inf') + (cls ? ' ' + cls : '') + '"><b>' + v + '</b>' +
-    (badges && badges.length ? '<span class="nmk">' + badges.map((m) => '<span class="mk mk-' + m + '">' + icon(m) + '</span>').join('') + '</span>' : '') + '</span></span>';
+    (badges && badges.length ? '<span class="nmk">' + badges.map((m) => '<span class="mk mk-' + m + '">' + why(m) + '</span>').join('') + '</span>' : '') + '</span></span>';
   const fx = (text, form) => '<span class="l1fx' + (form ? ' form' : '') + (String(text).length > 4 ? ' w' : '') + '">' + esc(text) + '</span>';
   const step = (n) => '<span class="h-step">' + n + '</span>';
   /** A board slot for an illustration (mounted after the page is in the DOM). */
@@ -14143,19 +15019,11 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     const B = Board();
     if (!B || !C) return;
     page.querySelectorAll('[data-board]').forEach((box) => {
-      const key = box.dataset.board, a = ART[key] && ART[key](T);
-      if (!a) return;
-      const st = artState(T, a), dio = box.querySelector('.dio');
+      const key = box.dataset.board;
       try {
-        const g = B.geom(st);
-        B.mount(dio, st, { score: C.score(st) });
-        // the plane leans back 44 deg about its top edge: about 0.66 of its height shows, and the
-        // top row's figures stand above it
-        const top = Math.round(g.TS * 0.62);
-        box.style.width = g.W + 'px';
-        box.style.height = Math.round(g.H * 0.68 + top + 12) + 'px';
-        dio.style.left = '0px';
-        dio.style.top = top + 'px';
+        const m = mountArt(box, key, T);
+        if (!m) return;
+        const st = m.st, a = m.a, dio = box.querySelector('.dio');
         if (a.held && a.at !== undefined) {
           const pv = C.predict(st, 0, a.at);
           if (pv) {
@@ -14168,13 +15036,24 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       } catch (e) { box.innerHTML = ''; }
     });
   }
+  /** Each type and its home terrain (tun.terrain.home), drawn: type glyph, the home badge, the
+   *  terrain's swatch. The rule otherwise lives only in a long-press sentence. */
+  const TERR = { forest: 'Forest', hills: 'Hills', plains: 'Plains', fields: 'Fields' };
+  function homesHtml(T) {
+    const home = (T.terrain || {}).home || { inf: 'forest', arc: 'hills', cav: 'plains' };
+    return '<div class="h-homes">' + TYPES.map((t) => {
+      const terr = home[t] || '';
+      return '<div class="h-home t-' + t + '"><span class="h-ty">' + icon(t) + '</span><span class="mk mk-home">' + icon('home') + '</span>' +
+        '<span class="h-terr tr-' + esc(terr) + '">' + icon(terr) + '</span><span class="h-tn">' + esc(TERR[terr] || terr) + '</span></div>';
+    }).join('') + '</div>';
+  }
   function art(id, T, P) {
     const K = Cards(), card = (c, o) => (K.html ? K.html(c, Object.assign({ T }, o || {})) : '');
     const plaque = (g, o) => (K.plaque ? K.plaque(g, Object.assign({ T }, o || {})) : '');
     const camps = (C && C.CAMPAIGNS) || [];
     if (id === 'goal') {
       const road = camps.map((c, i) => '<div class="h-stop"><span class="camp">' + (ROMAN[i] || i + 1) + '</span><span class="h-cap">' + c.first + '–' + c.last + '</span></div>' +
-        '<span class="h-way"></span>').join('') + '<div class="h-stop"><span class="h-capital">' + icon('fort') + '</span><span class="h-cap">The capital</span></div>';
+        '<span class="h-way"></span>').join('') + '<div class="h-stop"><span class="h-capital">' + (globalThis.L1Moments && L1Moments.siegeCrest ? L1Moments.siegeCrest() : icon('boss')) + '</span><span class="h-cap">The capital</span></div>';
       return '<div class="h-row">' +
         '<div class="pnl h-sp"><div class="lab">Target</div><div class="sc-tgt"><span class="v">' + icon('target') + '60</span></div>' +
         '<div class="lab" style="margin-top:8px">Score</div><div class="sc-tot">72<span class="dlt">Won</span></div></div>' +
@@ -14182,18 +15061,21 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     }
     if (id === 'turn') {
       const a = ART.turn(T);
-      const hand = [unit(15, 'inf', 1), a.held, unit(16, 'arc', 1)].map((c, i) => '<div class="h-hc' + (i === 1 ? ' up1' : '') + '">' + card(c, { size: 's', sel: i === 1 }) + (i === 1 ? step(1) : '') + '</div>').join('');
-      return '<div class="h-row h-turn"><div class="h-hand">' + hand + '</div><span class="h-arr">' + icon('march') + '</span>' + boardSlot('turn') + '</div>';
+      // the held card goes to the board; the other two go back to the pile (the top bar's deck chip)
+      const hand = [unit(15, 'inf', 1), a.held, unit(16, 'arc', 1)].map((c, i) => '<div class="h-hc' + (i === 1 ? ' up1' : ' out o' + i) + '">' + card(c, { size: 's', sel: i === 1 }) + (i === 1 ? step(1) : '') + '</div>').join('');
+      return '<div class="h-row h-turn"><div class="h-handc"><div class="h-hand">' + hand + '</div><span class="chip2 h-pile">' + icon('deck') + '</span></div>' +
+        '<span class="h-arr">' + icon('march') + '</span>' + boardSlot('turn') + '</div>';
     }
     if (id === 'score') {
       const ch = C ? chainOf(T) : { type: 'inf', power: 2, steps: [], final: 2 };
       const chain = '<div class="h-chain"><span class="h-gem t-' + ch.type + '">' + ch.power + '</span>' +
-        ch.steps.map((s) => '<span class="h-op">' + '<span class="h-why">' + icon(s.icon) + '</span>' + fx(s.chip) + '</span>').join('') +
+        ch.steps.map((s) => '<span class="h-op">' + '<span class="h-why">' + why(s.icon) + '</span>' + fx(s.chip) + '</span>').join('') +
         '<span class="h-eq">=</span>' + disc(ch.final, ch.type, ch.steps.map((s) => s.icon).filter((x, i, l) => x !== 'general' && l.indexOf(x) === i)) + '</div>';
       let total = 0, delta = 0;
       if (C) { const a = ART.score(T), st = artState(T, a), pv = C.predict(st, 0, a.at); total = pv ? pv.totalBefore : C.score(st).total; delta = pv ? pv.delta : 0; }
       return '<div class="h-col">' + chain + '<div class="h-row">' + boardSlot('score') +
-        '<div class="pnl h-sp"><div class="lab">Score</div><div class="sc-tot">' + total + '<span class="dlt' + (delta < 0 ? ' down' : '') + '">' + (delta < 0 ? '−' + -delta : '+' + delta) + '</span></div></div></div></div>';
+        '<div class="pnl h-sp"><div class="lab">Score</div><div class="sc-tot">' + total + '<span class="dlt' + (delta < 0 ? ' down' : '') + '">' + (delta < 0 ? '−' + -delta : '+' + delta) + '</span></div></div>' +
+        homesHtml(T) + '</div></div>';
     }
     if (id === 'generals') {
       const cap = P.caps || [];
@@ -14302,7 +15184,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       if (n === 1) return card(st.cards[0]);
       if (open.has(st.sig)) return '<div class="h-stack open" data-sig="' + sig + '">' + st.cards.map(card).join('') +
         '<button class="h-n" data-unstack="' + sig + '" aria-label="Stack the copies">×' + n + '</button></div>';
-      return '<div class="h-stack" data-sig="' + sig + '" data-n="' + n + '">' + card(st.cards[0]) + '<span class="h-n">×' + n + '</span></div>';
+      return '<div class="h-stack" data-sig="' + sig + '" data-n="' + n + '">' + card(st.cards[0]) + '<span class="h-n" aria-label="' + n + ' copies">×' + n + '</span></div>';
     };
     const ov = overlay(root, 'l1deck', '<div class="pnl h-deck">' +
       '<button class="h-x" data-h="close" aria-label="Close">' + X_SVG + '</button>' +
@@ -14337,7 +15219,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     return ov.el;
   }
 
-  globalThis.L1Help = { groupDeck, arrangeDeck, stackCards, typeTally, SORTS, pages, motionState, artState, chainOf, ART, PAGE_IDS, GROUPS };
+  globalThis.L1Help = { groupDeck, arrangeDeck, stackCards, typeTally, SORTS, pages, motionState, artState, mountArt, chainOf, ART, PAGE_IDS, GROUPS };
   globalThis.L1Screens = Object.assign(globalThis.L1Screens || {}, { menu, help, deck, askNewRun });
 })();
 </script>
@@ -14468,14 +15350,19 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       best = '<div class="hm-best mo-rise" style="--d:80ms"><div class="mo-kick">Furthest you have marched</div>' +
         '<div class="hm-big">Battle ' + v.big.battle + '</div><div class="hm-under">' + esc(v.big.camp) + '</div></div>';
     } else {
-      best = '<div class="hm-invite mo-rise" style="--d:80ms">Three campaigns stand between you and the capital.</div>';
+      // a first visit: the name alone, large (2026-11-05, user: no board), and one line
+      best = '<div class="hm-invite mo-rise" style="--d:140ms">Three campaigns stand between you and the capital.</div>';
     }
-    const recs = v.lines.length ? '<div class="hm-recs mo-rise" style="--d:160ms">' + v.lines.map((l) =>
+    // records still at zero say nothing: only what was earned shows
+    const shown = v.lines.filter((l) => l.v);
+    const recs = shown.length ? '<div class="hm-recs mo-rise" style="--d:160ms">' + shown.map((l) =>
       '<div class="hm-rec"><b>' + l.v + '</b><span>' + esc(l.k) + (l.sub ? ' · ' + esc(l.sub) : '') + '</span></div>').join('') + '</div>' : '';
-    const cont = live ? '<button class="btn-go mo-go hm-go" data-a="continue">Continue<small>' + (at ? 'Battle ' + at : 'The draft') + '</small>' + icon('march') + '</button>' : '';
+    // Continue names where the run stands, unless the big record just above already says it
+    const said = at && v.big && v.big.kind === 'march' && v.big.battle === at;
+    const cont = live ? '<button class="btn-go mo-go hm-go" data-a="continue">Continue' + (said ? '' : '<small>' + (at ? 'Battle ' + at : 'The draft') + '</small>') + icon('march') + '</button>' : '';
     const fresh = live ? '<button class="btn ghost hm-btn" data-a="new">New run</button>' : '<button class="btn-go mo-go hm-go" data-a="new">New run ' + icon('march') + '</button>';
     root.innerHTML = '<div class="mo hm' + (app.reducedMotion && app.reducedMotion() ? ' still' : '') + '"><div class="mo-glow"></div><div class="mo-center hm-col">' +
-      '<div class="hm-name mo-rise">Take the Field</div>' + best + recs +
+      '<div class="hm-name mo-rise' + (v.big ? '' : ' first') + '">Take the Field</div>' + best + recs +
       '<div class="hm-btns mo-rise" style="--d:220ms">' + cont + '<div class="hm-row">' + fresh +
       '<button class="btn ghost hm-btn" data-a="help">' + icon('help') + 'Help</button></div></div></div></div>';
     root.addEventListener('click', (e) => {
@@ -14610,7 +15497,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  *      A new run started in the game drops them from the address.
  * L1App = {run, topbar(opts), bindTop(root, handlers), route(), setRun(run), newRun(seed),
  *          battleDone(run), saveBattle(st), reducedMotion(), setting(k), setSetting(k, v),
- *          toStage(x, y), toast(text), uiSeen(k, v), screen() (the battle controller: st, held,
+ *          toStage(x, y), toast(text, anchorEl?), uiSeen(k, v), screen() (the battle controller: st, held,
  *          pv; tests), stage, records(), toHome(), homeContinue()}
  */
 (function () {
@@ -14649,10 +15536,25 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     const r = stage.getBoundingClientRect(), k = r.width / 1180 || 1;
     return { x: (x - r.left) / k, y: (y - r.top) / k };
   };
-  A.toast = (text) => {
+  /**
+   * A short message. With `anchor` (an element on the stage: the tapped price, tile, chip) it sits
+   * just above that element (below it when the element is near the top bar), where the eye already
+   * is; without, at the top centre as before. One anchored toast at a time.
+   */
+  A.toast = (text, anchor) => {
     const t = document.createElement('div');
     t.className = 'toast';
     t.textContent = text;
+    let r = null;
+    try { r = anchor && anchor.getBoundingClientRect && stage.contains(anchor) ? anchor.getBoundingClientRect() : null; } catch (e) { r = null; }
+    if (r && (r.width || r.height)) {
+      stage.querySelectorAll('.toast.at').forEach((x) => x.remove());
+      const a = A.toStage(r.left, r.top), b = A.toStage(r.right, r.bottom);
+      const below = a.y < 150;
+      t.classList.add('at', below ? 'below' : 'above');
+      t.style.left = Math.round(Math.max(130, Math.min(1050, (a.x + b.x) / 2))) + 'px';
+      t.style.top = Math.round(below ? b.y + 12 : a.y - 12) + 'px';
+    }
     stage.appendChild(t);
     setTimeout(() => t.remove(), 1700);
   };
@@ -14662,7 +15564,58 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     settings[k] = v;
     store.set(KEY.settings, settings);
     stage.classList.toggle('calm-motion', A.reducedMotion());
+    if (A.reducedMotion()) stopLoops();
   };
+
+  // ---- the march (the top bar's road; every screen's bindTop) ------------------------------------
+  // Entering a battle, the road fills from the last stud to this battle's stud and the stud rings
+  // (~300 ms, once per battle). While the boss is the next battle, its helmet glows red, slowly.
+  // Web Animations only (no stylesheet of the shell's): nothing runs under reduced motion.
+  let marched = null;
+  const LOOP = 'l1-loop';
+  function stopLoops() {
+    try { (document.getAnimations ? document.getAnimations() : []).forEach((x) => { if (x.id === LOOP) x.cancel(); }); } catch (e) { /* motion only */ }
+  }
+  function march(root) {
+    if (A.reducedMotion() || !root || !root.querySelector) return;
+    const track = root.querySelector('.top2 .track');
+    if (!track || !track.animate) return;
+    const boss = track.querySelector('.pip.boss.now');
+    if (boss) {
+      const a = boss.animate([{ filter: 'drop-shadow(0 0 4px rgba(224,80,58,.35))', transform: 'scale(1)' },
+        { filter: 'drop-shadow(0 0 16px rgba(240,90,64,.95))', transform: 'scale(1.1)' }],
+      { duration: 1100, iterations: Infinity, direction: 'alternate', easing: 'ease-in-out' });
+      a.id = LOOP;
+    }
+    const run = A.run;
+    if (!run || stage.dataset.screen !== 'battle' || run.phase !== 'battle') return;
+    const key = battleKey(run);
+    if (marched === key) return;
+    marched = key;
+    const now = C.battleInCampaign(run.battle);
+    const to = parseFloat(track.style.getPropertyValue('--fill')) || 0;
+    const from = Math.max(0, ((now - 1.6) / 10) * 100);
+    if (to > from) {
+      const t0 = performance.now(), dur = 300;
+      const step = (t) => {
+        if (!track.isConnected) return;
+        const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+        track.style.setProperty('--fill', (from + (to - from) * e).toFixed(1) + '%');
+        if (k < 1) requestAnimationFrame(step);
+      };
+      track.style.setProperty('--fill', from.toFixed(1) + '%');
+      requestAnimationFrame(step);
+      // frames may be throttled (a background tab): the road always ends where it belongs
+      setTimeout(() => track.style.setProperty('--fill', to.toFixed(1) + '%'), dur + 80);
+    }
+    const pip = track.querySelector('.pip.now');
+    if (pip) {
+      pip.animate([{ transform: 'scale(.6)', boxShadow: '0 0 0 0 rgba(243,213,142,.9)' },
+        { transform: 'scale(1.25)', boxShadow: '0 0 0 10px rgba(243,213,142,0)', offset: 0.6 },
+        { transform: 'scale(1)', boxShadow: '0 0 0 4px rgba(243,213,142,.15)' }],
+      { duration: 420, delay: 220, easing: 'ease-out', fill: 'backwards' });
+    }
+  }
   A.uiSeen = (k, v) => {
     if (v === undefined) return ui[k];
     ui[k] = v;
@@ -14684,7 +15637,10 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     let h = '<div class="top2"><div class="where"><b>' + (o.title || '') + '</b><span>' + (o.sub || cname) + '</span></div>' +
       '<div class="track" style="--fill:' + fill.toFixed(1) + '%"><span class="camp">' + (ROMAN[camp - 1] || camp) + '</span>';
     for (let k = 1; k <= 9; k++) h += '<span class="pip' + (o.allDone || k < now ? ' done' : k === now ? ' now' : '') + '"></span>';
-    h += '<span class="pip boss' + (o.allDone ? ' done' : now === 10 ? ' now' : '') + '">' + icon('boss') + '</span></div>' +
+    // the last campaign's boss is the capital: its crest (s-moments.js), never the campaign bosses' helmet
+    let fin = false;
+    try { const fb = R.finalBoss && R.finalBoss(run); fin = !!(fb && C.campaignOf(fb.battle) === camp && globalThis.L1Moments && L1Moments.siegeCrest); } catch (e) { fin = false; }
+    h += '<span class="pip boss' + (o.allDone ? ' done' : now === 10 ? ' now' : '') + '">' + (fin ? L1Moments.siegeCrest() : icon('boss')) + '</span></div>' +
       '<div class="res"><button class="chip2" data-act="deck" aria-label="' + (o.deckTitle || 'Deck') + '">' + icon('deck') + '<span class="n">' + (o.deck !== undefined ? o.deck : (run.deck || []).length) + '</span></button>' +
       '<span class="chip2" data-act="gold">' + icon('gold') + '<span class="n">' + (o.gold !== undefined ? o.gold : run.gold || 0) + '</span></span>' +
       '<button class="btn-round" data-act="help" aria-label="Help">' + icon('help') + '</button>' +
@@ -14699,6 +15655,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     on('deck', () => (h.deck ? h.deck() : L1Screens.deck(stage, ctx())));
     on('help', () => L1Screens.help(stage, ctx()));
     on('menu', () => L1Screens.menu(stage, ctx()));
+    try { march(root); } catch (e) { /* motion only */ }
   };
 
   // ---- the run --------------------------------------------------------------------------------
