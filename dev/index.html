@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="4">
-<script>(function(){var B="66753bc8f1";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=4;if(location.protocol==="file:")return;var last=0;function chk(back){var s=document.getElementById("stage");if(back&&s&&s.dataset.screen==="battle")return;if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}}chk(false);document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk(true)})})();</script>
+<script>(function(){var B="68c3fca533";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=4;if(location.protocol==="file:")return;var last=0;function chk(back){var s=document.getElementById("stage");if(back&&s&&s.dataset.screen==="battle")return;if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}}chk(false);document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk(true)})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#000000">
@@ -12111,12 +12111,14 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     }
     function scoreHtml() {
       const sd = R.standing(S.run, S.st);
-      const show = S.ending ? S.shown : sd.sum;
+      // a preview shows the total the placement would make, the badge what it adds (2026-11-05, user)
+      const pd = S.pv && !S.ending ? S.pv.delta : 0;
+      const show = S.ending ? S.shown : sd.sum + pd;
       const digits = String(Math.max(show, sd.sum)).length;
       const size = digits <= 2 ? '' : digits === 3 ? 'long' : 'xlong';
       let dl = '<span class="dlt hide">+0</span>';
       if (S.pv && !S.ending) {
-        const d = S.pv.delta;
+        const d = pd;
         dl = '<span class="dlt ' + (d > 0 ? 'up' : d < 0 ? 'down' : 'zero') + '">' + (d < 0 ? '−' + (-d) : '+' + d) + '</span>';
       }
       const M = turnsCap(), done = S.st.phase === 'done', N = done ? Math.min(S.st.turn, M) : Math.min(S.st.turn + 1, M);
