@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="8">
-<script>(function(){var B="9defd98f1b";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=8;if(location.protocol==="file:")return;var last=0;function chk(back){var s=document.getElementById("stage");if(back&&s&&s.dataset.screen==="battle")return;if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}}chk(false);document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk(true)})})();</script>
+<script>(function(){var B="87d7d7ca32";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=8;if(location.protocol==="file:")return;var last=0;function chk(back){var s=document.getElementById("stage");if(back&&s&&s.dataset.screen==="battle")return;if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}}chk(false);document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk(true)})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#000000">
@@ -983,9 +983,28 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .qm-gv { display: flex; align-items: center; gap: 14px; margin: auto 0; font-family: var(--label); font-size: 60px; line-height: 1; color: #f6e6c0; }
 .qm-gv .ic { font-size: 44px; color: #e6b54a; }
 .qm-gold .sub .up { color: #8fd08f; font-weight: 700; }
-.qm-dv { display: flex; align-items: baseline; gap: 8px; margin: auto 0; font-family: var(--label); font-size: 22px; line-height: 1; color: #f6e6c0; white-space: nowrap; }
-.qm-dv .n { font-size: 60px; }
-.qm-dv .ic { font-size: 34px; color: #c9a764; align-self: center; }
+.qm-dv { display: flex; align-items: baseline; gap: 8px; margin: 6px 0 0; font-family: var(--label); font-size: 18px; line-height: 1; color: #f6e6c0; white-space: nowrap; }
+.qm-dv .n { font-size: 44px; }
+.qm-dv .ic { font-size: 28px; color: #c9a764; align-self: center; }
+/* an armed recruit previewed: the old count dims, the new one green */
+.qm-dv.pv .n { font-size: 30px; color: #b9a888; }
+.qm-dv .to { margin-left: 2px; font-size: 44px; color: #9fe39a; }
+.qm-eye { position: absolute; top: 12px; right: 14px; font-size: 22px; color: #c9a764; opacity: .8; }
+/* the deck's army by type: gem, name over a bar, count */
+.qm-comp { display: flex; flex-direction: column; gap: 7px; margin: auto 0 4px; }
+.qm-ct { display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: 9px; font-family: var(--label); color: #f6e6c0; }
+.qm-ct .gem { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 17px; color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 2px 4px rgba(0,0,0,.5); }
+.qm-ct.inf .gem { background: radial-gradient(circle at 38% 32%, var(--inf1, #c4573f), var(--inf2, #7a2e20) 72%); }
+.qm-ct.arc .gem { background: radial-gradient(circle at 38% 32%, var(--arc1, #5f9a45), var(--arc2, #2f5a20) 72%); }
+.qm-ct.cav .gem { background: radial-gradient(circle at 38% 32%, var(--cav1, #4a78b8), var(--cav2, #24456f) 72%); }
+.qm-ct .k { display: block; margin-top: -2px; font-size: 12px; letter-spacing: .6px; text-transform: uppercase; color: #b9a888; }
+.qm-ct .bar { display: flex; height: 10px; border-radius: 5px; background: rgba(0,0,0,.35); overflow: hidden; }
+.qm-ct .bar i { display: block; height: 100%; border-radius: 5px; }
+.qm-ct.inf .bar i { background: var(--inf, #b8503a); } .qm-ct.arc .bar i { background: var(--arc, #4f8a3a); } .qm-ct.cav .bar i { background: var(--cav, #3a68a6); }
+.qm-ct .bar b { display: block; height: 100%; margin-left: -3px; border-radius: 0 5px 5px 0; background: #9fe39a; box-shadow: 0 0 8px rgba(159,227,154,.8); }
+.qm-ct .c { min-width: 64px; font-size: 24px; text-align: right; white-space: nowrap; }
+.qm-ct .c .p { margin-left: 4px; font-size: 18px; color: #9fe39a; }
+.qm-ct.up .c { color: #d9ffd2; }
 .qm-deck:active { filter: brightness(1.15); }
 /* the next boss, inside March On over its label */
 .qm-go.has-next { flex-direction: column; gap: 18px; }
@@ -14396,6 +14415,30 @@ html.d3 .dio[data-r="board"] .dt.locked .gr { background-color: rgba(12,9,6,.5);
     const goneNow = (shown) => goneSlots(app.uiSeen ? app.uiSeen('shelf') : null, stockKey(), shown, boughtSince(run.store, 'card'));
     const pill = (verb, price, ok) => '<span class="qm-pill' + (ok ? '' : ' no') + '">' + (verb ? '<span class="v">' + verb + '</span>' : '') + '<span class="p">' + icon('gold') + price + '</span></span>';
 
+    /** Your deck's inside: the card count and its army by type (C.armyOf: heroes and officers count
+     *  as their type; the engineers as none). rc: the armed recruit, previewed in green (its type +1;
+     *  the count grows unless a recruit replaces a card). */
+    function deckPanel(rc) {
+      const a = C.armyOf(run.deck), add = rc ? C.armyOf([rc]) : null, n = run.deck.length, grows = rc && !swaps();
+      const max = Math.max(a.inf, a.arc, a.cav) + 1;
+      const row = (t, name) => {
+        const k = a[t], up = add && add[t] ? 1 : 0;
+        return '<div class="qm-ct ' + t + (up ? ' up' : '') + '"><span class="gem">' + icon(t) + '</span>' +
+          '<span class="bw"><span class="k">' + name + '</span><span class="bar"><i style="width:' + (k / max * 100).toFixed(1) + '%"></i>' +
+          (up ? '<b style="width:' + (100 / max + 3).toFixed(1) + '%"></b>' : '') + '</span></span>' +
+          '<span class="c">' + (k + up) + (up ? '<span class="p">+1</span>' : '') + '</span></div>';
+      };
+      return '<div class="lab">Your deck</div><span class="qm-eye">' + icon('eye') + '</span>' +
+        '<div class="qm-dv' + (grows ? ' pv' : '') + '">' + icon('deck') + '<span class="n">' + n + '</span>' +
+        (grows ? '<span class="to">→ ' + (n + 1) + '</span>' : '<span class="w">cards</span>') + '</div>' +
+        '<div class="qm-comp">' + row('inf', 'Infantry') + row('arc', 'Archers') + row('cav', 'Cavalry') + '</div>';
+    }
+    /** Preview recruit i in Your deck (null: back to the deck as it is). */
+    function previewDeck(i) {
+      const d = layer.querySelector('.qm-deck');
+      if (d) d.innerHTML = deckPanel(i === null ? null : (run.store.recruits || [])[i] || null);
+    }
+
     function draw(o) {
       o = o || {};
       if (dead) return;
@@ -14430,8 +14473,7 @@ html.d3 .dio[data-r="board"] .dt.locked .gr { background-color: rgba(12,9,6,.5);
         // the right column (a flex column in its grid area): gold and deck, each half the Recruits row
         '<div class="qm-side"><div class="pnl qm-gold"><div class="lab">Your gold</div><div class="qm-gv">' + icon('gold') + '<span class="n">' + gold + '</span></div>' +
         (pay && pay.total ? '<div class="sub"><b class="up">+' + pay.total + '</b> from Battle ' + run.battle + '</div>' : '') + '</div>' +
-        '<div class="pnl qm-deck" data-a="deck" role="button" aria-label="Your deck"><div class="lab">Your deck</div><div class="qm-dv">' + icon('deck') +
-        '<span class="n">' + run.deck.length + '</span> cards</div><div class="sub">Tap to view</div></div></div>' +
+        '<div class="pnl qm-deck" data-a="deck" role="button" aria-label="Your deck">' + deckPanel(null) + '</div></div>' +
         // before a campaign boss, March On names it over its label
         '<button class="btn-go qm-go' + (nb ? ' has-next' : '') + '" data-a="march">' +
         (nb ? '<span class="qm-next ' + nb.kind + '"><span class="k">' + icon('boss') + 'Battle ' + nb.battle + '</span>' +
@@ -14515,7 +14557,7 @@ html.d3 .dio[data-r="board"] .dt.locked .gr { background-color: rgba(12,9,6,.5);
     }
 
     // ---- the shelves ----
-    const disarm = () => layer.querySelectorAll('.armed').forEach((x) => x.classList.remove('armed'));
+    const disarm = () => { if (layer.querySelector('.qm-ware.armed')) previewDeck(null); layer.querySelectorAll('.armed').forEach((x) => x.classList.remove('armed')); };
     let armedAt = 0;
     /** A refused tap: the price and the top bar's gold shake together, the reason beside the tap. */
     function refuse(why, pillEl) {
@@ -14535,6 +14577,7 @@ html.d3 .dio[data-r="board"] .dt.locked .gr { background-color: rgba(12,9,6,.5);
       if (!R.canBuy(run, shelf, i)) { refuse('Not enough gold', n.querySelector('.qm-pill')); return; }
       if (shelf === 'hire' && R.needsLeave(run)) { openReplace(i); return; }
       n.classList.add('armed');
+      if (shelf === 'recruits') previewDeck(i);
       armedAt = Date.now();
     }
     /** Recruit shelf item i (ware n). With swap on, `leave` is the deck card it replaces and `p` the
