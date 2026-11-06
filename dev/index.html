@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="8">
-<script>(function(){var B="124c0172f3";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=8;if(location.protocol==="file:")return;var last=0;function chk(back){var s=document.getElementById("stage");if(back&&s&&s.dataset.screen==="battle")return;if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}}chk(false);document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk(true)})})();</script>
+<script>(function(){var B="9defd98f1b";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=8;if(location.protocol==="file:")return;var last=0;function chk(back){var s=document.getElementById("stage");if(back&&s&&s.dataset.screen==="battle")return;if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}}chk(false);document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk(true)})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#000000">
@@ -912,19 +912,19 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 /* ---------- the panels: a grid on the stage (stage px, as the mock) ----------
    Each panel is absolutely positioned in its own grid area (inset 0), so the grid lines place it:
    March On shares the bottom row with General for hire and Services, its top and bottom theirs
-   (2026-11-06, user). The right column above it (down to the button) stacks gold, deck and the
-   next boss, the note at its foot just over the button. */
+   (2026-11-06, user). Gold and deck fill the Recruits row, their top and bottom its (2026-11-06,
+   user); the next boss is named inside March On, the battle the button marches to. */
 .qm { position: absolute; inset: 0; display: grid;
   grid-template-columns: 22px 430px 18px 436px 16px 236px;
   grid-template-rows: 84px 372px 18px 238px;
-  grid-template-areas: ". . . . . ." ". rec rec rec . side" ". . . . . side" ". hire . svc . go"; }
+  grid-template-areas: ". . . . . ." ". rec rec rec . side" ". . . . . ." ". hire . svc . go"; }
 .qm > .qm-rec, .qm > .qm-hirep, .qm > .qm-svcp, .qm > .qm-side, .qm > .qm-go { inset: 0; }
 .qm-rec { grid-area: rec; }
 .qm-rec .lab .sub { letter-spacing: 0; text-transform: none; font-size: 17px; }
 .qm-hirep { grid-area: hire; }
 .qm-svcp { grid-area: svc; }
-.qm-side { grid-area: side; position: absolute; display: flex; flex-direction: column; gap: 12px; padding-bottom: 12px; }
-.qm-side > .pnl { position: relative; flex: none; }
+.qm-side { grid-area: side; position: absolute; display: flex; flex-direction: column; gap: 12px; }
+.qm-side > .pnl { position: relative; flex: 1 1 0; display: flex; flex-direction: column; }
 .qm-deck { cursor: pointer; }
 .qm-go { grid-area: go; height: auto; }
 .qm-go:active { filter: brightness(1.15); }
@@ -979,22 +979,24 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .qm-s.off .b, .qm-s.off .t { opacity: .42; }
 .qm-s.off .b { box-shadow: 0 0 0 2px #6c5a3a, 0 0 0 4px #1a130c; }
 
-/* ---------- the right column: gold, deck, the next boss ---------- */
-.qm-gv { display: flex; align-items: center; gap: 12px; margin-top: 10px; font-family: var(--label); font-size: 52px; line-height: 1.1; color: #f6e6c0; }
-.qm-gv .ic { font-size: 36px; color: #e6b54a; }
-.qm-gold .sub { margin-top: 4px; }
+/* ---------- the right column: gold and deck (each half the Recruits row, the number centred) ---------- */
+.qm-gv { display: flex; align-items: center; gap: 14px; margin: auto 0; font-family: var(--label); font-size: 60px; line-height: 1; color: #f6e6c0; }
+.qm-gv .ic { font-size: 44px; color: #e6b54a; }
 .qm-gold .sub .up { color: #8fd08f; font-weight: 700; }
-.qm-dv { display: flex; align-items: center; gap: 10px; margin-top: 8px; font-family: var(--label); font-size: 32px; line-height: 1.2; color: #f6e6c0; }
-.qm-dv .ic { font-size: 30px; color: #c9a764; }
-.qm-deck .sub { margin-top: 4px; }
+.qm-dv { display: flex; align-items: baseline; gap: 8px; margin: auto 0; font-family: var(--label); font-size: 22px; line-height: 1; color: #f6e6c0; white-space: nowrap; }
+.qm-dv .n { font-size: 60px; }
+.qm-dv .ic { font-size: 34px; color: #c9a764; align-self: center; }
 .qm-deck:active { filter: brightness(1.15); }
-.qm-next { position: relative; margin: auto 10px 0; display: flex; flex-direction: column; gap: 2px; padding-left: 14px;
-  border-left: 2px solid rgba(194,69,58,.55); }
-.qm-next .k { display: flex; align-items: center; gap: 7px; font-family: var(--label); font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: #d2584b; }
+/* the next boss, inside March On over its label */
+.qm-go.has-next { flex-direction: column; gap: 18px; }
+.qm-go .qm-gol { display: flex; align-items: center; gap: 12px; }
+.qm-next { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 18px;
+  text-align: center; text-transform: none; letter-spacing: 0; font-weight: 400; }
+.qm-next .k { display: flex; align-items: center; gap: 7px; font-family: var(--label); font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: #ffd7c4; }
 .qm-next .k .ic { font-size: 20px; }
-.qm-next .t { font-family: var(--label); font-size: 18px; color: #f1dfb2; line-height: 1.12; }
-.qm-next .t .tw { font-size: 20px; margin: -3px 8px 0 0; color: #e07a6e; }
-.qm-next .l { font-size: 17px; color: #b9ab8f; line-height: 1.08; }
+.qm-next .t { font-family: var(--label); font-size: 19px; color: #fff1dc; line-height: 1.12; }
+.qm-next .t .tw { font-size: 20px; margin: -3px 8px 0 0; color: #ffd7c4; }
+.qm-next .l { font-family: var(--body, inherit); font-size: 16px; color: rgba(255,236,214,.85); line-height: 1.1; }
 
 /* ---------- the pop-ups: a pick over the dimmed store ---------- */
 .qm-pop { position: absolute; inset: 0; z-index: 20; }
@@ -1097,8 +1099,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .qm-fullv b { font-family: var(--label); font-size: 52px; line-height: 1; }
 
 /* rules 8: the note before the Siege shows the walled board */
-.qm-next.siege .t { padding-right: 46px; }
-.qm-next .mo-sgb { position: absolute; right: 0; top: -2px; width: 42px; height: 42px; }
+.qm-next .mo-sgb { position: static; width: 42px; height: 42px; }
 </style>
 <style>
 /*
@@ -1811,6 +1812,26 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 34px rgba(243,200,110,.35)) drop-shadow(0 4px 0 #000); text-shadow: none; }
 .hm-name.first + .hm-invite { margin-top: 40px; }
 </style>
+<style>
+/* loop001 - the three.js diorama spike (ui/board3d.js, ui/d3/diorama.js): only under html.d3.
+   The 3D canvas draws the ground, props, forts, walls and figures; the DOM board keeps the discs,
+   the tile highlights (the .gr box-shadows) and the taps. */
+.d3canvas { position: absolute; pointer-events: none; z-index: 0; }
+html.d3 .dio[data-r="board"] .plane { background: transparent; box-shadow: none; z-index: 1; }
+html.d3 .dio[data-r="board"].boss .plane { background: transparent; box-shadow: none; }
+html.d3 .dio[data-r="board"].boss .plane::before { display: none; }
+html.d3 .dio[data-r="board"] .dt .gr, html.d3 .dio[data-r="board"] .dw .gr { background-image: none !important; background-color: transparent; }
+html.d3 .dio[data-r="board"] .dt .gr { box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
+html.d3 .dio[data-r="board"] .dw .gr { display: none; }
+html.d3 .dio[data-r="board"] .up.prop, html.d3 .dio[data-r="board"] .up.fortp,
+html.d3 .dio[data-r="board"] .up.wallp, html.d3 .dio[data-r="board"] .up.gatep,
+html.d3 .dio[data-r="board"] .up.unit > svg { visibility: hidden; }
+/* the dimming the painted ground did with filters: a veil over the 3D instead */
+html.d3 .dio[data-r="board"] .dt.illegal .gr, html.d3 .dio[data-r="board"] .dt.nolegal .gr { background-color: rgba(12,9,6,.24); }
+html.d3 .dio[data-r="board"] .dt.locked .gr { background-color: rgba(12,9,6,.5); }
+</style>
+<!-- the three.js diorama spike (?d3=1; ui/board3d.js): three comes from the CDN only when it is on -->
+<script type="importmap">{"imports": {"three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
 <!-- shared painted art (figures, props, ground) -->
 <script>
 /*
@@ -13006,6 +13027,45 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 </script>
 <script>
 /*
+ * loop001/ui/board3d.js - the three.js diorama spike's switch (2026-11-06; ui/d3/diorama.js).
+ * ?d3=1 turns it on and the choice sticks in this browser (localStorage 'l1.d3'); ?d3=0 turns it
+ * off. Off, nothing changes. On, the battle board's mount / setPreview / clearPreview / breach also
+ * drive the 3D layer, and html.d3 (css/d3.css) hides the painted ground, props and figures the 3D
+ * now draws. The DOM board keeps the discs, the highlights and the taps. If three.js cannot load,
+ * html.d3 never goes on and the board stays as it was.
+ */
+(function () {
+  'use strict';
+  const KEY = 'l1.d3';
+  let on = false;
+  try {
+    const q = new URLSearchParams(location.search);
+    if (q.has('d3')) localStorage.setItem(KEY, q.get('d3') === '0' ? '0' : '1');
+    on = localStorage.getItem(KEY) === '1';
+  } catch (e) { on = /[?&]d3=1/.test(location.search); }
+  const B = globalThis.L1Board;
+  if (!on || !B) return;
+  let D = null;
+  const queue = [];
+  import('./d3/diorama.js').then((m) => { D = m; queue.splice(0).forEach((f) => f()); })
+    .catch((e) => { console.warn('loop001 d3: three.js did not load; the board stays 2D', e); });
+  const isBoard = (el) => !!(el && el.dataset && el.dataset.r === 'board');
+  const wrap = (name, after) => {
+    const orig = B[name];
+    B[name] = function () {
+      const r = orig.apply(this, arguments), a = arguments;
+      if (isBoard(a[0])) { const f = () => { try { after.apply(null, a); } catch (e) { console.warn('loop001 d3', e); } }; if (D) f(); else queue.push(f); }
+      return r;
+    };
+  };
+  wrap('mount', (el, st, o) => D.sync(el, st, o));
+  wrap('setPreview', (el, st, pv, card) => D.preview(el, st, pv, card));
+  wrap('clearPreview', (el) => D.preview(el, null, null, null));
+  wrap('breach', (el) => D.breach(el));
+})();
+</script>
+<script>
+/*
  * loop001/ui/battle.js - L1Battle: the battle screen (docs/LOOP001-UI.md "Battle screen").
  *
  * L1Battle.mount(root, ctx) builds and runs one battle (or one part of battle 20) inside the
@@ -14367,16 +14427,18 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         '<div class="qm-shelf"' + (z < 1 ? ' style="zoom:' + z.toFixed(3) + ';gap:30px;padding-top:' + (152 * (1 - z) / z).toFixed(1) + 'px"' : '') + '>' + wares + '</div></div>' +
         '<div class="pnl qm-hirep' + (hires.length > 1 ? ' many' : '') + '"><div class="lab">General for hire</div>' + hire + '</div>' +
         '<div class="pnl qm-svcp"><div class="lab">Services</div><div class="qm-svcs">' + svcs + '</div></div>' +
-        // the right column (a flex column in its grid area): gold, deck, the next boss at its foot
+        // the right column (a flex column in its grid area): gold and deck, each half the Recruits row
         '<div class="qm-side"><div class="pnl qm-gold"><div class="lab">Your gold</div><div class="qm-gv">' + icon('gold') + '<span class="n">' + gold + '</span></div>' +
         (pay && pay.total ? '<div class="sub"><b class="up">+' + pay.total + '</b> from Battle ' + run.battle + '</div>' : '') + '</div>' +
         '<div class="pnl qm-deck" data-a="deck" role="button" aria-label="Your deck"><div class="lab">Your deck</div><div class="qm-dv">' + icon('deck') +
-        '<span class="n">' + run.deck.length + '</span> cards</div><div class="sub">Tap to view</div></div>' +
-        (nb ? '<div class="qm-next ' + nb.kind + '"><div class="k">' + icon('boss') + 'Battle ' + nb.battle + '</div>' +
-          '<div class="t">' + (nb.twist && globalThis.L1Icons && L1Icons.twist ? L1Icons.twist(nb.twist, 'tw') : '') + esc(nb.title) + '</div>' +
+        '<span class="n">' + run.deck.length + '</span> cards</div><div class="sub">Tap to view</div></div></div>' +
+        // before a campaign boss, March On names it over its label
+        '<button class="btn-go qm-go' + (nb ? ' has-next' : '') + '" data-a="march">' +
+        (nb ? '<span class="qm-next ' + nb.kind + '"><span class="k">' + icon('boss') + 'Battle ' + nb.battle + '</span>' +
+          '<span class="t">' + (nb.twist && globalThis.L1Icons && L1Icons.twist ? L1Icons.twist(nb.twist, 'tw') : '') + esc(nb.title) + '</span>' +
           // rules 8: the walled Siege's board (L1Moments.siegeBoard)
-          (nb.siege && globalThis.L1Moments && L1Moments.siegeBoard ? L1Moments.siegeBoard(nb.siege) : '') + '<div class="l">' + esc(nb.line) + '</div></div>' : '') + '</div>' +
-        '<button class="btn-go qm-go" data-a="march">March on ' + icon('march') + '</button>';
+          (nb.siege && globalThis.L1Moments && L1Moments.siegeBoard ? L1Moments.siegeBoard(nb.siege) : '') + '<span class="l">' + esc(nb.line) + '</span></span>' : '') +
+        '<span class="qm-gol">March on ' + icon('march') + '</span></button>';
       app.bindTop(layer);
       if (o.goldFrom !== undefined) countGold(o.goldFrom, gold);
     }
