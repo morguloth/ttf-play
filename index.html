@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="8">
-<script>(function(){var B="87d7d7ca32";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=8;if(location.protocol==="file:")return;var last=0;function chk(back){var s=document.getElementById("stage");if(back&&s&&s.dataset.screen==="battle")return;if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}}chk(false);document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk(true)})})();</script>
+<script>(function(){var B="b5fdf210b2";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=8;if(location.protocol==="file:")return;var last=0;function chk(back){var s=document.getElementById("stage");if(back&&s&&s.dataset.screen==="battle")return;if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===v.build)return;try{if(sessionStorage.getItem(k)===v.build)return;sessionStorage.setItem(k,v.build)}catch(e){return}u.searchParams.set("v",v.build);location.replace(u.toString())}).catch(function(){})}catch(e){}}chk(false);document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk(true)})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#000000">
@@ -13423,13 +13423,20 @@ html.d3 .dio[data-r="board"] .dt.locked .gr { background-color: rgba(12,9,6,.5);
     function renderHand(deal, late) {
       const offer = S.ending || S.st.phase !== 'draft' ? [] : S.st.offer || [];
       el.hand.classList.toggle('late', !!(deal && late));
-      const n = offer.length, k = n >= 4 ? 0.86 : 1;
-      const w = n * CARD_W * k + Math.max(0, n - 1) * HAND_GAP;
-      el.hand.style.left = Math.round(BOARD_X - w / 2) + 'px';
+      const n = offer.length, gap = Math.max(0, n - 1) * HAND_GAP;
+      // 2026-11-07 (user): a big hand (Mustering Officer) stays clear of the generals column and the
+      // right column where they reach down to it; centred under the board while it fits, else slid
+      // into the free lane, and smaller only when even the lane is too narrow
+      const reaches = (x) => x.offsetHeight && x.offsetTop + x.offsetHeight > HAND_Y;
+      const lo = reaches(el.gens) ? el.gens.offsetLeft + el.gens.offsetWidth + 16 : 22;
+      const hi = reaches(el.peek) || reaches(el.acts) ? el.peek.offsetLeft - 16 : 1158;
+      const k = Math.min(n >= 4 ? 0.86 : 1, n ? (hi - lo - gap) / (n * CARD_W) : 1);
+      const w = n * CARD_W * k + gap;
+      el.hand.style.left = Math.round(Math.max(lo, Math.min(hi - w, BOARD_X - w / 2))) + 'px';
       el.hand.classList.toggle('empty', !n);
       el.hand.innerHTML = offer.map((c, i) => {
         const can = C.legalSlots(S.st, c).length > 0;
-        return '<div class="hc' + (deal ? ' deal' : '') + (can ? '' : ' nolegal') + '" data-i="' + i + '"' + (k !== 1 ? ' style="zoom:' + k + '"' : '') + '>' +
+        return '<div class="hc' + (deal ? ' deal' : '') + (can ? '' : ' nolegal') + '" data-i="' + i + '"' + (k !== 1 ? ' style="zoom:' + k.toFixed(3) + '"' : '') + '>' +
           (Cards ? Cards.html(c, { T, sel: S.held === i }) : '') + '</div>';
       }).join('');
     }
