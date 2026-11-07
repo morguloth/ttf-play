@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="10">
-<script>(function(){var B="77cedf63fd";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=10;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="bf885aa1e9";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=10;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2294,6 +2294,97 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   .hm .hm-e { animation: none; }
   .mo.hm > .hm-bd { transition: none; }
 }
+</style>
+<style>
+/*
+ * loop001/css/daily.css - the Daily Challenge (ui/s-daily.js; docs/LOOP001-DAILY.md §4): the daily
+ * screen (no top bar, the title screen's dark stage: the day and its generals in a column on the
+ * left, the leaderboard's panel on the right), the name plate, the title screen's Daily challenge
+ * button and the top bar's daily seal. Built on the moments' and the shell's pieces (.mo, .mo-kick,
+ * .mo-title, .pnl, .lab, .btn, .btn-go, .btn-round). Every class 'dy-'. Stage px (1180x820). Tap
+ * targets >= 52 stage px. Transform and opacity only; reduced motion: no entrance.
+ */
+
+/* ---------- the screen ---------- */
+.mo.dy .mo-glow { left: 32%; top: 50%; }
+.dy-back { position: absolute; top: 20px; left: 24px; z-index: 3; }
+.dy-back .ic { transform: rotate(180deg); }
+.dy-col { position: absolute; left: 40px; top: 24px; width: 600px; bottom: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.dy-col > * { animation: mo-rise .4s cubic-bezier(.2,.8,.3,1) backwards; }
+.dy-col > :nth-child(2) { animation-delay: 60ms; }
+.dy-col > :nth-child(n+4) { animation-delay: 140ms; }
+.dy-col > :nth-child(n+6) { animation-delay: 220ms; }
+.dy-n { margin-top: 10px; font-size: 64px; }
+.dy-date { margin-top: 4px; font-size: 22px; color: var(--sub, #b9ab8f); letter-spacing: .5px; }
+.dy-rule { margin-top: 8px; font-size: 18px; color: #8d8068; letter-spacing: .4px; }
+.dy-gens { display: flex; gap: 22px; margin-top: 22px; }
+.dy-gens .l1plaque { cursor: pointer; }
+.btn.dy-deck { margin-top: 18px; min-width: 200px; }
+.btn.dy-deck span { font-family: var(--label, 'Cinzel', serif); font-size: 20px; color: #f1dfb2; padding-left: 10px; border-left: 1px solid rgba(201,163,92,.45); }
+.dy-act { margin-top: 26px; display: flex; justify-content: center; }
+.btn-go.mo-go.dy-go { width: 340px; }
+
+/* the result: the run just finished, or today's first attempt */
+.dy-res { margin-top: 18px; display: flex; align-items: center; gap: 26px; padding: 10px 22px; border-radius: 12px;
+  background: rgba(20,16,12,.55); box-shadow: inset 0 0 0 1.5px rgba(201,163,92,.32); }
+.dy-res.won { box-shadow: inset 0 0 0 1.5px rgba(243,213,142,.7), 0 0 22px rgba(243,200,110,.18); }
+.dy-rh { display: flex; flex-direction: column; font-family: var(--label, 'Cinzel', serif); font-weight: 700; font-size: 24px; letter-spacing: 1px; color: #e07a6e; white-space: nowrap; }
+.dy-res.won .dy-rh { color: #ffe7a6; }
+.dy-rh span { font-family: var(--body, 'Barlow Condensed', sans-serif); font-weight: 500; font-size: 16px; letter-spacing: .5px; color: #a8987a; }
+.dy-rv { display: flex; gap: 22px; }
+.dy-rv > div { display: flex; flex-direction: column; align-items: center; }
+.dy-rv b { font-family: var(--label, 'Cinzel', serif); font-weight: 700; font-size: 30px; line-height: 1.05; color: #f1dfb2; }
+.dy-rv b small { font-size: 18px; color: #a8987a; }
+.dy-rv span { font-size: 14px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--lab, #c9a764); white-space: nowrap; }
+
+/* the leaderboard: a panel on the right, the top 20 as a ruled list */
+.pnl.dy-board { position: absolute; left: 676px; top: 84px; width: 476px; height: 704px; box-sizing: border-box; padding: 16px 18px; z-index: 1;
+  animation: mo-rise .4s cubic-bezier(.2,.8,.3,1) 120ms backwards; }
+.dy-bd { margin-top: 10px; }
+.dy-note { padding: 40px 0; text-align: center; font-size: 19px; color: #8d8068; letter-spacing: .5px; }
+.dy-rows { list-style: none; margin: 0; padding: 0; }
+.dy-row { display: grid; grid-template-columns: 34px minmax(0, 1fr) 54px 64px; align-items: center; gap: 8px; height: 29px; padding: 0 8px 0 4px;
+  border-bottom: 1px solid rgba(201,163,92,.14); }
+.dy-row > i { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-style: normal; font-family: var(--label, 'Cinzel', serif); font-weight: 700;
+  font-size: 13px; color: #c9a764; box-shadow: inset 0 0 0 1px rgba(201,163,92,.4); }
+.dy-row.p1 > i, .dy-row.p2 > i, .dy-row.p3 > i { color: #2a1d0d; box-shadow: 0 0 0 1px #0c0a08; }
+.dy-row.p1 > i { background: linear-gradient(180deg, var(--brass1, #f3d58e), var(--brass2, #c99a45) 55%, var(--brass3, #8a6226)); }
+.dy-row.p2 > i { background: linear-gradient(180deg, #f2f0ea, #b9b5ab 55%, #7b776e); }
+.dy-row.p3 > i { background: linear-gradient(180deg, #f0c493, #b97b44 55%, #7a4a20); }
+.dy-row > b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; font-size: 18px; color: #f1dfb2; }
+.dy-row > span { text-align: center; font-size: 17px; color: #b9ab8f; }
+.dy-row > span .ic { color: #8fd08f; font-size: 18px; }
+.dy-row > em { text-align: right; font-style: normal; font-family: var(--label, 'Cinzel', serif); font-weight: 700; font-size: 17px; color: #f1dfb2; }
+.dy-row.me { border-radius: 6px; border-bottom-color: transparent; background: linear-gradient(90deg, rgba(243,213,142,.28), rgba(243,213,142,.08)); box-shadow: inset 0 0 0 1.5px rgba(243,213,142,.7); }
+.dy-mine { margin-top: 4px; }
+.dy-mine::before { content: '⋯'; display: block; text-align: center; font-size: 18px; line-height: 1; color: #8d8068; }
+
+/* ---------- the name plate (over the stage, the menu panel's look) ---------- */
+.l1ov.dy-ask { position: absolute; inset: 0; z-index: 40; }
+.l1ov.dy-ask > .scrim { z-index: 0; }
+.pnl.dy-name { left: 340px; width: 500px; z-index: 1; display: flex; flex-direction: column; align-items: stretch; gap: 16px; padding: 24px 28px 26px; }
+.dy-name .mh { font-family: var(--label, 'Cinzel', serif); font-size: 26px; font-weight: 700; color: #f6e6c0; text-align: center; }
+.dy-in { box-sizing: border-box; width: 100%; height: 58px; padding: 0 16px; border: 0; border-radius: 10px; outline: none; text-align: center;
+  font-family: var(--body, 'Barlow Condensed', sans-serif); font-size: 26px; font-weight: 600; color: #f6e6c0; caret-color: #f3d58e;
+  background: rgba(10,8,6,.7); box-shadow: inset 0 0 0 1.5px rgba(201,163,92,.55); }
+.dy-in:focus { box-shadow: inset 0 0 0 2px #f3d58e, 0 0 16px rgba(243,213,142,.3); }
+.dy-in::placeholder { color: #6d6250; font-weight: 500; }
+.dy-name .mbtns { display: flex; justify-content: center; gap: 14px; }
+.dy-name .mbtns .btn { min-width: 140px; }
+
+/* ---------- the title screen's Daily challenge button ---------- */
+.btn.ghost.hm-btn.hm-daily { width: auto; padding: 0 22px; }
+.hm-daily small { font-family: var(--body, 'Barlow Condensed', sans-serif); font-size: 18px; font-weight: 600; letter-spacing: .5px; text-transform: none;
+  color: rgba(241,223,178,.8); padding-left: 10px; border-left: 1px solid rgba(201,163,92,.45); }
+.hm-top { display: flex; align-items: center; gap: 16px; }
+
+/* ---------- the top bar's seal on a daily run: a star in place of the campaign's numeral ---------- */
+.camp.dy .ic { font-size: 18px; }
+
+/* ---------- reduced motion ---------- */
+.dy.still .dy-col > *, .calm-motion .dy-col > *, .dy.still .pnl.dy-board, .calm-motion .pnl.dy-board { animation: none; }
+@media (prefers-reduced-motion: reduce) { .dy-col > *, .pnl.dy-board { animation: none; } }
+.hm-top .btn.hm-daily { min-height: 70px; }
 </style>
 <style>
 /*
@@ -6374,7 +6465,12 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       offerRankAt: [6, 12, 20, 30],
       // a `lateOffer` general (the Marshal of Reserves) is for hire only in the stores after this
       // battle or later (generals always join at level 1)
-      lateOfferFrom: 20
+      lateOfferFrom: 20,
+      // The Daily Challenge (docs/LOOP001-DAILY.md; daily.js C.Daily): a 10-battle run, the same for
+      // everyone on a UTC date, two seeded generals and a seeded 25-card deck (deck: C.Daily.DECK's
+      // numbers when absent). targets: battle 1..10 (Run.targetFor reads them for a run with
+      // run.daily; battle 10 the boss's base, x bosses.targetMult and its twist's factor).
+      daily: { battles: 10, targets: [20, 25, 35, 45, 55, 60, 70, 80, 85, 90] }
     },
     // Gold and the store after a won battle (run.js; docs/LOOP001.md §3: prog001's economy, leaning easy).
     store: {
@@ -11170,9 +11266,11 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 
   /** The target of battle k (default: the current one): tun.run.target (past the list, its last
    *  entry); a boss x tun.bosses.targetMult; the two-part battle's one combined target 2 x that;
-   *  rules 2: a twist boss x its twist's factor (twistFactorOf); rounded once. */
+   *  rules 2: a twist boss x its twist's factor (twistFactorOf); rounded once. A daily run (run.daily)
+ *  reads tun.run.daily.targets instead of tun.run.target. */
   function targetFor(run, k) {
-    const T = tunOf(run), b = k || run.battle, list = runTun(T).target || [0];
+    // the Daily Challenge (docs/LOOP001-DAILY.md): a daily run reads its own 10 targets
+    const T = tunOf(run), b = k || run.battle, list = (run && run.daily && (runTun(T).daily || {}).targets) || runTun(T).target || [0];
     const b0 = list[Math.min(b, list.length) - 1] || 0, kind = bossKind(run, b);
     if (!kind) return b0;
     return Math.round(b0 * (bossTun(T).targetMult || 1) * (kind === 'twoPart' ? 2 : 1) * twistFactorOf(run, b));
@@ -11908,6 +12006,230 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     advance, marchOn: advance
   };
   if (typeof module !== 'undefined') module.exports = C.Run;
+})();
+</script>
+<script>
+/*
+ * loop001/js/daily.js - the Daily Challenge engine (docs/LOOP001-DAILY.md; ported from prog001's
+ * prog001/js/daily.js, docs/DAILY.md). TTFCore4.Daily. Pure and DOM-free (no Math.random, no clock
+ * unless `now` is left out of today()). Loaded after run.js (node.js, index.html, the bundle).
+ *
+ * User (2026-11-07): "I want it to be its own thing. As far as run structure, go with same as prog
+ * 1. As for starter deck, go with a random 2 generals and a random 25 card deck." So: a 10-battle
+ * run, the same for everyone on a UTC date, one life, the store between battles, the boss at
+ * battle 10 (bosses.every), then the run is won. No draft. Ranked by battles won, then the total
+ * score (the sum of the run's battle totals). Only the first attempt of a date counts; replays
+ * that day are Practice. loop001 has no Military Scenarios, so there are none.
+ *
+ * ==== API ======================================================================================
+ *   C.Daily.EPOCH              '2026-11-07' (Daily #1)
+ *   C.Daily.today(now?)        the UTC date 'YYYY-MM-DD' of `now` (a Date, ms or a date string; default the clock)
+ *   C.Daily.number(date)       #N: days since EPOCH + 1
+ *   C.Daily.addDays(date, k)   the UTC date k days after `date` (k may be negative)
+ *   C.Daily.daySeed(date)      RNG.seedFrom('daily', date, C.RULES_VERSION) (uint32)
+ *   C.Daily.day(date?, T?)     the day (pure; deep-equal for the same date and rules):
+ *                              {date, n, seed, rules, generals: [{id, level: 1}] (2), deck: [card without uid] (25)}
+ *   C.Daily.generals(seed, T?) the day's two generals: one per tun.run.draft step's role (a formation
+ *                              general, then a boost general), each of a rarity drawn by campaign I's
+ *                              odds (falling to the next one down), never a battle-wide or late one
+ *   C.Daily.cards(seed, T?)    the deck generator (DECK, over tun.run.daily.deck): 25 real cards, no uids
+ *   C.Daily.startRun(day, opts?) a loop001 run (Run.startRun's shape) in phase 'battle', battle 1:
+ *                              seed day.seed, battles 10, the day's generals, its deck with uids
+ *                              0..24, gold 0; run.daily = {date, n, rules, practice, at, end: null}.
+ *                              opts {practice, tun, at (a start time in ms: tells practice runs apart)}
+ *   C.Daily.targetsOf(T?)      the daily's 10 targets (tun.run.daily.targets; battle 10 the boss's
+ *                              base, x bosses.targetMult and its twist's factor as in a normal run)
+ *   C.Daily.isDaily(run) / isOver(run) / abandon(run) / resumable(run, date?)
+ *   C.Daily.result(run)        {date, n, rules, practice, over, won, reached (battles won), fell
+ *                              (the battle it ended at unwon, or null), abandoned, score}
+ *   C.Daily.score(run)         the sum of the run's battle totals (every battle fought, the lost one too)
+ *   C.Daily.better(a, b)       > 0 when result a ranks above b (battles won, then score)
+ *   C.Daily.record(recs, run)  the records after `run` finished: {recs, first} (first: this finish is
+ *                              the date's first non-practice one and was just recorded). recs =
+ *                              {date: {score, reached, won, fell, abandoned, at}}; practice runs and second finishes
+ *                              change nothing.
+ * ===============================================================================================
+ */
+(function () {
+  const C = globalThis.TTFCore4 = globalThis.TTFCore4 || {};
+  const RNG = () => C.RNG;
+  const TYPES = ['inf', 'arc', 'cav'];
+  const EPOCH = '2026-11-07';
+  const DAY_MS = 86400000;
+  /** The deck generator's numbers when tun.run.daily.deck has none (docs/LOOP001-DAILY.md §2):
+   *  early-to-mid run strength. Leaders: a seeded count of each in [lo, hi]; the rest units, each
+   *  type at least typeMin (two-type formations always have their members), of rank r with odds
+   *  ranks[r - 1] (mostly rank 1, no rank 3). */
+  const DECK = { size: 25, officers: [2, 3], heroes: [1, 2], engineers: [1, 2], typeMin: 5, ranks: [0.75, 0.25] };
+
+  const clone = (x) => JSON.parse(JSON.stringify(x));
+  const tunOf = (T) => T || C.TUN_DEFAULT;
+  const runTun = (T) => tunOf(T).run || {};
+  const dailyTun = (T) => runTun(T).daily || {};
+
+  // ---- the day -----------------------------------------------------------------------------------
+  /** The UTC date 'YYYY-MM-DD' of `now` (a Date, a time in ms or a parseable string; default the clock). */
+  function today(now) {
+    const d = now instanceof Date ? now : new Date(now === undefined || now === null ? Date.now() : now);
+    return d.toISOString().slice(0, 10);
+  }
+  const msOf = (date) => Date.parse(String(date) + 'T00:00:00Z');
+  const addDays = (date, k) => new Date(msOf(date) + (k || 0) * DAY_MS).toISOString().slice(0, 10);
+  /** Daily #N: 2026-11-07 is #1. */
+  const number = (date) => Math.round((msOf(date) - msOf(EPOCH)) / DAY_MS) + 1;
+  /** The day's seed: the date and the rules version (a rules change makes a new daily). */
+  const daySeed = (date) => RNG().seedFrom('daily', date, C.RULES_VERSION) >>> 0;
+
+  /** A state-passing stream over seed s: next() in [0, 1), int(lo, hi), pick(arr), index(weights). */
+  function stream(s0) {
+    let s = s0 >>> 0;
+    const next = () => { const r = RNG().next(s); s = r.s; return r.value; };
+    const int = (lo, hi) => lo + Math.floor(next() * (hi - lo + 1));
+    const span = (r) => (Array.isArray(r) ? int(r[0], r[r.length - 1]) : Math.max(0, Math.floor(r || 0)));
+    const index = (ws) => {
+      const sum = ws.reduce((a, w) => a + (w > 0 ? w : 0), 0), x = next() * sum;
+      let acc = 0;
+      for (let k = 0; k < ws.length; k++) { acc += ws[k] > 0 ? ws[k] : 0; if (x < acc) return k; }
+      return 0;
+    };
+    return { next, int, span, index, pick: (arr) => arr[Math.floor(next() * arr.length)] };
+  }
+  /** Campaign I's rarity odds (tun.run.rarity[0]) as weights in C.RARITIES' order. */
+  const rarityWeights = (T) => { const w = Object.assign({ common: 0.75, uncommon: 0.22, rare: 0.03 }, (runTun(T).rarity || [])[0] || {}); return C.RARITIES.map((r) => w[r] || 0); };
+  /** The first def of rarity index k or the next one down that `ok` accepts, drawn from `defs`. */
+  function byRarity(R, defs, k, ok) {
+    for (let j = k; j >= 0; j--) {
+      const xs = defs.filter((d) => (d.rarity || 'common') === C.RARITIES[j] && ok(d));
+      if (xs.length) return R.pick(xs);
+    }
+    return null;
+  }
+
+  // ---- the generals --------------------------------------------------------------------------------
+  /** The day's two generals (no draft): one of each draft step's role (tun.run.draft: a formation
+   *  general, then a boost general), each of a rarity drawn by campaign I's odds, at level 1; never
+   *  a battle-wide (step 'battle') or late-offer general, never one twice. */
+  function generals(seed, T) {
+    const R = stream(RNG().seedFrom(seed, 'generals'));
+    const roles = (runTun(T).draft || [{ role: 'teach' }, { role: 'boost' }]).map((d) => d.role);
+    const pool = C.poolDefs('general').filter((g) => g.step !== 'battle' && !g.lateOffer);
+    const out = [];
+    for (const role of roles) {
+      const g = byRarity(R, pool, R.index(rarityWeights(T)), (d) => d.role === role && !out.some((x) => x.id === d.id));
+      if (g) out.push({ id: g.id, level: 1 });
+    }
+    return out;
+  }
+
+  // ---- the deck generator --------------------------------------------------------------------------
+  /**
+   * The day's 25 cards (no uids; migrated as a run deck is), drawn by seedFrom(seed, 'deck') with the
+   * same shapes the start deck and the store's shelves use: officers at rank 1 (a named one of the
+   * pool by rarity, never one twice, or a Sergeant of a type and area: tun.run.sergeantChance),
+   * heroes at their start rank (C.heroCard; never one twice), the Sappers, then units: each type at
+   * least typeMin, the rest of a random type, ranks by DECK.ranks. Leaders' rarity: campaign I's odds.
+   */
+  function cards(seed, T0) {
+    const T = tunOf(T0), D = Object.assign({}, DECK, dailyTun(T).deck || {});
+    const R = stream(RNG().seedFrom(seed, 'deck')), w = rarityWeights(T), out = [];
+    const shapes = (T.officerShapes || ['cross']).length ? T.officerShapes : ['cross'];
+    const chance = typeof runTun(T).sergeantChance === 'number' ? runTun(T).sergeantChance : 0.25;
+    const nOff = R.span(D.officers), nHero = R.span(D.heroes), nEng = R.span(D.engineers);
+    for (let k = 0; k < nOff; k++) {
+      const held = out.filter((c) => c.kind === 'officer');
+      const named = R.next() < chance ? null : byRarity(R, C.poolDefs('officer'), R.index(w), (d) => !held.some((c) => c.id === d.id));
+      if (named) out.push({ kind: 'officer', id: named.id, type: named.type, rank: 1, pips: 0 });
+      else {
+        const free = TYPES.filter((t) => !held.some((c) => !c.id && c.type === t));
+        out.push({ kind: 'officer', type: R.pick(free.length ? free : TYPES), shape: R.pick(shapes), rank: 1, pips: 0 });
+      }
+    }
+    for (let k = 0; k < nHero; k++) {
+      const h = byRarity(R, C.poolDefs('hero'), R.index(w), (d) => !out.some((c) => c.kind === 'hero' && c.id === d.id));
+      if (h) out.push(C.heroCard(h, T));
+    }
+    for (let k = 0; k < nEng; k++) out.push({ kind: 'engineer' });
+    const top = C.maxRank(T), ranks = (D.ranks || [1]).slice(0, top);
+    const nUnits = Math.max(0, (D.size || 25) - out.length), types = [];
+    for (const t of TYPES) for (let k = 0; k < Math.min(D.typeMin || 0, Math.floor(nUnits / 3)); k++) types.push(t);
+    while (types.length < nUnits) types.push(R.pick(TYPES));
+    const units = types.map((t) => ({ kind: 'unit', type: t, rank: R.index(ranks) + 1, pips: 0, traits: [] }));
+    return units.concat(out).map((c) => C.migrateCard(c));
+  }
+
+  /** The day's setup, pure: the same date (and rules) gives a deep-equal day. */
+  function day(date0, T) {
+    const date = date0 || today(), seed = daySeed(date);
+    return { date, n: number(date), seed, rules: C.RULES_VERSION, generals: generals(seed, T), deck: cards(RNG().seedFrom(seed, 'cards'), T) };
+  }
+
+  // ---- the daily run ---------------------------------------------------------------------------------
+  /** The daily's targets, battle 1..10 (tun.run.daily.targets). */
+  const targetsOf = (T) => (dailyTun(T).targets || []).slice();
+  /**
+   * A loop001 run for day `d` (Run.startRun's shape, so the battle, store, level-up and save code
+   * work as they are): the day's seed (boards, the boss and the shelves are the day's), 10 battles
+   * (tun.run.daily.battles), the day's generals (no draft: phase 'battle'), its deck with fresh uids
+   * 0..N-1, gold 0, and run.daily. Run.targetFor reads tun.run.daily.targets for it.
+   */
+  function startRun(d, opts0) {
+    if (!d || !d.date || !Array.isArray(d.deck) || !Array.isArray(d.generals)) throw new Error('not a daily day');
+    const o = opts0 || {};
+    const run = C.Run.startRun({ seed: d.seed, tun: o.tun, generals: d.generals });
+    run.deck = d.deck.map((c, uid) => { const x = C.migrateCard(clone(c)); delete x.uid; return Object.assign({ uid }, x); });
+    run.nextUid = run.deck.length;
+    run.battles = dailyTun(o.tun).battles || 10;
+    run.daily = { date: d.date, n: d.n, rules: d.rules, practice: !!o.practice, at: typeof o.at === 'number' ? o.at : 0, end: null };
+    return run;
+  }
+  const isDaily = (run) => !!(run && run.daily && typeof run.daily === 'object');
+  /** Has the daily ended (battle 10 won, a battle lost, or abandoned)? */
+  const isOver = (run) => isDaily(run) && (run.phase === 'won' || run.phase === 'lost' || !!run.daily.end);
+  /** The menu's end of a daily: it counts as finished with what it has (phase 'lost', end.reason
+   *  'abandoned', end.battle the battle it stood before). A copy; a run already over as it is. */
+  function abandon(run) {
+    if (!isDaily(run)) throw new Error('not a daily run');
+    if (isOver(run)) return run;
+    const out = clone(run);
+    out.phase = 'lost';
+    out.store = null;
+    delete out.part1;
+    const at = run.phase === 'store' ? Math.min(run.battles, run.battle + 1) : run.battle;
+    out.daily.end = { won: false, battle: at, reason: 'abandoned' };
+    out.reached = at;
+    return out;
+  }
+  /** Does a saved daily go on (Continue) on `date` (default today)? Unfinished, and a practice run
+   *  only on its own date (an earlier date's first attempt still goes on: it counts for its date). */
+  function resumable(run, date) {
+    if (!isDaily(run) || isOver(run)) return false;
+    return !run.daily.practice || run.daily.date === (date || today());
+  }
+  /** The sum of the run's battle totals (every battle fought, the lost one too). */
+  const score = (run) => Math.round(((run && run.results) || []).reduce((a, r) => a + (r && r.total > 0 ? r.total : 0), 0));
+  /** The run's daily result (the record, the daily screen and the leaderboard row read it). */
+  function result(run) {
+    const dl = (run && run.daily) || {}, res = (run && run.results) || [], over = isOver(run);
+    const won = !!run && run.phase === 'won', reached = res.filter((r) => r && r.won).length;
+    const lostAt = over && !won ? (dl.end && dl.end.battle) || run.reached || run.battle : null;
+    return { date: dl.date, n: dl.n, rules: dl.rules, practice: !!dl.practice, over, won, reached, fell: lostAt,
+      abandoned: !!(dl.end && dl.end.reason === 'abandoned'), score: score(run) };
+  }
+  /** > 0 when result a ranks above result b: battles won first, then the score. */
+  const better = (a, b) => ((a.reached || 0) - (b.reached || 0)) || ((a.score || 0) - (b.score || 0));
+  /** The records after `run` (a finished daily) ended: the date's first non-practice finish is
+   *  recorded {score, reached, won, at}; anything else (practice, a second finish, an unfinished
+   *  run) leaves them as they are. -> {recs (a copy), first} */
+  function record(recs0, run, now) {
+    const recs = Object.assign({}, recs0 && typeof recs0 === 'object' ? recs0 : {});
+    if (!isOver(run) || run.daily.practice || recs[run.daily.date]) return { recs, first: false };
+    const r = result(run);
+    recs[run.daily.date] = { score: r.score, reached: r.reached, won: r.won, fell: r.fell, abandoned: r.abandoned, at: typeof now === 'number' ? now : 0 };
+    return { recs, first: true };
+  }
+
+  C.Daily = { EPOCH, DECK, today, number, addDays, daySeed, day, generals, cards, startRun, targetsOf, isDaily, isOver, abandon, resumable, result, score, better, record };
+  if (typeof module !== 'undefined') module.exports = C.Daily;
 })();
 </script>
 <!-- the interface -->
@@ -18729,6 +19051,10 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  *                          stage without scrolling (measured 2026-11-07: the menu is 556 stage px
  *                          tall, 626 with Share play data, and the Sound section adds about 460;
  *                          the panel is 641).
+ *                          The Daily Challenge (2026-11-07, docs/LOOP001-DAILY.md): during a daily
+ *                          run (app.daily.active()) New run gives way to Abandon daily (asks first:
+ *                          it ends the daily, which counts as finished: app.daily.abandon()); once
+ *                          a leaderboard name is kept, a Leaderboard name row edits it (L1Daily.askName).
  *   askNewRun(root, ctx)   that New run question on its own (the title screen's New run).
  *   help(root, ctx, opts?) seven illustrated pages (the goal, a turn, the score, generals and
  *                          formations, officers / heroes / engineers, the store, the run): swipe,
@@ -19137,6 +19463,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     // help.css); a redraw in place keeps the class, so its entrance never replays
     const turn = (dir) => { if (!dir) return; pnl.classList.remove('h-from-r', 'h-from-l'); void pnl.offsetWidth; pnl.classList.add(dir); };
     const rows = () => menuRows(screenOf(root), app.run || ctx.run, !!app.toHome);
+    const inDaily = () => !!(app.daily && app.daily.active && app.daily.active() && runLive(app.run));
     function main(dir) {
       const m = motionState(app), S = soundState(app);
       turn(typeof dir === 'string' ? dir : '');
@@ -19150,7 +19477,15 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         toggle('calm', 'Reduced motion', m.on, m.forced ? 'On in your system settings' : '', m.forced) +
         '<button class="h-set h-row-go" data-h="sound"><span class="t">Sound</span><span class="h-val">' + (S.on ? 'On' : 'Off') + icon('chev') + '</span></button>' +
         (globalThis.L1Share && L1Share.available ? toggle('share', 'Share play data', app.setting('share') !== false) : '') +
-        '<button class="btn red" data-h="new"' + (rows().ask ? '' : NOSFX) + '>New run</button>';
+        (app.daily && app.daily.name && app.daily.name() && globalThis.L1Daily ? '<button class="h-set h-row-go" data-h="dname"><span class="t">Leaderboard name</span><span class="h-val">' + esc(app.daily.name()) + icon('chev') + '</span></button>' : '') +
+        (inDaily() ? '<button class="btn red" data-h="quit">Abandon daily</button>' : '<button class="btn red" data-h="new"' + (rows().ask ? '' : NOSFX) + '>New run</button>');
+      centre(pnl);
+    }
+    function quit() {
+      turn('');
+      const pr = app.run && app.run.daily && app.run.daily.practice;
+      pnl.innerHTML = '<div class="mh">' + (pr ? 'End the practice?' : 'Abandon the daily?') + '</div><div class="ms">' + (pr ? 'It ends here.' : 'It ends here and counts as your run of the day.') + '</div>' +
+        '<div class="mbtns"><button class="btn ghost" data-h="back">Cancel</button><button class="btn red" data-h="quitYes"' + NOSFX + '>' + (pr ? 'End' : 'Abandon') + '</button></div>';
       centre(pnl);
     }
     function ask() {
@@ -19197,6 +19532,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       },
       share: () => { const on = app.setting('share') === false; app.setSetting('share', on); if (on) L1Share.flush(); main(); },
       home: () => { ov.close(); app.toHome(); },
+      quit: () => quit(),
+      quitYes: () => { ov.close(); app.daily.abandon(); },
+      dname: () => { ov.close(true); globalThis.L1Daily.askName(root, app.daily.name(), (n) => app.daily.setName(n), true); },
       // a run lost or won (or none) is over: nothing ends, so no question
       new: () => { if (rows().ask) ask(); else { ov.close(); app.newRun(); } },
       back: main,
@@ -19517,6 +19855,12 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  *   - When play data is shared (L1Share.enabled()): a small low-contrast footer says so.
  *   Reduced motion (app.reducedMotion(), .calm-motion): static (no drift, no motes, no rise, no
  *   sheen); the name still waits for its fonts.
+ *   The Daily Challenge (2026-11-07, docs/LOOP001-DAILY.md): a "Daily challenge" button beside New
+ *   run (beside Continue while a run is in progress), its small line '#N', 'Continue' or 'Done'
+ *   (L1Daily.homeLabel); it opens the daily screen (app.daily.open()). User, 2026-11-07: "the daily
+ *   challenge button should only show up on the title screen once a player has completed a run (Win
+ *   or lose)": shown once the records count a run played (canDaily(rec): runs > 0; a daily never
+ *   counts there).
  *   Note: 2026-11-05 the user removed the small diorama from the first visit's column ("no board"),
  *   so the board stays off (BACKDROP = false: the motes alone); one switch shows it again.
  */
@@ -19607,6 +19951,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     return null;
   }
   const inProgress = (run) => !!run && (run.phase === 'draft' || run.phase === 'battle' || run.phase === 'store');
+  /** Does the title screen offer the Daily challenge: a normal run finished, won or lost (the records'
+   *  runs played; a daily run never counts there)? */
+  const canDaily = (rec) => norm(rec).runs > 0;
 
   // ---- the living backdrop: a demo board from the engine alone ----------------------------------------
   // off: the user's 2026-11-05 ruling for the first visit ("no board") stands; the motes stay
@@ -19678,6 +20025,15 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     const cont = live ? '<button class="btn-go mo-go hm-go" data-a="continue">Continue' + (said ? '' : '<small>' + (at ? 'Battle ' + at : 'The draft') + '</small>') + icon('march') + '</button>' : '';
     // (with a run in progress New run asks first: the question's own 'open' is its one sound)
     const fresh = live ? '<button class="btn ghost hm-btn" data-a="new" data-sfx="none">New run</button>' : '<button class="btn-go mo-go hm-go" data-a="new">New run ' + icon('march') + '</button>';
+    // the Daily challenge beside the main button, once a run has been finished
+    let dly = '';
+    if (app.daily && G.L1Daily && canDaily(app.records ? app.records() : null)) {
+      let line = '';
+      try { line = G.L1Daily.homeLabel(app.daily.view()); } catch (err) { line = ''; }
+      dly = '<button class="btn ghost hm-btn hm-daily" data-a="daily">Daily challenge' + (line ? '<small>' + esc(line) + '</small>' : '') + '</button>';
+    }
+    const main = live ? cont : fresh;
+    const top = dly ? '<div class="hm-top">' + main + dly + '</div>' : main;
     const NAME = 'Take the Field';
     let motes = '';
     for (const m of MOTES) motes += '<i style="left:' + m[0] + '%;--s:' + m[1] + 'px;--t:' + m[2] + 's;--md:' + m[3] + 's;--dx:' + m[4] + 'px"></i>';
@@ -19689,7 +20045,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       '<div class="mo-glow"></div><div class="mo-center hm-col">' +
       '<div class="hm-name' + (v.big ? '' : ' first') + e(0) + '>' + NAME +
       '<span class="hm-sheen" aria-hidden="true"><span class="hm-band"><span class="hm-st">' + NAME + '</span></span></span></div>' + best + recs +
-      '<div class="hm-btns' + e(recs ? 360 : 240) + '>' + cont + '<div class="hm-row">' + fresh +
+      '<div class="hm-btns' + e(recs ? 360 : 240) + '>' + top + '<div class="hm-row">' + (live ? fresh : '') +
       '<button class="btn ghost hm-btn" data-a="help" data-sfx="open">' + icon('help') + 'Help</button></div></div></div>' +
       '<button class="btn-round hm-menu" data-a="menu" data-sfx="open" aria-label="Menu">' + icon('menu') + '</button>' +
       (share ? '<div class="hm-foot">Shares anonymous play data to tune the game · turn it off in the menu</div>' : '') + '</div>';
@@ -19725,6 +20081,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       const a = n.dataset.a;
       const cx = { run, T, app };
       if (a === 'continue') app.homeContinue();
+      else if (a === 'daily') app.daily.open();
       else if (a === 'help') G.L1Screens.help(app.stage || root, cx, { page: app.helpPage ? app.helpPage('home') : 0 });
       else if (a === 'menu') G.L1Screens.menu(app.stage || root, cx);
       else if (a === 'new') {
@@ -19735,8 +20092,203 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     return { destroy() { timers.forEach((t) => clearTimeout(t)); } };
   }
 
-  G.L1Records = { empty, norm, update, abandon, reached, view, standing, inProgress };
+  G.L1Records = { empty, norm, update, abandon, reached, view, standing, inProgress, canDaily };
   G.L1Screens = Object.assign(G.L1Screens || {}, { home });
+})();
+</script>
+<script>
+/*
+ * loop001/ui/s-daily.js - the Daily Challenge screen (docs/LOOP001-DAILY.md §4; 2026-11-07, user:
+ * "on the title screen next to start a new run. Have a daily challenge button, and when you press
+ * that, it goes into a daily challenge section, which shows you the leaderboard and gives you an
+ * option to play the daily challenge"). Styles: css/daily.css (every class 'dy-'). Its engine is
+ * C.Daily (js/daily.js); app.js owns the daily run, its keys and the mode (L1App.daily).
+ *
+ * L1Screens.daily(root, ctx) (ctx.daily {just?: a result just finished}): no top bar (as the title
+ * screen). Back (top left) to the title screen. Left: "Daily #N" with the date, one rules line, the
+ * day's two generals (the plaques; a tap opens a general's view), Deck · 25 (the deck view of the
+ * day's cards), the result (the run just finished, else today's first attempt: Victory, or Defeat at
+ * battle k, with its battles won and score; a practice run says it is not counted), and the play
+ * button: Play, Continue (a saved daily that goes on; "Continue practice"), or Practice once today's
+ * daily is done. Right: today's leaderboard (the top 20, the player's own row highlighted, their rank
+ * under the list when outside it), "Loading" while it is read, a quiet "Leaderboard unavailable"
+ * when the read fails, "No one yet" when it is empty.
+ * The first time a non-practice daily finishes and no name is kept, the name plate asks for one
+ * (at most 16 characters; OK or Skip, Skip = Anonymous); then the day's row is posted
+ * (L1App.daily.post, once) and the board is read again a moment later. Reduced motion: no entrance.
+ *
+ * L1Daily (pure, test/loop001-daily-ui.test.js): dateWords(date), stateOf(view), resultHtml(r, n),
+ *   boardHtml(state, me), screenHtml(view, o), namePlateHtml(cur, edit), rankOf(state, me),
+ *   homeLabel(view) (the title screen button's small line); askName(root, cur, cb, edit) the name
+ *   plate (DOM).
+ */
+(function () {
+  'use strict';
+  const G = globalThis;
+  const C = G.TTFCore4;
+  const icon = (n, cls) => (G.L1Icons && G.L1Icons.use ? G.L1Icons.use(n, cls) : '');
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const Cards = () => G.L1Cards || {};
+  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const BOARD_DELAY = 1800;   // after a post, the board is read again this much later (the row lands first)
+
+  /** '2026-11-07' -> '7 November 2026'. */
+  function dateWords(date) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(date || ''));
+    return m ? (+m[3]) + ' ' + MONTHS[+m[2] - 1] + ' ' + m[1] : String(date || '');
+  }
+  /**
+   * The screen's state from L1App.daily.view(): 'continue' (a saved daily goes on: practice?, its
+   * date and n when an earlier date), 'done' (today's first attempt is over), 'play'.
+   */
+  function stateOf(v) {
+    if (v && v.live) return { kind: 'continue', practice: !!v.live.daily.practice, earlier: v.live.daily.date !== v.date ? { date: v.live.daily.date, n: v.live.daily.n } : null };
+    if (v && v.rec) return { kind: 'done' };
+    return { kind: 'play' };
+  }
+  /** The title screen button's small line: '#N', 'Continue', or 'Done'. */
+  function homeLabel(v) {
+    const s = stateOf(v);
+    return s.kind === 'continue' ? 'Continue' : s.kind === 'done' ? 'Done' : '#' + ((v && v.day && v.day.n) || 1);
+  }
+  /** A result's panel: Victory / Defeat at battle k, battles won, score (r: C.Daily.result or a record). */
+  function resultHtml(r, battles) {
+    if (!r) return '';
+    const n = battles || 10, won = !!r.won;
+    const head = won ? 'Victory' : (r.abandoned ? 'Abandoned' : 'Defeat') + ' · Battle ' + (r.fell || Math.min(n, (r.reached || 0) + 1));
+    return '<div class="dy-res' + (won ? ' won' : '') + (r.practice ? ' prac' : '') + '">' +
+      '<div class="dy-rh">' + esc(head) + (r.practice ? '<span>Practice · not counted</span>' : '') + '</div>' +
+      '<div class="dy-rv"><div><b>' + (r.reached || 0) + '<small>/' + n + '</small></b><span>Battles won</span></div>' +
+      '<div><b>' + Math.round(r.score || 0) + '</b><span>Score</span></div></div></div>';
+  }
+  /** The player's rank on a board state (their row in the top, else state.me), or null. */
+  function rankOf(state, me) {
+    if (!state || state.status !== 'ok') return null;
+    const at = me ? (state.rows || []).findIndex((x) => x.player === me) : -1;
+    return at >= 0 ? at + 1 : state.me && state.me.rank ? state.me.rank : null;
+  }
+  /** The leaderboard's inside for a board state ({status: 'loading' | 'unavailable' | 'ok', rows, me}). */
+  function boardHtml(state, me) {
+    const s = state || { status: 'loading' };
+    if (s.status === 'loading') return '<div class="dy-note">Loading</div>';
+    if (s.status !== 'ok') return '<div class="dy-note">Leaderboard unavailable</div>';
+    const rows = s.rows || [];
+    if (!rows.length && !s.me) return '<div class="dy-note">No one yet</div>';
+    const line = (rank, x, mine) => '<li class="dy-row' + (rank <= 3 ? ' p' + rank : '') + (mine ? ' me' : '') + '"><i>' + rank + '</i><b>' + esc(x.name) + '</b>' +
+      '<span>' + (x.won ? icon('check') : (x.reached || 0) + '/10') + '</span><em>' + Math.round(x.score || 0) + '</em></li>';
+    const at = me ? rows.findIndex((x) => x.player === me) : -1;
+    let h = '<ol class="dy-rows">' + rows.map((x, i) => line(i + 1, x, i === at)).join('') + '</ol>';
+    if (s.me && at < 0) h += '<ol class="dy-rows dy-mine">' + line(s.me.rank, s.me, true) + '</ol>';
+    return h;
+  }
+  /**
+   * The screen's markup. v: L1App.daily.view(); o {just (a result just finished), board (a state),
+   * me (the player id), T}.
+   */
+  function screenHtml(v, o0) {
+    const o = o0 || {}, d = v.day, st = stateOf(v), T = o.T || (C && C.TUN_DEFAULT);
+    const plaque = Cards().plaque || (() => '');
+    const shown = st.kind === 'continue' && st.earlier ? C.Daily.day(v.live.daily.date) : d;
+    const res = o.just || (st.kind === 'done' && v.rec ? Object.assign({}, v.rec, { practice: false }) : null);
+    const btn = st.kind === 'continue' ? '<button class="btn-go mo-go dy-go" data-a="resume">' + (st.practice ? 'Continue practice' : 'Continue') + ' ' + icon('march') + '</button>'
+      : st.kind === 'done' ? '<button class="btn-go mo-go dy-go" data-a="practice">Practice ' + icon('march') + '</button>'
+        : '<button class="btn-go mo-go dy-go" data-a="play">Play ' + icon('march') + '</button>';
+    return '<div class="mo hm dy' + (o.still ? ' still' : '') + '"><div class="mo-glow"></div>' +
+      '<button class="btn-round dy-back" data-a="back" aria-label="Back">' + icon('chev') + '</button>' +
+      '<div class="dy-col">' +
+        '<div class="mo-kick">Daily challenge</div>' +
+        '<div class="mo-title huge gold dy-n">Daily #' + shown.n + '</div>' +
+        '<div class="dy-date">' + esc(dateWords(shown.date)) + '</div>' +
+        '<div class="dy-rule">10 battles · one life · your first run counts</div>' +
+        '<div class="dy-gens" data-r="gens">' + shown.generals.map((g) => plaque(g, { T })).join('') + '</div>' +
+        '<button class="btn ghost dy-deck" data-a="deck" data-sfx="open">' + icon('deck') + 'Deck<span>' + shown.deck.length + '</span></button>' +
+        resultHtml(res, 10) +
+        (st.earlier ? '<div class="dy-rule">Daily #' + st.earlier.n + ' first: it counts for its own day</div>' : '') +
+        '<div class="dy-act">' + btn + '</div>' +
+      '</div>' +
+      '<div class="pnl dy-board"><div class="lab">Leaderboard · Daily #' + d.n + '</div><div class="dy-bd" data-r="board" aria-live="polite">' + boardHtml(o.board, o.me) + '</div></div>' +
+      '</div>';
+  }
+  /** The name plate: a title, the field (16 characters), OK and Skip (Cancel when editing). */
+  function namePlateHtml(cur, edit) {
+    const v = cur && cur !== 'Anonymous' ? cur : '';
+    return '<div class="pnl h-menu dy-name" data-r="pnl"><div class="mh">Leaderboard name</div>' +
+      '<input class="dy-in" type="text" maxlength="16" autocomplete="nickname" autocapitalize="words" spellcheck="false" aria-label="Leaderboard name" placeholder="Anonymous" value="' + esc(v) + '">' +
+      '<div class="mbtns"><button class="btn ghost" data-a="skip">' + (edit ? 'Cancel' : 'Skip') + '</button><button class="btn" data-a="ok">OK</button></div></div>';
+  }
+  /** The name plate over `root`; cb(name) with the cleaned name (Skip: 'Anonymous'); edit: Cancel calls nothing. */
+  function askName(root, cur, cb, edit) {
+    const host = root || document.getElementById('stage');
+    const el = document.createElement('div');
+    el.className = 'l1ov dy-ask';
+    el.innerHTML = '<div class="scrim"></div>' + namePlateHtml(cur, edit);
+    host.appendChild(el);
+    const pnl = el.querySelector('[data-r="pnl"]');
+    pnl.style.top = Math.max(24, Math.round((820 - pnl.offsetHeight) / 2) - 120) + 'px';
+    const input = el.querySelector('.dy-in');
+    let done = false;
+    const clean = (s) => (G.L1Share && G.L1Share.cleanName ? G.L1Share.cleanName(s) : (String(s || '').trim().slice(0, 16) || 'Anonymous'));
+    const finish = (name) => { if (done) return; done = true; el.remove(); if (name != null) cb(name); };
+    ['click', 'pointerdown', 'pointerup'].forEach((t) => el.addEventListener(t, (e) => e.stopPropagation()));
+    el.addEventListener('click', (e) => {
+      const n = e.target.closest ? e.target.closest('[data-a]') : null;
+      if (!n) return;
+      if (n.dataset.a === 'ok') finish(clean(input.value));
+      else if (n.dataset.a === 'skip') finish(edit ? null : 'Anonymous');
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); finish(clean(input.value)); }
+      else if (e.key === 'Escape') { e.preventDefault(); finish(edit ? null : 'Anonymous'); }
+      e.stopPropagation();
+    });
+    setTimeout(() => { try { input.focus(); } catch (e) { /* no focus */ } }, 60);
+    return el;
+  }
+
+  // ---- the screen -------------------------------------------------------------------------------------
+  function daily(root, ctx) {
+    const app = ctx.app, D = app.daily, T = ctx.T || C.TUN_DEFAULT;
+    const v = D.view(), o = (ctx.daily) || {};
+    const still = !!(app.reducedMotion && app.reducedMotion());
+    const me = D.player();
+    let board = { status: 'loading' }, alive = true;
+    const timers = [];
+    root.innerHTML = screenHtml(v, { just: o.just, board, me, T, still });
+    const gens = root.querySelector('[data-r="gens"]');
+    if (gens && Cards().bindLongPress) Cards().bindLongPress(gens, { ctx: () => ({ T }), tap: true });
+    const paint = () => { const el = root.querySelector('[data-r="board"]'); if (alive && el) el.innerHTML = boardHtml(board, me); };
+    const load = () => {
+      board = { status: 'loading' };
+      paint();
+      Promise.resolve(D.board(v.date, C.RULES_VERSION)).then((b) => { board = b || { status: 'unavailable' }; paint(); }, () => { board = { status: 'unavailable' }; paint(); });
+    };
+    // the row of a finished first attempt goes once; the name is asked the first time
+    const saved = v.saved, rec = saved && saved.daily && !saved.daily.practice && C.Daily.isOver(saved) ? v.recs[saved.daily.date] : null;
+    if (rec && !rec.posted) {
+      const post = () => { D.post(saved); timers.push(setTimeout(load, BOARD_DELAY)); };
+      if (v.name) post(); else askName(app.stage || root, '', (name) => { D.setName(name); post(); });
+      board = { status: 'loading' };
+    } else load();
+    if (o.just && G.L1Sfx) { try { G.L1Sfx.play(o.just.won ? 'victory' : 'page'); } catch (e) { /* sound only */ } }
+    const shownDay = () => (v.live && v.live.daily.date !== v.date ? C.Daily.day(v.live.daily.date) : v.day);
+    root.addEventListener('click', (ev) => {
+      const n = ev.target.closest ? ev.target.closest('[data-a]') : null;
+      if (!n || !root.contains(n)) return;
+      const a = n.dataset.a;
+      if (a === 'back') app.toHome();
+      else if (a === 'play') D.play(false);
+      else if (a === 'practice') D.play(true);
+      else if (a === 'resume') D.resume();
+      else if (a === 'deck' && G.L1Screens.deck) {
+        const dd = shownDay(), cards = dd.deck.map((c, uid) => Object.assign({ uid: 1000 + uid }, c));
+        G.L1Screens.deck(app.stage || root, { run: { deck: cards, generals: dd.generals }, T, app: null }, { cards, title: 'Daily #' + dd.n + ' deck' });
+      }
+    });
+    return { destroy() { alive = false; timers.forEach(clearTimeout); } };
+  }
+
+  G.L1Daily = { dateWords, stateOf, homeLabel, resultHtml, rankOf, boardHtml, screenHtml, namePlateHtml, askName };
+  G.L1Screens = Object.assign(G.L1Screens || {}, { daily });
 })();
 </script>
 <script>
@@ -19752,7 +20304,16 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  *
  * Storage (under 'ttf-loop001:'): player (a random id), outbox (at most 40 rows waiting, retried on
  * the next load), sent (the last 120 keys, so a reload never sends a battle twice).
- * L1Share = {battle(run), flush(), enabled(), available, item(run) (the row, for tests)}
+ * L1Share = {battle(run), flush(), enabled(), available, item(run) (the row, for tests),
+ *            daily(run, name), dailyItem(run, name), board(date, rules) (docs/LOOP001-DAILY.md §5)}
+ * The Daily Challenge (2026-11-07): a daily's battle rows carry `daily` (its date) and
+ * `dailyPractice`, keyed apart from a normal run's ('daily:DATE:first|p<at>:battle'). When a
+ * non-practice daily finishes for the first time the app calls daily(run, name): one row
+ * {kind:'daily', v:1, game:'loop001', date, n, rules, player, name, score, reached, won, build, at}
+ * through the same outbox and the same enabled() switch (a player who turned sharing off is not on
+ * the board). board(date, rules) reads the day's leaderboard: GET SHARE_URL?daily=DATE&rules=N
+ * &game=loop001&player=ID, 6 s at most, allowed from anywhere (only writing is guarded) ->
+ * Promise<{status: 'ok' | 'unavailable', rows, me}> (parseBoard).
  */
 (function () {
   'use strict';
@@ -19788,13 +20349,69 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   function item(run) {
     const r = run && (run.results || [])[(run.results || []).length - 1];
     if (!r) return null;
-    return {
-      v: 1, game: C.BUILD_NAME || 'loop001', key: run.seed + ':' + r.battle, player: playerId(), rules: C.RULES_VERSION, build: buildName(),
+    const dl = run.daily && typeof run.daily === 'object' ? run.daily : null;
+    const key = dl ? 'daily:' + dl.date + ':' + (dl.practice ? 'p' + (dl.at || 0) : 'first') + ':' + r.battle : run.seed + ':' + r.battle;
+    const row = {
+      v: 1, game: C.BUILD_NAME || 'loop001', key, player: playerId(), rules: C.RULES_VERSION, build: buildName(),
       at: new Date().toISOString(), seed: run.seed, attempt: 0, phase: run.phase,
       pool: (run.generals || []).map((g) => ({ id: g.id, level: g.level || 1 })),
       deckSize: (run.deck || []).length, result: r, cardPool: 'loop001', battles: run.battles || 30,
       gold: run.gold || 0, pay: r.pay || null, store: storeBefore(run, r.battle), reached: run.reached || null
     };
+    if (dl) { row.daily = dl.date; row.dailyPractice = !!dl.practice; }
+    return row;
+  }
+  /** A name as the board keeps it: control characters out, spaces folded, 16 characters; '' -> Anonymous. */
+  function cleanName(s) {
+    const t = String(s == null ? '' : s).replace(/\s+/g, ' ').replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, 16).trim();
+    return t || 'Anonymous';
+  }
+  /** The leaderboard row of a finished daily (null for a practice run or one not over). */
+  function dailyItem(run, name) {
+    const D = C.Daily;
+    if (!D || !D.isOver(run) || run.daily.practice) return null;
+    const r = D.result(run);
+    return {
+      kind: 'daily', v: 1, game: C.BUILD_NAME || 'loop001', key: 'daily:' + r.date, date: r.date, n: r.n, rules: r.rules,
+      player: playerId(), name: cleanName(name), score: r.score, reached: r.reached, won: r.won, build: buildName(), at: new Date().toISOString()
+    };
+  }
+  /** Queue and send a finished daily's row, once per date. */
+  function daily(run, name) {
+    if (!enabled()) return false;
+    const it = dailyItem(run, name);
+    if (!it) return false;
+    const sent = readList('sent');
+    if (sent.indexOf(it.key) >= 0) return false;
+    raw.set('sent', JSON.stringify(sent.concat([it.key]).slice(-120)));
+    raw.set('outbox', JSON.stringify(readList('outbox').concat([it]).slice(-40)));
+    flush();
+    return true;
+  }
+  const yes = (v) => v === true || v === 1 || v === 'TRUE' || v === 'true';
+  /** The sheet's answer {date, rules, game?, rows: [{name, score, reached, won, player}], me?} -> a
+   *  board state ('unavailable' for an error, another date or rules, or no rows array). */
+  function parseBoard(j, date, rules) {
+    if (!j || typeof j !== 'object' || j.error || !Array.isArray(j.rows)) return { status: 'unavailable' };
+    if (date && j.date && String(j.date).slice(0, 10) !== date) return { status: 'unavailable' };
+    if (rules != null && j.rules != null && +j.rules !== +rules) return { status: 'unavailable' };
+    const row = (x) => ({ name: cleanName(x.name), score: Math.max(0, Math.round(+x.score || 0)), reached: Math.max(0, Math.min(99, Math.round(+x.reached || 0))), won: yes(x.won), player: String(x.player == null ? '' : x.player) });
+    const rows = j.rows.filter((x) => x && typeof x === 'object').slice(0, 20).map(row);
+    const me = j.me && typeof j.me === 'object' ? Object.assign(row(j.me), { rank: Math.max(1, Math.round(+j.me.rank || 0)) }) : null;
+    return { status: 'ok', rows, me };
+  }
+  /** The board's URL for a date and rules (this player's id, so a rank outside the top 20 comes back). */
+  const boardUrl = (date, rules) => SHARE_URL + '?daily=' + encodeURIComponent(date) + '&rules=' + encodeURIComponent(rules) + '&game=loop001&player=' + encodeURIComponent(playerId());
+  /** GET the day's board, at most `ms` (6000) ms -> Promise<board state>. Reading is allowed anywhere. */
+  function board(date, rules, ms) {
+    if (typeof fetch !== 'function' || !SHARE_URL) return Promise.resolve({ status: 'unavailable' });
+    let ctl = null;
+    try { ctl = new AbortController(); } catch (e) { ctl = null; }
+    let timer = 0;
+    const late = new Promise((res) => { timer = setTimeout(() => { if (ctl) { try { ctl.abort(); } catch (e) { /* gone */ } } res(null); }, ms || 6000); });
+    let get;
+    try { get = Promise.resolve(fetch(boardUrl(date, rules), ctl ? { signal: ctl.signal } : {})).then((r) => (r && r.ok ? r.json() : null)).catch(() => null); } catch (e) { get = Promise.resolve(null); }
+    return Promise.race([get, late]).then((j) => { clearTimeout(timer); return parseBoard(j, date, rules); });
   }
   /** Queue and send the battle `run` just finished (its last result), once per key. */
   function battle(run) {
@@ -19823,7 +20440,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       }, () => { flushing = false; });
   }
 
-  globalThis.L1Share = { battle, flush, enabled, available: !!SHARE_URL && SHAREABLE, item };
+  globalThis.L1Share = { battle, flush, enabled, available: !!SHARE_URL && SHAREABLE, item, daily, dailyItem, board, boardUrl, parseBoard, cleanName, playerId };
 })();
 </script>
 <script>
@@ -19848,6 +20465,14 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  *                         every run change, a run abandoned for a new one counts as played;
  *                         seeded from the run in progress the first time)
  *   ttf-loop001:player, :outbox, :sent   the play-data sender's (share.js)
+ *   The Daily Challenge (docs/LOOP001-DAILY.md, 2026-11-07; additive keys, a normal run is never touched):
+ *   ttf-loop001:daily        the daily run (C.Daily.startRun; kept once finished, for its result)
+ *   ttf-loop001:dailyBattle  {key, st}: its battle in progress
+ *   ttf-loop001:dailyUi      {boss, lv}: its plates already shown
+ *   ttf-loop001:dailyRecords {date: {score, reached, won, at, posted}}: the first finished
+ *                            non-practice daily of each date (C.Daily.record); posted once its
+ *                            leaderboard row went to the outbox (or sharing was off)
+ *   ttf-loop001:dailyName    the leaderboard name (asked the first time a daily counts)
  * URL: ?seed=N a run with seed N (a saved run with that seed resumes, any other is replaced);
  *      ?new=1 discards the saved run (then dropped from the address, so a reload resumes);
  *      ?debugBattle=K (with ?seed only; a dev aid for the bosses and the Siege) a run set up at
@@ -19859,7 +20484,15 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  * L1App = {run, topbar(opts), bindTop(root, handlers), route(), setRun(run), newRun(seed),
  *          battleDone(run), saveBattle(st), reducedMotion(), setting(k), setSetting(k, v),
  *          toStage(x, y), toast(text, anchorEl?), uiSeen(k, v), screen() (the battle controller: st, held,
- *          pv; tests), stage, records(), toHome(), homeContinue(), helpPage(screen)}
+ *          pv; tests), stage, records(), toHome(), homeContinue(), helpPage(screen),
+ *          daily: {active(), open(o?), view(now?), play(practice), resume(), abandon(), name(),
+ *          setName(n), post(run), board(date, rules), player()}}
+ * The daily mode (2026-11-07): the daily screen's Play / Practice / Continue put the app in it:
+ *   L1App.run is the daily run, saved under the daily keys; the title screen (toHome, homeContinue,
+ *   newRun) leaves it (the daily run stays saved: Continue on the daily screen resumes it). In it
+ *   the run intro is skipped (the daily screen is its intro) and the run won / lost go to the daily
+ *   screen (L1Screens.daily) with the result, after the record is kept. The records of the title
+ *   screen count normal runs only. URL ?daily=1 (a dev aid) opens on the daily screen.
  * PLAN 63 (docs/LOOP001-UX.md §3 S2, 2026-11-07):
  *   - screen changes cross-fade: the outgoing .screen stays as a still layer (.l1-out: inert, under
  *     the new one, no taps, its clicks stopped); the new screen fades in and rises 8 px (240 ms).
@@ -19886,7 +20519,8 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   'use strict';
   const C = globalThis.TTFCore4, R = C.Run;
   const P = 'ttf-loop001:';
-  const KEY = { run: P + 'run', battle: P + 'battle', ui: P + 'ui', settings: P + 'settings', records: P + 'records' };
+  const KEY = { run: P + 'run', battle: P + 'battle', ui: P + 'ui', settings: P + 'settings', records: P + 'records',
+    daily: P + 'daily', dailyBattle: P + 'dailyBattle', dailyUi: P + 'dailyUi', dailyRec: P + 'dailyRecords', dailyName: P + 'dailyName' };
   const icon = (n, cls) => (globalThis.L1Icons && L1Icons.use ? L1Icons.use(n, cls) : '');
   const ROMAN = ['I', 'II', 'III', 'IV', 'V'];
 
@@ -19898,11 +20532,16 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 
   const A = globalThis.L1App = {};
   let stage = null, current = null, ui = {}, settings = {}, records = null;
+  // the daily mode: L1App.run is the daily run; mainRun the normal run set aside meanwhile
+  let dailyMode = false, mainRun = null, dailyUi = {}, dailyOpts = {};
+  const D = () => C.Daily;
+  const runKey = () => (dailyMode ? KEY.daily : KEY.run);
+  const battleStore = () => (dailyMode ? KEY.dailyBattle : KEY.battle);
   const Rec = () => globalThis.L1Records || null;
   /** The records after run `run` changed (abandon: it is being left for a new run). */
   function keepRecords(run, abandon) {
     const L = Rec();
-    if (!L || !run) return;
+    if (!L || !run || run.daily) return;
     try { records = L[abandon ? 'abandon' : 'update'](records, run); store.set(KEY.records, records); } catch (e) { /* records only */ }
   }
   A.records = () => records;
@@ -20052,9 +20691,10 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     }
   }
   A.uiSeen = (k, v) => {
-    if (v === undefined) return ui[k];
-    ui[k] = v;
-    store.set(KEY.ui, ui);
+    const u = dailyMode ? dailyUi : ui;
+    if (v === undefined) return u[k];
+    u[k] = v;
+    store.set(dailyMode ? KEY.dailyUi : KEY.ui, u);
     return v;
   };
 
@@ -20067,10 +20707,13 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   A.topbar = (o) => {
     const run = A.run || {};
     const b = Math.max(1, Math.min(30, o.battle || run.battle || 1));
-    const camp = C.campaignOf(b), now = C.battleInCampaign(b), cname = (C.CAMPAIGNS[camp - 1] || {}).name || '';
+    const camp = C.campaignOf(b), now = C.battleInCampaign(b);
+    // a daily run: its name where the campaign's goes, its seal a star (one 10-battle track)
+    const dl = run.daily || null;
+    const cname = dl ? (dl.practice ? 'Practice' : 'Daily #' + dl.n) : (C.CAMPAIGNS[camp - 1] || {}).name || '';
     const fill = o.allDone ? 100 : Math.max(0, Math.min(100, ((now - 0.6) / 10) * 100));
     let h = '<div class="top2"><div class="where"><b>' + (o.title || '') + '</b><span>' + (o.sub || cname) + '</span></div>' +
-      '<div class="track" style="--fill:' + fill.toFixed(1) + '%"><span class="camp">' + (ROMAN[camp - 1] || camp) + '</span>';
+      '<div class="track" style="--fill:' + fill.toFixed(1) + '%"><span class="camp' + (dl ? ' dy' : '') + '">' + (dl ? icon('star') : ROMAN[camp - 1] || camp) + '</span>';
     for (let k = 1; k <= 9; k++) h += '<span class="pip' + (o.allDone || k < now ? ' done' : k === now ? ' now' : '') + '"></span>';
     // the last campaign's boss is the capital: its crest (s-moments.js), never the campaign bosses' helmet
     let fin = false;
@@ -20103,19 +20746,34 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 
   // ---- the run --------------------------------------------------------------------------------
   const battleKey = (run) => run.seed + ':' + run.battle + ':' + R.partOf(run);
-  A.saveBattle = (st) => { if (A.run && st) store.set(KEY.battle, { key: battleKey(A.run), st }); };
+  A.saveBattle = (st) => { if (A.run && st) store.set(battleStore(), { key: battleKey(A.run), st }); };
   A.setRun = (run) => {
     A.run = run;
-    store.set(KEY.run, run);
-    store.del(KEY.battle);
+    store.set(runKey(), run);
+    store.del(battleStore());
     keepRecords(run);
   };
+  /** Out of the daily mode (the daily run stays saved): L1App.run is the normal run again. */
+  function leaveDaily() {
+    if (!dailyMode) return;
+    dailyMode = false;
+    A.run = mainRun;
+    mainRun = null;
+  }
+  /** Into the daily mode with run `run` (a daily; fresh: a new one, its plates and battle cleared). */
+  function enterDaily(run, fresh) {
+    if (!dailyMode) { mainRun = A.run; dailyMode = true; }
+    if (fresh) { dailyUi = {}; store.set(KEY.dailyUi, dailyUi); store.del(KEY.dailyBattle); }
+    A.run = run;
+    store.set(KEY.daily, run);
+  }
   /** Drop the start parameters from the address, so a reload resumes the run in storage. */
   const plainUrl = () => {
     if (!location.search || !history.replaceState) return;
     try { history.replaceState(null, '', location.pathname); } catch (e) { /* file:// may refuse */ }
   };
   A.newRun = (seed) => {
+    leaveDaily();
     if (A.run) keepRecords(A.run, true);
     plainUrl();
     store.del(KEY.battle);
@@ -20208,12 +20866,12 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     // before the leaving layer: in front of it (it sits under, z -1) and first for any query
     stage.insertBefore(root, out);
     if (name === 'battle') {
-      const saved = store.get(KEY.battle);
+      const saved = store.get(battleStore());
       let st = saved && saved.key === battleKey(A.run) && saved.st ? saved.st : null;
       if (st && st.seed !== R.battleSeed(A.run.seed, A.run.battle, R.partOf(A.run))) st = null;
       current = L1Battle.mount(root, { run: A.run, st, app: A });
       warmSoon(current);
-    } else current = L1Screens[name](root, ctx()) || null;
+    } else current = L1Screens[name](root, name === 'daily' ? Object.assign(ctx(), { daily: dailyOpts }) : ctx()) || null;
     // the incoming top bar sits where the old one is: the old one's contents go at once (no double print)
     if (out && root.querySelector('.top2')) out.classList.add('l1-notop');
     if (old) entered(root, out);
@@ -20236,13 +20894,16 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     const run = A.run;
     if (!run) { A.newRun(); return; }
     if (run.phase === 'draft') return show('draft');
+    const u = dailyMode ? dailyUi : ui;
     if (run.phase === 'battle') {
-      if (run.battle === 1 && !R.partOf(run) && ui.intro !== run.seed) return show('intro');
-      if (R.isBoss(run) && ui.boss !== battleKey(run)) return show('bossIntro');
+      // a daily has no run intro: the daily screen is its intro
+      if (!dailyMode && run.battle === 1 && !R.partOf(run) && ui.intro !== run.seed) return show('intro');
+      if (R.isBoss(run) && u.boss !== battleKey(run)) return show('bossIntro');
       return show('battle');
     }
-    if ((run.phase === 'store' || run.phase === 'won') && (run.levelUps || []).length && ui.lv !== levelKey(run)) return show('levelUp');
+    if ((run.phase === 'store' || run.phase === 'won') && (run.levelUps || []).length && u.lv !== levelKey(run)) return show('levelUp');
     if (run.phase === 'store') return show('store');
+    if (dailyMode) { finishDaily(run); return; }
     if (run.phase === 'won') return show('won');
     return show('lost');
   };
@@ -20253,8 +20914,73 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   A.bossDone = () => { A.uiSeen('boss', battleKey(A.run)); A.route(); };
   A.levelsDone = () => { A.uiSeen('lv', levelKey(A.run)); A.route(); };
   /** The title screen (the menu's Title screen, the run won / lost plates); Continue routes back. */
-  A.toHome = () => show('home');
-  A.homeContinue = () => A.route();
+  A.toHome = () => { leaveDaily(); show('home'); };
+  A.homeContinue = () => { leaveDaily(); A.route(); };
+
+  // ---- the Daily Challenge (docs/LOOP001-DAILY.md) ----------------------------------------------------
+  const dailyRecs = () => store.get(KEY.dailyRec) || {};
+  /** A finished daily (won, lost or abandoned): its record kept (the date's first non-practice
+   *  finish, posted: false until its row is sent), then the daily screen with the result (it asks
+   *  for the name the first time and posts the row). */
+  function finishDaily(run) {
+    const r = D().record(dailyRecs(), run, Date.now());
+    if (r.first) { r.recs[run.daily.date].posted = false; store.set(KEY.dailyRec, r.recs); }
+    const just = D().result(run);
+    leaveDaily();
+    dailyOpts = { just };
+    show('daily');
+  }
+  A.daily = {
+    /** Is the daily mode on (L1App.run a daily)? */
+    active: () => dailyMode,
+    /** The daily screen (o.just: a result just finished, to show). */
+    open: (o) => { leaveDaily(); dailyOpts = o || {}; show('daily'); },
+    /** What the daily screen shows: today's day, the saved daily run (live: it goes on), today's
+     *  record, the records, the name. */
+    view: (now) => {
+      const date = D().today(now), day = D().day(date);
+      let saved = store.get(KEY.daily);
+      if (saved) { try { saved = R.migrate(saved); } catch (e) { saved = null; } }
+      if (saved && !D().isDaily(saved)) saved = null;
+      const recs = dailyRecs();
+      // an unfinished first attempt of an earlier date still goes on (it counts for its own date)
+      const live = saved && D().resumable(saved, date) ? saved : null;
+      return { date, day, saved, live, rec: recs[date] || null, recs, name: store.get(KEY.dailyName) };
+    },
+    /** Play today's daily (practice: a replay that does not count). */
+    play: (practice) => {
+      const day = D().day(D().today());
+      enterDaily(D().startRun(day, { practice: !!practice, at: Date.now() }), true);
+      A.route();
+    },
+    /** Continue the saved daily run. */
+    resume: () => {
+      let run = store.get(KEY.daily);
+      try { run = R.migrate(run); } catch (e) { run = null; }
+      if (!run || !D().resumable(run)) { A.daily.open(); return; }
+      enterDaily(run, false);
+      A.route();
+    },
+    /** The menu's Abandon daily: the daily ends and counts as finished. */
+    abandon: () => {
+      if (!dailyMode || !A.run) return;
+      A.setRun(D().abandon(A.run));
+      A.route();
+    },
+    name: () => store.get(KEY.dailyName),
+    setName: (n) => { const v = globalThis.L1Share && L1Share.cleanName ? L1Share.cleanName(n) : (String(n || '').trim().slice(0, 16) || 'Anonymous'); store.set(KEY.dailyName, v); return v; },
+    /** The finished daily's leaderboard row, once: its record marked posted (sent, or sharing off). */
+    post: (run) => {
+      const recs = dailyRecs(), rec = run && run.daily && recs[run.daily.date];
+      if (!rec || rec.posted || run.daily.practice || !D().isOver(run)) return false;
+      try { if (globalThis.L1Share && L1Share.daily) L1Share.daily(run, store.get(KEY.dailyName) || 'Anonymous'); } catch (e) { /* play data only */ }
+      rec.posted = true;
+      store.set(KEY.dailyRec, recs);
+      return true;
+    },
+    board: (date, rules) => (globalThis.L1Share && L1Share.board ? L1Share.board(date, rules) : Promise.resolve({ status: 'unavailable' })),
+    player: () => (globalThis.L1Share && L1Share.playerId ? L1Share.playerId() : '')
+  };
 
   // ---- boot -----------------------------------------------------------------------------------
   function boot() {
@@ -20265,6 +20991,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     if (F && F.ensureDefs) { try { F.ensureDefs(document); } catch (e) { /* presentation only */ } }
     settings = store.get(KEY.settings) || {};
     ui = store.get(KEY.ui) || {};
+    dailyUi = store.get(KEY.dailyUi) || {};
     const q = new URLSearchParams(location.search);
     const seedQ = q.has('seed') && /^\d+$/.test(q.get('seed')) ? +q.get('seed') : null;
     const fresh = q.get('new') === '1';
@@ -20299,7 +21026,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     addEventListener('resize', fit);
     addEventListener('orientationchange', fit);
     stage.addEventListener('click', onPress, true);
-    if (direct) A.route(); else A.toHome();
+    if (direct) A.route(); else if (q.get('daily') === '1') A.daily.open(); else A.toHome();
     if (globalThis.L1Share) { try { L1Share.flush(); } catch (e) { /* play data only */ } }
   }
   A.setRunQuiet = (run) => { A.run = run; store.set(KEY.run, run); keepRecords(run); };
