@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="12">
-<script>(function(){var B="431d3e44a2";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=12;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="d616a1a0a2";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=12;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1898,6 +1898,44 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   .mo-lost .mo-bar i, .mo-lost .mo-short, .mo-lost .mo-parts, .mo-lv.flip .mo-c0, .mo-lv.flip .mo-c1 { animation: none; }
   .mo-cardz.stk::before, .mo-cardz.stk::after, .mo-lvn { transition: none; }
 }
+
+/* ---------- the draft's advice (2026-11-08): the deck meter, the Recommended mark, the why line ---------- */
+.mo-meter { display: flex; gap: 12px; margin-top: 8px; }
+.mo-mt { flex: 1 1 0; display: flex; align-items: center; gap: 10px; padding: 5px 12px 6px 7px; border-radius: 10px; background: rgba(0,0,0,.26);
+  box-shadow: inset 0 0 0 1px rgba(201,163,92,.16); transition: opacity .18s ease, box-shadow .18s ease, background .18s ease; min-width: 0;
+  position: relative; overflow: hidden; }
+.mo-mt.eng { flex: 0 0 auto; }
+.mo-md { width: 30px; height: 30px; flex: none; border-radius: 50%; display: grid; place-items: center; color: #fff4e4; font-size: 16px;
+  box-shadow: 0 0 0 2px #15110d, 0 0 0 3px rgba(243,213,142,.35); background: #6b5a43; }
+.t-inf .mo-md { background: #c4573f; } .t-arc .mo-md { background: #5c9443; } .t-cav .mo-md { background: #4673b2; }
+.mo-mb { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.mo-mh { display: flex; align-items: baseline; gap: 8px; line-height: 1; }
+.mo-mh b { font-family: var(--label, 'Cinzel', serif); font-size: 15px; color: #f1dfb2; letter-spacing: .5px; }
+.mo-mn { font: 700 22px var(--body, 'Barlow Condensed', sans-serif); color: #fff4dc; }
+.mo-mq { margin-left: auto; font-size: 15px; font-weight: 600; color: var(--brass1, #f3d58e); }
+/* the bar: the cell's bottom edge, as long as the type's share of the largest */
+.mo-mbar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255,255,255,.06); }
+.mo-mbar i { display: block; height: 100%; border-radius: 0 2px 2px 0; background: linear-gradient(90deg, var(--brass3, #8a6226), var(--brass1, #f3d58e)); }
+.mo-ms { font-size: 15px; color: var(--sub, #b9ab8f); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mo-meter.lit .mo-mt:not(.on) { opacity: .45; }
+.mo-meter.lit .mo-mt.on { background: rgba(243,213,142,.09); box-shadow: inset 0 0 0 1.5px rgba(243,213,142,.6); }
+.mo-opt { position: relative; }
+.mo-rec { position: absolute; z-index: 4; left: 50%; top: -15px; transform: translateX(-50%); padding: 4px 14px; border-radius: 14px; white-space: nowrap;
+  font: 700 13px var(--label, 'Cinzel', serif); letter-spacing: 1.6px; text-transform: uppercase; color: #2a1d0d;
+  background: linear-gradient(180deg, var(--brass1, #f3d58e), var(--brass2, #c99a45) 60%, var(--brass3, #8a6226)); box-shadow: 0 0 0 2px #15110d, 0 4px 10px rgba(0,0,0,.55); pointer-events: none; }
+.mo-why { margin-top: 10px; min-height: 22px; font-size: 17px; line-height: 22px; color: var(--ink-mid, #cdbf9f); text-align: center; max-width: 980px; }
+.mo-why b { font-family: var(--label, 'Cinzel', serif); font-size: 16px; color: #f1dfb2; letter-spacing: .5px; margin-right: 10px; }
+.mo-wr { font-style: normal; font: 700 12px var(--label, 'Cinzel', serif); letter-spacing: 1.4px; text-transform: uppercase; color: var(--brass1, #f3d58e); margin-right: 10px; }
+.mo-why + .mo-confirm { margin-top: 8px; }
+/* the meter's room: the draft sits tighter than before it (1180x820 stage) */
+.mo-draft { padding-top: 22px; }
+.mo-draft .mo-opts { margin-top: 22px; }
+.mo-draft .mo-steps { margin-top: 10px; }
+.mo-draft .mo-ok { height: 50px; }
+.mo-draft .pnl.mo-deck { margin-top: 14px; padding: 10px 20px 12px; }
+.mo-draft .mo-minis { margin-top: 14px; }
+.calm-motion .mo-mt { transition: none; }
+.mo-draft.nohint .mo-rec, .mo-draft.nohint .mo-why { display: none; }
 </style>
 <style>
 /*
@@ -12276,6 +12314,193 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   if (typeof module !== 'undefined') module.exports = C.Daily;
 })();
 </script>
+<script>
+/*
+ * loop001/js/advice.js - the draft's advice (2026-11-08, user: "i always have to count how many of
+ * each unit type there is in my starting deck when deciding on a general" and "the 'best' general
+ * to pick for the run's starting deck marked"). TTFCore4.Advice. Pure and DOM-free; UI only (no
+ * rule reads it, so no rules bump). Loaded after run.js (node.js, index.html, the bundle).
+ *
+ * ==== API ======================================================================================
+ *   C.Advice.BUILDER_EV        a general's measured worth: the mean gain (%) of adding him as a third
+ *                              general under the builder's play (tools/loop001-sim.js reads it)
+ *   C.Advice.ev(id)            BUILDER_EV[id], else 8 x his rarity (common 1, uncommon 2, rare 3)
+ *   C.Advice.DRAFT_WORTH       a general's worth as a draft pick: the battles his runs reach (a run
+ *                              won counts one more) over the mean of every pick, the builder playing
+ *                              all 9 pairs of each seed's draft (480 seeds, 2026-11-08)
+ *   C.Advice.worth(id)         DRAFT_WORTH[id], else 0 (an average pick)
+ *   C.Advice.affinity(id)      his type match {inf, arc, cav} (shares summing to 1; all 0: typeless):
+ *                              the type words of his texts + 2 per member of his taught formation
+ *   C.Advice.needs(id)         a teacher's formation members by type {inf, arc, cav, any}, else null
+ *   C.Advice.meter(deck)       {inf|arc|cav: {total, units, officers, heroes, ranks: {1, 2, 3}},
+ *                              engineers, size}: units, officers and heroes count under their type
+ *   C.Advice.rate(run, opts?)  each draft option rated: [{id, worth, fit, score, best, why}] (opts:
+ *                              the options, default Run.draftOptions(run)); best = the top score
+ * The rating is for new players (user, 2026-11-08: "deck fit is indeed the part i care about the
+ * most ... something that's going to work as easily as possible"): fit, how readily his bonus works
+ * with this deck and no special setup, decides; his measured worth only breaks near-ties
+ * (score = fit + WORTH_W x worth), and a general worth VETO or less is never marked over another.
+ *   a teacher     how surely the deck makes his formation: a battle shows SEEN of the deck's cards
+ *                 (3-card hands, 7 turns); per needed type, the cards of it seen over twice the
+ *                 members it asks for, the weakest type counts, at most 1, at least FIT_MIN
+ *   KIND[id]      how he fires:
+ *     'cards'     he boosts cards the deck holds (CARDS[id]: which, and how many make him full): the
+ *                 deck's count of them over that, at most 1
+ *     'auto'      every battle, no setup (the first or last card, every piece): 1
+ *     'form'      he lifts formations: the held teacher's fit (PLACE without one)
+ *     'place'     only on the right tiles or in the right shape: PLACE
+ *     'run'       not on the battle's score (gold, hand size): RUN
+ *   unlisted      a typed one as 'cards' on his type (TYPE_FULL of them); else PLACE
+ * ===============================================================================================
+ */
+(function () {
+  const C = globalThis.TTFCore4 = globalThis.TTFCore4 || {};
+  const TYPES = ['inf', 'arc', 'cav'];
+  const NAMES = { inf: 'Infantry', arc: 'Archers', cav: 'Cavalry' };
+  const RARITY = { common: 1, uncommon: 2, rare: 3 };
+  /** The cards a battle shows (3-card hands over 7 turns: about 21 of 25), the teacher's fit floor,
+   *  the fits of a placement and a run general, the worth's weight and the veto. */
+  const SEEN = 21, FIT_MIN = 0.2, PLACE = 0.6, RUN = 0.4, WORTH_W = 0.04, VETO = -2, TYPE_FULL = 10;
+  const KIND = {
+    foot_purist: 'cards', levy_marshal: 'cards', paymaster: 'cards', banner_sgt: 'cards', sgt_line: 'cards',
+    herald: 'auto', rearguard_cpt: 'auto', war_council: 'auto', high_command: 'auto',
+    drillmaster: 'form',
+    steward: 'place', marshal_centre: 'place', warden_flanks: 'place', lord_hills: 'place', forester: 'place',
+    keeper_corners: 'place', master_ranks: 'place', mixed_ranks: 'place', picket_master: 'place',
+    mustering: 'run', treasurer: 'run'
+  };
+  /** A 'cards' general's cards: test(card), full (the count that makes him full), what / one (their name, many / one). */
+  const CARDS = {
+    foot_purist: { test: (c) => typeOf(c) === 'inf', full: TYPE_FULL, what: 'Infantry' },
+    levy_marshal: { test: (c) => typeOf(c) === 'inf', full: TYPE_FULL, what: 'Infantry' },
+    paymaster: { test: (c) => c.kind === 'hero', full: 2, what: 'heroes', one: 'hero' },
+    banner_sgt: { test: (c) => c.kind === 'officer', full: 2, what: 'officers', one: 'officer' },
+    sgt_line: { test: (c) => c.kind !== 'engineer' && (c.rank || 1) === 1, full: 15, what: 'rank-1 cards', one: 'rank-1 card' }
+  };
+  const PLACE_WHY = {
+    steward: 'units on their home terrain', marshal_centre: 'the centre tiles', warden_flanks: 'the left and right columns',
+    lord_hills: 'hills', forester: 'forest', keeper_corners: 'the corner tiles', master_ranks: 'one big touching group',
+    mixed_ranks: 'pieces touching another type', picket_master: 'pieces standing alone'
+  };
+  /** The builder's runs from each draft pair (tools/loop001-sim.js playRun opts.draft, 480 seeds x 9
+   *  pairs, real targets): the mean battles reached (+1 a run won) with him, less the mean of all (22.5). */
+  const DRAFT_WORTH = {
+    paymaster: 2.8, cpt_foot: 2.4, foot_purist: 2, keeper_corners: 1.5, picket_master: 1.5, herald: 1.5,
+    rearguard_cpt: 1.3, marshal_centre: 0.8, master_ranks: 0.8, forester: 0.8, steward: 0.3, cpt_line: 0.2,
+    mixed_ranks: 0.2, warden_flanks: 0.1, cpt_horse: -0.1, cpt_lances: -0.1, treasurer: -0.4, mustering: -0.8,
+    war_council: -0.8, cpt_flanks: -1.3, drillmaster: -1.3, cpt_archers: -1.3, lord_hills: -1.5, sgt_line: -1.6,
+    levy_marshal: -1.9, banner_sgt: -2.1, high_command: -2.3
+  };
+  const worth = (id) => (DRAFT_WORTH[id] !== undefined ? DRAFT_WORTH[id] : 0);
+  /** --free --probe-gens 5,15 --probe-policy builder, 64 runs (2026-11-04): his formations finished,
+   *  the teachers read their worth. Moved from tools/loop001-sim.js (2026-11-08). */
+  const BUILDER_EV = {
+    many_banners: 77, lean_column: 72, foot_purist: 61, cpt_foot: 54, herald: 47, keeper_corners: 44,
+    grand_marshal: 44, paymaster: 43, strategist: 43, supply_general: 42, elite_corps: 40, skirmish_master: 39,
+    cpt_combined: 38, marshal_centre: 36, old_guard: 36, tactician: 33, cpt_lances: 31, mixed_ranks: 31,
+    cpt_flanks: 30, cpt_hammer: 30, herald_heroes: 29, warden_flanks: 29, master_mason: 29, master_ranks: 29,
+    picket_master: 26, lord_line: 25, siege_master: 25, forester: 24, cpt_horse: 24, lord_horse: 24,
+    sgt_line: 23, cpt_line: 22, steward: 22, cpt_battleline: 21, cpt_archers: 20, drillmaster: 18, mustering: 17,
+    lord_hills: 17, quartermaster: 17, grand_council: 17, hero_patron: 17, cartographer: 16, colonel: 15,
+    war_council: 14, rearguard_cpt: 14, high_command: 13, marshal_reserves: 13, banner_sgt: 12, pathfinder: 9,
+    banner_general: 7, levy_marshal: 5, warlord: 2, vet_trainer: 1, reinforcements: 1, treasurer: 1,
+    scout_master: 1
+  };
+  const genDef = (id) => (C.generalDef && C.generalDef(id)) || {};
+  const ev = (id) => (BUILDER_EV[id] !== undefined ? BUILDER_EV[id] : 8 * (RARITY[genDef(id).rarity] || 1));
+  const formOf = (id) => (C.FORMATIONS || []).find((f) => f.id === (genDef(id).effect || {}).teach) || null;
+
+  /** A teacher's formation members by type ({inf, arc, cav, any}), else null. */
+  function needs(id) {
+    const f = formOf(id);
+    if (!f) return null;
+    const n = { inf: 0, arc: 0, cav: 0, any: 0 };
+    if (f.combo) for (const t of TYPES) n[t] += f.combo[t] || 0;
+    else for (const ch of f.shape.join('')) { const t = { i: 'inf', a: 'arc', c: 'cav', '?': 'any' }[ch]; if (t) n[t] += 1; }
+    return n;
+  }
+  const AFF = {};
+  function affinity(id) {
+    if (AFF[id]) return AFF[id];
+    const d = genDef(id), txt = (d.short || '') + ' ' + (d.desc || '');
+    const w = { inf: (txt.match(/Infantry/g) || []).length, arc: (txt.match(/Archers?/g) || []).length, cav: (txt.match(/Cavalry/g) || []).length };
+    const n0 = needs(id);
+    if (n0) for (const t of TYPES) w[t] += 2 * n0[t];
+    const n = w.inf + w.arc + w.cav;
+    return (AFF[id] = n ? { inf: w.inf / n, arc: w.arc / n, cav: w.cav / n } : { inf: 0, arc: 0, cav: 0 });
+  }
+
+  /** A card's type (a unit's, an officer's, a hero's), else null. */
+  function typeOf(c) {
+    if (!c) return null;
+    let t = c.type;
+    if (!NAMES[t] && c.kind === 'hero' && C.heroType) t = C.heroType(c.id);
+    if (!NAMES[t] && c.kind === 'officer' && c.id && C.officerDef) t = (C.officerDef(c.id) || {}).type;
+    return NAMES[t] ? t : null;
+  }
+  /** The deck by type: units, officers and heroes under their type; the Sappers apart. */
+  function meter(deck) {
+    const m = { engineers: 0, size: 0 };
+    for (const t of TYPES) m[t] = { total: 0, units: 0, officers: 0, heroes: 0, ranks: { 1: 0, 2: 0, 3: 0 } };
+    for (const c of deck || []) {
+      if (!c) continue;
+      m.size++;
+      if (c.kind === 'engineer') { m.engineers++; continue; }
+      const t = typeOf(c), k = { unit: 'units', officer: 'officers', hero: 'heroes' }[c.kind];
+      if (!t || !k) continue;
+      m[t].total++;
+      m[t][k]++;
+      if (c.kind === 'unit') m[t].ranks[c.rank || 1] = (m[t].ranks[c.rank || 1] || 0) + 1;
+    }
+    return m;
+  }
+  const plural = (n, t) => n + ' ' + NAMES[t];
+  /** A teacher's fit and line on meter m: the weakest needed type's seen cards over twice the need. */
+  function teachFit(id, m) {
+    const n = needs(id), f = formOf(id), ts = TYPES.filter((t) => n[t]);
+    let fit = 1;
+    for (const t of ts) fit = Math.min(fit, (SEEN * m[t].total / Math.max(1, m.size)) / (2 * n[t]));
+    return { fit: Math.max(FIT_MIN, fit), name: f.name,
+      why: ts.length ? f.name + ' needs ' + ts.map((t) => plural(n[t], t)).join(' + ') + ': you have ' + ts.map((t) => m[t].total).join(' / ') + '.' : f.name + ' takes any units.' };
+  }
+
+  /** Each draft option rated against the run's deck and held generals: [{id, worth, fit, score, best, why}]. */
+  function rate(run, opts0) {
+    const opts = opts0 || (C.Run && C.Run.draftOptions ? C.Run.draftOptions(run) : []);
+    const deck = (run && run.deck) || [], m = meter(deck);
+    const teacher = ((run && run.generals) || []).find((g) => needs(g.id));
+    const out = opts.map((o) => {
+      const id = o.id || o;
+      let fit, why;
+      if (needs(id)) ({ fit, why } = teachFit(id, m));
+      else {
+        let kind = KIND[id], cards = CARDS[id];
+        if (!kind) {
+          const a = affinity(id), t = TYPES.find((x) => a[x] >= 0.5);
+          if (t) { kind = 'cards'; cards = { test: (c) => typeOf(c) === t, full: TYPE_FULL, what: NAMES[t] }; } else kind = 'place';
+        }
+        if (kind === 'cards') {
+          const k = deck.filter(cards.test).length;
+          fit = Math.min(1, k / cards.full);
+          why = (k ? 'Boosts your ' + k + ' ' + (k === 1 && cards.one ? cards.one : cards.what) : 'You have no ' + cards.what) + (k >= cards.full ? '.' : ' (best with ' + cards.full + '+).');
+        } else if (kind === 'auto') { fit = 1; why = 'Works every battle with no setup.'; }
+        else if (kind === 'form') {
+          const tf = teacher ? teachFit(teacher.id, m) : null;
+          fit = tf ? tf.fit : PLACE;
+          why = tf ? 'Lifts your ' + tf.name + ' whenever you build it.' : 'Lifts formations you build.';
+        } else if (kind === 'run') { fit = RUN; why = 'Helps the run, not the battle score.'; }
+        else { fit = PLACE; why = 'Works when you place for it: ' + (PLACE_WHY[id] || 'the right tiles') + '.'; }
+      }
+      const w = worth(id);
+      return { id, worth: w, fit, score: fit + WORTH_W * w - (w <= VETO ? 1 : 0), best: false, why };
+    });
+    if (out.length) out.reduce((b, x) => (x.score > b.score ? x : b)).best = true;
+    return out;
+  }
+
+  C.Advice = { BUILDER_EV, DRAFT_WORTH, KIND, ev, worth, affinity, needs, meter, rate, SEEN, FIT_MIN, PLACE, RUN, WORTH_W, VETO };
+})();
+</script>
 <!-- the interface -->
 <script>
 /*
@@ -18630,6 +18855,48 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
    *  press); left out, the shell plays 'ui' (the run-end Continue). */
   const goBtn = (label, a, cls, snd) => '<button class="btn-go mo-go' + (cls ? ' ' + cls : '') + '" data-a="' + a + '"' + (snd ? ' data-sfx="' + snd + '"' : '') + '>' + label + ' ' + icon('march') + '</button>';
 
+  // ---- the draft's advice (2026-11-08, C.Advice) -------------------------------------------------------
+  const TYPE_NAME = { inf: 'Infantry', arc: 'Archers', cav: 'Cavalry' };
+  const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many);
+  /** The deck by type (C.Advice.meter): a cell per type (its count, a bar against the largest, what
+   *  it is made of, the rank-2+ units) and the Sappers apart. Cells carry data-t for the pick's light. */
+  function deckMeter(run) {
+    const A = C.Advice;
+    if (!A) return '';
+    const m = A.meter(run.deck), top = Math.max(1, m.inf.total, m.arc.total, m.cav.total);
+    const cell = (t) => {
+      const x = m[t], up = (x.ranks[2] || 0) + (x.ranks[3] || 0);
+      const parts = [plural(x.units, 'unit', 'units')];
+      if (x.officers) parts.push(plural(x.officers, 'officer', 'officers'));
+      if (x.heroes) parts.push(plural(x.heroes, 'hero', 'heroes'));
+      return '<div class="mo-mt t-' + t + '" data-t="' + t + '"><span class="mo-md">' + icon(t) + '</span>' +
+        '<span class="mo-mb"><span class="mo-mh"><b>' + esc(TYPE_NAME[t]) + '</b><span class="mo-mn">' + x.total + '</span><span class="mo-mq"></span></span>' +
+        '<span class="mo-mbar"><i style="width:' + Math.round(100 * x.total / top) + '%"></i></span>' +
+        '<span class="mo-ms">' + parts.join(' · ') + (up ? ' · ' + up + ' ranked up' : '') + '</span></span></div>';
+    };
+    return '<div class="mo-meter" data-r="meter">' + ['inf', 'arc', 'cav'].map(cell).join('') +
+      (m.engineers ? '<div class="mo-mt eng"><span class="mo-md">' + icon('engineer') + '</span><span class="mo-mb"><span class="mo-mh"><b>Sappers</b><span class="mo-mn">' + m.engineers + '</span></span><span class="mo-ms">no type</span></span></div>' : '') + '</div>';
+  }
+  /** Light the meter for general `id`: his types on (a teacher's: how many his formation needs), the rest dim. */
+  function lightMeter(el, id) {
+    const A = C.Advice;
+    if (!el || !A) return;
+    const n = id ? A.needs(id) : null, a = id ? A.affinity(id) : null;
+    const on = (t) => (n ? n[t] > 0 : !!a && a[t] > 0);
+    const any = !!id && ['inf', 'arc', 'cav'].some(on);
+    el.classList.toggle('lit', any);
+    el.querySelectorAll('.mo-mt[data-t]').forEach((c) => {
+      const t = c.dataset.t;
+      c.classList.toggle('on', any && on(t));
+      const q = c.querySelector('.mo-mq');
+      if (q) q.textContent = any && n && n[t] ? 'needs ' + n[t] : '';
+    });
+  }
+  /** An option's why: his name and the line (the Recommended one says so; the star is the officer's icon). */
+  const whyHtml = (r) => (r ? (r.best ? '<i class="mo-wr">Recommended</i>' : '') + '<b>' + esc(genName(r.id)) + '</b>' + esc(r.why) : '');
+  /** The draft hint (menu Settings: Draft hint, on unless switched off). */
+  const hintOn = (app) => !(app && app.setting && app.setting('draftHint') === false);
+
   // ---- the draft (run start) -----------------------------------------------------------------------
   function draft(root, ctx) {
     const app = ctx.app, run = ctx.run, T = ctx.T;
@@ -18642,15 +18909,22 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         '<div class="mo-step ' + st + '"><span class="d">' + (g ? CHECK : n) + '</span><span class="t">' + esc(g ? genName(g.id) : roleLabel(D.role)) + '</span></div>';
     }).join('');
     const plaque = Cards().plaque || (() => '');
+    // the Recommended mark and each option's one line why (C.Advice.rate); the Draft hint off
+    // (menu Settings) hides them (.nohint, toggled live by the menu)
+    const rated = C.Advice ? C.Advice.rate(run, opts) : null;
+    const rateOf = (id) => (rated || []).find((x) => x.id === id) || null;
+    const best = (rated || []).find((x) => x.best) || null;
     root.innerHTML = app.topbar({ title: 'The draft', sub: 'Before battle 1', battle: 1 }) +
-      '<div class="mo mo-draft' + (reduced(ctx) ? ' still' : '') + '"><div class="mo-glow"></div>' +
+      '<div class="mo mo-draft' + (reduced(ctx) ? ' still' : '') + (hintOn(app) ? '' : ' nohint') + '"><div class="mo-glow"></div>' +
       '<div class="mo-title mo-rise">Choose your generals</div>' +
       '<div class="mo-steps mo-rise" style="--d:60ms">' + stepsHtml + '</div>' +
-      '<div class="mo-opts" data-r="opts">' + opts.map((o, i) => '<div class="mo-opt mo-rise" style="--d:' + (110 + i * 70) + 'ms" data-a="pick" data-id="' + esc(o.id) + '" role="button" aria-label="' + esc(genName(o.id)) + '">' +
+      '<div class="mo-opts" data-r="opts">' + opts.map((o, i) => '<div class="mo-opt mo-rise" style="--d:' + (110 + i * 70) + 'ms" data-a="pick" data-id="' + esc(o.id) + '" role="button" aria-label="' + esc(genName(o.id)) + (best && best.id === o.id ? ', recommended' : '') + '">' +
+        (best && best.id === o.id ? '<span class="mo-rec">Recommended</span>' : '') +
         plaque(o, { T, size: 'big' }) + '</div>').join('') + '</div>' +
+      (rated ? '<div class="mo-why mo-rise" style="--d:320ms" data-r="why">' + whyHtml(best) + '</div>' : '') +
       // the wrapper catches a tap on the disabled Confirm (the button takes none while off)
       '<div class="mo-confirm" data-a="nok"><button class="btn mo-ok off" data-a="ok">Confirm</button></div>' +
-      '<div class="pnl mo-deck mo-rise" style="--d:260ms"><div class="lab">Your starting deck<span class="mo-n">' + run.deck.length + ' cards</span><span class="mo-hit" data-r="hit"></span></div>' + deckStacks(run, T) + '</div>' +
+      '<div class="pnl mo-deck mo-rise" style="--d:260ms"><div class="lab">Your starting deck<span class="mo-n">' + run.deck.length + ' cards</span><span class="mo-hit" data-r="hit"></span></div>' + deckMeter(run) + deckStacks(run, T) + '</div>' +
       '</div>';
     app.bindTop(root);
     const optsEl = root.querySelector('[data-r="opts"]');
@@ -18709,6 +18983,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
           if (p) p.classList.toggle('sel', me);
         });
         root.querySelector('[data-a="ok"]').classList.remove('off');
+        lightMeter(root.querySelector('[data-r="meter"]'), sel);
+        const why = root.querySelector('[data-r="why"]');
+        if (why) why.innerHTML = whyHtml(rateOf(sel));
         // the cards he acts on light up, the rest dim; a chip counts them (the deck icon: the star
         // means officer elsewhere)
         const hit = generalCards(sel, run.deck, T), minis = root.querySelector('[data-r="deck"]'), chip = root.querySelector('[data-r="hit"]');
@@ -19085,7 +19362,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     return { destroy: () => clearAll(timers) };
   }
   const SCREENS = { draft, intro, bossIntro, levelUp, won, lost, levelMoment };
-  G.L1Moments = { levelTimes, flecks, countAt, twistName, twistLine, twistIcon, twistBoard, siegeBoard, siegeCrest, renameLine, rankChange, changeLine, mergeLevelUps, lostScore, generalCards, rankLine, part1Split, part2Left, part2Cards, trackStates, trackFill, deckZoom, deckLayout, stackZoom, roleLabel, SCREENS: Object.keys(SCREENS) };
+  G.L1Moments = { levelTimes, flecks, countAt, twistName, twistLine, twistIcon, twistBoard, siegeBoard, siegeCrest, renameLine, rankChange, changeLine, mergeLevelUps, lostScore, generalCards, rankLine, part1Split, part2Left, part2Cards, trackStates, trackFill, deckZoom, deckLayout, stackZoom, roleLabel, deckMeter, whyHtml, SCREENS: Object.keys(SCREENS) };
   G.L1Screens = Object.assign(G.L1Screens || {}, SCREENS);
 })();
 </script>
@@ -19101,7 +19378,8 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  *   menu(root, ctx)        Resume, Help, Title screen (app.toHome(); not over the title screen
  *                          itself, where Resume just closes the menu), Settings (Reduced motion =
  *                          settings.calm through app.setSetting, app.js honours it; a Sound row
- *                          with a chevron that opens the Sound panel; Share play data =
+ *                          with a chevron that opens the Sound panel; Draft hint =
+ *                          settings.draftHint, false when off: the draft's Recommended mark; Share play data =
  *                          settings.share, false when off, shown only where share.js can send),
  *                          New run (asks first while a run is still to play: it ends this run;
  *                          on the run lost / won screens, or with no run, straight to
@@ -19542,6 +19820,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         (rows().home ? '<button class="btn ghost" data-h="home"' + NOSFX + '>' + icon('home') + 'Title screen</button>' : '') +
         '<div class="lab">Settings</div>' +
         toggle('calm', 'Reduced motion', m.on, m.forced ? 'On in your system settings' : '', m.forced) +
+        toggle('hint', 'Draft hint', app.setting('draftHint') !== false, 'Marks the recommended general') +
         '<button class="h-set h-row-go" data-h="sound"><span class="t">Sound</span><span class="h-val">' + (S.on ? 'On' : 'Off') + icon('chev') + '</span></button>' +
         (globalThis.L1Share && L1Share.available ? toggle('share', 'Share play data', app.setting('share') !== false) : '') +
         (app.daily && app.daily.name && app.daily.name() && globalThis.L1Daily ? '<button class="h-set h-row-go" data-h="dname"><span class="t">Leaderboard name</span><span class="h-val">' + esc(app.daily.name()) + icon('chev') + '</span></button>' : '') +
@@ -19596,6 +19875,13 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         app.setSetting('sfxOff', withSfxOff(app.setting('sfxOff'), g, on));
         if (on) sfxDo('sample', g); else sfx('ui');
         sound();
+      },
+      // the draft under the menu shows or hides its Recommended mark at once (s-moments.js: .nohint)
+      hint: () => {
+        const off = app.setting('draftHint') !== false;
+        app.setSetting('draftHint', !off);
+        if (typeof document !== 'undefined') document.querySelectorAll('.mo-draft').forEach((x) => x.classList.toggle('nohint', off));
+        main();
       },
       share: () => { const on = app.setting('share') === false; app.setSetting('share', on); if (on) L1Share.flush(); main(); },
       home: () => { ov.close(); app.toHome(); },
@@ -20528,7 +20814,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  *   ttf-loop001:battle    {key: 'seed:battle:part', st}: the battle in progress (resumed)
  *   ttf-loop001:ui        {intro: seed, boss: key, lv: key}: the plates already shown;
  *                         shelf {key, gone}: the store's empty recruit slots (s-store.js)
- *   ttf-loop001:settings  {calm, sound, sfxVol, sfxOff, share} (s-help.js menu): calm: reduced motion;
+ *   ttf-loop001:settings  {calm, sound, sfxVol, sfxOff, share, draftHint} (s-help.js menu): calm: reduced motion;
  *                         sound: the sounds on (true; missing = off); sfxVol 'low' | 'mid' | 'high';
  *                         sfxOff {group: true} for each sound component turned off (sfx.js); share:
  *                         play data off when false. mute: legacy (before PLAN 63 S7), no longer read
