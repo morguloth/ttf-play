@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="13">
-<script>(function(){var B="7029b94485";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=13;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="d4b7fcd6fa";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=13;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -12352,7 +12352,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  *                 members it asks for, the weakest type counts, at most 1, at least FIT_MIN
  *   KIND[id]      how he fires:
  *     'cards'     he boosts cards the deck holds (CARDS[id]: which, and how many make him full): the
- *                 deck's count of them over that, at most 1
+ *                 deck's count of them over that, at most 1, raised to CARDS[id].pow (2026-11-09, user:
+ *                 Paymaster over the Warden of the Flanks with one hero was wrong: a lone hero or officer
+ *                 lifts one piece, and only the battles he is drawn in, so one of the two is a quarter)
  *     'auto'      every battle, no setup (the first or last card, every piece): 1
  *     'form'      he lifts formations: the held teacher's fit (PLACE without one)
  *     'place'     only on the right tiles or in the right shape: PLACE
@@ -12376,12 +12378,13 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     keeper_corners: 'place', master_ranks: 'place', mixed_ranks: 'place', picket_master: 'place',
     mustering: 'run', treasurer: 'run'
   };
-  /** A 'cards' general's cards: test(card), full (the count that makes him full), what / one (their name, many / one). */
+  /** A 'cards' general's cards: test(card), full (the count that makes him full), pow (short of full
+   *  his fit falls as the count over full to this power; 1 if none), what / one (their name, many / one). */
   const CARDS = {
     foot_purist: { test: (c) => typeOf(c) === 'inf', full: TYPE_FULL, what: 'Infantry' },
     levy_marshal: { test: (c) => typeOf(c) === 'inf', full: TYPE_FULL, what: 'Infantry' },
-    paymaster: { test: (c) => c.kind === 'hero', full: 2, what: 'heroes', one: 'hero' },
-    banner_sgt: { test: (c) => c.kind === 'officer', full: 2, what: 'officers', one: 'officer' },
+    paymaster: { test: (c) => c.kind === 'hero', full: 2, pow: 2, what: 'heroes', one: 'hero' },
+    banner_sgt: { test: (c) => c.kind === 'officer', full: 2, pow: 2, what: 'officers', one: 'officer' },
     sgt_line: { test: (c) => c.kind !== 'engineer' && (c.rank || 1) === 1, full: 15, what: 'rank-1 cards', one: 'rank-1 card' }
   };
   const PLACE_WHY = {
@@ -12488,7 +12491,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         }
         if (kind === 'cards') {
           const k = deck.filter(cards.test).length;
-          fit = Math.min(1, k / cards.full);
+          fit = Math.pow(Math.min(1, k / cards.full), cards.pow || 1);
           why = (k ? 'Boosts your ' + k + ' ' + (k === 1 && cards.one ? cards.one : cards.what) : 'You have no ' + cards.what) + (k >= cards.full ? '.' : ' (best with ' + cards.full + '+).');
         } else if (kind === 'auto') { fit = 1; why = 'Works every battle with no setup.'; }
         else if (kind === 'form') {
