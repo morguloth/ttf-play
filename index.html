@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="13">
-<script>(function(){var B="d4b7fcd6fa";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=13;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="588f5ca3c6";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=13;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -12343,6 +12343,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  *                              engineers, size}: units, officers and heroes count under their type
  *   C.Advice.rate(run, opts?)  each draft option rated: [{id, worth, fit, score, best, why}] (opts:
  *                              the options, default Run.draftOptions(run)); best = the top score
+ *   C.Advice.EASE              a boost general's ease: what he adds unplanned, over the best's
  * The rating is for new players (user, 2026-11-08: "deck fit is indeed the part i care about the
  * most ... something that's going to work as easily as possible"): fit, how readily his bonus works
  * with this deck and no special setup, decides; his measured worth only breaks near-ties
@@ -12350,16 +12351,27 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  *   a teacher     how surely the deck makes his formation: a battle shows SEEN of the deck's cards
  *                 (3-card hands, 7 turns); per needed type, the cards of it seen over twice the
  *                 members it asks for, the weakest type counts, at most 1, at least FIT_MIN
- *   KIND[id]      how he fires:
- *     'cards'     he boosts cards the deck holds (CARDS[id]: which, and how many make him full): the
+ *   a booster     (2026-11-09, user: go over all the recommendations with ease in mind) his EASE: on
+ *                 the builder's boards of battles 2-8 played without him (tools/loop001-sim.js, 160
+ *                 runs, rules 13), what adding him at level 1 adds to the same board, over the best
+ *                 one's (the War Council). Then by KIND[id]:
+ *     'cards'     he boosts cards the deck holds (CARDS[id]: which, and how many make him full): x the
  *                 deck's count of them over that, at most 1, raised to CARDS[id].pow (2026-11-09, user:
  *                 Paymaster over the Warden of the Flanks with one hero was wrong: a lone hero or officer
  *                 lifts one piece, and only the battles he is drawn in, so one of the two is a quarter)
- *     'auto'      every battle, no setup (the first or last card, every piece): 1
- *     'form'      he lifts formations: the held teacher's fit (PLACE without one)
- *     'place'     only on the right tiles or in the right shape: PLACE
- *     'run'       not on the battle's score (gold, hand size): RUN
- *   unlisted      a typed one as 'cards' on his type (TYPE_FULL of them); else PLACE
+ *     'auto'      every battle, no setup (the first or last card, every piece)
+ *     'form'      he lifts formations: x the held teacher's fit (he works when it is built)
+ *     'place'     only on the right tiles or in the right shape
+ *     'run'       not on the battle's score (gold, hand size): 0
+ *                 EASE_BY[teacher][id] instead of EASE once a formation general is held (2026-11-09,
+ *                 user: a formation that favours a type should favour that type's booster): the same
+ *                 measure on runs drafting that teacher (60 a teacher); where it beats his mean over the
+ *                 teachers by SYNERGY or more, the line adds "Pairs well with your <teacher>." (Foot Purist and
+ *                 Levy Marshal with the Captain of Foot, Forester too; the Drillmaster and the Motley
+ *                 Captain with the Captain of the Line)
+ *                 TEACHER[id] (the Drillmaster, the War Council): 0 without a formation general held
+ *                 (2026-11-09, user)
+ *   unlisted      EASE_DEFAULT; a typed one as 'cards' on his type (TYPE_FULL of them)
  * ===============================================================================================
  */
 (function () {
@@ -12368,8 +12380,29 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   const NAMES = { inf: 'Infantry', arc: 'Archers', cav: 'Cavalry' };
   const RARITY = { common: 1, uncommon: 2, rare: 3 };
   /** The cards a battle shows (3-card hands over 7 turns: about 21 of 25), the teacher's fit floor,
-   *  the fits of a placement and a run general, the worth's weight and the veto. */
-  const SEEN = 21, FIT_MIN = 0.2, PLACE = 0.6, RUN = 0.4, WORTH_W = 0.04, VETO = -2, TYPE_FULL = 10;
+   *  an unmeasured booster's ease, the worth's weight and the veto. */
+  const SEEN = 21, FIT_MIN = 0.2, EASE_DEFAULT = 0.4, WORTH_W = 0.01, VETO = -2, TYPE_FULL = 10;
+  /** A booster's ease (2026-11-09; the header): the mean gain of adding him unplanned (War Council
+   *  +36%, Herald +26%, Picket Master +12%: he fires in only 55% of battles), over the War Council's. */
+  const EASE = {
+    war_council: 1, high_command: 0.79, herald: 0.73, forester: 0.7, master_ranks: 0.68, paymaster: 0.65,
+    foot_purist: 0.6, steward: 0.59, keeper_corners: 0.57, rearguard_cpt: 0.56, warden_flanks: 0.55,
+    sgt_line: 0.52, lord_hills: 0.41, mixed_ranks: 0.38, drillmaster: 0.38, marshal_centre: 0.34,
+    levy_marshal: 0.33, picket_master: 0.33, banner_sgt: 0.16, mustering: 0, treasurer: 0
+  };
+  /** A booster's ease with this formation general held (the header), over the War Council's best. */
+  const EASE_BY = {
+    cpt_foot: { steward: 0.56, drillmaster: 0.4, marshal_centre: 0.28, warden_flanks: 0.56, lord_hills: 0.36, master_ranks: 0.69, sgt_line: 0.52, forester: 0.86, keeper_corners: 0.67, herald: 0.82, rearguard_cpt: 0.58, banner_sgt: 0.21, mixed_ranks: 0.33, picket_master: 0.24, levy_marshal: 0.52, foot_purist: 0.95, war_council: 1, high_command: 0.77, paymaster: 0.64 },
+    cpt_line: { steward: 0.61, drillmaster: 0.53, marshal_centre: 0.32, warden_flanks: 0.54, lord_hills: 0.54, master_ranks: 0.7, sgt_line: 0.52, forester: 0.62, keeper_corners: 0.59, herald: 0.78, rearguard_cpt: 0.59, banner_sgt: 0.17, mixed_ranks: 0.58, picket_master: 0.26, levy_marshal: 0.26, foot_purist: 0.51, war_council: 0.84, high_command: 0.84, paymaster: 0.79 },
+    cpt_lances: { steward: 0.6, drillmaster: 0.34, marshal_centre: 0.31, warden_flanks: 0.57, lord_hills: 0.44, master_ranks: 0.67, sgt_line: 0.51, forester: 0.59, keeper_corners: 0.63, herald: 0.78, rearguard_cpt: 0.58, banner_sgt: 0.18, mixed_ranks: 0.37, picket_master: 0.38, levy_marshal: 0.23, foot_purist: 0.41, war_council: 0.99, high_command: 0.83, paymaster: 0.69 },
+    cpt_horse: { steward: 0.62, drillmaster: 0.38, marshal_centre: 0.33, warden_flanks: 0.54, lord_hills: 0.52, master_ranks: 0.67, sgt_line: 0.62, forester: 0.53, keeper_corners: 0.63, herald: 0.76, rearguard_cpt: 0.63, banner_sgt: 0.16, mixed_ranks: 0.48, picket_master: 0.37, levy_marshal: 0.19, foot_purist: 0.42, war_council: 0.85, high_command: 0.86, paymaster: 0.76 },
+    cpt_archers: { steward: 0.59, drillmaster: 0.32, marshal_centre: 0.37, warden_flanks: 0.52, lord_hills: 0.5, master_ranks: 0.66, sgt_line: 0.53, forester: 0.77, keeper_corners: 0.6, herald: 0.75, rearguard_cpt: 0.56, banner_sgt: 0.17, mixed_ranks: 0.47, picket_master: 0.33, levy_marshal: 0.38, foot_purist: 0.7, war_council: 0.82, high_command: 0.88, paymaster: 0.69 },
+    cpt_flanks: { steward: 0.59, drillmaster: 0.41, marshal_centre: 0.35, warden_flanks: 0.5, lord_hills: 0.46, master_ranks: 0.69, sgt_line: 0.46, forester: 0.65, keeper_corners: 0.55, herald: 0.83, rearguard_cpt: 0.56, banner_sgt: 0.15, mixed_ranks: 0.53, picket_master: 0.33, levy_marshal: 0.26, foot_purist: 0.47, war_council: 0.98, high_command: 0.82, paymaster: 0.72 }
+  };
+  /** The ease over his mean across the teachers that reads "Pairs well with your <teacher>". */
+  const SYNERGY = 1.25;
+  /** The boosters who do nothing without a formation general (the user, 2026-11-09). */
+  const TEACHER = { drillmaster: 1, war_council: 1 };
   const KIND = {
     foot_purist: 'cards', levy_marshal: 'cards', paymaster: 'cards', banner_sgt: 'cards', sgt_line: 'cards',
     herald: 'auto', rearguard_cpt: 'auto', war_council: 'auto', high_command: 'auto',
@@ -12489,17 +12522,24 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
           const a = affinity(id), t = TYPES.find((x) => a[x] >= 0.5);
           if (t) { kind = 'cards'; cards = { test: (c) => typeOf(c) === t, full: TYPE_FULL, what: NAMES[t] }; } else kind = 'place';
         }
+        const by = teacher && EASE_BY[teacher.id], e = by && by[id] !== undefined ? by[id] : EASE[id];
+        fit = e !== undefined ? e : EASE_DEFAULT;
         if (kind === 'cards') {
           const k = deck.filter(cards.test).length;
-          fit = Math.pow(Math.min(1, k / cards.full), cards.pow || 1);
+          fit *= Math.pow(Math.min(1, k / cards.full), cards.pow || 1);
           why = (k ? 'Boosts your ' + k + ' ' + (k === 1 && cards.one ? cards.one : cards.what) : 'You have no ' + cards.what) + (k >= cards.full ? '.' : ' (best with ' + cards.full + '+).');
-        } else if (kind === 'auto') { fit = 1; why = 'Works every battle with no setup.'; }
+        } else if (kind === 'auto') why = 'Works every battle with no setup.';
         else if (kind === 'form') {
           const tf = teacher ? teachFit(teacher.id, m) : null;
-          fit = tf ? tf.fit : PLACE;
+          if (tf) fit *= tf.fit;
           why = tf ? 'Lifts your ' + tf.name + ' whenever you build it.' : 'Lifts formations you build.';
-        } else if (kind === 'run') { fit = RUN; why = 'Helps the run, not the battle score.'; }
-        else { fit = PLACE; why = 'Works when you place for it: ' + (PLACE_WHY[id] || 'the right tiles') + '.'; }
+        } else if (kind === 'run') { fit = 0; why = 'Helps the run, not the battle score.'; }
+        else why = 'Works when you place for it: ' + (PLACE_WHY[id] || 'the right tiles') + '.';
+        if (TEACHER[id] && !teacher) { fit = 0; why = 'Needs a formation general.'; }
+        else if (by && by[id] !== undefined) {
+          const row = Object.keys(EASE_BY).map((t) => EASE_BY[t][id] || 0), mean = row.reduce((a, x) => a + x, 0) / row.length;
+          if (mean > 0 && by[id] >= SYNERGY * mean) why += ' Pairs well with your ' + (genDef(teacher.id).name || 'formation general') + '.';
+        }
       }
       const w = worth(id);
       return { id, worth: w, fit, score: fit + WORTH_W * w - (w <= VETO ? 1 : 0), best: false, why };
@@ -12508,7 +12548,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     return out;
   }
 
-  C.Advice = { BUILDER_EV, DRAFT_WORTH, KIND, ev, worth, affinity, needs, meter, rate, SEEN, FIT_MIN, PLACE, RUN, WORTH_W, VETO };
+  C.Advice = { BUILDER_EV, DRAFT_WORTH, KIND, EASE, EASE_BY, ev, worth, affinity, needs, meter, rate, SEEN, FIT_MIN, WORTH_W, VETO };
 })();
 </script>
 <!-- the interface -->
