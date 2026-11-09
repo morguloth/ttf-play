@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="14">
-<script>(function(){var B="a963c45baa";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=14;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="c9b910b568";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=14;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -20682,7 +20682,8 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       const post = () => { D.post(saved); timers.push(setTimeout(load, BOARD_DELAY)); };
       if (v.name) post(); else askName(app.stage || root, '', (name) => { D.setName(name); post(); });
       board = { status: 'loading' };
-    } else load();
+    } else if (D.repost && D.repost()) { board = { status: 'loading' }; timers.push(setTimeout(load, BOARD_DELAY)); }
+    else load();
     if (o.just && G.L1Sfx) { try { G.L1Sfx.play(o.just.won ? 'victory' : 'page'); } catch (e) { /* sound only */ } }
     const shownDay = () => (v.live && v.live.daily.date !== v.date ? C.Daily.day(v.live.daily.date) : v.day);
     root.addEventListener('click', (ev) => {
@@ -20719,9 +20720,10 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  * Storage (under 'ttf-loop001:'): player (a random id), outbox (at most 40 rows waiting, retried on
  * the next load), sent (the last 120 keys, so a reload never sends a battle twice).
  * L1Share = {battle(run), flush(), enabled(), available, item(run) (the row, for tests),
- *            daily(run, name), dailyItem(run, name), board(date, rules) (docs/LOOP001-DAILY.md §5)}
+ *            daily(run, name), dailyItem(run, name), dailyRecord(day, rec, name), dailyKey(d), wasSent(key),
+ *            board(date, rules) (docs/LOOP001-DAILY.md §5)}
  * The Daily Challenge (2026-11-07): a daily's battle rows carry `daily` (its date) and
- * `dailyPractice`, keyed apart from a normal run's ('daily:DATE:first|p<at>:battle'). When a
+ * `dailyPractice`, keyed apart from a normal run's ('daily:DATE:rRULES:first|p<at>:battle'). When a
  * non-practice daily finishes for the first time the app calls daily(run, name): one row
  * {kind:'daily', v:1, game:'loop001', date, n, rules, player, name, score, reached, won, build, at}
  * through the same outbox and the same enabled() switch (a player who turned sharing off is not on
@@ -20764,7 +20766,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     const r = run && (run.results || [])[(run.results || []).length - 1];
     if (!r) return null;
     const dl = run.daily && typeof run.daily === 'object' ? run.daily : null;
-    const key = dl ? 'daily:' + dl.date + ':' + (dl.practice ? 'p' + (dl.at || 0) : 'first') + ':' + r.battle : run.seed + ':' + r.battle;
+    const key = dl ? dailyKey(dl) + ':' + (dl.practice ? 'p' + (dl.at || 0) : 'first') + ':' + r.battle : run.seed + ':' + r.battle;
     const row = {
       v: 1, game: C.BUILD_NAME || 'loop001', key, player: playerId(), rules: C.RULES_VERSION, build: buildName(),
       at: new Date().toISOString(), seed: run.seed, attempt: 0, phase: run.phase,
@@ -20780,20 +20782,34 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     const t = String(s == null ? '' : s).replace(/\s+/g, ' ').replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, 16).trim();
     return t || 'Anonymous';
   }
+  /** A daily's send-once key: its date and rules (2026-11-09, user: a rules change's daily, won, never
+   *  reached the board: the old rules' row of that date held the bare 'daily:DATE' key). d: a day or run.daily. */
+  const dailyKey = (d) => 'daily:' + d.date + ':r' + d.rules;
+  /** The leaderboard row of a result {date, n, rules, score, reached, won}. */
+  const rowOf = (r, name) => ({
+    kind: 'daily', v: 1, game: C.BUILD_NAME || 'loop001', key: dailyKey(r), date: r.date, n: r.n, rules: r.rules,
+    player: playerId(), name: cleanName(name), score: r.score, reached: r.reached, won: r.won, build: buildName(), at: new Date().toISOString()
+  });
   /** The leaderboard row of a finished daily (null for a practice run or one not over). */
   function dailyItem(run, name) {
     const D = C.Daily;
     if (!D || !D.isOver(run) || run.daily.practice) return null;
-    const r = D.result(run);
-    return {
-      kind: 'daily', v: 1, game: C.BUILD_NAME || 'loop001', key: 'daily:' + r.date, date: r.date, n: r.n, rules: r.rules,
-      player: playerId(), name: cleanName(name), score: r.score, reached: r.reached, won: r.won, build: buildName(), at: new Date().toISOString()
-    };
+    return rowOf(D.result(run), name);
   }
-  /** Queue and send a finished daily's row, once per date. */
+  /** Has this key's row been queued? */
+  const wasSent = (key) => readList('sent').indexOf(key) >= 0;
+  /** Queue and send a finished daily's row, once per date and rules. */
   function daily(run, name) {
+    return queueDaily(dailyItem(run, name));
+  }
+  /** The row of a day's kept record (C.Daily.record: score, reached, won), once: the app resends a
+   *  record marked posted whose row never went (the bare-date key's block, before 2026-11-09). */
+  function dailyRecord(day, rec, name) {
+    if (!day || !rec) return false;
+    return queueDaily(rowOf({ date: day.date, n: day.n, rules: day.rules, score: rec.score, reached: rec.reached, won: !!rec.won }, name));
+  }
+  function queueDaily(it) {
     if (!enabled()) return false;
-    const it = dailyItem(run, name);
     if (!it) return false;
     const sent = readList('sent');
     if (sent.indexOf(it.key) >= 0) return false;
@@ -20854,7 +20870,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       }, () => { flushing = false; });
   }
 
-  globalThis.L1Share = { battle, flush, enabled, available: !!SHARE_URL && SHAREABLE, item, daily, dailyItem, board, boardUrl, parseBoard, cleanName, playerId };
+  globalThis.L1Share = { battle, flush, enabled, available: !!SHARE_URL && SHAREABLE, item, daily, dailyItem, dailyRecord, dailyKey, wasSent, board, boardUrl, parseBoard, cleanName, playerId };
 })();
 </script>
 <script>
@@ -21393,6 +21409,13 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       rec.posted = true;
       store.set(KEY.dailyRec, recs);
       return true;
+    },
+    /** Today's record marked posted whose row never went (2026-11-09: a rules change's daily, its row
+     *  blocked by the old rules' key) is sent now, once. -> true when it was queued. */
+    repost: () => {
+      const S = globalThis.L1Share, day = D().day(D().today()), rec = dailyRecs()[D().recKey(day)], name = store.get(KEY.dailyName);
+      if (!S || !S.dailyRecord || !S.wasSent || !rec || !rec.posted || !name || S.wasSent(S.dailyKey(day))) return false;
+      try { return S.dailyRecord(day, rec, name); } catch (e) { return false; }
     },
     board: (date, rules) => (globalThis.L1Share && L1Share.board ? L1Share.board(date, rules) : Promise.resolve({ status: 'unavailable' })),
     player: () => (globalThis.L1Share && L1Share.playerId ? L1Share.playerId() : '')
