@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="15">
-<script>(function(){var B="1b8b3b46fe";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=15;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="9e6bc79356";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=15;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -931,27 +931,25 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .hand .hc.dragging { opacity: .35; }
 .hand .hc.nolegal { filter: grayscale(.7) brightness(.7); }
 .hand.empty { display: none; }
-/* rules 15 (2026-11-10, review; integration): the hand stands at x0.8 (x0.78 when four or more cards
-   squeeze its lane), so its small words step up to 14.2 px (11 px on the 1180x820 stage); a 16-19
-   letter name takes two lines like a longer one; the held card rises less, clear of the front plates */
-.hand .hc .l1card .name.n2 { font-size: var(--fs-sm, 15px); letter-spacing: .2px; }
-.hand .hc .l1card .name.n3, .hand .hc .l1card .name.n4 { font-size: 14.2px; letter-spacing: 0; white-space: normal; line-height: 1; }
-.hand .hc .l1card .name.n3 + .kt { top: 116px; }
-.hand .hc .l1card .kt { font-size: 14.2px; letter-spacing: .4px; }
-.hand .hc .l1card .rule .cap { font-size: 14.2px; letter-spacing: 0; }
-/* rules 15 Wave E (2026-11-10, shoot): the rule row's connective word ("per") steps up with the caption */
-.hand .hc .l1card .rule .l1if { font-size: 14.2px; letter-spacing: .3px; }
-.hand .hc .l1card .typemark .tword { font-size: 14.2px; letter-spacing: 1.6px; }
+/* the user (2026-11-11, iPad): the hand's cards bigger and their rule area less crowded. The smaller
+   board leaves room: the hand stands at x0.92 (battle.js HAND_K; x0.78 or less only when four or more
+   cards squeeze its lane), where the card's own type sizes already read 12 px on the 1180x820 stage,
+   so the names and words keep the full card's sizes (no step-up: a 16-19 letter name stays on one
+   line, clear of the rule row). The type mark's icon and studs shrink a little so the name strip
+   never covers the icon. The held card rises less, clear of the front plates. */
+.hand .hc .l1card .typemark { top: 171px; gap: 2px; }
+.hand .hc .l1card .typemark .ic { font-size: 27px; }
+.hand .hc .l1card .typemark .studs i { width: 14px; height: 14px; }
+.hand .hc .l1card .typemark .tword { letter-spacing: 1.8px; }
 .hand .hc .l1card.sel { transform: translateY(-16px); }
-/* review fix (2026-11-10): a stage drawn under 0.95 (1024x768: 0.87) puts the x0.8 hand's words under
-   11 px; there they are 16 px (11.1 px on screen), a long name on two lines */
-.hand.hsmall .hc .l1card .name { font-size: 16px; letter-spacing: .2px; }
-.hand.hsmall .hc .l1card .name.n2, .hand.hsmall .hc .l1card .name.n3, .hand.hsmall .hc .l1card .name.n4 { top: 133px; height: 34px; font-size: 16px; letter-spacing: 0; white-space: normal; line-height: .92; }
-.hand.hsmall .hc .l1card .name.n2 + .kt, .hand.hsmall .hc .l1card .name.n3 + .kt, .hand.hsmall .hc .l1card .name.n4 + .kt { top: 113px; }
-.hand.hsmall .hc .l1card .kt, .hand.hsmall .hc .l1card .rule .cap, .hand.hsmall .hc .l1card .rule .l1if { font-size: 16px; letter-spacing: 0; }
-.hand.hsmall .hc .l1card .typemark .tword { font-size: 16px; letter-spacing: 1.2px; }
-.hand.hsmall .hc .l1card .typemark { gap: 2px; }
-.hand.hsmall .hc .l1card .typemark .ic { font-size: 26px; }   /* review fix (2026-11-10): room for the 16 px type word */
+/* a stage drawn under 0.95 (1024x768: 0.87, 1280x720: 0.88) puts 13 px words under 11 px on screen:
+   there the small words are 14.2 px (11 px on screen even in a squeezed four-card hand) and the type mark tighter still */
+.hand.hsmall .hc .l1card .kt, .hand.hsmall .hc .l1card .rule .cap, .hand.hsmall .hc .l1card .rule .l1if { font-size: 14.2px; letter-spacing: 0; }
+.hand.hsmall .hc .l1card .name.n3, .hand.hsmall .hc .l1card .name.n4 { font-size: 14px; letter-spacing: -.3px; }
+.hand.hsmall .hc .l1card .typemark { gap: 1px; }
+.hand.hsmall .hc .l1card .typemark .ic { font-size: 24px; }
+.hand.hsmall .hc .l1card .typemark .tword { font-size: 14px; letter-spacing: 1.2px; }
+.hand.hsmall .hc .l1card .typemark .studs i { width: 13px; height: 13px; }
 .dragcard { position: absolute; z-index: 40; pointer-events: none; transform-origin: 50% 50%; opacity: .92; filter: drop-shadow(0 18px 20px rgba(0,0,0,.7)); }
 
 /* ---------- the prompt bar (a choice, a survey) ---------- */
@@ -17255,7 +17253,8 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   const UNDO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 9H15a5 5 0 0 1 0 10H9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path fill="currentColor" d="M2.5 9 9 3.5v11z"/></svg>';
   // rules 15 (2026-11-10, review): the hand at 0.8 scale (its cards 136 x 200 on the stage), at the
   // stage's foot, so the grown board (board.js geom) stays clear of it
-  const BOARD_X = 580, BOARD_Y = 128, HAND_Y = 616, CARD_W = 170, HAND_GAP = 20, STAGE_W = 1180, HAND_K = 0.8;
+  // the user (2026-11-11): the hand bigger (x0.8 -> x0.92) and higher (616 -> 584), the smaller board leaves room
+  const BOARD_X = 580, BOARD_Y = 128, HAND_Y = 584, CARD_W = 170, HAND_GAP = 20, STAGE_W = 1180, HAND_K = 0.92;
   const LONG_MS = 480, MOVE_PX = 12;
   // the twist names that are too long for a chip (one or two words)
   const TWIST_SHORT = { rally: 'Rally', fog: 'Fog' };
