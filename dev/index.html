@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="15">
-<script>(function(){var B="96618a901c";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=15;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="1b8b3b46fe";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=15;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -465,8 +465,8 @@
 /* rules 15 (2026-11-10, review): a placed unit's number on one row (L1Cards.chipChain, the battle's
    #b-chain under the board): the power in its type's gem, a small steel chip per step (violet: a
    formation's), "=", its disc. Two rows at most; the middle folds into "… N more" past that. */
-.chain-strip { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 5px; max-width: 100%;
-  max-height: 72px; overflow: hidden; font-family: var(--label); line-height: 1; color: #fff4dc; -webkit-user-select: none; user-select: none; }
+.chain-strip { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 5px; max-width: 100%; box-sizing: border-box;
+  max-height: 82px; padding: 5px 4px; overflow: hidden; /* 2026-11-11: the padding keeps the discs' rings inside the clip (the user saw the final disc cut off) */ font-family: var(--label); line-height: 1; color: #fff4dc; -webkit-user-select: none; user-select: none; }
 .chain-strip > span { flex: none; }
 .chain-strip .cs-base { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: var(--fs-md, 17px); color: #fff8e6;
   text-shadow: 0 1px 2px rgba(0,0,0,.7); background: radial-gradient(circle at 38% 32%, var(--t1, #a58a62), var(--t2, #5a4630) 72%);
@@ -1385,10 +1385,12 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 /* a tapped or previewed unit's number chain (L1Cards.chipChain: .chain-strip). Review fix (2026-11-10):
    in the generals column under the chips (battle.js showChain sets its top), on a solid dark pill, never
    over the figures; .side: under the actions in the right column when the generals fill theirs */
-.bchain { position: absolute; left: 22px; top: 300px; width: 240px; box-sizing: border-box; z-index: 4; display: none; pointer-events: auto;
+.bchain { position: absolute; left: 22px; top: 300px; width: max-content; min-width: 240px; max-width: 268px; box-sizing: border-box; z-index: 4; display: none; pointer-events: auto;
   padding: 6px 10px; border-radius: 22px; background: rgba(20,14,8,.92); border: 1px solid #6b5330; box-shadow: 0 8px 18px rgba(0,0,0,.55); }
 .bchain.side { left: 898px; width: 260px; }
-.bchain .chain-strip { max-height: 138px; }
+.bchain .chain-strip { max-height: 148px; }
+/* 2026-11-11 (user: the strip got cut off): the pill grows with its chain up to 268 px; the smaller
+   board (rules 16 layout, 102 px tiles) leaves that room left of the plane */
 .bchain.on { display: block; animation: l1-chainin .16s ease-out both; }
 @keyframes l1-chainin { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 /* the tapped unit: a gold ring on its tile, its plate lifted and lit (the strip is this unit's) */
@@ -16428,9 +16430,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  * figures stand 1.3x; the held card's cues (best tiles, completing tiles) come through cues().
  *
  * L1Board = {
- *   geom(st)                     {G (TTFCore4.geoOf), TS (tile px), W, H (plane px)}: 4x4 125 px
- *                                tiles, the Siege's 5x5 97 px (rules 15: the plane about 540 px;
- *                                battle.js still reads TS < 98 as the 5x5)
+ *   geom(st)                     {G (TTFCore4.geoOf), TS (tile px), W, H (plane px), small (the
+ *                                5x5)}: 4x4 102 px tiles, the Siege's 5x5 79 px (rules 16 layout:
+ *                                the plane about 445 px, clear of the hand, generals and score panel)
  *   mount(el, st, opts)          (re)build the board inside `el` (the .dio box, positioned by the
  *                                caller). opts: {score (C.score(st), else computed), land (a slot,
  *                                or a list of slots, that just took a unit: it drops in and a dust
@@ -16654,10 +16656,11 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 
   // ---- geometry --------------------------------------------------------------------------------
   function geom(st) {
-    // rules 15 (2026-11-10, review): the plane from 431 to about 540 px (+55% area): 4x4 tiles 125 px
-    // (539), the Siege's 5x5 97 px (529; under 98, which battle.js reads as the 5x5)
-    const G = C.geoOf(st), TS = G.cols <= 4 && G.rows <= 4 ? 125 : 97;
-    return { G, TS, W: PAD * 2 + TS * G.cols + GAP * (G.cols - 1), H: PAD * 2 + TS * G.rows + GAP * (G.rows - 1) };
+    // rules 15 (2026-11-10, review) took the plane from 431 to about 540 px; the user (2026-11-11):
+    // a bit smaller, so it never runs under the hand, the score panel or a third general: 4x4 tiles
+    // 102 px (447), the Siege's 5x5 79 px (439). small: the 5x5 (its smaller plates and figures)
+    const G = C.geoOf(st), small = !(G.cols <= 4 && G.rows <= 4), TS = small ? 79 : 102;
+    return { G, TS, small, W: PAD * 2 + TS * G.cols + GAP * (G.cols - 1), H: PAD * 2 + TS * G.rows + GAP * (G.rows - 1) };
   }
 
   // ---- the number disc and its badges ------------------------------------------------------------
@@ -16733,7 +16736,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     if (!g || !g.G) return '';
     const G = g.G, TS = g.TS, th = TILT * Math.PI / 180;
     const c = G.colOf ? G.colOf(i) : i % G.cols, r = G.rowOf ? G.rowOf(i) : Math.floor(i / G.cols);
-    const ph = TS < 98 ? 24 : 28, v = PAD + r * (TS + GAP) + TS * 0.99;
+    const ph = g.small ? 24 : 28, v = PAD + r * (TS + GAP) + TS * 0.99;
     const X = PAD + c * (TS + GAP) + TS / 2 - g.W / 2, Y = v * Math.cos(th) - ph / 2, Z = v * Math.sin(th);
     const Zt = g.H * Math.sin(th) + 24, t = (Zt - Z) / (PERSP - Z);
     if (!(t > 0 && t < 1)) return '';
@@ -16823,7 +16826,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       if (p) {
         const u = U[i], type = (u && u.type) || typeOf(p);
         fig = figuresHtml(p, i);
-        disc = numHtml(u, type, { cls: o.hideNums ? 'rv0' : '', small: TS < 98, lift: liftOf(g, i) });
+        disc = numHtml(u, type, { cls: o.hideNums ? 'rv0' : '', small: g.small, lift: liftOf(g, i) });
       }
       tiles.push({
         key: 's' + i, cls, sty, gr, disc, land,
@@ -16832,7 +16835,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       });
     }
     // the board's state classes: a change restyles every tile, so the board is built whole
-    const key = plane + '|' + (TS < 98) + '|' + !!SG + '|' + !!(SG && locked.length) + '|' + !!(C.isBossBattle && C.isBossBattle(st));
+    const key = plane + '|' + g.small + '|' + !!SG + '|' + !!(SG && locked.length) + '|' + !!(C.isBossBattle && C.isBossBattle(st));
     const bt0 = el._l1brT ? Date.now() - el._l1brT : -1;
     const prev = el._l1tiles, pl = el.firstElementChild;
     const same = !!prev && !!pl && prev.plane === pl && prev.key === key && !(bt0 >= 0 && bt0 < BREACH_MS) &&
@@ -16843,7 +16846,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     el.style.width = g.W + 'px';
     el.style.height = g.H + 'px';
     el._l1geo = g;
-    el.classList.toggle('siege', TS < 98);
+    el.classList.toggle('siege', g.small);
     el.classList.toggle('walled', !!SG);
     el.classList.toggle('sealed', !!(SG && locked.length));
     // a breach still playing carries on where it stands on the new tiles (battle.css reads --bt:
@@ -17252,7 +17255,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   const UNDO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 9H15a5 5 0 0 1 0 10H9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path fill="currentColor" d="M2.5 9 9 3.5v11z"/></svg>';
   // rules 15 (2026-11-10, review): the hand at 0.8 scale (its cards 136 x 200 on the stage), at the
   // stage's foot, so the grown board (board.js geom) stays clear of it
-  const BOARD_X = 580, BOARD_Y = 104, HAND_Y = 616, CARD_W = 170, HAND_GAP = 20, STAGE_W = 1180, HAND_K = 0.8;
+  const BOARD_X = 580, BOARD_Y = 128, HAND_Y = 616, CARD_W = 170, HAND_GAP = 20, STAGE_W = 1180, HAND_K = 0.8;
   const LONG_MS = 480, MOVE_PX = 12;
   // the twist names that are too long for a chip (one or two words)
   const TWIST_SHORT = { rally: 'Rally', fog: 'Fog' };
@@ -17558,7 +17561,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     };
     const geo = L1Board.geom(S.st);
     // the Siege's 5x5 board sits a little lower: its top row's discs clear the top bar's shadow
-    const boardY = BOARD_Y + (geo.TS < 98 ? 10 : 0);
+    const boardY = BOARD_Y + (geo.small ? 10 : 0);
     root.innerHTML = app.topbar(topInfo()) +
       '<div class="gens" data-r="gens"></div>' +
       '<div class="dio" data-r="board" style="left:' + Math.round(BOARD_X - geo.W / 2) + 'px;top:' + boardY + 'px"></div>' +
