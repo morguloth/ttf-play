@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="2">
-<script>(function(){var B="0f296925b0";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=2;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-war001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("war001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="8187a2197f";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=2;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-war001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("war001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1468,6 +1468,11 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 /* the pips beside the band's number: its progress */
 .sc-tgt.sg-band .v .sg-pips { margin-left: 4px; align-self: center; }
 .sc-tgt.sg-band.top .v .ic { font-size: 30px; }
+/* 2026-11-12 (user): the met target stays identical (no .met look); its next bonus coin and the band pips sit
+   beside it, wrapping under a long (4-digit) number */
+.sc-tgt.mb { flex-wrap: wrap; row-gap: 6px; }
+.sc-tgt.mb .mbx { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; }
+.sc-tgt .mbx .bcoin { width: 38px; height: 38px; font-size: 16px; }
 .sc-tgt.sg-band .v { color: #f6e6c0; text-shadow: none; }
 .sc-tgt.sg-band.top .v { color: var(--reached, #f3d58e); text-shadow: 0 0 18px var(--reached-glow, rgba(243,213,142,.7)); }
 .sc-tgt .bcoin { display: grid; place-items: center; width: 42px; height: 42px; flex: none; border-radius: 50%; font-family: var(--label, 'Cinzel', serif); font-weight: 700; font-size: 18px;
@@ -19343,10 +19348,13 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         // review fix (2026-11-10): the met target is its own quiet chip ("Target 5 ✓", apart from the
         // label: "Next bonus ✓5" read as "the bonus is 5"); the pips sit beside the band's number (its
         // progress); all three met: a laurel, not a second check
-        head = '<div class="lab sc-tl"><span>' + (bs.next ? 'Next bonus' : 'All bonuses') + '</span><span class="sc-was" aria-label="Target ' + sd.target + ' met">Target ' + sd.target + icon('check') + '</span></div>' +
-          '<div class="sc-tgt met sg-band' + (bs.next ? '' : ' top') + (fe >= 0 ? flip : stampB) + '"><span class="v">' +
-          (bs.next ? '<span class="bcoin" aria-label="+' + b.gold + ' gold">+' + b.gold + '</span>' : icon('laurel')) +
-          '<span data-r="band">' + Math.max(0, b.at - mb.offset) + '</span>' + pipsHtml(bs, true, be) + '</span></div>';
+        // 2026-11-12 (user, playtest feedback: a changing big number read as "not at the target yet";
+        // "I want the big red target to remain identical"): the target's icon and number stay exactly as
+        // before it was met; the next bonus's gold coin and the band pips sit beside them (wrapping under
+        // a long number); user: "just add the attached stuff to the right" (the label stays Target)
+        head = '<div class="lab">Target</div>' +
+          '<div class="sc-tgt mb' + (fe >= 0 ? flip : stampB) + '"><span class="v">' + icon('target') + '<span data-r="tgt">' + sd.target + '</span></span>' +
+          '<span class="mbx">' + (bs.next ? '<span class="bcoin" aria-label="+' + b.gold + ' gold">+' + b.gold + '</span>' : '') + pipsHtml(bs, true, be) + '</span></div>';
       } else {
         head = '<div class="lab">Target</div><div class="sc-tgt' + (met ? ' met' : '') + flip + '"><span class="v">' + icon(met ? 'check' : 'target') + '<span data-r="tgt">' + sd.target + '</span></span>' +
           (bs ? pipsHtml(bs, met, -1) : '') + '</div>';
