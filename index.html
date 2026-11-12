@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="19">
-<script>(function(){var B="0e811f11eb";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=19;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="043b144839";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=19;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-loop001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("loop001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1593,6 +1593,17 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .qm.s3h .qm-hirep.three .l1plaque .gn.n3, .qm.s3h .qm-hirep.three .l1plaque .gn.n4 { font-size: 14.5px; letter-spacing: 0; /* off-step */ }
 .qm:not(.s2):not(.s3h) .qm-hirep.many .l1plaque { zoom: .66; }
 .qm-hirep .lab .sub { letter-spacing: 0; text-transform: none; font-size: var(--fs-md, 17px); }
+/* 2026-11-12 (user): "Your generals" at the hire panel's label row's end (after its hairline); opens openGens */
+.qm-hirep .lab::after { order: 1; }
+.qm-hirep .lab { white-space: nowrap; }
+.qm-gbtn { order: 2; flex: none; display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 10px; margin: -6px 0 -6px 2px; border-radius: 9px;
+  font-family: var(--label); font-weight: 700; font-size: var(--fs-xs, 13px); letter-spacing: 1px; text-transform: uppercase; color: #c9b48a;
+  background: rgba(20,16,12,.5); box-shadow: inset 0 0 0 1.5px rgba(201,163,92,.5); }
+.qm-gbtn .ic { font-size: 17px; }
+.qm-gbtn .n { font-family: var(--label); color: #f1dfb2; padding-left: 6px; border-left: 1px solid rgba(201,163,92,.45); }
+.qm-gbtn:active { filter: brightness(1.2); }
+.qm-gview .qm-its { justify-content: center; }
+.qm-gview .qm-it { cursor: default; }
 
 /* ---------- services ---------- */
 .qm-svcs { position: absolute; left: 14px; right: 14px; top: 46px; display: flex; justify-content: space-between; align-items: flex-start; }
@@ -20039,7 +20050,10 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       layer.innerHTML = app.topbar({ title: 'Quartermaster', sub: 'Spend gold, then march to Battle ' + next, battle: next }) +
         '<div class="pnl qm-rec"><div class="lab">Recruits <span class="sub">· ' + (swaps() ? 'Each replaces a card you choose' : 'Join your deck') + '</span></div>' +
         '<div class="qm-shelf"' + (z < 1 ? ' style="zoom:' + z.toFixed(3) + ';gap:30px;padding-top:' + (152 * (1 - z) / z).toFixed(1) + 'px"' : '') + '>' + wares + '</div></div>' +
-        '<div class="pnl qm-hirep' + (many ? ' many' + (hires.length > 2 ? ' three' : '') : '') + '"><div class="lab">' + ht.label + (ht.sub ? ' <span class="sub">· ' + ht.sub + '</span>' : '') + '</div>' + hire + '</div>' +
+        // 2026-11-12 (user): "there should be a way to see your generals from in the store": a button at
+        // the hire panel's label row opens them (openGens)
+        '<div class="pnl qm-hirep' + (many ? ' many' + (hires.length > 2 ? ' three' : '') : '') + '"><div class="lab">' + ht.label + (ht.sub ? ' <span class="sub">· ' + ht.sub + '</span>' : '') +
+        ((run.generals || []).length ? '<button class="qm-gbtn" data-a="gens" data-sfx="none" aria-label="Your generals">' + icon('general') + 'Yours<span class="n">' + run.generals.length + '</span></button>' : '') + '</div>' + hire + '</div>' +
         '<div class="pnl qm-svcp"><div class="lab">Services</div><div class="qm-svcs">' + svcs + '</div></div>' +
         // the right column (a flex column in its grid area): gold and deck, each half the Recruits row
         '<div class="qm-side"><div class="pnl qm-gold"><div class="lab">Your gold</div><div class="qm-gv">' + icon('gold') + '<span class="n">' + gold + '</span></div>' +
@@ -20230,6 +20244,22 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         '<div class="qm-ms">From now on, each recruit takes the place of a card you choose.</div>' +
         '<div class="qm-mbtns"><button class="qm-mb ok" data-p="cancel" data-sfx="none">Got it</button></div></div>';
       hideTip();
+      root.appendChild(el);
+      pop = { el, busy: false };
+      sfx('open');
+    }
+    /** 2026-11-12 (user): the generals you hold, each on his plaque (level and effect), to look at only. */
+    function openGens() {
+      const gs = run.generals || [];
+      if (!gs.length || dead) return;
+      closePop(true);
+      hideTip();
+      const el = document.createElement('div'), w = Math.min(1120, Math.max(560, gs.length * 222 + 30));
+      el.className = 'qm-pop' + (calm() ? '' : ' anim');
+      el.innerHTML = '<div class="qm-scrim" data-p="cancel"></div><div class="pnl qm-modal qm-full qm-gview" style="left:' + Math.round((1180 - w) / 2) + 'px;width:' + w + 'px">' +
+        '<div class="qm-mh">Your generals</div><div class="qm-ms">Their levels and what each one does.</div>' +
+        '<div class="qm-mrow"><div class="qm-its">' + gs.map((x) => '<div class="qm-it">' + plaque(x, { T, run, size: 'm' }) + '</div>').join('') + '</div></div>' +
+        '<div class="qm-mbtns"><button class="qm-mb ok" data-p="cancel" data-sfx="none">Close</button></div></div>';
       root.appendChild(el);
       pop = { el, busy: false };
       sfx('open');
@@ -20494,6 +20524,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       if (a === 'ware') tapWare(n);
       else if (a === 'svc') tapSvc(n.dataset.s, n);
       else if (a === 'deck') openDeck();
+      else if (a === 'gens') openGens();
       else if (a === 'march') march();
       else if (!tipUp && !t.closest('.top2')) armTip();
     };
