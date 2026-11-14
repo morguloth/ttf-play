@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="9">
-<script>(function(){var B="bf7d3fecbf";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=9;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-war050:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("war050-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="12ef0eb559";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=9;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-war050:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("war050-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -16945,13 +16945,17 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   }
 
   /** Each draft option rated against the run's deck and held generals: [{id, worth, fit, score, best, why}]. */
+  /** The Warlord's size (tun generals.warlord.minUnits, 4) and: does the run hold a formation general
+   *  whose formation has that many units or more? (2026-11-14, user) */
+  const warlordMin = () => ((((C.TUN_DEFAULT || {}).generals || {}).warlord || {}).minUnits) || 4;
+  const bigForm = (run) => ((run && run.generals) || []).some((g) => { const f = formOf(g.id); return !!(f && (f.size || 0) >= warlordMin()); });
   function rate(run, opts0) {
     const opts = opts0 || (C.Run && C.Run.draftOptions ? C.Run.draftOptions(run) : []);
     const deck = (run && run.deck) || [], m = meter(deck);
     const teacher = ((run && run.generals) || []).find((g) => needs(g.id));
     const out = opts.map((o) => {
       const id = o.id || o;
-      let fit, why;
+      let fit, why, blocked = false;
       if (needs(id)) { const tf = teachFit(id, m); fit = tf.fit; why = tf.why; }
       else {
         let kind = KIND[id], cards = CARDS[id];
@@ -16977,6 +16981,8 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         else if (kind === 'pact') { fit = EASE_DEFAULT * PACT_FIT; why = pactWhy(pact); }
         else why = 'Works when you place for it: ' + (PLACE_WHY[id] || 'the right tiles') + '.';
         if (TEACHER[id] && !teacher) { fit = 0; why = 'Needs a formation general.'; }
+        // 2026-11-14 (user): the Warlord only once a held formation general's formation has his size (4+ units)
+        else if (id === 'warlord' && !bigForm(run)) { fit = 0; blocked = true; why = 'Needs a formation of ' + warlordMin() + '+ units: draft its general first.'; }
         else if (by && by[id] !== undefined) {
           const row = Object.keys(EASE_BY).map((t) => EASE_BY[t][id] || 0), mean = row.reduce((a, x) => a + x, 0) / row.length;
           if (mean > 0 && by[id] >= SYNERGY * mean) why += ' Pairs well with your ' + (genDef(teacher.id).name || 'formation general') + '.';
@@ -16985,7 +16991,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       const w = worth(id);
       // a teacher: the chance decides, his worth only splits a tie (TEACH_WORTH_W)
       const ww = needs(id) ? TEACH_WORTH_W : WORTH_W;
-      return { id, worth: w, fit, score: fit + ww * w - (w <= VETO ? 1 : 0), best: false, why };
+      return { id, worth: w, fit, score: blocked ? -Infinity : fit + ww * w - (w <= VETO ? 1 : 0), best: false, why };
     });
     if (out.length) out.reduce((b, x) => (x.score > b.score ? x : b)).best = true;
     return out;
