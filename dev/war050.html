@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="6">
-<script>(function(){var B="f7dcc33379";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=6;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-war050:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("war050-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="508efda0dd";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=6;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-war050:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("war050-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2327,18 +2327,14 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 /* ---------- the run intro ---------- */
 .mo-intro { padding-top: 30px; }
 .mo-intro .mo-title { margin-top: 10px; }
-.mo-road { display: flex; gap: 22px; align-items: flex-start; margin-top: 58px; }
-.mo-roadline { position: absolute; left: 110px; right: 150px; top: 51px; height: 3px; z-index: 0;
+.mo-road { position: relative; display: flex; gap: 22px; align-items: flex-start; margin-top: 58px; }
+.mo-roadline { position: absolute; left: 110px; right: 110px; top: 51px; height: 3px; z-index: 0;
   background: repeating-linear-gradient(90deg, rgba(201,163,92,.75) 0 12px, transparent 12px 20px); }
 .mo-stn { position: relative; z-index: 1; width: 220px; display: flex; flex-direction: column; align-items: center; text-align: center; }
 .mo-sn { margin-top: 16px; min-height: 50px; display: flex; align-items: center; justify-content: center; font-family: var(--label, 'Cinzel', serif); font-weight: 700;
   font-size: 21px; line-height: 1.15; letter-spacing: .6px; color: #f6e6c0; }
 .mo-sb { margin-top: 6px; font-family: var(--label, 'Cinzel', serif); font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: var(--lab, #c9a764); }
 .mo-sl { margin-top: 10px; font-size: 19px; line-height: 1.15; color: var(--sub, #b9ab8f); }
-.mo-stn.siege { width: 290px; padding: 0 14px 16px; }
-.mo-stn.siege::before { content: ''; position: absolute; left: 0; right: 0; top: 52px; bottom: 0; z-index: -1; border-radius: 14px;
-  background: linear-gradient(180deg, rgba(92,30,22,.55), rgba(40,16,12,.72)); box-shadow: inset 0 0 0 1px rgba(224,98,90,.38), 0 16px 30px -12px rgba(0,0,0,.9); }
-.mo-stn.siege .mo-sb { color: #e07a6e; }
 .mo-sbd { display: flex; align-items: center; gap: 10px; margin-top: 12px; font-size: 19px; color: #e6d7b6; }
 .mo-tws { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; width: 100%; }
 .mo-stn .mo-row { gap: 10px; padding: 8px 10px; background: rgba(0,0,0,.3); }
@@ -2550,16 +2546,31 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .mo-minis.lit .l1mini.hit { opacity: 1; filter: none; transform: translateY(-4px);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 0 0 2px #f3d58e, 0 0 14px rgba(243,213,142,.55), 0 8px 14px -6px rgba(0,0,0,.9); }
 
-/* the run intro: the Siege is campaign III's boss, a crest on III's medallion, its panel below */
+/* the run intro: each campaign's finale (s-moments.js finaleCard) - its crest a stud on the medallion,
+   its card below the station (2026-11-14: one system for all five; the bosses' red) */
 .mo-crest { position: absolute; right: -10px; bottom: -6px; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font-size: 26px; color: #fff0e6;
   background: radial-gradient(circle at 40% 30%, #ec7a6a, #b23a2e 56%, #5e1712);
   box-shadow: 0 0 0 2.5px #2a0d0a, 0 0 0 5px rgba(224,98,90,.3), 0 0 22px rgba(224,98,90,.55), 0 6px 12px rgba(0,0,0,.7); }
-.mo-stn.siege { width: 330px; padding: 0; }
-.mo-intro .mo-road { margin-top: 44px; }
-.mo-stn.siege::before { display: none; }
-.mo-sgp { position: relative; width: 100%; margin-top: 12px; padding: 10px 12px 12px; border-radius: 14px;
+.mo-intro .mo-road { margin-top: 22px; align-items: stretch; }
+.mo-intro .mo-sn { margin-top: 12px; }
+.mo-crest .ic { font-size: 26px; }
+.mo-fin { position: relative; flex: 1 1 auto; width: 100%; margin-top: 14px; padding: 9px 10px 10px; border-radius: 14px; display: flex; flex-direction: column; align-items: center;
   background: linear-gradient(180deg, rgba(92,30,22,.55), rgba(40,16,12,.72)); box-shadow: inset 0 0 0 1px rgba(224,98,90,.38), 0 16px 30px -12px rgba(0,0,0,.9); }
-.mo-sgp::before { content: ''; position: absolute; left: 50%; top: -14px; width: 2px; height: 14px; background: rgba(224,98,90,.55); }
+.mo-fin::before { content: ''; position: absolute; left: 50%; top: -14px; width: 2px; height: 14px; background: rgba(224,98,90,.55); }
+.mo-fnh { display: flex; align-items: center; justify-content: center; gap: 7px; font-family: var(--label, 'Cinzel', serif); font-weight: 700; font-size: 16px; letter-spacing: 1.6px;
+  text-transform: uppercase; color: #e07a6e; }
+.mo-fnh .ic { font-size: 20px; }
+.mo-fnn { margin-top: 4px; min-height: 40px; display: flex; align-items: center; justify-content: center; font-family: var(--label, 'Cinzel', serif); font-weight: 700;
+  font-size: 16px; line-height: 1.2; color: #f1dfb2; }
+.mo-fng { height: 76px; margin-top: 6px; display: flex; align-items: center; justify-content: center; }
+.mo-fng svg { display: block; height: 100%; width: auto; filter: drop-shadow(0 4px 6px rgba(0,0,0,.6)); }
+.mo-fng .mo-sgb, .mo-fng .mo-fb { display: block; height: 68px; width: auto; }
+.mo-fng .mo-sgb svg { width: 68px; }
+.mo-fb2 { display: flex; align-items: center; gap: 5px; height: 52px; }
+.mo-fb2 .mo-fb { height: 52px; }
+.mo-fb2 i { width: 0; height: 0; border-left: 8px solid #c9a764; border-top: 6px solid transparent; border-bottom: 6px solid transparent; }
+.mo-fnr { margin-top: 8px; min-height: 42px; display: flex; align-items: center; justify-content: center; font-size: var(--fs-md, 17px); line-height: 1.2; color: #e6d7b6; }
+.mo-fnt { margin-top: auto; padding-top: 6px; font-size: 16px; color: var(--lab, #c9a764); }
 .mo-sgh { display: flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--label, 'Cinzel', serif); font-size: 14px; letter-spacing: 1.6px;
   text-transform: uppercase; color: #e07a6e; }
 .mo-sgh .ic { font-size: 20px; }
@@ -2879,10 +2890,10 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .mo-track.n5 { zoom: .74; gap: 14px; }
 /* the run intro: five stations, narrower; the Siege's panel still under III */
 .mo-road.n5 { gap: 12px; }
-.mo-road.n5 .mo-stn { width: 168px; }
-.mo-road.n5 .mo-stn.siege { width: 300px; }
-.mo-road.n5 .mo-roadline { left: 84px; right: 84px; }
+.mo-road.n5 .mo-stn { width: 206px; }
+.mo-road.n5 .mo-roadline { left: 103px; right: 103px; }
 .mo-road.n5 .mo-sn { font-size: 19px; }
+.mo-road.n5 .mo-sb { font-size: 16px; letter-spacing: 1.6px; }
 .mo-road.n5 .mo-sl { font-size: 18px; }
 /* a campaign's opening plate (IV, V): a brass seal with its numeral, the region's picture, its story */
 .mo .pnl.mo-plate.cp { width: 700px; padding: 70px 44px 24px;
@@ -24619,10 +24630,12 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  * intro five stations (.mo-road.n5); the Siege is the final battle only where the run ends at it
  * (endsAtCapital), battle 50 is "The final battle"; the run won at 50 reads "The war is won" over the
  * coast with the player's camp.
+ * 2026-11-14 (user): the run intro gives every campaign's finale the Siege's treatment (finaleCard: a
+ * crest stud on the medallion, a card with its board, its rule and its turns; fieldBoard, FIN_CREST).
  * Also L1Screens.levelMoment(root, {run, T, rec, then, index?, count?, reduced?}): one level-up
  * moment over any screen (a Train in the store may use it) -> {el, finish(), destroy()}.
  * rules 8 (docs/LOOP001-SIEGE.md "Screens"): siegeBoard(sg, o) the walled board as a little picture
- * (the run intro's Siege panel, the boss intro, the store's note before battle 30); the boss intro
+ * (the run intro's Siege card, the boss intro, the store's note before battle 30); the boss intro
  * shows each side's target under it; the defeat screen names both sides of a lost Siege.
  * Pure helpers (tests): L1Moments.{twistName, twistLine, rankLine, part1Split, part2Left,
  * trackStates, trackFill, deckZoom, deckLayout, roleLabel, rankChange, changeLine, mergeLevelUps,
@@ -25357,9 +25370,6 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   }
 
   // ---- the run intro (before battle 1) ---------------------------------------------------------------
-  const CAMP_LINE = { twist: 'A boss with a twist ends it', twoPart: 'Ends with a battle in two parts', siege: 'Ends at the capital\'s walls',
-    // war050 rules 5: the set pieces
-    citadel: 'Ends at the Usurper\'s citadel', kings: 'Ends on the Field of Kings' };
   /** A twist as icon + name + one line (bare: no name; the plate's title already says it; turns:
    *  the battle's real turns, for 'short'). */
   function twistRow(t, T, bare, turns, n, d, crest) {
@@ -25385,26 +25395,96 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   }
   /** The Siege's rule in one line (the engine's: "Breach the gate, then take the city"). */
   const sgShort = () => (((C && C.BOSS_KINDS) || {}).siege || {}).short || 'Breach the gate, then take the city';
+  /**
+   * 2026-11-14 (user: "only siege gets a detailed view"): every campaign's finale as one system - a
+   * crest per boss kind (the stud on the campaign's medallion and its card's header) and a card under
+   * the station: the crest and "Battle N", the boss's name (C.BOSS_KINDS), its board as a little
+   * picture, its rule in one line (C.BOSS_KINDS[kind].short) and its turns. No card names a twist
+   * before the battle shows it (battle 10's twist, the Field of Kings' fronts): the store and the
+   * boss's plate do.
+   */
+  const FIN_CREST = {
+    twist: () => icon('boss'),
+    // two boards, one behind the other: a battle in two parts
+    twoPart: () => svg('<rect x="2.5" y="2.5" width="12.5" height="12.5" rx="2" fill="none" stroke="currentColor" stroke-width="2.3"/><rect x="9" y="9" width="12.5" height="12.5" rx="2"/>'),
+    siege: siegeCrest,
+    citadel: () => icon('keep'),
+    kings: () => icon('crown')
+  };
+  const finCrest = (kind) => (FIN_CREST[kind] || FIN_CREST.twist)();
+  /**
+   * A plain board as a little picture (an SVG string; pure, tests): cols x rows field tiles in the
+   * Siege picture's greens; o.mark 'q' a red seal with a question mark on its middle (a twist not told
+   * yet); o.num a numeral on its corner (a part of battle 20).
+   */
+  function fieldBoard(cols, rows, o) {
+    const x = o || {}, n = cols || 4, m = rows || 4, cs = 10, gp = 1.5, W = n * cs + (n - 1) * gp, H = m * cs + (m - 1) * gp;
+    const FIELD = ['#6f8c45', '#7f9a4c', '#5f7f3c', '#8a9a52'], out = [];
+    for (let i = 0; i < n * m; i++) {
+      const px = (i % n) * (cs + gp), py = Math.floor(i / n) * (cs + gp);
+      out.push('<rect x="' + px + '" y="' + py + '" width="' + cs + '" height="' + cs + '" rx="1.2" fill="' + FIELD[(i * 5 + 1) % FIELD.length] + '"' + (x.mark ? ' fill-opacity=".72"' : '') + '/>');
+    }
+    if (x.mark === 'q') {
+      const r = Math.min(W, H) * 0.3, cx = W / 2, cy = H / 2;
+      out.push('<circle cx="' + cx + '" cy="' + cy + '" r="' + r.toFixed(2) + '" fill="#a3302a" stroke="#2a0d0a" stroke-width="1"/>' +
+        '<g transform="translate(' + (cx - r * 0.75).toFixed(2) + ' ' + (cy - r * 0.75).toFixed(2) + ') scale(' + (r * 1.5 / 24).toFixed(3) + ')">' +
+        '<path d="M8.6 8.8a3.5 3.5 0 1 1 5 3.2c-1 .5-1.6 1.2-1.6 2.3v.9" fill="none" stroke="#fff0e6" stroke-width="2.8" stroke-linecap="round"/><circle cx="12" cy="19.2" r="1.7" fill="#fff0e6"/></g>');
+    }
+    if (x.num) out.push('<circle cx="' + (W - 1) + '" cy="1" r="6.2" fill="#1a140e" stroke="#c9a764" stroke-width="1"/><text x="' + (W - 1) + '" y="4.1" text-anchor="middle" font-size="8.6" font-weight="700" font-family="Cinzel, serif" fill="#f1dfb2">' + x.num + '</text>');
+    return '<span class="mo-fb" aria-hidden="true"><svg viewBox="-1 -6 ' + (W + 7) + ' ' + (H + 7) + '">' + out.join('') + '</svg></span>';
+  }
+  /** The battle at boss battle k for its picture (a set piece's tiers / Standard; a plain board's size): null on a throw. */
+  function finBattle(run, k) {
+    try { return R.battleFor(Object.assign({}, run, { battle: k, part: undefined })); } catch (e) { return null; }
+  }
+  /**
+   * A campaign's finale as a card (pure; tests): c a campaign (C.CAMPAIGNS), fb the Siege (Run.finalBoss).
+   * -> {kind, html}; html '' when the campaign's last battle is no boss.
+   */
+  function finaleCard(run, c, T, fb) {
+    const k = c.last, kind = R.bossKind(run, k);
+    if (!kind) return { kind: null, html: '' };
+    const info = ((C.BOSS_KINDS || {})[kind]) || {};
+    const b = kind === 'siege' && fb && fb.battle === k ? fb : (R.bossFor(run, k) || {});
+    const turns = (T && T.turns) || 7;
+    let glyph = '', rule = info.short || '', foot = '', extra = '';
+    if (kind === 'twist') {
+      const st = finBattle(run, k), g = st && C.geoOf ? C.geoOf(st) : { cols: 4, rows: 4 };
+      glyph = fieldBoard(g.cols, g.rows, { mark: 'q' });
+      foot = 'Twist revealed before it';
+    } else if (kind === 'twoPart') {
+      const st = finBattle(run, k), g = st && C.geoOf ? C.geoOf(st) : { cols: 4, rows: 4 };
+      glyph = '<span class="mo-fb2">' + fieldBoard(g.cols, g.rows, { num: 1 }) + '<i></i>' + fieldBoard(g.cols, g.rows, { num: 2 }) + '</span>';
+      foot = turns + ' turns a part';
+    } else if (kind === 'siege') {
+      // rules 8: the walled board from battle 1, its rule in one line (its twists, if any, known from the start)
+      glyph = b.siege ? siegeBoard(b.siege, { cols: b.geo.cols }) : fieldBoard(b.geo && b.geo.cols, b.geo && b.geo.rows);
+      rule = sgShort();
+      foot = b.turns + ' turns';
+      if ((b.twists || []).length) extra = '<div class="mo-tws">' + b.twists.map((t) => twistRow(t, T, false, 0)).join('') + '</div>';
+    } else if (kind === 'citadel' || kind === 'kings') {
+      // war050 rules 5: the set pieces' own boards (the Field of Kings' front twists left to its plate)
+      glyph = setPieceBoard(finBattle(run, k), { cell: 10, plain: true });
+      foot = b.turns + ' turns' + (kind === 'kings' ? ' · hands of ' + (b.hand || 4) : '');
+    }
+    return { kind, html: '<div class="mo-fin ' + kind + '"><div class="mo-fnh">' + finCrest(kind) + '<span>Battle ' + k + '</span></div>' +
+      '<div class="mo-fnn">' + esc(b.name || info.name || 'Boss battle') + '</div>' +
+      '<div class="mo-fng">' + glyph + '</div><div class="mo-fnr">' + esc(rule) + '</div><div class="mo-fnt">' + esc(foot) + '</div>' + extra + '</div>' };
+  }
   function intro(root, ctx) {
     const app = ctx.app, run = ctx.run, T = ctx.T, fb = R.finalBoss(run);
-    const camps = C.CAMPAIGNS || [];
-    // the capital's campaign (III) ends at the Siege: it hangs from its medallion as its boss stud (a
-    // crest), its board and twists below it. war050 rules 2 (2026-11-14): IV and V follow it, each a
-    // station of its own (five stations draw narrower: .mo-road.n5)
+    // the run's campaigns (war001's 30-battle run: three)
+    const camps = (C.CAMPAIGNS || []).filter((c) => c.first <= (run.battles || 50));
+    // each campaign ends at its boss: its crest a stud on the medallion, its card below the station.
+    // war050 rules 2 (2026-11-14): five stations draw narrower (.mo-road.n5)
     const stations = camps.map((c, i) => {
-      const kind = R.bossKind(run, c.last), sg = fb && fb.battle === c.last;
-      return '<div class="mo-stn mo-rise' + (sg ? ' siege' : '') + '" style="--d:' + (80 + i * 90) + 'ms"><span class="mo-emb">' + (ROMAN[c.n - 1] || c.n) +
-        (sg ? '<span class="mo-crest">' + siegeCrest() + '</span>' : '') + '</span>' +
+      const fin = finaleCard(run, c, T, fb);
+      return '<div class="mo-stn mo-rise' + (fin.kind ? ' fin ' + fin.kind : '') + '" style="--d:' + (80 + i * 90) + 'ms"><span class="mo-emb">' + (ROMAN[c.n - 1] || c.n) +
+        (fin.kind ? '<span class="mo-crest">' + finCrest(fin.kind) + '</span>' : '') + '</span>' +
         '<div class="mo-sn">' + esc(c.name) + '</div><div class="mo-sb">Battles ' + c.first + '–' + c.last + '</div>' +
         // rules 15 (2026-11-10, review): the campaign's skirmish (before its boss), a small diamond
         skirmishesIn(run, c.first, c.last).map((k) => '<div class="mo-skl"><i class="mo-st sk"></i>Skirmish · battle ' + k + '</div>').join('') +
-        (sg ? '<div class="mo-sgp"><div class="mo-sgh">' + siegeCrest() + '<span>The Siege · Battle ' + fb.battle + '</span></div>' +
-          (fb.siege
-            // rules 8: the walled board from battle 1, its rule in one line (no twists)
-            ? '<div class="mo-sbd wall">' + siegeBoard(fb.siege, { cols: fb.geo.cols }) + '<span><b>' + esc(sgShort()) + '</b>' + fb.turns + ' turns</span></div>'
-            : '<div class="mo-sbd">' + boardGlyph(fb.geo.cols, fb.geo.rows) + '<span>' + fb.geo.cols + '×' + fb.geo.rows + ' board · ' + fb.turns + ' turns</span></div>') +
-          (fb.twists.length ? '<div class="mo-tws">' + fb.twists.map((t) => twistRow(t, T, false, 0)).join('') + '</div>' : '') + '</div>'
-          : '<div class="mo-sl">' + esc(CAMP_LINE[kind] || 'A boss ends it') + '</div>') + '</div>';
+        (fin.html || '<div class="mo-sl">A boss ends it</div>') + '</div>';
     }).join('');
     root.innerHTML = app.topbar({ title: 'The campaign', battle: 1 }) +
       '<div class="mo mo-intro' + (reduced(ctx) ? ' still' : '') + '"><div class="mo-glow"></div>' +
@@ -25566,7 +25646,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
    * (the Outer Bailey's fields, the Inner Bailey's yards, the Keep's stone), a curtain wall between
    * each two, a padlock over the closed ones, the Throne's crown; the Field of Kings' three fronts
    * apart, the Royal Standard's banner. st: the battle (Run.battleFor) for its Throne / Standard tile;
-   * o: {cell (px, 16), open (the tiers open: 1)}. '' off a set piece.
+   * o: {cell (px, 16), open (the tiers open: 1), plain (no front twists: the run intro)}. '' off a set piece.
    */
   function setPieceBoard(st, o) {
     const sc = st && st.scenario;
@@ -25607,7 +25687,8 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     const fg = 7, xOf = (c) => c * (cs + gp) + Math.floor(c / 2) * fg;
     const W = xOf(Gm.cols - 1) + cs, H = Gm.rows * (cs + gp) - gp;
     const blocked = {};
-    for (const t of (C.bossesOf ? C.bossesOf(st) : [])) for (const q of t.slots || []) if (t.id === 'blocked_tile' || t.id === 'row_closed') blocked[q] = t.id;
+    // o.plain (the run intro): the fronts' twists stay for the battle's plate
+    if (!x.plain) for (const t of (C.bossesOf ? C.bossesOf(st) : [])) for (const q of t.slots || []) if (t.id === 'blocked_tile' || t.id === 'row_closed') blocked[q] = t.id;
     for (let i = 0; i < Gm.S; i++) {
       const c = Gm.colOf(i), r = Gm.rowOf(i), px = xOf(c), py = r * (cs + gp);
       out.push('<rect x="' + px + '" y="' + py + '" width="' + cs + '" height="' + cs + '" rx="1.6" fill="' + (blocked[i] ? '#3a332c' : FIELD[(i * 5 + 1) % FIELD.length]) + '"/>');
@@ -26304,7 +26385,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     return { destroy: () => clearAll(timers) };
   }
   const SCREENS = { draft, intro, bossIntro, skirmishIntro, campIntro, scenIntro, reprieve, levelUp, won, lost, levelMoment };
-  G.L1Moments = { martyrPlate, reprieveLost, setPieceBoard, citadelBody, kingsBody, skKindPlate, skKindShort, SP_CREST, CAMP_STORY, campOpens, trackScen, failedGoals, scenOpens, scenRules, scenCardHtml, campScene, endsAtCapital, twistCrest, splitLevelUps, stripLayout, stripHtml, levelStrip, BIG_RANK, defeatLine, wonStats, breachedWall, peekPlate, levelTimes, flecks, countAt, twistName, twistLine, twistIcon, twistBoard, siegeBoard, siegeCrest, renameLine, rankChange, changeLine, mergeLevelUps, lostScore, generalCards, rankLine, part1Split, part2Left, part2Cards, P2_LINE, skirmishOf, skirmishLine, skirmishHtml, track30, trackStates, trackFill, deckZoom, deckLayout, stackZoom, roleLabel, deckMeter, whyHtml, SCREENS: Object.keys(SCREENS) };
+  G.L1Moments = { finaleCard, fieldBoard, FIN_CREST, martyrPlate, reprieveLost, setPieceBoard, citadelBody, kingsBody, skKindPlate, skKindShort, SP_CREST, CAMP_STORY, campOpens, trackScen, failedGoals, scenOpens, scenRules, scenCardHtml, campScene, endsAtCapital, twistCrest, splitLevelUps, stripLayout, stripHtml, levelStrip, BIG_RANK, defeatLine, wonStats, breachedWall, peekPlate, levelTimes, flecks, countAt, twistName, twistLine, twistIcon, twistBoard, siegeBoard, siegeCrest, renameLine, rankChange, changeLine, mergeLevelUps, lostScore, generalCards, rankLine, part1Split, part2Left, part2Cards, P2_LINE, skirmishOf, skirmishLine, skirmishHtml, track30, trackStates, trackFill, deckZoom, deckLayout, stackZoom, roleLabel, deckMeter, whyHtml, SCREENS: Object.keys(SCREENS) };
   G.L1Screens = Object.assign(G.L1Screens || {}, SCREENS);
 })();
 </script>
