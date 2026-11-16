@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="14">
-<script>(function(){var B="f65602271b";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=14;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-war050:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("war050-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="4b92617b14";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=14;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-war050:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("war050-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -11229,6 +11229,8 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  *   C.scenarioFilter(st, type, slots)  the slots a card of `type` may take (rules.js legalSlots)
  *   C.scenarioBars(st, type, slot)  is the slot closed to a piece of `type` (closed, or banned to it)?
  *   C.objectivesPossible(st, extra)  may every objective still be met with slot `extra` taking no piece?
+ *   C.objectivesReachable(st), C.objectivesLostBy(before, after)  the placement guard: may every objective
+ *                               still be met; the goals a placement puts out of reach (the UI asks first)
  *   C.objectiveCheck(st, ob, k) {have, need, met, failed, text} of one objective
  *   C.seizeLatch(st)            the scenario record with every Seize whose turn has ended latched (rules.js endPlay)
  *   C.objectives(st)            the live objectives [{kind, goal, label, slots, type?, have, need, met, failed, text}] ([] off a scenario)
@@ -12075,6 +12077,62 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     });
   }
 
+  // ---- the placement guard (2026-11-16, user: objective slips ended the boss's best runs) --------
+  /** Can objective `ob` (index k) still be met on battle `st`? The board (objectivesPossible on it
+   *  alone), a typed or hero Hold's tiles (none taken by a piece that does not count; enough cards of
+   *  its type or heroes still to come: hand, pile, discard), an unlatched Seize's tiles by its turn,
+   *  and the placements left. A move or swap that could still fix a tile is not counted. */
+  function objectiveReachable(st, ob, k) {
+    const sc = st.scenario, ck = objectiveCheck(st, ob, k);
+    if (ck.met) return true;
+    if (ck.failed) return false;
+    const seized = sc.seized && typeof sc.seized[k] === 'boolean' ? { 0: sc.seized[k] } : undefined;
+    const one = Object.assign({}, st, { scenario: Object.assign({}, sc, { objectives: [ob], seized }) });
+    if (!objectivesPossible(one)) return false;
+    const turn = st.turn || 0, left = Math.max(0, (C.turnsOf ? C.turnsOf(st) : 0) - turn), miss = ck.need - ck.have;
+    if (ob.kind !== 'connect' && miss > left) return false;
+    if (ob.kind === 'seize' && miss > (ob.by || 1) - turn) return false;
+    if (ob.kind === 'hold' && (ob.type || ob.hero)) {
+      const P = st.pieces || {};
+      const counts = (p) => (ob.hero ? p.kind === 'hero' : (C.scoredTypeOf ? C.scoredTypeOf(p) : C.cardTypeOf(p)) === ob.type);
+      if ((ob.slots || []).some((s) => P[s] && !counts(P[s]))) return false;
+      const fits = (c) => !!c && (ob.hero ? c.kind === 'hero' : C.cardTypeOf(c) === ob.type);
+      if ([].concat(st.offer || [], st.deck || [], st.discard || []).filter(fits).length < miss) return false;
+    }
+    return true;
+  }
+  /** Can every objective of battle `st` still be met (each one, and all of them in the plays left)?
+   *  true off a battle with objectives. */
+  function objectivesReachable(st) {
+    const sc = st && st.scenario;
+    if (!sc || !Array.isArray(sc.objectives) || !sc.objectives.length) return true;
+    if (!sc.objectives.every((ob, k) => objectiveReachable(st, ob, k))) return false;
+    let need = 0;
+    sc.objectives.forEach((ob, k) => { const ck = objectiveCheck(st, ob, k); if (!ck.met) need += ob.kind === 'connect' ? 1 : Math.max(0, ck.need - ck.have); });
+    return need <= Math.max(0, (C.turnsOf ? C.turnsOf(st) : 0) - (st.turn || 0));
+  }
+  /** objectivesReachable once a pending choice (a move or swap a placement opened: phase 'choose')
+   *  is answered: reachable when skipping it or any answer leaves the objectives reachable (the play
+   *  is spent, the turn not yet counted). depth: how many choices in a row to follow. */
+  function settledReachable(st, depth) {
+    if (!st || st.phase !== 'choose' || !C.skipChoice || depth <= 0) return objectivesReachable(st);
+    const next = [];
+    try { next.push(C.skipChoice(st)); } catch (e) { /* no skip */ }
+    try { for (const a of (C.choices ? C.choices(st) : [])) next.push(C.choose(st, a)); } catch (e) { /* none */ }
+    return !next.length || next.some((x) => settledReachable(x, depth - 1));
+  }
+  /** The goals a move from battle state `before` to `after` (a placement: C.place) puts out of reach:
+   *  [] when every objective could still be met after it, or could not be before it (nothing left to
+   *  save). The UI asks before such a placement. When only the plays left fall short: every unmet goal. */
+  function objectivesLostBy(before, after) {
+    const sc = after && after.scenario;
+    if (!sc || !Array.isArray(sc.objectives) || !sc.objectives.length) return [];
+    if (!before || !objectivesReachable(before) || settledReachable(after, 3)) return [];
+    const goal = (ob) => ob.goal || ob.label || 'an objective';
+    const out = sc.objectives.filter((ob, k) => !objectiveReachable(after, ob, k)).map(goal);
+    return out.length ? out : sc.objectives.filter((ob, k) => !objectiveCheck(after, ob, k).met).map(goal);
+  }
+
   /** Does the battle's scenario bar a piece of `type` (null: untyped) from slot s (a closed tile,
    *  a tile banned to its type)? Advance is not a bar (scenarioFilter). */
   function scenarioBars(st, type, s, card) {
@@ -12278,7 +12336,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     SKIRMISH_KINDS, skirmishKindDef, skirmishKindTun, skirmishStart,
     SCENARIOS, SCENARIO_TILES: TILES, SCENARIO_PARTS: PARTS, scenarioDef, scenarioTurns, scenarioBuild, scenarioSchedule,
     SCENARIO_FIT_P: FIT_P, scenarioNeeds, typeThreshold, scenarioSeen, scenarioFit, scenarioTurnsUnder, scenarioLayouts, formationRoom, formationRoomTable, taughtBy, typedObjectivesPossible, objectiveNeed, objectiveDeal,
-    tileOf, tileDef, scenarioFilter, scenarioBars, objectivesPossible, objectiveCheck, seizeLatch, objectives, objectivesMet, scenarioOf, scenarioCallouts
+    tileOf, tileDef, scenarioFilter, scenarioBars, objectivesPossible, objectiveReachable, objectivesReachable, objectivesLostBy, objectiveCheck, seizeLatch, objectives, objectivesMet, scenarioOf, scenarioCallouts
   });
   if (typeof module !== 'undefined') module.exports = C;
 })();
@@ -22918,16 +22976,32 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       const fx = snapOf(S.st);
       let nx;
       try { nx = C.place(S.st, S.held, slot); } catch (e) { app.toast('That card cannot go there', el.board.querySelector('.dt[data-slot="' + slot + '"]')); return; }
-      // the unplayed cards slide away (set aside), whatever comes next: the next hand, a choice, the end
-      const late = flyOut(S.held) && nx.phase === 'draft';
-      if (!app.reducedMotion()) {
-        const d = R.standing(S.run, nx).sum - fx.sum0;
-        S.flyD = d > 0 ? d : 0;
-      }
-      const K = coach();
-      if (K) K.done('b-place');
-      commit(nx, { land: slot, deal: nx.phase === 'draft', late, fx, refill: true });
-      coachPlaced();
+      guardLoss(nx, 'Place anyway', () => {
+        // the unplayed cards slide away (set aside), whatever comes next: the next hand, a choice, the end
+        const late = flyOut(S.held) && nx.phase === 'draft';
+        if (!app.reducedMotion()) {
+          const d = R.standing(S.run, nx).sum - fx.sum0;
+          S.flyD = d > 0 ? d : 0;
+        }
+        const K = coach();
+        if (K) K.done('b-place');
+        commit(nx, { land: slot, deal: nx.phase === 'draft', late, fx, refill: true });
+        coachPlaced();
+      });
+    }
+    /** The placement guard (2026-11-16, user: objective slips ended the boss's best runs): a play that
+     *  puts an objective out of reach (C.objectivesLostBy) asks first; go() runs on `verb` ("Place
+     *  anyway"), Cancel leaves the battle as it was (the card still held). */
+    function guardLoss(nx, verb, go) {
+      const lost = C.objectivesLostBy ? C.objectivesLostBy(S.st, nx) : [];
+      if (!lost.length || !globalThis.L1Screens || !L1Screens.modal) return go();
+      const before = S.st;
+      L1Screens.modal(app.stage, {
+        w: 640, top: 150, title: 'This loses the battle',
+        line: 'After this, ' + lost.map((g) => '“' + g + '”').join(' and ') + ' can no longer be met.',
+        buttons: [{ a: 'cancel', label: 'Cancel', cls: 'ghost' }, { a: 'ok', label: verb, cls: 'red' }],
+        on: { ok: (b) => { b.closest('.l1-modal').remove(); if (S.st === before) go(); } }
+      });
     }
     function undo() {
       if (!C.canUndo(S.st)) return;
