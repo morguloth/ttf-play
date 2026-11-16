@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="18">
-<script>(function(){var B="0c1477d0a5";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=18;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-war050:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("war050-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="99794fd0f7";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=18;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-war050:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("war050-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1033,8 +1033,8 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .prompt .btn { min-height: 52px; padding: 0 18px; font-size: var(--fs-sm, 15px); }
 
 /* ---------- the end-of-battle plate ---------- */
-/* centred in the empty lower half, under the board (the board stays readable behind the veil); opaque */
-.pnl.endplate { position: absolute; left: 580px; top: 656px; transform: translate(-50%, -50%); z-index: 30; min-width: 520px; padding: 28px 40px 26px; text-align: center;
+/* 2026-11-16 (user): centred on the screen under the top bar (was the lower half, against the bottom edge); opaque */
+.pnl.endplate { position: absolute; left: 580px; top: 442px; transform: translate(-50%, -50%); z-index: 30; min-width: 520px; padding: 28px 40px 26px; text-align: center;
   display: flex; flex-direction: column; align-items: center; gap: 6px; animation: l1-plate .35s cubic-bezier(.3,1.4,.5,1) both;
   background: linear-gradient(180deg, #3a3026, #1f1a15); }
 @keyframes l1-plate { from { opacity: 0; transform: translate(-50%, -50%) scale(.85); } to { opacity: 1; transform: translate(-50%, -50%); } }
@@ -1426,7 +1426,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   color: #f3d58e; background: radial-gradient(circle at 40% 35%, #4d3f2b, #1d1712); box-shadow: 0 0 0 2px #c99a45, 0 0 0 4px #1a130c, 0 0 18px rgba(243,213,142,.35), 0 6px 14px rgba(0,0,0,.7); }
 .endplate.lost .ecrest { font-size: 38px; color: #f29a8f; background: radial-gradient(circle at 40% 35%, #4a2a24, #1d1210); box-shadow: 0 0 0 2px #9a4a3a, 0 0 0 4px #1a0c08, 0 0 18px rgba(224,98,90,.3), 0 6px 14px rgba(0,0,0,.7); }
 /* soft rays turning slowly behind the Victory plate (still under reduced motion) */
-.endrays { position: absolute; left: 580px; top: 650px; width: 680px; height: 680px; margin: -340px 0 0 -340px; border-radius: 50%; pointer-events: none; z-index: 29; opacity: .3;
+.endrays { position: absolute; left: 580px; top: 436px; width: 680px; height: 680px; margin: -340px 0 0 -340px; border-radius: 50%; pointer-events: none; z-index: 29; opacity: .3;
   background: repeating-conic-gradient(from 0deg, rgba(255,226,150,.95) 0deg 5deg, rgba(255,226,150,0) 5deg 15deg);
   -webkit-mask-image: radial-gradient(closest-side, #000 18%, rgba(0,0,0,0) 88%); mask-image: radial-gradient(closest-side, #000 18%, rgba(0,0,0,0) 88%);
   animation: l1-raysin .6s ease-out both, l1-rays 60s linear infinite; }
