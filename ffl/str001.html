@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="23">
-<script>(function(){var B="8d0d5416d9";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=23;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-str001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("str001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="f6c5dd841b";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=23;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-str001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("str001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2066,6 +2066,44 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
    two columns on a wider plate; war050's single column ran the button off the stage's foot) */
 .mo-plate.scn:has(.mo-goals > :nth-child(4)) { width: 800px; }
 .mo-goals:has(> :nth-child(4)) { display: grid; grid-template-columns: 1fr 1fr; column-gap: 22px; row-gap: 8px; }
+
+/* ---------- 2026-11-16 (user): a mission is a choice: two cards side by side ---------- */
+.mo-msn .mo-center { flex-direction: column; gap: 14px; }
+.ms-head { text-align: center; }
+.ms-ask { font-family: var(--label, 'Cinzel', serif); font-weight: 700; font-size: 34px; letter-spacing: 2px; color: #ffe9b0; text-transform: uppercase; text-shadow: 0 2px 0 #000, 0 0 22px rgba(243,213,142,.35); }
+.ms-cards { display: flex; align-items: stretch; gap: 14px; }
+.ms-or { align-self: center; font-family: var(--label, 'Cinzel', serif); font-size: 20px; color: #a8987a; text-transform: uppercase; letter-spacing: 2px; }
+.mo .pnl.ms-card { width: 500px; padding: 20px 24px 18px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; border-radius: 16px;
+  transition: transform .15s ease, box-shadow .15s ease; }
+.mo .pnl.ms-card.take { box-shadow: inset 0 0 0 1px rgba(255,226,160,.12), 0 0 0 1px #0c0a08, 0 0 0 3px #b8862e, 0 0 0 4px #1a140e, 0 0 50px rgba(245,197,66,.22), 0 18px 34px -10px rgba(0,0,0,.95); }
+.mo .pnl.ms-card.plain { width: 380px; box-shadow: inset 0 0 0 1px rgba(255,226,160,.08), 0 0 0 1px #0c0a08, 0 0 0 3px #6b5a40, 0 0 0 4px #1a140e, 0 18px 34px -10px rgba(0,0,0,.95); }
+@media (hover: hover) { .mo .pnl.ms-card:hover { transform: translateY(-3px); } }
+.ms-ck { display: flex; align-items: center; gap: 8px; font-family: var(--label, 'Cinzel', serif); font-weight: 700; font-size: 15px; letter-spacing: 2px; text-transform: uppercase; color: #c9a764; }
+.ms-card.plain .ms-ck { color: #a8987a; }
+.ms-name { font-family: var(--label, 'Cinzel', serif); font-weight: 700; font-size: 30px; color: #fff1cf; text-align: center; line-height: 1.05; text-shadow: 0 2px 0 #000; }
+.ms-scen { display: flex; align-items: center; gap: 16px; width: 100%; }
+.ms-scen .scmap { flex: none; filter: drop-shadow(0 4px 8px rgba(0,0,0,.6)); }
+.ms-goals { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.ms-goals .mo-goal { font-size: 17px; gap: 10px; }
+.ms-goals .mo-goal .oi { width: 28px; height: 28px; font-size: 15px; }
+.ms-gain, .ms-risk { display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px 12px; border-radius: 10px; text-align: left; }
+.ms-gain { background: rgba(245,197,66,.12); box-shadow: inset 0 0 0 1.5px rgba(245,197,66,.55); }
+.ms-risk { background: rgba(194,69,58,.14); box-shadow: inset 0 0 0 1.5px rgba(224,98,90,.6); }
+.ms-art { flex: none; width: 52px; height: 52px; display: grid; place-items: center; }
+.ms-art svg { width: 52px; height: 52px; }
+.ms-ri { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-size: 22px; color: #fff; background: #9a3a2a; box-shadow: 0 0 0 2px #2a0f0b; margin: 0 6px; }
+.ms-bt { display: flex; flex-direction: column; gap: 1px; }
+.ms-bt b { font-family: var(--label, 'Cinzel', serif); font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase; color: #f3d58e; }
+.ms-risk .ms-bt b { color: #f29a8f; }
+.ms-bt span { font-size: 18px; line-height: 1.15; color: #f1e4c4; }
+.ms-nums { display: flex; align-items: center; justify-content: center; gap: 24px; margin-top: auto; }
+.ms-nums .mo-target { margin-top: 0; }
+.ms-plainart { width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center; font-size: 50px; color: #c8b78f; background: rgba(0,0,0,.28); box-shadow: inset 0 0 0 2px #6b5a40; margin-top: 4px; }
+.ms-lines { display: flex; flex-direction: column; gap: 8px; font-size: 18px; color: #e6d7b6; align-self: stretch; padding: 0 8px; }
+.ms-lines div { display: flex; align-items: center; gap: 10px; }
+.ms-lines .ic { color: #a8987a; font-size: 18px; }
+.ms-card .ms-btn { position: relative; inset: auto; width: 100%; height: 60px; min-height: 56px; flex: none; justify-content: center; margin-top: 4px; }
+.ms-card .ms-btn.btn { height: auto; }
 </style>
 <style>
 /*
@@ -30973,6 +31011,46 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     const row = m && C.packDef ? C.packDef(m.pack) : null;
     return 'A mission of your own. Win it for a free ' + (row ? row.name : 'pack') + ' in the next store, or decline and fight an ordinary battle.';
   }
+  /** 2026-11-16 (user: "make the fact there's a choice obvious and the decision/consequences more
+   *  featured"): the battle a declined mission becomes, {target, turns, dyn} (Run.chooseMission false,
+   *  then Run.battleFor), or null when it cannot be worked out. */
+  function ordinaryOf(run) {
+    try {
+      const st = R.battleFor(R.chooseMission(run, false));
+      return { target: st.target, turns: C.turnsOf ? C.turnsOf(st) : st.turns, dyn: dynMoved(st) };
+    } catch (e) { return null; }
+  }
+  /** A choice card's numbers: the target (counted up) and the turns. */
+  const choiceNums = (target, turns, d) => '<div class="ms-nums mo-deal" style="--d:' + d + 'ms"><div class="mo-target"><span class="v">' + icon('target') + '<b data-count="' + target + '">' + target + '</b></span><span class="k">Target</span></div>' +
+    '<div class="mo-scturns">' + icon('turn') + turns + ' turns</div></div>';
+  /** The mission's choice (pure; tests): two cards side by side, the mission (its map, objectives and
+   *  rules, the reward in gold, the risk in red, its target) and the ordinary battle (its own target, no
+   *  objective, no reward); each card, and its button, answers. intro: Run.scenarioIntro; st: the
+   *  mission's battle; ms: Run.missionPending; ord: ordinaryOf(run); o: {note, battle}. */
+  function missionChoiceHtml(intro, st, T, ms, ord, o) {
+    const A = G.L1ScenArt, map = A && A.mapSvg ? A.mapSvg(st, { cell: 24 }) : '';
+    const row = C.packDef ? C.packDef(ms.pack) : null, info = row && G.L1Store && G.L1Store.packInfo ? G.L1Store.packInfo(row) : null;
+    const art = info && G.L1PackArt ? G.L1PackArt.svg(info, { cls: 'sm' }) : icon('star');
+    const goals = intro.goals.map((g) => '<div class="mo-goal"><span class="oi">' + icon('flag') + '</span><span>' + esc(g) + '</span></div>').join('');
+    const rules = scenRules(st, T).map((r) => '<div class="mo-goal rule"><span class="oi">' + icon(r.icon) + '</span><span>' + esc(r.text) + '</span></div>').join('');
+    const target = st.dynamic ? st.target : intro.target;
+    const take = '<div class="pnl ms-card take mo-rise" data-a="take" role="button" aria-label="' + esc('Take the mission: ' + intro.name) + '">' +
+      '<div class="ms-ck">' + icon('flag') + 'Take the mission</div><div class="ms-name">' + esc(intro.name) + '</div>' + (dynMoved(st) ? DYN_TAG : '') +
+      '<div class="ms-scen mo-deal" style="--d:200ms">' + map + '<div class="ms-goals">' + goals + rules + '</div></div>' +
+      (o && o.note ? '<div class="mo-scnote">' + esc(o.note) + '</div>' : '') +
+      '<div class="ms-gain mo-deal" style="--d:320ms"><span class="ms-art">' + art + '</span><span class="ms-bt"><b>Reward if you win</b><span>' + esc(row ? row.name : 'A pack') + ', free in the next store</span></span></div>' +
+      '<div class="ms-risk mo-deal" style="--d:380ms"><span class="ms-ri">' + icon('defeat') + '</span><span class="ms-bt"><b>Risk</b><span>Miss an objective and the battle is lost, whatever the score. The run ends.</span></span></div>' +
+      choiceNums(target, intro.turns, 440) +
+      '<button class="btn-go ms-btn" data-a="take" data-sfx="none">Take the mission ' + icon('march') + '</button></div>';
+    const plain = '<div class="pnl ms-card plain mo-rise" data-a="decline" role="button" aria-label="Decline: fight an ordinary battle">' +
+      '<div class="ms-ck">' + icon('xmark') + 'Decline</div><div class="ms-name">An ordinary battle</div>' + (ord && ord.dyn ? DYN_TAG : '') +
+      '<div class="ms-plainart mo-deal" style="--d:200ms">' + icon('banners') + '</div>' +
+      '<div class="ms-lines mo-deal" style="--d:320ms"><div>' + icon('check') + 'No objective: only the target counts</div><div>' + icon('xmark') + 'No reward</div></div>' +
+      (ord ? choiceNums(ord.target, ord.turns, 440) : '') +
+      '<button class="btn ghost ms-btn" data-a="decline">Fight an ordinary battle</button></div>';
+    return '<div class="ms-head mo-rise"><div class="mo-kick">Mission offered · Battle ' + (o && o.battle) + '</div><div class="ms-ask">Choose one</div></div>' +
+      '<div class="ms-cards">' + take + '<div class="ms-or mo-rise">or</div>' + plain + '</div>';
+  }
   function scenIntro(root, ctx) {
     const app = ctx.app, run = ctx.run, T = ctx.T, intro = scenOpens(run);
     const done = () => (app.scenDone ? app.scenDone() : app.route());
@@ -30983,7 +31061,11 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     let ms = null;
     try { ms = R.missionPending && app.missionChoice ? R.missionPending(run) : null; } catch (e) { ms = null; }
     const mline = ms ? missionLine(ms) : '';
-    root.innerHTML = app.topbar({ title: 'Battle ' + run.battle }) +
+    // 2026-11-16 (user): a mission is a choice between two cards (missionChoiceHtml)
+    if (ms && st) root.innerHTML = app.topbar({ title: 'Battle ' + run.battle }) +
+      '<div class="mo mo-boss mo-scnc mo-msn' + (reduced(ctx) ? ' still' : '') + '"><div class="mo-glow gold"></div><div class="mo-center">' +
+      missionChoiceHtml(intro, st, T, ms, ordinaryOf(run), { note, battle: run.battle }) + '</div></div>';
+    else root.innerHTML = app.topbar({ title: 'Battle ' + run.battle }) +
       '<div class="mo mo-boss mo-scnc' + (reduced(ctx) ? ' still' : '') + '"><div class="mo-glow gold"></div><div class="mo-center">' +
       '<div class="pnl mo-plate scn mo-rise"><span class="mo-emb scn big">' + icon('flag') + '</span>' +
       '<div class="mo-kick">' + (ms ? 'Mission' : 'Scenario') + ' · Battle ' + run.battle + '</div><div class="mo-title">' + esc(intro.name) + '</div>' + (dynMoved(st) ? DYN_TAG : '') +
@@ -31759,7 +31841,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     return { destroy: () => clearAll(timers) };
   }
   const SCREENS = { draft, intro, bossIntro, skirmishIntro, campIntro, scenIntro, reprieve, levelUp, won, lost, levelMoment };
-  G.L1Moments = { finaleCard, fieldBoard, FIN_CREST, martyrPlate, reprieveLost, setPieceBoard, citadelBody, kingsBody, skKindPlate, skKindShort, SP_CREST, CAMP_STORY, campOpens, trackScen, failedGoals, scenOpens, scenRules, scenCardHtml, missionLine, campScene, endsAtCapital, twistCrest, splitLevelUps, stripLayout, stripHtml, levelStrip, BIG_RANK, defeatLine, wonStats, breachedWall, peekPlate, levelTimes, flecks, countAt, twistName, twistLine, twistIcon, twistBoard, siegeBoard, siegeCrest, renameLine, rankChange, changeLine, mergeLevelUps, lostScore, generalCards, rankLine, part1Split, part2Left, part2Cards, P2_LINE, skirmishOf, skirmishLine, skirmishHtml, track30, trackStates, trackFill, deckZoom, deckLayout, stackZoom, roleLabel, deckMeter, whyHtml, SCREENS: Object.keys(SCREENS) };
+  G.L1Moments = { finaleCard, fieldBoard, FIN_CREST, martyrPlate, reprieveLost, setPieceBoard, citadelBody, kingsBody, skKindPlate, skKindShort, SP_CREST, CAMP_STORY, campOpens, trackScen, failedGoals, scenOpens, scenRules, scenCardHtml, missionLine, missionChoiceHtml, ordinaryOf, campScene, endsAtCapital, twistCrest, splitLevelUps, stripLayout, stripHtml, levelStrip, BIG_RANK, defeatLine, wonStats, breachedWall, peekPlate, levelTimes, flecks, countAt, twistName, twistLine, twistIcon, twistBoard, siegeBoard, siegeCrest, renameLine, rankChange, changeLine, mergeLevelUps, lostScore, generalCards, rankLine, part1Split, part2Left, part2Cards, P2_LINE, skirmishOf, skirmishLine, skirmishHtml, track30, trackStates, trackFill, deckZoom, deckLayout, stackZoom, roleLabel, deckMeter, whyHtml, SCREENS: Object.keys(SCREENS) };
   G.L1Screens = Object.assign(G.L1Screens || {}, SCREENS);
 })();
 </script>
