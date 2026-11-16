@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="22">
-<script>(function(){var B="fda4451eea";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=22;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-str001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("str001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="952a0e7fe4";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=22;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-str001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("str001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -28643,7 +28643,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       officers: 'Officers, one of your main type',
       heroes: 'Heroes, a rank higher',
       siege: 'Sappers and War Machines',
-      dispatch: 'Orders: promote or train',
+      dispatch: 'Promote a general or train units',   // 2026-11-16 (user): was 'Orders: ...', read as the battle Orders
       // str001 rules 7: the Legendary Pack
       legendary: 'Legendaries, one of each a run'
     }[d] || '';
@@ -29318,7 +29318,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     const packKey = (op) => run.seed + ':' + run.battle + ':' + op.slot + ':' + op.pack + ':' + (run.store.restocks || 0);
     // (a Dispatch order is {kind: 'order', order: ...}; a deck order card, The King's Command, is a card)
     const cardsKind = (cs) => (cs.length && cs.every((c) => c.kind === 'general') ? 'general' : cs.length && cs.every((c) => c.kind === 'order' && c.order) ? 'order' : 'card');
-    /** An order card: "Order", the general's plaque (his next level) or the unit with the pips it gains, the order in words. */
+    /** A Dispatch pick: its kind (Promotion | Training | Requisition; 2026-11-16, user: was "Order"), the general's plaque (his next level) or the unit with the pips it gains, the order in words. */
     function orderHtml(o, sel) {
       let piece = '';
       if (o.order === 'promote') {
@@ -29332,7 +29332,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         piece = c ? card(c, { T, run, size: 's' }) + trainRow(c, true, false, o.pips || 2) : '';
       }
       const ic = o.order === 'promote' ? 'promote' : o.order === 'gold' ? 'gold' : 'train';
-      return '<div class="qm-order o-' + esc(o.order || 'other') + (piece ? '' : ' bare') + (sel ? ' sel' : '') + '"><span class="k">' + icon(ic) + 'Order</span>' + piece + '<span class="t">' + esc(orderText(o, run)) + '</span></div>';
+      return '<div class="qm-order o-' + esc(o.order || 'other') + (piece ? '' : ' bare') + (sel ? ' sel' : '') + '"><span class="k">' + icon(ic) + (o.order === 'promote' ? 'Promotion' : o.order === 'gold' ? 'Requisition' : 'Training') + '</span>' + piece + '<span class="t">' + esc(orderText(o, run)) + '</span></div>';
     }
     function faceHtml(c, sel) {
       if (c.kind === 'general') return plaque(c, { T, run, size: 'm', mark: sel ? 'pick' : null });
