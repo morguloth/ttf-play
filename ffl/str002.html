@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="4">
-<script>(function(){var B="301a1b44ff";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=4;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-str002:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("str002-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="54a40e1c64";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=4;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-str002:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("str002-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -116,7 +116,7 @@
   --bg: #0e0c0a;
   --hud: rgba(34,29,24,.92); --hud-edge: rgba(201,163,92,.38); --hud-ink: #f2e7cf; --hud-dim: #a89a80;
   --panel1: rgba(58,48,38,.96); --panel2: rgba(31,26,21,.97); --panel-rim: #6e5532; --panel-line: rgba(214,177,104,.22);
-  --lab: #c9a764; --sub: #b9ab8f; --ink-hi: #f1dfb2; --ink-mid: #cdbf9f; --ink-lo: #8d8068;
+  --lab: #c9a764; --sub: #b9ab8f; --ink-hi: #f1dfb2; --ink-mid: #cdbf9f; --ink-lo: #b3a585;
 
   /* the card's parchment */
   --parch: #efe3c6; --parch2: #e2d2ac; --card-ink: #2b2219; --card-ink2: #5a4630;
@@ -497,7 +497,7 @@
 .l1plaque.s-chip .gn { margin: 0; font-size: var(--fs-sm, 15px); letter-spacing: .2px; line-height: 1.2; text-align: left; white-space: normal; overflow-wrap: break-word;
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 .l1plaque.s-chip .gn.n3, .l1plaque.s-chip .gn.n4 { font-size: var(--fs-xs, 13px); letter-spacing: 0; }
-.l1plaque.s-chip .gw { font-size: 14px; line-height: 1.05; color: var(--ink-lo, #8d8068); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.l1plaque.s-chip .gw { font-size: 14px; line-height: 1.05; color: var(--ink-lo, #b3a585); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .l1plaque.s-chip > .l1fx { height: 28px; font-size: var(--fs-md, 17px); padding: 0 9px; border-radius: 14px; }
 .l1plaque.s-chip > .l1fx.w { font-size: var(--fs-sm, 15px); padding: 0 7px; }
 .l1plaque.s-chip.nocopy .gw { color: var(--ink-mid, #cdbf9f); font-style: italic; }
@@ -1155,6 +1155,13 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .sc-tot { display: flex; align-items: center; gap: 12px; margin-top: 2px; font-family: var(--label, 'Cinzel', serif); font-weight: 700; font-size: var(--fs-hero, 92px); line-height: 1;
   color: #fff4dc; text-shadow: 0 0 22px rgba(243,213,142,.3), 0 2px 0 #000; min-height: 98px; }
 .sc-tot.long { font-size: var(--fs-4xl, 64px); }
+/* 2026-11-17: the Score rule is a meter from 0 to the target; it and the total turn gold once it is met */
+.scorep .lab.sc-ml::after { display: none; }
+.sc-meter { flex: 1; min-width: 0; height: 10px; border-radius: 5px; background: #15110d; box-shadow: inset 0 0 0 1px #5a4a30, inset 0 2px 3px rgba(0,0,0,.7); overflow: hidden; }
+.sc-meter i { display: block; height: 100%; border-radius: 5px; background: linear-gradient(#d9c9a3, #9c8a63); }
+.sc-meter.met { box-shadow: inset 0 0 0 1px #dcaa45, 0 0 10px rgba(230,181,74,.45); }
+.sc-meter.met i { background: linear-gradient(#fff0b8, #dcaa45); }
+.sc-tot.met:not(.pv) [data-r="tot"] { color: #ffe08a; text-shadow: 0 0 18px rgba(230,181,74,.45), 0 2px 0 #000; }
 /* rules 15 (2026-11-10, review): never under 64 px; four digits and more in condensed figures */
 .sc-tot.xlong, .sc-tot.xxlong { flex-wrap: wrap; row-gap: 4px; }
 .sc-tot.xlong [data-r="tot"], .sc-tot.xxlong [data-r="tot"] { font-family: var(--body, 'Barlow Condensed', sans-serif); font-weight: 700; letter-spacing: -1px; }
@@ -1852,6 +1859,16 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
    its 3D so its plate, lifted toward the eye (board.js liftOf), sorts in front of the row before it */
 .dt .up.unit { transform-style: preserve-3d; }
 .dt .up.unit > svg { margin-bottom: 20px; }
+/* 2026-11-17: the figures stand a little smaller (84 %, from their feet) so neighbours stop merging,
+   each on an oval base in its type's colour (read from its plate; not on the Citadel's ringed tiles) */
+.dt .up.unit > svg { scale: .84; transform-origin: 50% 100%; }
+.dt.occ:not(.cz-keep):not(.cz-inner) .gr::after { content: ''; position: absolute; left: 8%; right: 8%; bottom: 7%; height: 50%; border-radius: 50%; pointer-events: none;
+  background: var(--u-base, transparent); opacity: .5; box-shadow: inset 0 0 0 2px rgba(20,14,8,.55), 0 2px 3px rgba(0,0,0,.45); }
+.dt.occ:not(:has(.u-plate)) .gr::after { display: none; }
+.dt.occ:has(.u-plate.inf) { --u-base: #d2584b; }
+.dt.occ:has(.u-plate.arc) { --u-base: #6fbf4f; }
+.dt.occ:has(.u-plate.cav) { --u-base: #4f8ee0; }
+.dt.occ:has(.u-plate.mac) { --u-base: #d9b27a; }
 .siege .dt .up.unit > svg { margin-bottom: 15px; }
 
 /* ---------- the plate: one per unit, its type colour; a violet edge = a formation member ---------- */
@@ -2313,7 +2330,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .qm-rs .t .u { color: #b9ab8f; }
 
 /* ---------- the stalls ---------- */
-.qm-stalls { position: absolute; left: 22px; right: 22px; top: 152px; height: 420px; display: flex; gap: 14px; align-items: stretch; }
+.qm-stalls { position: absolute; left: 22px; right: 22px; top: 152px; height: 468px; display: flex; gap: 14px; align-items: stretch; }
 .qm-stall { position: relative; flex: var(--grow, 1) 1 0; min-width: 0; display: flex; flex-direction: column; padding: 10px 12px 12px; }
 .qm-sl { flex: none; min-height: 36px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 1px; }
 .qm-sl .k { font-family: var(--label); font-size: var(--fs-xs, 13px); font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: #c9a764; line-height: 1.15; }
@@ -2465,9 +2482,13 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .qm-pinfo .t { font-size: var(--fs-sm, 15px); color: #c9a764; font-weight: 600; line-height: 1.12; }
 
 /* ---------- the foot: Your deck, Your generals, March On ---------- */
-.qm-deck { left: 22px; top: 586px; width: 370px; height: 218px; cursor: pointer; display: flex; flex-direction: column; }
-.qm-gens { left: 408px; top: 586px; width: 382px; height: 218px; cursor: pointer; display: flex; flex-direction: column; }
-.qm-go { left: 806px; top: 586px; width: 352px; height: 218px; }
+/* 2026-11-17: the foot is 170 tall (was 218) and March On 300 wide (was 352): it was the largest thing
+   on the screen; the stalls take the 48 px, and the wares stand larger in them (below) */
+.qm-deck { left: 22px; top: 634px; width: 370px; height: 170px; cursor: pointer; display: flex; flex-direction: column; }
+.qm-gens { left: 408px; top: 634px; width: 434px; height: 170px; cursor: pointer; display: flex; flex-direction: column; }
+.qm-go { left: 858px; top: 634px; width: 300px; height: 170px; }
+#stage:not([data-shape="tall"]) .qm-stall.pwide .qm-ware > .qm-med { zoom: 1.14; }
+#stage:not([data-shape="tall"]) .qm-stall .qm-acts:not(.qm-plist):not(:has(> .qm-s:nth-child(3))) > .qm-s { zoom: 1.08; }
 .qm-go:active, .qm-deck:active, .qm-gens:active { filter: brightness(1.15); }
 .qm-eye { position: absolute; top: 12px; right: 14px; font-size: 22px; color: #c9a764; opacity: .8; }
 .qm-dv { display: flex; align-items: baseline; gap: 8px; margin: 6px 0 0; font-family: var(--label); font-size: 18px; line-height: 1; color: #f6e6c0; white-space: nowrap; }
@@ -2765,21 +2786,22 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .qm-stall .qm-art.reliquary { filter: drop-shadow(0 0 10px rgba(255,130,40,.45)); }
 
 /* ---------- str001 rules 8 (2026-11-13): Rest the troops and Winter Quarters ---------- */
-/* the stall: who is tired (the Z's and depth, the deepest first, three at most), then the call */
+/* the stall: who is tired (the Z's and depth, the deepest first, three at most), then the call;
+   2026-11-17: a warm panel like the others, only the Z's and the rest button stay cold (the tired badge's colour) */
 .qm-rest { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 16px; }
 .qm-rl { width: 100%; max-width: 250px; display: flex; flex-direction: column; gap: 5px; padding: 8px 10px; border-radius: 10px;
-  background: rgba(38,56,82,.45); box-shadow: inset 0 0 0 1px rgba(201,214,238,.22); }
-.qm-rh { font-family: var(--label); font-weight: 700; font-size: var(--fs-sm, 15px); color: #dfe8f8; text-align: center; letter-spacing: .3px; }
+  background: rgba(20,15,10,.5); box-shadow: inset 0 0 0 1px rgba(201,167,100,.3); }
+.qm-rh { font-family: var(--label); font-weight: 700; font-size: var(--fs-sm, 15px); color: var(--ink-hi, #f1dfb2); text-align: center; letter-spacing: .3px; }
 .qm-r1 { display: flex; align-items: center; gap: 7px; font-size: var(--fs-xs, 13px); color: #e6d7b6; line-height: 1.1; min-width: 0; }
 .qm-r1 .zz { flex: none; display: inline-flex; align-items: center; gap: 1px; height: 20px; padding: 0 6px 0 3px; border-radius: 10px; font-family: var(--label); font-weight: 700;
   font-size: var(--fs-xs, 13px); color: #1f3352; background: linear-gradient(180deg, #f4f7fd, #c9d6ee); box-shadow: 0 0 0 1px #3c5378; }
 .qm-r1 .zi { width: 13px; height: 13px; }
 .qm-r1 .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.qm-r1 .fx { flex: none; font-family: var(--label); font-weight: 700; color: #9fb4d8; }
+.qm-r1 .fx { flex: none; font-family: var(--label); font-weight: 700; color: var(--lab, #c9a764); }
 .qm-rmore { font-size: var(--fs-xs, 13px); color: #b9ab8f; text-align: center; }
 .qm-rl.fresh .qm-rh { color: #b9ab8f; }
 .qm-s.qm-rs2 .b { color: #dfe8f8; background: radial-gradient(circle at 38% 32%, #6a82aa, #2c3f5c 72%); }
-.qm-s.qm-rs2 .t .u { color: #9fb4d8; }
+.qm-s.qm-rs2 .t .u { color: var(--sub, #b9ab8f); }
 .qm-rest.gone { opacity: 1; }
 #stage[data-shape="tall"] .qm-rest { gap: 10px; }
 /* Winter Quarters: a cold light on the theme's name */
@@ -2873,7 +2895,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 /* ---------- the draft ---------- */
 .mo-draft { padding-top: 38px; }
 .mo-steps { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
-.mo-step { display: flex; align-items: center; gap: 10px; font-size: var(--fs-lg, 20px); color: var(--ink-lo, #8d8068); white-space: nowrap; }
+.mo-step { display: flex; align-items: center; gap: 10px; font-size: var(--fs-lg, 20px); color: #8d8068; white-space: nowrap; }
 .mo-step .d { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; flex: none; font-family: var(--body, 'Barlow Condensed', sans-serif); font-weight: 700;
   font-size: 19px; color: #8d8068; box-shadow: inset 0 0 0 2px rgba(201,163,92,.35); }
 .mo-step .d .ic { font-size: 18px; }
@@ -3554,7 +3576,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .h-set { display: flex; align-items: center; justify-content: space-between; gap: 14px; width: 100%; min-height: 56px; padding: 8px 14px 8px 18px; border-radius: 10px;
   font-size: 21px; font-weight: 600; color: #e6d7b6; text-align: left; background: rgba(0,0,0,.25); box-shadow: inset 0 0 0 1px rgba(201,163,92,.25); }
 .h-set .t { display: flex; flex-direction: column; line-height: 1.1; }
-.h-set small { font-size: var(--fs-sm, 15px); font-weight: 500; color: #8d8068; margin-top: 2px; }
+.h-set small { font-size: var(--fs-sm, 15px); font-weight: 500; color: var(--ink-lo, #b3a585); margin-top: 2px; }
 .h-set i { position: relative; flex: none; width: 52px; height: 30px; border-radius: 15px; background: #2a231c; box-shadow: inset 0 0 0 1.5px rgba(201,163,92,.45); transition: background .15s; }
 .h-set i::after { content: ''; position: absolute; left: 4px; top: 4px; width: 22px; height: 22px; border-radius: 50%; background: #8d8068; transition: left .15s, background .15s; }
 .h-set.on i { background: #6a5426; box-shadow: inset 0 0 0 1.5px #f3d58e; }
@@ -3754,7 +3776,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .h-tally .t-arc .ic { color: var(--arc1); }
 .h-tally .t-cav .ic { color: var(--cav1); }
 .h-tally .t-mac .ic { color: var(--mac1); }
-.h-tally i { font-size: var(--fs-sm, 15px); color: #8d8068; }
+.h-tally i { font-size: var(--fs-sm, 15px); color: var(--ink-lo, #b3a585); }
 .h-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; margin-top: 14px; padding: 0 8px; }
 .h-chips, .h-sort { display: flex; flex-wrap: wrap; gap: 8px; }
 .h-chip { position: relative; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 22px; border: 1.5px solid rgba(201,163,92,.45);
@@ -3800,7 +3822,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   background: #2a231c; box-shadow: 0 0 0 2px #cdbf9f, 0 0 0 3.5px #15110d, 0 4px 10px rgba(0,0,0,.55); }   /* a plain count: neutral, never the brass x-N of a multiplier */
 .h-stack.open > .h-n { position: relative; right: auto; top: auto; }   /* the xN that stacks them again: inside the outline, after the copies */
 .h-stack.open > .h-n::after { content: ''; position: absolute; inset: -8px; }
-.h-empty { width: 100%; padding: 40px 0; text-align: center; font-size: var(--fs-lg, 20px); color: #8d8068; }
+.h-empty { width: 100%; padding: 40px 0; text-align: center; font-size: var(--fs-lg, 20px); color: var(--ink-lo, #b3a585); }
 
 /* ---------- reduced motion (the game's setting: .calm-motion on the stage; the system's) ---------- */
 .calm-motion .l1ov > .pnl, .calm-motion .h-in.from-r, .calm-motion .h-in.from-l, .calm-motion .h-hc.out, .calm-motion .h-pile.chip2 { animation: none; }
@@ -4079,14 +4101,14 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   background: radial-gradient(ellipse 70% 62% at 50% 72%, rgba(8,7,6,.38) 0%, rgba(8,7,6,.66) 55%, rgba(8,7,6,.94) 100%),
     linear-gradient(180deg, rgba(8,7,6,.96) 0%, rgba(8,7,6,.86) 34%, rgba(8,7,6,.5) 64%, rgba(8,7,6,.62) 84%, rgba(8,7,6,.94) 100%); }
 /* rules 15 (2026-11-10, review D4): the rank behind the title: the board's figures stand low across
-   the foot of the stage, darkened and warmed, the back of the rank higher and smaller (s-home.js sets
+   the foot of the stage, dimmed a little and warmed (2026-11-17: lit, it was a near-black band), the back of the rank higher and smaller (s-home.js sets
    left, --lift, --fs, z-index); a shade over its feet; it rises in once with the entrance */
-.hm-rank { position: absolute; left: 0; right: 0; bottom: 0; height: 190px; filter: brightness(.46) saturate(.7) sepia(.18); opacity: 0; }
+.hm-rank { position: absolute; left: 0; right: 0; bottom: 0; height: 190px; filter: brightness(.82) saturate(.9) sepia(.12); opacity: 0; }
 .hm-fig { position: absolute; bottom: calc(-22px + var(--lift, 0px)); width: 176px; height: 146px; margin-left: -88px;
   transform: scale(var(--fs, 1)); transform-origin: 50% 100%; }
 .hm-fig > svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .hm-rshade { position: absolute; left: 0; right: 0; bottom: 0; height: 190px;
-  background: linear-gradient(180deg, rgba(8,7,6,0) 0%, rgba(8,7,6,.18) 45%, rgba(8,7,6,.72) 86%, rgba(8,7,6,.9) 100%); }
+  background: linear-gradient(180deg, rgba(8,7,6,0) 0%, rgba(8,7,6,.08) 55%, rgba(8,7,6,.55) 92%, rgba(8,7,6,.8) 100%); }
 .hm.go .hm-rank { opacity: 1; animation: hm-rank 1.6s cubic-bezier(.2,.8,.3,1) .25s backwards; }
 @keyframes hm-rank { from { opacity: 0; transform: translateY(26px); } }
 
@@ -4192,7 +4214,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .dy-col > :nth-child(n+6) { animation-delay: 220ms; }
 .dy-n { margin-top: 10px; font-size: var(--fs-4xl, 64px); }
 .dy-date { margin-top: 4px; font-size: 22px; color: var(--sub, #b9ab8f); letter-spacing: .5px; }
-.dy-rule { margin-top: 8px; font-size: 18px; color: #8d8068; letter-spacing: .4px; }
+.dy-rule { margin-top: 8px; font-size: 18px; color: var(--ink-lo, #b3a585); letter-spacing: .4px; }
 .dy-gens { display: flex; gap: 22px; margin-top: 22px; }
 .dy-gens .l1plaque { cursor: pointer; }
 .btn.dy-deck { margin-top: 18px; min-width: 200px; }
@@ -4217,7 +4239,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .pnl.dy-board { position: absolute; left: 676px; top: 84px; width: 476px; height: 704px; box-sizing: border-box; padding: 16px 18px; z-index: 1;
   animation: mo-rise .4s cubic-bezier(.2,.8,.3,1) 120ms backwards; }
 .dy-bd { margin-top: 10px; }
-.dy-note { padding: 40px 0; text-align: center; font-size: 19px; color: #8d8068; letter-spacing: .5px; }
+.dy-note { padding: 40px 0; text-align: center; font-size: 19px; color: var(--ink-lo, #b3a585); letter-spacing: .5px; }
 .dy-rows { list-style: none; margin: 0; padding: 0; }
 .dy-row { display: grid; grid-template-columns: 34px minmax(0, 1fr) 54px 64px; align-items: center; gap: 8px; height: 29px; padding: 0 8px 0 4px;
   border-bottom: 1px solid rgba(201,163,92,.14); }
@@ -21719,7 +21741,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
  * (walnut, brass, parchment, leather, iron): wooden thunks and ticks, paper swishes, brass chimes,
  * timpani and horns. The interface's sounds sit low in the mix (about -18 dB under the fanfares);
  * placements and fanfares carry.
- *   L1Sfx.play(name, opts?)  opts: {v: 0..1 strength, pitch: 0..1, n: count}; an unknown name or
+ *   L1Sfx.play(name, opts?)  opts: {v: 0..1 strength, pitch: 0..1, n: count, x: a formation's factor}; an unknown name or
  *                            bad opts are ignored, it never throws
  *   L1Sfx.unlock()           create / resume the audio context (bound to the first gesture)
  *   L1Sfx.names              every sound name (docs/LOOP001-UX.md §1, in that order)
@@ -21942,6 +21964,10 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   // ---- the sounds: each builds into k.o from t and returns its length (s) -------------------------
   const N = (n) => 261.63 * semi(n);       // a note n semitones from middle C
   const COIN = [1, 1.47, 2.09, 2.56], COIN_A = [1, 0.55, 0.35, 0.2];
+  // the formation's horn chord by level: C major, an inversion higher a level (semitones from middle C)
+  const FORM_CHORD = [[0, 4, 7, 12], [4, 7, 12, 16], [7, 12, 16, 19], [12, 16, 19, 24]];
+  /** The formation's level 0..3 from its factor x: under x2, x2 to under x3, x3 to under x5, x5 and over. */
+  const formLevel = (x) => (typeof x === 'number' && isFinite(x) ? (x >= 5 ? 3 : x >= 3 ? 2 : x >= 2 ? 1 : 0) : 0);
   const B = {
     ui(k, o, t) {                         // a soft wooden tick
       click(k, k.o, t, 0.5, 1700, 0.028, 5);
@@ -21980,6 +22006,11 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       thud(k, k.o, t, body, 0.75 + 0.25 * v, 0.16 + 0.1 * v, 0.5);
       thud(k, k.o, t, body * 2.35, 0.5, 0.06, 0.6, 'triangle');
       clink(k, k.o, t + 0.012, 2310, 0.05 + 0.05 * v, 0.08);
+      // 2026-11-17: the knock of the base on the table (430-1500 Hz): 94 % of the sound sat under
+      // 200 Hz, which a tablet's speakers lose (-23 dB there; with the knock about -16 dB)
+      osc(k, amp(k, k.o, t, 0.38, 0.002, 0.09), 'triangle', 620 * k.P, t, 0.1, 430 * k.P);
+      osc(k, amp(k, k.o, t, 0.18, 0.002, 0.05), 'sine', 1240 * k.P, t, 0.06, 900 * k.P);
+      click(k, k.o, t, 0.26, 1500, 0.03, 1.2);
       return 0.28 + 0.1 * v;
     },
     pop(k, o, t) {                        // a soft pluck on a pentatonic step
@@ -22001,16 +22032,39 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       osc(k, amp(k, k.o, t + 0.12, 0.2, 0.004, 0.6), 'triangle', N(11) * k.P, t + 0.12, 0.6);
       return 1.3;
     },
-    formation(k, o, t) {                  // a low drum and a warm major chord
+    /**
+     * A low drum and a warm major chord; 2026-11-17: over them the drum's skin and a horn chord an
+     * octave up (the drum and pad sat 76 % under 200 Hz: -22 dB on a tablet's speakers, now about
+     * -11 dB), and {x: the formation's factor} steps it up (formLevel: under x2, x2, x3, x5 and
+     * over): the same C major climbs an inversion a level, opens brighter and rings longer, gains a
+     * second and a third drum hit and, at the top, a bell. The level stays about the same.
+     */
+    formation(k, o, t) {
+      const lvl = formLevel(o.x), tail = 0.6 + 0.14 * lvl, g = 1 - 0.07 * lvl;
       drum(k, k.o, t, 72, 0.9, 0.5, 0.6);
       pad(k, k.o, t + 0.02, [N(-12), N(-8), N(-5), N(0)], 0.62, 0.32, 1500);
-      return 0.68;
+      [0, 0.15, 0.27].slice(0, lvl >= 3 ? 3 : lvl >= 2 ? 2 : 1).forEach((d, i) => click(k, k.o, t + d, 0.87 - i * 0.17, 900 + 250 * i, 0.07, 1));
+      const lp = k.c.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.setValueAtTime(2600 + 900 * lvl, t);
+      lp.frequency.exponentialRampToValueAtTime(900 + 200 * lvl, t + tail);
+      lp.connect(k.o);
+      FORM_CHORD[lvl].forEach((n, i) => {
+        osc(k, amp(k, lp, t + 0.02, (0.33 - i * 0.033) * g, 0.03, tail), 'sawtooth', N(n) * k.P, t + 0.02, tail + 0.06);
+        osc(k, amp(k, lp, t + 0.02, 0.26 * g, 0.03, tail - 0.05), 'triangle', N(n) * k.P * 1.003, t + 0.02, tail + 0.02);
+      });
+      if (lvl >= 3) bell(k, k.o, t + 0.27, N(24), 0.22, 0.9, [1, 2.76, 5.4], [1, 0.5, 0.33]);
+      return Math.max(0.68, tail + 0.12, lvl >= 3 ? 1.25 : 0);
     },
     refuse(k, o, t) {                     // a dull low thud
       click(k, k.o, t, 0.4, 320, 0.05);
       thud(k, k.o, t, 118, 1, 0.15, 0.55);
       thud(k, k.o, t, 96, 0.3, 0.09, 0.7, 'triangle');
       thud(k, k.o, t, 232, 0.45, 0.08, 0.6, 'triangle');
+      // 2026-11-17: two dull knocks, falling (270-480 Hz), for a tablet's speakers (as place)
+      osc(k, amp(k, k.o, t, 0.44, 0.002, 0.07), 'triangle', 480 * k.P, t, 0.08, 330 * k.P);
+      osc(k, amp(k, k.o, t + 0.075, 0.33, 0.002, 0.08), 'triangle', 400 * k.P, t + 0.075, 0.09, 270 * k.P);
+      click(k, k.o, t, 0.22, 800, 0.03, 1.2);
       return 0.2;
     },
     undo(k, o, t) {                       // a reverse swish: a slow swell that cuts off
@@ -22144,7 +22198,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
    */
   const LEVEL = {
     ui: 0.96, open: 0.49, close: 0.66, page: 0.6, pick: 1.5, preview: 0.7, place: 1.75, pop: 0.9, tick: 0.64,
-    target: 0.42, formation: 0.46, refuse: 0.9, undo: 0.3, deal: 0.33, victory: 0.62, defeat: 0.55, coin: 0.77,
+    target: 0.42, formation: 0.42, refuse: 0.9, undo: 0.3, deal: 0.33, victory: 0.62, defeat: 0.55, coin: 0.77,
     buy: 0.8, 'rankup-charge': 0.42, rankup: 0.88, boss: 0.62, march: 0.45, breach: 1.1
   };
 
@@ -22437,7 +22491,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     play: (name, opts) => play(name, opts), unlock, names: NAMES.slice(), groups: Object.freeze(Object.assign({}, GROUPS)), allowed,
     sample: (group) => sample(group), sync,
     _gate: gate, _plan: plan, _build: build, _master: master, _render: render, _levels: LEVEL, _vol: vol, _samples: SAMPLES, _ctx: () => ctx, _bus: () => bus,
-    _duck: () => duck, _big: Object.freeze(Object.keys(BIG)), _small: Object.freeze(Object.keys(SMALL))
+    _duck: () => duck, _big: Object.freeze(Object.keys(BIG)), _small: Object.freeze(Object.keys(SMALL)), _formLevel: formLevel
   };
 })();
 </script>
@@ -26776,6 +26830,13 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         } else if (S.bandN !== null && bs.reached < S.bandN) S.bandT = 0;
         S.bandN = bs.reached;
       }
+      // 2026-11-17: the Score rule is a meter from 0 to the target: the committed score (not a
+      // preview's), gold with the total once the target is met. The html always carries the bar's
+      // final width; a change glides to it from where it stood (meterGlide). The target's own number
+      // never changes.
+      const mf = sd.target > 0 ? Math.max(0, Math.min(1, cur / sd.target)) : 0;
+      if (S.meterW !== mf) { S.meterFrom = typeof S.meterW === 'number' ? S.meterW : mf; S.meterW = mf; S.meterT = app.reducedMotion() ? 0 : performance.now(); }
+      const meter = '<span class="sc-meter' + (met ? ' met' : '') + '" aria-hidden="true"><i style="width:' + (mf * 100).toFixed(1) + '%"></i></span>';
       let dl = S.flyD > 0 ? '<span class="dlt up fly">+' + S.flyD + '</span>' : '<span class="dlt hide">+0</span>';
       if ((S.pv || (S.opv && S.opv.d)) && !S.ending) {
         const d = pd, hc = heldCard();
@@ -26866,14 +26927,14 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       }
       // PLAN 63: a preview's total is what it WOULD make: pale brass
       // 2026-11-07: in the walled Siege the two sides are the big numbers; the board's total sits small under them
-      const totCls = 'sc-tot ' + (sg || kf ? 'sgtot' : size) + ((S.pv || (S.opv && S.opv.d)) && !S.ending ? ' pv' : '');
+      const totCls = 'sc-tot ' + (sg || kf ? 'sgtot' : size + (met ? ' met' : '')) + ((S.pv || (S.opv && S.opv.d)) && !S.ending ? ' pv' : '');
       // war050 rules 5: the Citadel's tiers under the turns
       const tz = S.st.scenario && S.st.scenario.tiers && C.tiersOf ? tierRows(C.tiersOf(S.st)) : '';
       // P1 (PERF-12): the parts a preview changes, for renderTotal (rows: the walled Siege's bars)
       return {
         totCls, show, dl, rows, head, rowsSel,
         html: head +
-          '<div class="lab" style="margin-top:' + (kf ? 10 : 14) + 'px">' + (sg || kf ? 'Total' + dynTag : 'Score') + '</div>' +
+          '<div class="lab' + (sg || kf ? '' : ' sc-ml') + '" style="margin-top:' + (kf ? 10 : 14) + 'px">' + (sg || kf ? 'Total' + dynTag : 'Score' + meter) + '</div>' +
           '<div class="' + totCls + '"><span data-r="tot">' + show + '</span>' + dl + '</div>' + part +
           '<div class="lab" style="margin-top:' + (kf ? 10 : 16) + 'px">' + turnLabel(N, M) + '</div>' +
           '<div class="tn' + (M > 10 ? ' lots' : M > 8 ? ' many' : '') + '">' + pips + '</div>' + tz + tw + objHtml(S.st)
@@ -26897,8 +26958,29 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       if (rows) { rows.outerHTML = p.head; S.lane = null; }
       if (!S.holdChime) flushChime();
     }
+    /**
+     * The meter's glide (2026-11-17), driven frame by frame like the count-up: as a CSS animation it
+     * held the bar at its old place until the animation started, which could be seconds after a
+     * placement. The panel's html carries the final width; while a glide runs (450 ms from S.meterT)
+     * the bar is set to where the glide stands, through any re-render, and a timer lands it.
+     */
+    function meterGlide() {
+      const bar = () => el.score.querySelector('.sc-meter i'), t0 = S.meterT;
+      if (!t0 || typeof S.meterFrom !== 'number' || !bar()) return;
+      const from = S.meterFrom, to = S.meterW;
+      const at = () => Math.max(0, Math.min(1, (performance.now() - t0) / 450));
+      const set = (f) => { const n = bar(); if (n) n.style.width = ((f >= 1 ? to : from + (to - from) * (1 - Math.pow(1 - f, 3))) * 100).toFixed(1) + '%'; };
+      if (at() >= 1) return;
+      set(at());
+      if (S.meterRun === t0) return;
+      S.meterRun = t0;
+      const step = () => { if (S.destroyed || S.meterT !== t0) return; const f = at(); set(f); if (f < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+      setTimeout(() => { if (!S.destroyed && S.meterT === t0) set(1); }, 520);
+    }
     function renderScoreFrom(p) {
       el.score.innerHTML = p.html;
+      meterGlide();
       colChanged('score', p.html);
       if (!colRO) placeCol();
       if (!S.holdChime) flushChime();
@@ -27117,7 +27199,12 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
           if (g) replayCls(g, 'fdone');
         }
       }
-      if (forms.length) { fxLater(() => sfx('formation'), beats.formation >= 0 ? beats.formation : 120); coachDone('b-form'); }
+      // 2026-11-17: the formation's sound steps up with its factor (1 + pct, twice over for a twice-counted one)
+      if (forms.length) {
+        const fx2 = forms.reduce((m, f) => Math.max(m, Math.pow(1 + (f.pct > 0 ? f.pct : 0), f.twice ? 2 : 1)), 0);
+        fxLater(() => sfx('formation', { x: fx2 }), beats.formation >= 0 ? beats.formation : 120);
+        coachDone('b-form');
+      }
       if (breaches) { sfx('breach'); if (!calm && L1Board.breach) L1Board.breach(el.board); }
       if (!calm && d !== 0) countUp(fx.sum0, sd.sum, 300);
     }
