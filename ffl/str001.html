@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="25">
-<script>(function(){var B="de69856338";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=25;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-str001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("str001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="cd5db142c0";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=25;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-str001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("str001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2324,6 +2324,22 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   font-family: var(--label); font-size: var(--fs-sm, 15px); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff4de;
   background: linear-gradient(180deg, #4f9a54, #24602a); box-shadow: 0 0 0 1px #0c0a08, 0 3px 8px rgba(0,0,0,.6); }
 .qm-stall.sale { box-shadow: inset 0 0 0 1px rgba(255,226,160,.10), 0 0 0 1px #0c0a08, 0 0 0 3px #4f9a54, 0 0 0 4px #1a140e, 0 16px 30px -10px rgba(0,0,0,.95); }
+/* 2026-11-17 (user): a won mission's spoils: a gold Reward ribbon, a pulsing gold glow, the pack shining */
+.qm-stall.spoils .qm-sl { padding: 0 34px; }
+.qm-stall.spoils .qm-sl .s { color: #f2cf7a; font-weight: 700; }
+.qm-ribbon.rw { width: 70px; height: 70px; }
+.qm-ribbon.rw b { top: 15px; right: -23px; width: 100px; padding: 3px 0; font-size: 11px; letter-spacing: 1px; background: linear-gradient(180deg, #e9bf5a, #9a6a1c); color: #2a1c08; text-shadow: 0 1px 0 rgba(255,240,200,.5); }
+.qm-stall.spoils { box-shadow: inset 0 0 0 1px rgba(255,226,160,.18), 0 0 0 1px #0c0a08, 0 0 0 3px #d9a943, 0 0 0 4px #1a140e, 0 0 26px 4px rgba(233,191,90,.45), 0 16px 30px -10px rgba(0,0,0,.95);
+  animation: qm-spoils 1.6s ease-in-out infinite; }
+@keyframes qm-spoils {
+  0%, 100% { box-shadow: inset 0 0 0 1px rgba(255,226,160,.18), 0 0 0 1px #0c0a08, 0 0 0 3px #d9a943, 0 0 0 4px #1a140e, 0 0 14px 2px rgba(233,191,90,.30), 0 16px 30px -10px rgba(0,0,0,.95); }
+  50% { box-shadow: inset 0 0 0 1px rgba(255,226,160,.30), 0 0 0 1px #0c0a08, 0 0 0 3px #ffd77a, 0 0 0 4px #1a140e, 0 0 34px 8px rgba(255,209,110,.65), 0 16px 30px -10px rgba(0,0,0,.95); }
+}
+.qm-stall.spoils .qm-sb::after { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: 10px;
+  background: linear-gradient(115deg, transparent 35%, rgba(255,236,180,.22) 50%, transparent 65%) no-repeat; background-size: 250% 100%;
+  animation: qm-shine 2.4s ease-in-out infinite; }
+@keyframes qm-shine { 0% { background-position: 130% 0; } 60%, 100% { background-position: -30% 0; } }
+@media (prefers-reduced-motion: reduce) { .qm-stall.spoils, .qm-stall.spoils .qm-sb::after { animation: none; } }
 /* a spent stall stays in place, dimmed, stamped */
 .qm-stall.spent .qm-sb, .qm-stall.spent .qm-sl { opacity: .38; filter: saturate(.35); }
 .qm-stamp { position: absolute; left: 50%; top: 34%; transform: translate(-50%, -50%) rotate(-12deg); z-index: 3; pointer-events: none; padding: 6px 18px; border-radius: 8px;
@@ -28919,7 +28935,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     const sold = s.kind === 'messenger' && Array.isArray(s.sold) ? s.sold : [];
     return {
       i, kind: s.kind, label, sub, spent: !!s.spent, mark: s.spent ? (s.kind === 'pack' ? 'Opened' : s.kind === 'rest' ? 'Rested' : 'Taken') : '',
-      sale: !!s.sale, extra: !!s.extra, fixed: !!s.fixed,
+      sale: !!s.sale, extra: !!s.extra, fixed: !!s.fixed, spoils: !!s.spoils,
       price: priceShow(run, i, 0),
       items: s.kind === 'pack' ? [] : items.map((it, j) => Object.assign({ item: it, pick: j, shelf: s.kind === 'hire' ? 'hire' : s.kind === 'messenger' ? 'messenger' : 'recruits', vi: viewIndex(st, i, j), price: priceShow(run, i, j) },
         sold.indexOf(j) >= 0 ? { sold: true } : {})),
@@ -29238,7 +29254,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       return rm ? '<div class="qm-acts">' + svcHtml(rm, 'Remove a card', 'It leaves for good') + '</div>' : '<div class="sub qm-none">Not in this visit</div>';
     }
     function stallHtml(v, x, g, dl) {
-      const cls = 'pnl qm-stall k-' + x.kind + (x.spent ? ' spent' : '') + (x.sale && !x.spent ? ' sale' : '') + (g.pwide ? ' pwide' : '') +
+      const cls = 'pnl qm-stall k-' + x.kind + (x.spent ? ' spent' : '') + (x.sale && !x.spent ? ' sale' : '') + (x.spoils && !x.spent ? ' spoils' : '') + (g.pwide ? ' pwide' : '') +
         (x.kind === 'hire' && x.items.length > 1 ? ' many' : '') + (g.span >= 6 ? ' ph' : '') + ' r' + g.row;
       const style = '--grow:' + g.grow + ';--span:' + g.span + ';--z:' + g.z + ';--pz:' + g.pz;
       let body = '';
@@ -29251,7 +29267,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       else if (x.kind === 'rest') body = restHtml(v, x);
       return '<div class="' + cls + '" data-slot="' + x.i + '" style="' + style + '"><div class="qm-sl"><span class="k">' + esc(x.label) + '</span>' +
         (x.sub ? '<span class="s">' + esc(x.sub) + '</span>' : '') + '</div><div class="qm-sb">' + body + '</div>' +
-        (x.sale && !x.spent ? '<span class="qm-ribbon"><b>Sale</b></span>' : '') + (x.spent ? '<span class="qm-stamp">' + esc(x.mark) + '</span>' : '') + '</div>';
+        (x.sale && !x.spent ? '<span class="qm-ribbon"><b>Sale</b></span>' : '') +
+        // 2026-11-17 (user): a won mission's reward stands out: a gold Reward ribbon, the stall's glow pulsing
+        (x.spoils && !x.spent ? '<span class="qm-ribbon rw"><b>Reward</b></span>' : '') + (x.spent ? '<span class="qm-stamp">' + esc(x.mark) + '</span>' : '') + '</div>';
     }
 
     function draw(o) {
