@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#080706">
 <title>Take the Field · dev</title>
 <link rel="icon" href="data:,">
-<!-- 2026-11-12 (user): the dev home (ttf-play/dev/). 2026-11-14 (user): loop001 removed; war001
-     (War Machines) and war050 (The Long War, 50 battles) below it. The look is loop001's title screen (loop001/css/home.css, shell.css .btn-go/.pnl,
+<!-- 2026-11-12 (user): the dev home (ttf-play/dev/). 2026-11-14 (user): loop001 removed. 2026-11-17 (user):
+     war001 removed; war050 (The Long War, 50 battles), then str001 (Store & Packs). The look is loop001's title screen (loop001/css/home.css, shell.css .btn-go/.pnl,
      moments.css .mo-glow). Source: site/dev/index.html; node tools/build-dev-home.js inlines the
      fonts into dist/dev-home.html, which is what gets published as dev/index.html. -->
 <style>
@@ -81,6 +81,31 @@ h1 { margin: 14px 0 0; font-family: var(--label); font-weight: 700; font-size: c
   .ln { font-size: 18px; }
   .go { width: 100%; height: 58px; }
 }
+/* 2026-11-17 (user): Store & Packs wears str001's legendary look (cards.css .l1plaque.lg, .lgaura, the crown):
+   an ember-red panel, a gold ring and a warm glow, a gold crown on its top edge, the name in gold, rising embers */
+.opt.lg { background: linear-gradient(180deg, #4e2216, #23100a);
+  box-shadow: inset 0 0 0 1px rgba(255,226,160,.25), 0 0 0 1px #0c0a08, 0 0 0 3px #f0b543, 0 0 0 4px #2e0904, 0 0 26px 3px rgba(255,124,36,.45), 0 16px 30px -10px rgba(0,0,0,.95); }
+.opt.lg::before { border-color: rgba(243,201,90,.35); }
+.opt.lg .nm { color: #ffd98a; text-shadow: 0 0 10px rgba(255,140,40,.55), 0 2px 3px rgba(0,0,0,.8); }
+.opt.lg .ln { color: #e8c890; }
+.opt.lg .ver { color: rgba(232,200,144,.6); }
+.opt.lg .txt, .opt.lg .go { position: relative; z-index: 2; }
+.opt.lg .lgcrown { position: absolute; left: 50%; top: -19px; transform: translateX(-50%); width: 44px; height: 31px; z-index: 3; pointer-events: none;
+  filter: drop-shadow(0 0 7px rgba(255,170,60,.9)) drop-shadow(0 2px 2px rgba(0,0,0,.7)); }
+.opt.lg .lgcrown svg { display: block; width: 100%; height: 100%; }
+.opt.lg .lgaura { position: absolute; inset: 0; border-radius: 12px; overflow: hidden; pointer-events: none; z-index: 1;
+  background: radial-gradient(ellipse 60% 80% at 30% 120%, rgba(255,140,40,.32), rgba(255,90,20,.1) 55%, transparent 76%);
+  box-shadow: inset 0 0 26px rgba(150,36,0,.55); }
+.lgaura i { position: absolute; bottom: 4px; width: 4px; height: 4px; border-radius: 50%; background: #ffd77a; box-shadow: 0 0 5px 1px #ff7a1a; opacity: 0;
+  animation: ember 3.4s linear infinite; }
+.lgaura i:nth-child(1) { left: 8%; animation-delay: 0s; }
+.lgaura i:nth-child(2) { left: 21%; animation-delay: -1.2s; width: 3px; height: 3px; }
+.lgaura i:nth-child(3) { left: 36%; animation-delay: -2.4s; }
+.lgaura i:nth-child(4) { left: 52%; animation-delay: -.7s; width: 3px; height: 3px; }
+.lgaura i:nth-child(5) { left: 66%; animation-delay: -1.9s; }
+.lgaura i:nth-child(6) { left: 90%; animation-delay: -2.9s; width: 3px; height: 3px; }
+@keyframes ember { 0% { transform: translate(0, 0); opacity: 0; } 12% { opacity: 1; } 70% { opacity: .8; } 100% { transform: translate(8px, -90px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .lgaura i { animation: none; opacity: .7; } .lgaura i:nth-child(odd) { bottom: 35%; } .lgaura i:nth-child(3n) { bottom: 62%; } }
 @media (prefers-reduced-motion: reduce) { .motes { display: none; } }
 </style>
 </head>
@@ -96,13 +121,15 @@ h1 { margin: 14px 0 0; font-family: var(--label); font-weight: 700; font-size: c
   <div class="kick">Development</div>
   <h1>Take the Field</h1>
   <p class="invite">Pick a version to test.</p>
-  <a class="opt" href="war001.html">
-    <div class="txt"><div class="nm">War Machines</div><div class="ln">Thirty battles with a fourth unit: War Machines</div>
-      <div class="meta"><span class="pips" aria-hidden="true"><span class="pip inf"></span><span class="pip arc"></span><span class="pip cav"></span><span class="pip mac"></span></span><span class="ver" data-v="war001"></span></div></div>
-    <span class="go">Play</span></a>
   <a class="opt" href="war050.html">
-    <div class="txt"><div class="nm">The Long War <span class="new">New</span></div><div class="ln">Fifty battles: five campaigns, a 7th rank, scenarios and new set pieces</div>
+    <div class="txt"><div class="nm">The Long War</div><div class="ln">Fifty battles: five campaigns, a 7th rank, scenarios and new set pieces</div>
       <div class="meta"><span class="pips" aria-hidden="true"><span class="pip inf"></span><span class="pip arc"></span><span class="pip cav"></span><span class="pip mac"></span></span><span class="ver" data-v="war050"></span></div></div>
+    <span class="go">Play</span></a>
+  <a class="opt lg" href="str001.html">
+    <span class="lgaura" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+    <span class="lgcrown" aria-hidden="true"><svg viewBox="0 0 40 28" focusable="false"><path d="M3 24 L1 7 L11 15 L20 2 L29 15 L39 7 L37 24Z" fill="#f3c95a" stroke="#5a3608" stroke-width="2" stroke-linejoin="round"/><path d="M5 20 L35 20" stroke="#b97c1c" stroke-width="2"/><path d="M6 12 L11 16.5 L20 4.5" stroke="#fff3c0" stroke-width="1.4" fill="none" opacity=".75"/><circle cx="20" cy="15" r="3" fill="#c8321e" stroke="#5a1408" stroke-width="1"/><circle cx="11" cy="19" r="1.9" fill="#3f74c2"/><circle cx="29" cy="19" r="1.9" fill="#3f74c2"/><circle cx="1.5" cy="6.5" r="2" fill="#fff0b0" stroke="#5a3608" stroke-width="1"/><circle cx="20" cy="2" r="2" fill="#fff0b0" stroke="#5a3608" stroke-width="1"/><circle cx="38.5" cy="6.5" r="2" fill="#fff0b0" stroke="#5a3608" stroke-width="1"/></svg></span>
+    <div class="txt"><div class="nm">Store &amp; Packs <span class="new">New</span></div><div class="ln">The Long War with a themed store, card packs, orders and legendaries</div>
+      <div class="meta"><span class="pips" aria-hidden="true"><span class="pip inf"></span><span class="pip arc"></span><span class="pip cav"></span><span class="pip mac"></span></span><span class="ver" data-v="str001"></span></div></div>
     <span class="go">Play</span></a>
   <div class="foot">Each version keeps its own saved run in this browser.</div>
 </main>
