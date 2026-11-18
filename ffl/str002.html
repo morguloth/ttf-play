@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="6">
-<script>(function(){var B="00a14a38c4";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=6;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-str002:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("str002-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="6613af4be0";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=6;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-str002:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("str002-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -30293,7 +30293,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       const ready = () => (multi ? sel.length === multi : sel !== null);
       const priceAt = (k) => (typeof o.price === 'function' ? o.price(k) : o.price);
       const el = document.createElement('div');
-      el.className = 'qm-pop' + (pk ? ' over' : '') + (calm() ? '' : ' anim');
+      el.className = 'qm-pop' + (pk ? ' over' : '') + (calm() || o.again ? '' : ' anim');
       // over the pack pop-up, the pack steps back until this pick closes
       if (pk) pk.el.classList.add('under');
       const items = () => o.items.map((it) => '<div class="qm-it" data-p="sel" data-k="' + esc(it.key) + '">' + it.html(has(String(it.key))) + '</div>').join('');
@@ -30304,7 +30304,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         '<div class="qm-mbtns"><button class="qm-mb cancel" data-p="cancel" data-sfx="none">Cancel</button><button class="qm-mb ' + (o.danger ? 'red' : 'ok') + ' off" data-p="ok" data-sfx="none">' +
         '<span class="v">' + esc(o.verb(null)) + '</span>' + mp(null) + '</button></div></div>';
       root.appendChild(el);
-      sfx('open');
+      if (!o.again) sfx('open');
       const okB = el.querySelector('[data-p="ok"]');
       pop = {
         el, busy: false,
@@ -30366,7 +30366,20 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       const up = nf.pips + g >= nf.per;
       return '<div class="qm-tr' + (sel ? ' sel' : '') + '"><span class="qm-trs">' + h + '</span>' + (up ? '<span class="qm-tru">' + icon('up') + 'Rank up</span>' : '') + '</div>';
     }
-    function openPick(what, price) {
+    /** str001/str002 (2026-11-18, user: "when you promote a general, an order, or train a unit, you should stay in that
+     *  window, not drop back to the shop"): after a Train or a Promotion settles, its window opens again (quietly, fresh choices and
+     *  prices) while there is one more the gold covers; else the store shows, as before. */
+    function again(what) {
+      if (dead || pop) return;
+      const gold = run.gold || 0, ids = R.choicesFor(run, what);
+      if (!ids.length) return;
+      if (what === 'train') { const pr = R.servicePrice(run, 'train'); if (pr != null && gold >= pr) openPick('train', pr, true); return; }
+      const cost = (k) => (what === 'promote' ? promotePrice(run, k) : R.servicePrice(run, 'promoteOrder', +k));
+      const low = Math.min.apply(null, ids.map(cost));
+      if (gold < low) return;
+      if (what === 'promote') openPromote(low, true); else openPromoteOrder(low, true);
+    }
+    function openPick(what, price, quiet) {
       const ids = R.choicesFor(run, what);
       if (!ids.length) return;
       const train = what === 'train', pips = ((tunOf(run).store || {}).trainPips) || 2;
@@ -30375,7 +30388,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         title: train ? 'Train a unit' : 'Remove a card',
         line: train ? '+' + pips + ' level pips on the card you choose.' : 'It leaves your deck for good.',
         items: ids.map((uid) => ({ key: uid, html: (sel) => card(byUid(uid), { T, run, mark: sel ? (train ? 'train' : 'leave') : null }) + (train ? trainRow(byUid(uid), sel) : '') })),
-        verb: () => (train ? 'Train' : 'Remove'), price, danger: !train,
+        verb: () => (train ? 'Train' : 'Remove'), price, danger: !train, again: quiet,
         ok: (k, p) => {
           const uid = +k, g0 = run.gold || 0;
           if (train) {
@@ -30385,7 +30398,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
             set(r, { goldFrom: g0 });
             const it = p.item(k), c = byUid(uid);
             if (it && c && !calm()) it.innerHTML = card(c, { T, run, mark: 'pick' }) + (before ? trainRow(before, true, true) : '');
-            settle(p, 'qm-glow', 560, () => { if (e.rankUp) rankUpMoment(e.rankUp); });
+            settle(p, 'qm-glow', 560, () => { again('train'); if (e.rankUp) rankUpMoment(e.rankUp); });
           } else {
             const r = R.removeCard(run, uid);
             sfx('undo');
@@ -30395,7 +30408,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         }
       });
     }
-    function openPromote(from) {
+    function openPromote(from, quiet) {
       const ids = R.choicesFor(run, 'promote');
       if (!ids.length) return;
       const gen = (id) => run.generals.find((g) => g.id === id);
@@ -30405,7 +30418,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         title: 'Promote a general', line: 'One level up: his effect grows.',
         items: ids.map((id) => ({ key: id, html: (sel) => plaque(gen(id), { T, run, size: 'm', mark: sel ? 'pick' : null, next: sel }) +
           '<div class="qm-gpr">' + pill(null, cost(id), gold >= cost(id)) + '</div>' })),
-        verb: () => 'Promote', price: (sel) => (sel === null ? from : cost(sel)),
+        verb: () => 'Promote', price: (sel) => (sel === null ? from : cost(sel)), again: quiet,
         refuse: (id) => (gold >= cost(id) ? '' : 'Not enough gold'),
         ok: (id, p) => {
           const g0 = run.gold || 0, r = R.promoteGeneral(run, id);
@@ -30413,13 +30426,13 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
           set(r, { goldFrom: g0 });
           const it = p.item(id), g = gen(id);
           if (it && g && !calm()) { it.innerHTML = plaque(g, { T, run, size: 'm', mark: 'pick' }); it.classList.add('qm-roll'); }
-          settle(p, 'qm-glow', 560);
+          settle(p, 'qm-glow', 560, () => again('promote'));
         }
       });
     }
     /** str001 rules 6 (2026-11-13): Promote an order: the deck's orders below their top level, each
      *  card with its pay now and at the next level; the one picked goes up a level (Run.promoteOrder). */
-    function openPromoteOrder(price) {
+    function openPromoteOrder(price, quiet) {
       const ids = R.choicesFor(run, 'promoteOrder');
       if (!ids.length) return;
       // str001 rules 30: each order its own price (its rarity's x its level)
@@ -30431,7 +30444,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         title: 'Promote an order', line: 'One level up: it pays more when met.',
         items: ids.map((uid) => ({ key: uid, html: (sel) => card(byUid(uid), { T, run, mark: sel ? 'pick' : null }) + up(byUid(uid)) +
           '<div class="qm-gpr">' + pill(null, cost(uid), gold >= cost(uid)) + '</div>' })),
-        verb: () => 'Promote', price: (sel) => (sel === null ? price : cost(sel)),
+        verb: () => 'Promote', price: (sel) => (sel === null ? price : cost(sel)), again: quiet,
         refuse: (uid) => (gold >= cost(uid) ? '' : 'Not enough gold'),
         ok: (k, p) => {
           const uid = +k, g0 = run.gold || 0;
@@ -30441,7 +30454,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
           set(r, { goldFrom: g0 });
           const it = p.item(k), c = byUid(uid);
           if (it && c && !calm()) { it.innerHTML = card(c, { T, run, mark: 'pick' }) + (c.level < (C.ORDER_MAX_LEVEL || 3) ? up(c) : '<div class="qm-oup"><b>Top level</b></div>'); it.classList.add('qm-roll'); }
-          settle(p, 'qm-glow', 560);
+          settle(p, 'qm-glow', 560, () => again('promoteOrder'));
         }
       });
     }
