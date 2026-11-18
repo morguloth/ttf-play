@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="35">
-<script>(function(){var B="6b093b44c3";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=35;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-str001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("str001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="fe094417f9";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=35;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-str001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("str001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -29762,6 +29762,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       if (c.kind === 'order' && c.order) return orderHtml(c, sel);
       return card(c, { T, run, mark: sel ? 'pick' : null });
     }
+    /** str001 rules 35 (2026-11-18, user: "its gives you the option to skip the upgrade, there's literally no reason to ever
+     *  skip that"): a Dispatch's one order is taken, never skipped: no Skip button, the order already picked. */
+    const soleOrder = (op) => !!(op && op.cards && op.cards.length === 1 && op.cards[0].kind === 'order' && op.cards[0].order);
     /** The pack pop-up for store.open `op`: its cards fan out, face down, and turn (flip). */
     function packPop(op, flip) {
       const info = packInfo(C.packDef(op.pack)) || { name: 'Pack', art: 'crate' }, cs = op.cards || [], n = cs.length;
@@ -29772,7 +29775,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       // card k, the j-th of the m in its row: its tilt and drop from the row's middle
       const pkHtml = (c, k, j, m) => {
         const d = j - (m - 1) / 2, rot = m > 1 ? d * (m > 3 ? 3.2 : 4) : 0, drop = Math.round(d * d * (m > 3 ? 5 : 7));
-        return '<div class="qm-pk k-' + kind + '" data-p="' + (op.all ? 'none' : 'sel') + '" data-k="' + k + '" style="--k:' + k + ';--rot:' + rot.toFixed(1) + 'deg;--drop:' + drop + 'px">' +
+        return '<div class="qm-pk k-' + kind + '" data-p="' + (op.all || soleOrder(op) ? 'none' : 'sel') + '" data-k="' + k + '" style="--k:' + k + ';--rot:' + rot.toFixed(1) + 'deg;--drop:' + drop + 'px">' +
           '<div class="qm-flip"><div class="qm-face">' + faceHtml(c, false) + '</div><div class="qm-back ' + info.art + '"><span class="m">' + (info.art === 'reliquary' && Cards().CROWN_SVG ? Cards().CROWN_SVG : icon(back)) + '</span></div></div></div>';
       };
       const rowHtml = (r) => cs.slice(r[0], r[1]).map((c, j) => pkHtml(c, r[0] + j, j, r[1] - r[0])).join('');
@@ -29782,9 +29785,11 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       el.innerHTML = '<div class="qm-scrim"></div><div class="pnl qm-modal qm-pack" ' + mstyle(w) + '>' +
         '<div class="qm-pkh"><span class="qm-pko">' + packArt(info, { cls: 'sm' }) + '</span><div><div class="qm-mh">' + esc(info.name) + '</div><div class="qm-ms">' + esc(packLine(op)) + '</div></div></div>' +
         '<div class="qm-fan n' + n + ' k-' + kind + (fr.rows.length > 1 ? ' two' : '') + '">' + (n ? items : '<div class="sub">Nothing in it.</div>') + '</div>' +
-        '<div class="qm-mbtns"><button class="qm-mb cancel" data-p="skip" data-sfx="none"><span class="v">Skip</span></button>' +
+        (soleOrder(op)
+          ? '<div class="qm-mbtns"><button class="qm-mb ok" data-p="take" data-sfx="none"><span class="v">Take</span></button></div></div>'
+          : '<div class="qm-mbtns"><button class="qm-mb cancel" data-p="skip" data-sfx="none"><span class="v">Skip</span></button>' +
         '<button class="qm-mb ok' + (pickState(op, []).ok ? '' : ' off') + '" data-p="take" data-sfx="none"><span class="v">' + esc(pickState(op, []).verb) + '</span></button></div>' +
-        '<div class="qm-pkn">Skipping gives no gold back.</div></div>';
+        '<div class="qm-pkn">Skipping gives no gold back.</div></div>');
       return el;
     }
     /** Show or drop the pack pop-up to match store.open (a reload shows it again, face up). */
@@ -29798,7 +29803,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       closePop(true);
       disarm();
       const flip = !!(o && o.flip) && !calm();
-      pk = { key, picks: [], skipAt: 0, busy: false, el: packPop(op, flip) };
+      pk = { key, picks: soleOrder(op) ? [0] : [], skipAt: 0, busy: false, el: packPop(op, flip) };
       root.appendChild(pk.el);
       if (flip) wait(260, () => sfx('deal'));
       // str001 rules 7: a legendary turned up (the Legendary Pack, or a lucky card in any pack): the
