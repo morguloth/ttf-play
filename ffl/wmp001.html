@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="16">
-<script>(function(){var B="a14288acaf";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=16;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-wmp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("wmp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="4ca03b9344";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=16;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-wmp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("wmp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -3665,6 +3665,16 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 /* the Chief of Staff's open extra seat in the store's lists: a plain Open seat, its roundel edged in his violet */
 .pnl .qm-g1.open.his .gi { color: var(--ink-violet); box-shadow: 0 0 0 1.5px var(--ink-violet); outline-color: rgba(78,47,122,.55); }
 .pnl .qm-g1.open.his .nm { color: var(--ink); }
+
+/* ---- after rules 16 (2026-11-19, owner, playing the parchment build) ------------------------------------------------
+   March On: its words sat on the button's left edge with a wide gap before the arrow; "This visit" was hard to notice
+   and crowded the Sale ribbon; a stall's label (Leader) sat on its card's power badge. */
+.qm-go:not(.has-next):not(.arm) { padding: 0 16px; }
+.qm-go:not(.has-next):not(.arm) .qm-gol { gap: 7px; font-size: .9em; letter-spacing: .04em; white-space: nowrap; }
+.qm-go .qm-gol .ic { margin: 0; }
+.qm-rtab { top: -22px; padding: 2px 18px 3px; border-radius: 999px; background: var(--table1, #1f150a); color: #f3d58e;
+  border: 1px solid rgba(214,180,110,.75); box-shadow: 0 2px 6px rgba(0,0,0,.55); font-size: 14px; letter-spacing: 2.2px; }
+.qm.fx .qm-stall .qm-sl:not(.msl) { justify-content: flex-start; }
 </style>
 <style>
 /*
@@ -4233,6 +4243,8 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 /* the draft meter: each type's sub-line (units, officers, ranked up) dimmed until the first pick
    (review fix, 2026-11-10: dimmed, not hidden; the deck's makeup reads at once, nothing shifts) */
 .mo-meter:not(.picked) .mo-ms { opacity: .55; }
+/* after rules 16 (owner: "kind of hard to read"): on paper the dimmed line fell under readable contrast */
+.pnl .mo-meter:not(.picked) .mo-ms { opacity: .88; color: var(--ink2); }
 .mo-meter.picked .mo-ms { opacity: 1; transition: opacity .25s ease; }
 
 /* a twist's crest (s-moments.js twistCrest): a brass-rimmed shield, the twist's glyph its charge; on a
