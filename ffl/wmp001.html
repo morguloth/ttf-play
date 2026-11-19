@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="16">
-<script>(function(){var B="df2b252be4";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=16;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-wmp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("wmp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="6ac18d69b7";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=16;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-wmp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("wmp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -236,11 +236,13 @@
   --well: rgba(0,0,0,.28); --edge: rgba(201,163,92,.35);
   --pill-bg: linear-gradient(180deg, #3a3027, #1d1813); --roundel-bg: radial-gradient(circle at 45% 35%, #4a3d30, #1f1913); --tsh: initial;
   --reached: #f3d58e; --gain: #6fd27a; --loss: #e0625a; }
-/* after rules 16 (owner): the store's own screen (.qm: its head, stalls, tiles, Your deck, Your generals, March On)
-   keeps its dark look from before the parchment; its pop-ups (.qm-pop, outside .qm) stay paper. The sheets, plaques
-   and slips inside it take the table's values back, and "go" is brass again (the values before the parchment).
+/* after rules 16 (owner): the store keeps its dark look from before the parchment: its screen (.qm-scr, the store's
+   screen layer: the head, stalls, tiles, Your deck, Your generals, March On, and its pop-ups .qm-pop and the deck
+   view opened from Your deck) and the views the stage opens over it (a card's or general's view .l1detail, the
+   formations drawer .fdrawer, the deck view .l1deck; not help or the menu). The same pop-ups and views over any other
+   screen stay paper. The sheets, plaques and slips inside take the table's values back, and "go" is brass again.
    The parts the parchment build drew differently: store.css "After rules 16: the store keeps its dark look". */
-.qm, .qm :is(.pnl, .l1plaque, .wm-card, .paper) {
+:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)), :is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) :is(.pnl, .l1plaque, .wm-card, .paper) {
   --lab: #c9a764; --sub: #b9ab8f; --ink-hi: #f1dfb2; --ink-mid: #cdbf9f; --ink-lo: #b3a585;
   --hud-ink: #f2e7cf; --hud-dim: #a89a80; --panel-line: rgba(214,177,104,.22);
   --ink-top: #f6e6c0; --ink-body: #e6d7b6; --ink-dim: #a8987a; --ink-brass: #f3d58e; --coin-ic: #e6b54a;
@@ -426,11 +428,11 @@
 .l1price.no .ic { color: var(--ink-off, #6c6252); }
 /* after rules 15: on a sheet the price is an ink-outlined tag; cannot afford, wax-red numerals.
    (After rules 16, owner: the store's own screen, .qm, keeps its dark look, so this file's paper rules end in
-   :where(:not(.qm *)), "not inside the store's screen", adding no specificity; store.css has the rest.) */
-.pnl .l1price:where(:not(.qm *)) { background: var(--tag-bg); border-radius: var(--tag-r); box-shadow: var(--tag-sh); color: var(--ink); }
-.pnl .l1price .ic:where(:not(.qm *)) { color: var(--coin); filter: drop-shadow(0 0 .6px rgba(42,26,12,.9)); }
-.pnl .l1price.no:where(:not(.qm *)) { color: var(--wax); background: rgba(255,250,236,.22); box-shadow: var(--tag-no-sh); }
-.pnl .l1price.no .ic:where(:not(.qm *)) { color: #a8977a; filter: none; }
+   :where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), "not in the store's scope" (tokens.css), adding no specificity; store.css has the rest.) */
+.pnl .l1price:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: var(--tag-bg); border-radius: var(--tag-r); box-shadow: var(--tag-sh); color: var(--ink); }
+.pnl .l1price .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--coin); filter: drop-shadow(0 0 .6px rgba(42,26,12,.9)); }
+.pnl .l1price.no:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--wax); background: rgba(255,250,236,.22); box-shadow: var(--tag-no-sh); }
+.pnl .l1price.no .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #a8977a; filter: none; }
 .l1card .l1price { position: absolute; left: 50%; top: calc(100% + 12px); transform: translateX(-50%); }
 
 /* ======================================================================= rule glyphs */
@@ -442,11 +444,11 @@
 .l1fx.form { background: linear-gradient(180deg, var(--form1), var(--form2)); box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 2px 5px rgba(0,0,0,.45); }
 /* after rules 15: on paper (a sheet, a plaque, an overlay) the chips are ink stamps, a pale wash of their colour
    with an edge in that colour: the plain ×N / +N slate, formations violet. A card keeps its own chips. */
-:is(.pnl, .l1plaque, .l1ov) .l1fx:not(.form):not(.l1card .l1fx):where(:not(.qm *)) { color: #22364c; text-shadow: none;
+:is(.pnl, .l1plaque, .l1ov) .l1fx:not(.form):not(.l1card .l1fx):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #22364c; text-shadow: none;
   background: linear-gradient(180deg, rgba(222,228,226,.92), rgba(196,206,206,.92)); box-shadow: inset 0 0 0 1.5px var(--ink-slate), 0 1px 0 rgba(255,250,236,.5); }
-:is(.pnl, .l1plaque, .l1ov) .l1fx.form:not(.l1card .l1fx):where(:not(.qm *)) { color: #3a1f60; text-shadow: none;
+:is(.pnl, .l1plaque, .l1ov) .l1fx.form:not(.l1card .l1fx):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #3a1f60; text-shadow: none;
   background: linear-gradient(180deg, rgba(232,220,240,.95), rgba(210,194,224,.95)); box-shadow: inset 0 0 0 1.5px var(--ink-violet), 0 1px 0 rgba(255,250,236,.5); }
-:is(.pnl, .l1plaque) .l1if:where(:not(.qm *)) { color: var(--ink2); }
+:is(.pnl, .l1plaque) .l1if:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink2); }
 .l1if { font-family: var(--label); font-size: var(--fs-xs, 13px); font-weight: 700; color: #7a6040; font-style: italic; margin: 0 -3px; text-transform: uppercase; letter-spacing: .5px; }
 /* a hero's condition: a framed line pictogram */
 .l1cond { width: 38px; height: 38px; border-radius: 7px; display: grid; place-items: center; flex: none; background: #efe2c2;
@@ -458,8 +460,8 @@
 .l1tok { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; flex: none; font-size: 19px; color: var(--ink-brass, #f3d58e);
   background: linear-gradient(180deg, var(--fx1), var(--fx2)); box-shadow: inset 0 0 0 1.5px #c9a764, 0 2px 5px rgba(0,0,0,.45); }
 .l1tok.boss { color: #e0625a; }
-:is(.pnl, .l1plaque, .l1ov) .l1tok:not(.l1card .l1tok):where(:not(.qm *)) { color: var(--ink-h); background: radial-gradient(circle at 40% 32%, #f8edcf, #e3cd9c 78%); box-shadow: inset 0 0 0 1.5px var(--ink-h), 0 1px 0 rgba(255,250,236,.5); }
-:is(.pnl, .l1plaque, .l1ov) .l1tok.boss:not(.l1card .l1tok):where(:not(.qm *)) { color: var(--wax); }
+:is(.pnl, .l1plaque, .l1ov) .l1tok:not(.l1card .l1tok):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-h); background: radial-gradient(circle at 40% 32%, #f8edcf, #e3cd9c 78%); box-shadow: inset 0 0 0 1.5px var(--ink-h), 0 1px 0 rgba(255,250,236,.5); }
+:is(.pnl, .l1plaque, .l1ov) .l1tok.boss:not(.l1card .l1tok):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--wax); }
 /* an officer's area: the tiles he reaches, where they are around him */
 .l1cells { display: inline-grid; gap: 2px; flex: none; }
 .l1cells i { width: var(--c, 16px); height: var(--c, 16px); border-radius: 3px; display: grid; place-items: center; font-style: normal; color: #fff;
@@ -511,11 +513,11 @@
 .l1fex.board i.lit { background: var(--brass1); box-shadow: 0 0 3px rgba(243,213,142,.7); }
 /* after rules 15: the glyph on paper: an ink-drawn box on a pale wash; the cells keep their colours, each
    with a fine ink edge so the light ones (Skirmishers, any) hold on the paper */
-:is(.pnl, .l1plaque, .l1ov) .l1fex:where(:not(.qm *)) { background: rgba(255,250,236,.55); box-shadow: inset 0 0 0 1px rgba(58,36,16,.55); }
-:is(.pnl, .l1plaque, .l1ov) .l1fex i.e:where(:not(.qm *)) { box-shadow: inset 0 0 0 1px rgba(58,36,16,.3); }
-:is(.pnl, .l1plaque, .l1ov) :is(.l1fex, .l1fan) i:not(.e):not(.any):where(:not(.qm *)) { box-shadow: 0 0 0 .8px rgba(42,26,12,.75); }
-:is(.pnl, .l1plaque, .l1ov) .l1fex.board i.lit:where(:not(.qm *)) { background: #b07a1c; box-shadow: 0 0 0 .8px rgba(42,26,12,.75); }
-:is(.pnl, .l1plaque, .l1ov) .l1fan:where(:not(.qm *)) { border-color: rgba(58,36,16,.55); }
+:is(.pnl, .l1plaque, .l1ov) .l1fex:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(255,250,236,.55); box-shadow: inset 0 0 0 1px rgba(58,36,16,.55); }
+:is(.pnl, .l1plaque, .l1ov) .l1fex i.e:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: inset 0 0 0 1px rgba(58,36,16,.3); }
+:is(.pnl, .l1plaque, .l1ov) :is(.l1fex, .l1fan) i:not(.e):not(.any):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: 0 0 0 .8px rgba(42,26,12,.75); }
+:is(.pnl, .l1plaque, .l1ov) .l1fex.board i.lit:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: #b07a1c; box-shadow: 0 0 0 .8px rgba(42,26,12,.75); }
+:is(.pnl, .l1plaque, .l1ov) .l1fan:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { border-color: rgba(58,36,16,.55); }
 .l1fan { position: relative; display: inline-block; width: 40px; height: 32px; border-radius: 16px; border: 1.5px dashed rgba(201,163,92,.6); flex: none; }
 .l1fan.n4 { width: 44px; }
 .l1fan.n6 { width: 48px; }
@@ -534,8 +536,8 @@
   background: var(--slip);   /* after rules 15: a parchment slip, a fine ink rule inside (::before) */
   box-shadow: var(--burn-sm), var(--lift-sm), 0 10px 18px -10px rgba(0,0,0,.6);
   -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; transition: box-shadow .16s ease; }
-.l1plaque:where(:not(.qm *))::before { content: ''; position: absolute; inset: 4px; border-radius: 9px; pointer-events: none; border: 1px solid rgba(58,36,16,.3); }
-.l1plaque.s-chip:where(:not(.qm *))::before { border-radius: 30px 8px 8px 30px; }
+.l1plaque:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *))::before { content: ''; position: absolute; inset: 4px; border-radius: 9px; pointer-events: none; border: 1px solid rgba(58,36,16,.3); }
+.l1plaque.s-chip:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *))::before { border-radius: 30px 8px 8px 30px; }
 .l1plaque .gp { width: 86px; height: 86px; border-radius: 50%; overflow: hidden; flex: none; background: #6f8aa0;
   box-shadow: 0 0 0 2.5px #c49a48, 0 0 0 3.5px #2a1a0c, 0 3px 6px rgba(40,22,6,.45); }
 .l1plaque .gp svg { width: 112%; height: 112%; margin: -6%; display: block; }
@@ -1061,22 +1063,23 @@
 .fdraw .fdgrid.sl.dense .fcell.off { justify-content: center; }
 
 /* ======================================================================= after rules 15: the parchment look
+   (After rules 16: not in the store's scope, so each selector ends in :where(:not(:is(.qm-scr, ...) *)); tokens.css.)
    (docs/WMP001.md): the formations drawer on paper - the learned cells a pale violet wash with a violet edge, the
    rest a pale well; the ×N violet ink stamps; the open slot a dashed ink line, the locked one an ink well */
-.fdrawer .fscrim { background: rgba(18,10,3,.6); }
-.fcell.on { background: rgba(120,80,170,.1); box-shadow: inset 0 0 0 1.5px rgba(78,47,122,.6); }
-.fcell .fx { color: #3a1f60; background: linear-gradient(180deg, rgba(232,220,240,.95), rgba(210,194,224,.95)); box-shadow: inset 0 0 0 1.5px var(--ink-violet); }
-.fcell.off .fgl { filter: grayscale(1); opacity: .6; }
-.fcell.off .fx { color: var(--ink3); background: rgba(58,36,16,.06); box-shadow: inset 0 0 0 1px rgba(58,36,16,.35); }
-.fcell .fck { color: var(--ink-forest); }
-.fcell.on.cnt { background: rgba(61,107,58,.12); box-shadow: inset 0 0 0 1.5px var(--ink-forest-hi); }
-.fcell.fslot.open { background: rgba(255,250,236,.35); box-shadow: none; outline: 1.5px dashed rgba(58,36,16,.55); }
-.fcell.fslot.open .fsi { color: var(--ink-violet); background: transparent; box-shadow: inset 0 0 0 1.5px rgba(78,47,122,.6); }
-.fcell.fslot.open .fn { color: var(--ink); }
-.fcell.fslot.lock .fsi { color: var(--ink3); }
-.fdraw .fclose { color: var(--ink-h); }
-.pnl .fbtn { box-shadow: inset 0 0 0 1.5px var(--ink-violet), 0 2px 4px rgba(60,36,14,.3); }
-.pnl .fbtn .ic { color: var(--ink-violet); }
+.fdrawer .fscrim:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(18,10,3,.6); }
+.fcell.on:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(120,80,170,.1); box-shadow: inset 0 0 0 1.5px rgba(78,47,122,.6); }
+.fcell .fx:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #3a1f60; background: linear-gradient(180deg, rgba(232,220,240,.95), rgba(210,194,224,.95)); box-shadow: inset 0 0 0 1.5px var(--ink-violet); }
+.fcell.off .fgl:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { filter: grayscale(1); opacity: .6; }
+.fcell.off .fx:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink3); background: rgba(58,36,16,.06); box-shadow: inset 0 0 0 1px rgba(58,36,16,.35); }
+.fcell .fck:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-forest); }
+.fcell.on.cnt:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(61,107,58,.12); box-shadow: inset 0 0 0 1.5px var(--ink-forest-hi); }
+.fcell.fslot.open:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(255,250,236,.35); box-shadow: none; outline: 1.5px dashed rgba(58,36,16,.55); }
+.fcell.fslot.open .fsi:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-violet); background: transparent; box-shadow: inset 0 0 0 1.5px rgba(78,47,122,.6); }
+.fcell.fslot.open .fn:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink); }
+.fcell.fslot.lock .fsi:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink3); }
+.fdraw .fclose:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-h); }
+.pnl .fbtn:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: inset 0 0 0 1.5px var(--ink-violet), 0 2px 4px rgba(60,36,14,.3); }
+.pnl .fbtn .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-violet); }
 </style>
 <style>
 /*
@@ -1193,7 +1196,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   content: ''; position: absolute; inset: 6px; border-radius: 7px; border: 1px solid var(--rule); outline: 1px solid rgba(58,36,16,.16); outline-offset: 2px; pointer-events: none; }
 .lab { font-family: var(--label, 'Cinzel', serif); font-size: var(--fs-xs, 13px); letter-spacing: 2.2px; text-transform: uppercase; color: var(--lab, #c9a764); font-weight: 700; display: flex; align-items: center; gap: 8px; }
 .lab::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(201,167,100,.5), transparent); }
-.pnl .lab:where(:not(.qm *))::after { background: linear-gradient(90deg, rgba(58,36,16,.62), rgba(58,36,16,.08)); }
+.pnl .lab:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *))::after { background: linear-gradient(90deg, rgba(58,36,16,.62), rgba(58,36,16,.08)); }
 .sub { font-family: var(--body, 'Barlow Condensed', sans-serif); font-size: var(--fs-md, 17px); color: var(--sub, #b9ab8f); font-weight: 500; }
 
 /* ---------- buttons ----------
@@ -2170,125 +2173,126 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .seat.open.his .st b { color: #d9c8f4; }
 
 /* ======================================================================= after rules 15: the parchment look
+   (After rules 16: not in the store's scope, so each selector ends in :where(:not(:is(.qm-scr, ...) *)); tokens.css.)
    (docs/WMP001.md). The score panel and the Formations panel are sheets (shell.css .pnl); their parts are drawn in
    ink on the paper. On the table: Undo and the general's actions are paper slips, the seats a dashed paper line,
    the orders' chips oxblood seals. */
 /* the board's plane: the table's umber */
-.plane { background: #2e1f10; box-shadow: 0 0 0 3px #5a3f20, 0 0 0 5px #160d05, 0 40px 60px -10px rgba(10,5,0,.9); }
+.plane:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: #2e1f10; box-shadow: 0 0 0 3px #5a3f20, 0 0 0 5px #160d05, 0 40px 60px -10px rgba(10,5,0,.9); }
 /* the score panel: ink numerals, a wax-red target, the meter an ink-edged groove */
-.scorep .sc-tgt .v { color: var(--ink); text-shadow: none; }
-.scorep .sc-tgt .v .ic { color: var(--wax); }
-.scorep .sc-tot, .scorep .sc-tot [data-r="tot"] { color: var(--ink); text-shadow: 0 1px 0 rgba(255,248,226,.55); }
-.scorep .sc-tot.met:not(.pv) [data-r="tot"] { color: #6a3a06; text-shadow: 0 1px 0 rgba(255,248,226,.55); }
-.scorep .sc-tot.pv [data-r="tot"] { color: var(--ink3); text-shadow: none; }
-.scorep .sc-tgt.met .v { color: #6a3a06; text-shadow: none; }
-.scorep .sc-tgt.met .v .ic { color: #f6e6c0; background: radial-gradient(circle at 40% 35%, #b84a38, #7a1f15); box-shadow: 0 0 0 1.5px #2a0a04; }
-.scorep.boss .sc-tgt:not(.met) .v { color: var(--wax); text-shadow: none; }
-.scorep .sc-tgt.sg-band .v { color: var(--ink); }
-.scorep .sc-tgt.sg-band.top .v { color: #6a3a06; text-shadow: none; }
-.pnl .sc-meter { background: rgba(58,36,16,.12); box-shadow: inset 0 0 0 1px rgba(42,26,12,.7), inset 0 1px 2px rgba(58,36,16,.3); }
-.pnl .sc-meter i { background: linear-gradient(180deg, #6a4a26, #3a2410); }
-.pnl .sc-meter.met { box-shadow: inset 0 0 0 1px #6a3a06; }
-.pnl .sc-meter.met i { background: linear-gradient(180deg, #d9b25c, #9a6a1c); }
-.pnl .sg-pips i { background: rgba(58,36,16,.08); box-shadow: inset 0 0 0 1.5px rgba(58,36,16,.5); }
-.pnl .sg-pips i.on { background: radial-gradient(circle at 38% 32%, #f6dfa0, #c9962e 60%, #8a5a14); box-shadow: 0 0 0 1px #2a1a0c; }
-.pnl .sc-tgt .bcoin { box-shadow: inset 0 0 0 2px rgba(122,82,26,.65), 0 0 0 1.5px #2a1a0c, 0 2px 4px rgba(60,36,14,.35); }
+.scorep .sc-tgt .v:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink); text-shadow: none; }
+.scorep .sc-tgt .v .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--wax); }
+.scorep .sc-tot:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .scorep .sc-tot [data-r="tot"]:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink); text-shadow: 0 1px 0 rgba(255,248,226,.55); }
+.scorep .sc-tot.met:not(.pv) [data-r="tot"]:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #6a3a06; text-shadow: 0 1px 0 rgba(255,248,226,.55); }
+.scorep .sc-tot.pv [data-r="tot"]:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink3); text-shadow: none; }
+.scorep .sc-tgt.met .v:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #6a3a06; text-shadow: none; }
+.scorep .sc-tgt.met .v .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #f6e6c0; background: radial-gradient(circle at 40% 35%, #b84a38, #7a1f15); box-shadow: 0 0 0 1.5px #2a0a04; }
+.scorep.boss .sc-tgt:not(.met) .v:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--wax); text-shadow: none; }
+.scorep .sc-tgt.sg-band .v:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink); }
+.scorep .sc-tgt.sg-band.top .v:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #6a3a06; text-shadow: none; }
+.pnl .sc-meter:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(58,36,16,.12); box-shadow: inset 0 0 0 1px rgba(42,26,12,.7), inset 0 1px 2px rgba(58,36,16,.3); }
+.pnl .sc-meter i:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: linear-gradient(180deg, #6a4a26, #3a2410); }
+.pnl .sc-meter.met:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: inset 0 0 0 1px #6a3a06; }
+.pnl .sc-meter.met i:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: linear-gradient(180deg, #d9b25c, #9a6a1c); }
+.pnl .sg-pips i:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(58,36,16,.08); box-shadow: inset 0 0 0 1.5px rgba(58,36,16,.5); }
+.pnl .sg-pips i.on:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: radial-gradient(circle at 38% 32%, #f6dfa0, #c9962e 60%, #8a5a14); box-shadow: 0 0 0 1px #2a1a0c; }
+.pnl .sc-tgt .bcoin:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: inset 0 0 0 2px rgba(122,82,26,.65), 0 0 0 1.5px #2a1a0c, 0 2px 4px rgba(60,36,14,.35); }
 /* the score's fly-up chip (+N into the total): an ink stamp on the paper - a pale wash of green (up), wax red
    (down) or ink (zero), its edge and numerals in that ink */
-.pnl .sc-tot .dlt { color: var(--ink-forest); text-shadow: none; background: linear-gradient(180deg, rgba(226,238,214,.95), rgba(196,218,182,.95));
+.pnl .sc-tot .dlt:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-forest); text-shadow: none; background: linear-gradient(180deg, rgba(226,238,214,.95), rgba(196,218,182,.95));
   box-shadow: inset 0 0 0 2px var(--ink-forest-hi), 0 1px 0 rgba(255,250,236,.5), 0 3px 6px rgba(40,22,6,.3); }
-.pnl .sc-tot .dlt.down { color: var(--wax); background: linear-gradient(180deg, rgba(246,224,214,.95), rgba(232,198,184,.95)); box-shadow: inset 0 0 0 2px var(--wax), 0 3px 6px rgba(40,22,6,.3); }
-.pnl .sc-tot .dlt.zero { color: var(--ink2); background: rgba(255,250,236,.55); box-shadow: inset 0 0 0 2px rgba(58,36,16,.55), 0 3px 6px rgba(40,22,6,.3); }
-.pnl .sc-tot .dlt.cross { box-shadow: inset 0 0 0 2px var(--ink-forest-hi), 0 0 0 2px #c9962e, 0 0 12px rgba(201,150,46,.45); }
-.pnl .sc-tot .dlt.fortd { color: #3a1e08; box-shadow: inset 0 0 0 2px #6a3a14, 0 3px 6px rgba(40,22,6,.3); }
-.pnl .sc-tl .sc-was { color: var(--ink2); opacity: 1; box-shadow: inset 0 0 0 1px rgba(58,36,16,.45); }
-.pnl .sc-tl .sc-was .ic { color: var(--ochre); }
+.pnl .sc-tot .dlt.down:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--wax); background: linear-gradient(180deg, rgba(246,224,214,.95), rgba(232,198,184,.95)); box-shadow: inset 0 0 0 2px var(--wax), 0 3px 6px rgba(40,22,6,.3); }
+.pnl .sc-tot .dlt.zero:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink2); background: rgba(255,250,236,.55); box-shadow: inset 0 0 0 2px rgba(58,36,16,.55), 0 3px 6px rgba(40,22,6,.3); }
+.pnl .sc-tot .dlt.cross:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: inset 0 0 0 2px var(--ink-forest-hi), 0 0 0 2px #c9962e, 0 0 12px rgba(201,150,46,.45); }
+.pnl .sc-tot .dlt.fortd:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #3a1e08; box-shadow: inset 0 0 0 2px #6a3a14, 0 3px 6px rgba(40,22,6,.3); }
+.pnl .sc-tl .sc-was:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink2); opacity: 1; box-shadow: inset 0 0 0 1px rgba(58,36,16,.45); }
+.pnl .sc-tl .sc-was .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ochre); }
 /* turn pips: ink rings; spent filled ink; now a larger ring, a brass core */
-.pnl .tn i { border: 1.5px solid rgba(42,26,12,.55); background: transparent; }
-.pnl .tn i.used { background: radial-gradient(circle at 40% 35%, #6a4a26, #3a2410); border-color: #2a1a0c; }
-.pnl .tn i.now { border: 2.5px solid #2a1a0c; background: radial-gradient(circle at 40% 35%, #f6dfa0, #c9962e); box-shadow: 0 0 0 2px rgba(255,248,226,.6); }
-.pnl .tn i.now.last { border-color: var(--wax); }
-.pnl .tn i.lgt { border-color: #b8501a; box-shadow: none; }
-.pnl .tn i.now.lgt { border-color: #b8501a; box-shadow: 0 0 8px rgba(255,130,40,.55); }
-.pnl .sc-twist .tw-line { color: var(--ink2); }
-.pnl .sc-twist.open { box-shadow: inset 0 0 0 1.5px rgba(58,36,16,.5); }
-.pnl .sc-twist .tw-ic { box-shadow: 0 0 0 1.5px #2a0a04; }
+.pnl .tn i:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { border: 1.5px solid rgba(42,26,12,.55); background: transparent; }
+.pnl .tn i.used:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: radial-gradient(circle at 40% 35%, #6a4a26, #3a2410); border-color: #2a1a0c; }
+.pnl .tn i.now:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { border: 2.5px solid #2a1a0c; background: radial-gradient(circle at 40% 35%, #f6dfa0, #c9962e); box-shadow: 0 0 0 2px rgba(255,248,226,.6); }
+.pnl .tn i.now.last:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { border-color: var(--wax); }
+.pnl .tn i.lgt:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { border-color: #b8501a; box-shadow: none; }
+.pnl .tn i.now.lgt:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { border-color: #b8501a; box-shadow: 0 0 8px rgba(255,130,40,.55); }
+.pnl .sc-twist .tw-line:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink2); }
+.pnl .sc-twist.open:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: inset 0 0 0 1.5px rgba(58,36,16,.5); }
+.pnl .sc-twist .tw-ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: 0 0 0 1.5px #2a0a04; }
 /* the Siege's sides on the sheet */
-.pnl .sg-bar { background: rgba(58,36,16,.12); box-shadow: inset 0 0 0 1px rgba(42,26,12,.6); }
-.pnl .sg-side.locked .sg-bar { background: repeating-linear-gradient(45deg, rgba(58,36,16,.22) 0 4px, rgba(58,36,16,.06) 4px 8px); }
-.pnl .sg-side.cross .sg-bar { box-shadow: inset 0 0 0 1px #6a3a06, 0 0 8px rgba(201,150,46,.45); }
-.pnl .sg-side.met .sg-ic { box-shadow: 0 0 0 1.5px #2a1a0c; }
+.pnl .sg-bar:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(58,36,16,.12); box-shadow: inset 0 0 0 1px rgba(42,26,12,.6); }
+.pnl .sg-side.locked .sg-bar:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: repeating-linear-gradient(45deg, rgba(58,36,16,.22) 0 4px, rgba(58,36,16,.06) 4px 8px); }
+.pnl .sg-side.cross .sg-bar:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: inset 0 0 0 1px #6a3a06, 0 0 8px rgba(201,150,46,.45); }
+.pnl .sg-side.met .sg-ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: 0 0 0 1.5px #2a1a0c; }
 
 /* on the table, Undo and the general's actions are paper slips */
-.abtn { background: var(--slip); color: var(--ink); text-shadow: none; box-shadow: var(--burn-sm), var(--lift-sm), 0 2px 6px rgba(0,0,0,.45); }
-.abtn svg, .abtn .ic { color: var(--ink-h); }
-.abtn small { color: var(--ink2); }
-.abtn.on { background: var(--slip); box-shadow: var(--burn-sm), inset 0 0 0 2.5px var(--ochre), var(--lift-sm); }
-.abtn:active { filter: brightness(.92); }
+.abtn:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: var(--slip); color: var(--ink); text-shadow: none; box-shadow: var(--burn-sm), var(--lift-sm), 0 2px 6px rgba(0,0,0,.45); }
+.abtn svg:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .abtn .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-h); }
+.abtn small:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink2); }
+.abtn.on:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: var(--slip); box-shadow: var(--burn-sm), inset 0 0 0 2.5px var(--ochre), var(--lift-sm); }
+.abtn:active:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { filter: brightness(.92); }
 /* the seats beside the generals: drawn on the table, a dashed paper line; the locked one an ink well */
-.seat.open { background: rgba(230,205,150,.05); box-shadow: inset 0 0 0 1px rgba(230,205,150,.3); outline: 1.5px dashed rgba(230,205,150,.55); outline-offset: -5px; }
-.seat.open .sr { color: #f0d48e; background: var(--node-bg); box-shadow: var(--node-sh); }
-.seat.open .st b { color: #f0d48e; }
-.seat.open .st span { color: #cdb894; }
-.seat.lock { background: rgba(14,8,2,.45); box-shadow: inset 0 0 0 1px rgba(201,164,90,.22); }
-.seat.lock .sr { background: rgba(46,31,16,.8); color: #a8946e; box-shadow: 0 0 0 1.5px rgba(201,164,90,.45); }
-.seat.lock .st b { color: #b8a27c; }
-.seat.lock .st span { color: #9c8a6a; }
-.seat.fseat.open .sr { color: #d9c8f4; box-shadow: 0 0 0 2px #9468dc, 0 0 0 3.5px #1a0e05; }
-.seat.open.his { background: rgba(60,44,84,.25); }
-.seat.open.his .sr { color: #d9c8f4; box-shadow: 0 0 0 2px #9468dc, 0 0 0 3.5px #1a0e05; }
+.seat.open:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(230,205,150,.05); box-shadow: inset 0 0 0 1px rgba(230,205,150,.3); outline: 1.5px dashed rgba(230,205,150,.55); outline-offset: -5px; }
+.seat.open .sr:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #f0d48e; background: var(--node-bg); box-shadow: var(--node-sh); }
+.seat.open .st b:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #f0d48e; }
+.seat.open .st span:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #cdb894; }
+.seat.lock:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(14,8,2,.45); box-shadow: inset 0 0 0 1px rgba(201,164,90,.22); }
+.seat.lock .sr:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(46,31,16,.8); color: #a8946e; box-shadow: 0 0 0 1.5px rgba(201,164,90,.45); }
+.seat.lock .st b:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #b8a27c; }
+.seat.lock .st span:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #9c8a6a; }
+.seat.fseat.open .sr:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #d9c8f4; box-shadow: 0 0 0 2px #9468dc, 0 0 0 3.5px #1a0e05; }
+.seat.open.his:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(60,44,84,.25); }
+.seat.open.his .sr:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #d9c8f4; box-shadow: 0 0 0 2px #9468dc, 0 0 0 3.5px #1a0e05; }
 /* the orders' label on the table */
-.gens .olab { color: #cdb894; }
+.gens .olab:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #cdb894; }
 
 
 /* the end plates: ink on the paper, the crest an umber medallion with a brass laurel (the map's node) */
-.endplate .eh { color: var(--ink); text-shadow: 0 1px 0 rgba(255,248,226,.6); }
-.endplate.lost .eh { color: var(--wax); text-shadow: 0 1px 0 rgba(255,248,226,.6); }
-.endplate .ecrest { background: var(--node-bg); color: #f0d48e; box-shadow: var(--node-sh); }
-.endplate.lost .ecrest { color: #e8a090; background: var(--node-bg); box-shadow: 0 0 0 2px var(--wax-hi), 0 0 0 3.5px #1a0805, 0 6px 12px -4px rgba(0,0,0,.8); }
-.endplate .es { color: var(--ink2); }
-.endplate .es b, .endplate .eg { color: var(--ink); text-shadow: none; }
-.endplate .eg .ic { color: var(--coin); filter: drop-shadow(0 0 .6px rgba(42,26,12,.9)); }
-.endplate .ep { color: var(--ink2); }
-.endplate .et { color: var(--ink3); font-style: italic; }
-.endplate .ew { color: var(--ochre); text-shadow: none; }
-.vic-plate.t3 .ew { color: #7a3a06; text-shadow: 0 0 10px rgba(255,214,120,.6); }
-.vic-plate.t2, .vic-plate.t3 { box-shadow: var(--burn), 0 0 0 2.5px #b8863a, 0 0 0 3.5px #2a1a0c, var(--lift); }
-.endplate .eo { color: var(--ink2); } .endplate .eo b { color: var(--ink); } .endplate .eo span.ok .ic { color: var(--ink-forest); }
-.endplate .sg-es .ok .ic { color: var(--ochre); } .endplate .sg-es .no .ic, .endplate .sg-es .no b { color: var(--wax); }
-.endplate .ef3 b { color: var(--ink); }
-.endplate.objmiss .om-score { color: var(--ink2); }
+.endplate .eh:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink); text-shadow: 0 1px 0 rgba(255,248,226,.6); }
+.endplate.lost .eh:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--wax); text-shadow: 0 1px 0 rgba(255,248,226,.6); }
+.endplate .ecrest:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: var(--node-bg); color: #f0d48e; box-shadow: var(--node-sh); }
+.endplate.lost .ecrest:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #e8a090; background: var(--node-bg); box-shadow: 0 0 0 2px var(--wax-hi), 0 0 0 3.5px #1a0805, 0 6px 12px -4px rgba(0,0,0,.8); }
+.endplate .es:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink2); }
+.endplate .es b:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .endplate .eg:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink); text-shadow: none; }
+.endplate .eg .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--coin); filter: drop-shadow(0 0 .6px rgba(42,26,12,.9)); }
+.endplate .ep:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink2); }
+.endplate .et:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink3); font-style: italic; }
+.endplate .ew:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ochre); text-shadow: none; }
+.vic-plate.t3 .ew:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #7a3a06; text-shadow: 0 0 10px rgba(255,214,120,.6); }
+.vic-plate.t2:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .vic-plate.t3:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: var(--burn), 0 0 0 2.5px #b8863a, 0 0 0 3.5px #2a1a0c, var(--lift); }
+.endplate .eo:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink2); } .endplate .eo b:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink); } .endplate .eo span.ok .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-forest); }
+.endplate .sg-es .ok .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ochre); } .endplate .sg-es .no .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .endplate .sg-es .no b:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--wax); }
+.endplate .ef3 b:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink); }
+.endplate.objmiss .om-score:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink2); }
 /* the chest row on the Victory plate: a pale well with an ink keyline, the chest's name in ochre */
-.endplate .ech { background: rgba(120,80,30,.1); box-shadow: inset 0 0 0 1px rgba(58,36,16,.35); }
-.endplate .ech-a svg { filter: drop-shadow(0 2px 3px rgba(60,34,10,.45)); }
-.endplate .ech-t b { color: var(--ochre); } .endplate .ech-t span { color: var(--ink); }
-.endplate .ech-w { color: var(--ink2); border-left-color: rgba(58,36,16,.3); }
+.endplate .ech:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(120,80,30,.1); box-shadow: inset 0 0 0 1px rgba(58,36,16,.35); }
+.endplate .ech-a svg:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { filter: drop-shadow(0 2px 3px rgba(60,34,10,.45)); }
+.endplate .ech-t b:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ochre); } .endplate .ech-t span:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink); }
+.endplate .ech-w:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink2); border-left-color: rgba(58,36,16,.3); }
 /* the Siege's sides on the sheet: the locked side faded ink, its lock an ink glyph */
-.pnl .sg-side.locked .sg-ic { color: var(--ink3); }
-.pnl .sg-side.locked .sg-v b, .pnl .sg-side.locked .sg-t { color: rgba(42,26,12,.45); }
-.pnl .sg-side.opens .sg-ic { filter: none; }
-.pnl .sg-side.met .sg-v b { text-shadow: none; }
-.pnl .sg-ic { color: var(--wax); }
+.pnl .sg-side.locked .sg-ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink3); }
+.pnl .sg-side.locked .sg-v b:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .pnl .sg-side.locked .sg-t:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: rgba(42,26,12,.45); }
+.pnl .sg-side.opens .sg-ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { filter: none; }
+.pnl .sg-side.met .sg-v b:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { text-shadow: none; }
+.pnl .sg-ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--wax); }
 /* a seat chip on paper (the store's pop-ups, its generals panel): a dashed ink line (open) or a pale ink well (locked) */
-.pnl .seat.open { background: rgba(255,250,236,.3); box-shadow: none; outline: 1.5px dashed rgba(58,36,16,.55); }
-.pnl .seat.open .sr { color: var(--ink-h); background: radial-gradient(circle at 40% 32%, #f8edcf, #e3cd9c 78%); box-shadow: 0 0 0 1.5px var(--ink-h); }
-.pnl .seat.open .st b { color: var(--ink); }
-.pnl .seat.open .st span { color: var(--ink2); }
-.pnl .seat.lock { background: rgba(58,36,16,.1); box-shadow: inset 0 0 0 1px rgba(58,36,16,.35); }
-.pnl .seat.lock .sr { color: var(--ink3); background: rgba(58,36,16,.08); box-shadow: 0 0 0 1.5px rgba(58,36,16,.45); }
-.pnl .seat.lock .st b { color: var(--ink2); }
-.pnl .seat.lock .st span { color: var(--ink3); }
-.pnl .seat.fseat.open .sr, .pnl .seat.open.his .sr { color: var(--ink-violet); box-shadow: 0 0 0 1.5px var(--ink-violet); }
-.pnl .seat.open.his { background: rgba(120,80,170,.08); outline-color: rgba(78,47,122,.6); }
+.pnl .seat.open:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(255,250,236,.3); box-shadow: none; outline: 1.5px dashed rgba(58,36,16,.55); }
+.pnl .seat.open .sr:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-h); background: radial-gradient(circle at 40% 32%, #f8edcf, #e3cd9c 78%); box-shadow: 0 0 0 1.5px var(--ink-h); }
+.pnl .seat.open .st b:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink); }
+.pnl .seat.open .st span:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink2); }
+.pnl .seat.lock:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(58,36,16,.1); box-shadow: inset 0 0 0 1px rgba(58,36,16,.35); }
+.pnl .seat.lock .sr:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink3); background: rgba(58,36,16,.08); box-shadow: 0 0 0 1.5px rgba(58,36,16,.45); }
+.pnl .seat.lock .st b:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink2); }
+.pnl .seat.lock .st span:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink3); }
+.pnl .seat.fseat.open .sr:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .pnl .seat.open.his .sr:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-violet); box-shadow: 0 0 0 1.5px var(--ink-violet); }
+.pnl .seat.open.his:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(120,80,170,.08); outline-color: rgba(78,47,122,.6); }
 /* a one-word name that fills the chip (Quartermaster, Cartographer): the chip's gaps close up and the word tightens,
    so it is never cut ("Quartermastei" on the 1024 x 768 fit) */
-.gens .l1plaque.s-chip:has(.gn.w1) { gap: 6px; padding-right: 7px; }
-.gens .l1plaque.s-chip .gn.w1 { letter-spacing: -.55px; }
-.gens .l1plaque.s-chip.gnt .gn { letter-spacing: -.5px; word-spacing: -1px; }
+.gens .l1plaque.s-chip:has(.gn.w1):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { gap: 6px; padding-right: 7px; }
+.gens .l1plaque.s-chip .gn.w1:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { letter-spacing: -.55px; }
+.gens .l1plaque.s-chip.gnt .gn:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { letter-spacing: -.5px; word-spacing: -1px; }
 /* a chip's line too long for one line (battle.js fitLines): a second line under a one-line name, else a tighter face */
-.gens .l1plaque.s-chip.gw2 .gw { white-space: normal; line-height: 1.02; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; text-overflow: clip; }
-.gens .l1plaque.s-chip.gwt .gw { letter-spacing: -.55px; font-size: var(--fs-xs, 13px); text-overflow: clip; }
-.gens.tighter .l1plaque.s-chip.gw2 .gw, .gens.tighter .l1plaque.s-chip.gwt .gw { display: none; }
+.gens .l1plaque.s-chip.gw2 .gw:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { white-space: normal; line-height: 1.02; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; text-overflow: clip; }
+.gens .l1plaque.s-chip.gwt .gw:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { letter-spacing: -.55px; font-size: var(--fs-xs, 13px); text-overflow: clip; }
+.gens.tighter .l1plaque.s-chip.gw2 .gw:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .gens.tighter .l1plaque.s-chip.gwt .gw:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { display: none; }
 
 /* ======================================================================= after rules 15 (owner): the Formations panel,
    always open (L1Cards.formsCol; it was a tab opening a drawer, from when a run collected many formations). A run holds
@@ -3547,151 +3551,152 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
    (docs/WMP001.md). The stalls, tiles and pop-ups are sheets (shell.css .pnl); prices are ink-outlined tags; go is
    the wax-red seal; danger (Sell, Remove) a wax-red outline; icons engraved paper roundels; the store's head
    (the Royal Muster, Restock) sits on the table: umber nodes and a paper slip.
-   After rules 16 (owner) these are the pop-ups' only: the store's own screen (.qm) keeps its dark look, so every
-   selector here ends in :where(:not(.qm *)) ("not inside the store's screen", no added specificity); the pop-ups
-   (.qm-pop) are not inside .qm. Untagged: the Academy name's two lines, a layout fix the store keeps. */
-.qm-scrim { background: rgba(18,10,3,.76); }
+   After rules 16 (owner) none of this reaches the store: its screen, its pop-ups and the views over it keep the dark
+   look, so every selector here ends in :where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) ("not
+   in the store's scope", no added specificity; tokens.css says what the scope is); the same pop-ups and views over
+   any other screen stay paper. Untagged: the Academy name's two lines, a layout fix the store keeps. */
+.qm-scrim:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(18,10,3,.76); }
 /* headings and lines on the paper */
-.qm-tl .k:where(:not(.qm *)), .qm-sl .k:where(:not(.qm *)), .wm-ck:where(:not(.qm *)) { color: var(--ink-h); font-weight: 700; text-shadow: none; }
-.qm-sl .k:where(:not(.qm *)) { letter-spacing: 2px; }
-.pnl :is(.qm-at .n, .qm-tn, .qm-tb .w, .qm-s .t, .qm-dv, .qm-ct, .qm-g1 .nm, .qm-pinfo .w, .qm-mh):where(:not(.qm *)) { color: var(--ink); text-shadow: none; }
-.pnl :is(.qm-sl .s, .qm-at .r, .qm-tile.shut .qm-tb .w, .qm-gsl, .qm-gn, .qm-g1 .lv, .qm-ct .k, .qm-ms, .qm-dv .w):where(:not(.qm *)) { color: var(--ink2); text-shadow: none; }
-.pnl .qm-pinfo .t:where(:not(.qm *)) { color: var(--ink-h); }
-.pnl .qm-tile.shut .qm-tb:where(:not(.qm *)) { opacity: .75; }
-.pnl :is(.qm-dv .ic, .qm-eye, .qm-swap):where(:not(.qm *)) { color: var(--ink-h); opacity: 1; }
-.pnl .qm-dv.pv .n:where(:not(.qm *)) { color: var(--ink3); }
-.pnl .qm-dv .to:where(:not(.qm *)), .pnl .qm-ct.up .c:where(:not(.qm *)), .pnl .qm-ct .c .p:where(:not(.qm *)), .pnl .qm-done:where(:not(.qm *)) { color: var(--ink-forest); text-shadow: none; }
-.pnl .qm-ct .bar:where(:not(.qm *)) { background: rgba(80,50,18,.16); box-shadow: inset 0 0 0 1px rgba(58,36,16,.35); }
-.pnl .qm-ct .bar b:where(:not(.qm *)) { background: var(--ink-forest-hi); box-shadow: none; }
-.pnl .qm-ct .gem:where(:not(.qm *)) { box-shadow: 0 0 0 1.5px var(--ink), inset 0 1px 0 rgba(255,255,255,.3); }
-.pnl .qm-flink:where(:not(.qm *)) { color: var(--ink-violet); text-decoration-color: rgba(78,47,122,.5); }
-.pnl .qm-flink b:where(:not(.qm *)) { color: #3a1f60; }
-.pnl .qm-empty:where(:not(.qm *)) { background: rgba(120,80,30,.08); box-shadow: inset 0 0 0 1.5px rgba(58,36,16,.3); color: var(--ink3); }
-.pnl .qm-empty span:where(:not(.qm *)) { color: var(--ink3); }
-.pnl .qm-in .sub:where(:not(.qm *)) { color: var(--ink-forest); font-weight: 600; }
+.qm-tl .k:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .qm-sl .k:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .wm-ck:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-h); font-weight: 700; text-shadow: none; }
+.qm-sl .k:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { letter-spacing: 2px; }
+.pnl :is(.qm-at .n, .qm-tn, .qm-tb .w, .qm-s .t, .qm-dv, .qm-ct, .qm-g1 .nm, .qm-pinfo .w, .qm-mh):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink); text-shadow: none; }
+.pnl :is(.qm-sl .s, .qm-at .r, .qm-tile.shut .qm-tb .w, .qm-gsl, .qm-gn, .qm-g1 .lv, .qm-ct .k, .qm-ms, .qm-dv .w):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink2); text-shadow: none; }
+.pnl .qm-pinfo .t:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-h); }
+.pnl .qm-tile.shut .qm-tb:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { opacity: .75; }
+.pnl :is(.qm-dv .ic, .qm-eye, .qm-swap):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-h); opacity: 1; }
+.pnl .qm-dv.pv .n:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink3); }
+.pnl .qm-dv .to:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .pnl .qm-ct.up .c:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .pnl .qm-ct .c .p:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .pnl .qm-done:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-forest); text-shadow: none; }
+.pnl .qm-ct .bar:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(80,50,18,.16); box-shadow: inset 0 0 0 1px rgba(58,36,16,.35); }
+.pnl .qm-ct .bar b:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: var(--ink-forest-hi); box-shadow: none; }
+.pnl .qm-ct .gem:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: 0 0 0 1.5px var(--ink), inset 0 1px 0 rgba(255,255,255,.3); }
+.pnl .qm-flink:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-violet); text-decoration-color: rgba(78,47,122,.5); }
+.pnl .qm-flink b:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #3a1f60; }
+.pnl .qm-empty:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(120,80,30,.08); box-shadow: inset 0 0 0 1.5px rgba(58,36,16,.3); color: var(--ink3); }
+.pnl .qm-empty span:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink3); }
+.pnl .qm-in .sub:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-forest); font-weight: 600; }
 
 /* the primary: the wax-red seal everywhere (armed price = Buy, Open · Free) */
-:is(.armed .qm-pill, .qm-pill.qm-free):where(:not(.qm *)) { background: var(--pri-bg); color: var(--pri-ink); text-shadow: var(--pri-ts); box-shadow: var(--pri-sh); border-radius: 8px; }
-:is(.qm-mb.ok, .armed .qm-pill, .qm-pill.qm-free) .ic:where(:not(.qm *)) { color: var(--pri-coin); }
-:is(.qm-mb.ok, .armed .qm-pill, .qm-pill.qm-free) :is(.qm-mp, .p):where(:not(.qm *)) { border-left-color: var(--pri-sep); color: var(--pri-ink); }
-.qm-pill.qm-free .v:where(:not(.qm *)), .armed .qm-pill .v:where(:not(.qm *)), .armed .qm-pill .was:where(:not(.qm *)) { color: var(--pri-ink); }
-.qm-mbtns .qm-mb.ok:where(:not(.qm *)), .qm-mb.qm-tbtn.ok:not(.no):where(:not(.qm *)) { box-shadow: inset 0 0 0 4px var(--pri-flat), inset 0 0 0 5px var(--pri-rule), var(--pri-sh); }
-:is(.qm-mb, .qm-gsell, .qm-pill):active:where(:not(.qm *)) { filter: brightness(.88); }
+:is(.armed .qm-pill, .qm-pill.qm-free):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: var(--pri-bg); color: var(--pri-ink); text-shadow: var(--pri-ts); box-shadow: var(--pri-sh); border-radius: 8px; }
+:is(.qm-mb.ok, .armed .qm-pill, .qm-pill.qm-free) .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--pri-coin); }
+:is(.qm-mb.ok, .armed .qm-pill, .qm-pill.qm-free) :is(.qm-mp, .p):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { border-left-color: var(--pri-sep); color: var(--pri-ink); }
+.qm-pill.qm-free .v:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .armed .qm-pill .v:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .armed .qm-pill .was:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--pri-ink); }
+.qm-mbtns .qm-mb.ok:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .qm-mb.qm-tbtn.ok:not(.no):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: inset 0 0 0 4px var(--pri-flat), inset 0 0 0 5px var(--pri-rule), var(--pri-sh); }
+:is(.qm-mb, .qm-gsell, .qm-pill):active:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { filter: brightness(.88); }
 /* disabled / cannot afford: the plate drops to an ink outline on paper, its words faded; its price in wax red */
-.qm-mb.qm-tbtn.no:where(:not(.qm *)), .qm-mb.off:where(:not(.qm *)) { background: rgba(58,36,16,.06); color: rgba(42,26,12,.5); text-shadow: none; box-shadow: inset 0 0 0 1.5px rgba(58,36,16,.32); opacity: 1; }
-.qm-mb.qm-tbtn.no .qm-mp:where(:not(.qm *)) { border-left-color: rgba(58,36,16,.25); color: var(--wax); }
-.qm-mb.qm-tbtn.no .qm-mp .ic:where(:not(.qm *)), .qm-mb.off .qm-mp .ic:where(:not(.qm *)) { color: #a08a68; }
-.qm-mb.off .qm-mp:where(:not(.qm *)) { border-left-color: rgba(58,36,16,.25); }
-.qm-mb.red.off:where(:not(.qm *)) { color: rgba(138,42,28,.5); box-shadow: inset 0 0 0 1.5px rgba(138,42,28,.35); background: transparent; }
-.qm-mb.red .qm-mp:where(:not(.qm *)) { border-left-color: rgba(138,42,28,.35); }
-.qm-mb.red .qm-mp .ic:where(:not(.qm *)) { color: var(--coin); }
+.qm-mb.qm-tbtn.no:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .qm-mb.off:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(58,36,16,.06); color: rgba(42,26,12,.5); text-shadow: none; box-shadow: inset 0 0 0 1.5px rgba(58,36,16,.32); opacity: 1; }
+.qm-mb.qm-tbtn.no .qm-mp:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { border-left-color: rgba(58,36,16,.25); color: var(--wax); }
+.qm-mb.qm-tbtn.no .qm-mp .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .qm-mb.off .qm-mp .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #a08a68; }
+.qm-mb.off .qm-mp:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { border-left-color: rgba(58,36,16,.25); }
+.qm-mb.red.off:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: rgba(138,42,28,.5); box-shadow: inset 0 0 0 1.5px rgba(138,42,28,.35); background: transparent; }
+.qm-mb.red .qm-mp:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { border-left-color: rgba(138,42,28,.35); }
+.qm-mb.red .qm-mp .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--coin); }
 /* secondary: ink-outlined on the paper (Cancel) */
-.qm-mb.cancel:where(:not(.qm *)) { background: transparent; color: var(--ink); text-shadow: none; box-shadow: inset 0 0 0 1.5px rgba(42,26,12,.78); }
-.qm-mb.cancel.arm:where(:not(.qm *)) { color: var(--wax); background: rgba(138,42,28,.08); box-shadow: inset 0 0 0 1.5px var(--wax); }
-.qm-mb.cancel:active:where(:not(.qm *)) { filter: none; background: rgba(58,36,16,.12); }
+.qm-mb.cancel:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: transparent; color: var(--ink); text-shadow: none; box-shadow: inset 0 0 0 1.5px rgba(42,26,12,.78); }
+.qm-mb.cancel.arm:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--wax); background: rgba(138,42,28,.08); box-shadow: inset 0 0 0 1.5px var(--wax); }
+.qm-mb.cancel:active:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { filter: none; background: rgba(58,36,16,.12); }
 /* Sell (danger): a wax-red outline; armed (a second tap sells), a heavier edge and a pale wax wash, never filled */
-.qm-gsell:where(:not(.qm *)), .qm-mb.qm-sell:where(:not(.qm *)) { border-radius: 6px; background: transparent; color: var(--wax); text-shadow: none; box-shadow: inset 0 0 0 1.5px var(--wax); }
-.qm-gsell .d:where(:not(.qm *)), .qm-mb.qm-sell .d:where(:not(.qm *)) { color: var(--wax); }
-.qm-gsell .ic:where(:not(.qm *)), .qm-mb.qm-sell .ic:where(:not(.qm *)) { color: var(--coin); }
-.qm-gsell.arm:where(:not(.qm *)), .qm-mb.qm-sell.arm:where(:not(.qm *)) { filter: none; color: var(--wax); background: rgba(168,57,42,.14); box-shadow: inset 0 0 0 2.5px var(--wax), 0 0 0 2px rgba(168,57,42,.18); }
-.qm-gsell.arm .d:where(:not(.qm *)), .qm-mb.qm-sell.arm .d:where(:not(.qm *)) { color: var(--wax); }
-.qm-gsell:active:where(:not(.qm *)), .qm-mb.qm-sell:active:where(:not(.qm *)) { filter: none; background: rgba(168,57,42,.2); }
+.qm-gsell:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .qm-mb.qm-sell:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { border-radius: 6px; background: transparent; color: var(--wax); text-shadow: none; box-shadow: inset 0 0 0 1.5px var(--wax); }
+.qm-gsell .d:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .qm-mb.qm-sell .d:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--wax); }
+.qm-gsell .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .qm-mb.qm-sell .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--coin); }
+.qm-gsell.arm:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .qm-mb.qm-sell.arm:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { filter: none; color: var(--wax); background: rgba(168,57,42,.14); box-shadow: inset 0 0 0 2.5px var(--wax), 0 0 0 2px rgba(168,57,42,.18); }
+.qm-gsell.arm .d:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .qm-mb.qm-sell.arm .d:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--wax); }
+.qm-gsell:active:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .qm-mb.qm-sell:active:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { filter: none; background: rgba(168,57,42,.2); }
 
 /* on the table, Restock is a paper slip */
-.qm-rs:where(:not(.qm *)) { background: var(--slip); color: var(--ink); text-shadow: none; box-shadow: var(--burn-sm), var(--lift-sm), 0 2px 6px rgba(0,0,0,.45); }
-.qm-rs .t:where(:not(.qm *)) { color: var(--ink); }
-.qm-rs .t .u:where(:not(.qm *)) { color: var(--ink-forest); }
-.qm-rs.off .t .u:where(:not(.qm *)), .qm-rs .t .u.no:where(:not(.qm *)) { color: var(--ink3); }
+.qm-rs:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: var(--slip); color: var(--ink); text-shadow: none; box-shadow: var(--burn-sm), var(--lift-sm), 0 2px 6px rgba(0,0,0,.45); }
+.qm-rs .t:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink); }
+.qm-rs .t .u:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-forest); }
+.qm-rs.off .t .u:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .qm-rs .t .u.no:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink3); }
 
 /* prices: ink numerals, a brass coin, an ink-outlined tag */
-.qm-pill:not(.qm-free):where(:not(.qm *)) { background: var(--tag-bg); color: var(--ink); text-shadow: none; border-radius: var(--tag-r); box-shadow: var(--tag-sh); }
-.qm-pill:not(.qm-free) .ic:where(:not(.qm *)) { color: var(--coin); filter: drop-shadow(0 0 .6px rgba(42,26,12,.9)); }
-.qm-pill:not(.qm-free) .f:where(:not(.qm *)) { color: var(--ink2); }
-.qm-pill:not(.qm-free) .was:where(:not(.qm *)) { color: var(--ink3); text-decoration-color: var(--wax); }
-.qm-pill.no:not(.qm-free):where(:not(.qm *)) { color: var(--wax); box-shadow: var(--tag-no-sh); background: rgba(255,250,236,.22); }
-.qm-pill.no:not(.qm-free) .ic:where(:not(.qm *)) { color: #a8977a; filter: none; }
-.qm-pill.no .f:where(:not(.qm *)) { color: var(--ink3); }
-.qm-pill.sale:not(.no):not(.qm-free):where(:not(.qm *)) { box-shadow: inset 0 0 0 2px var(--ink-forest-hi), 0 1px 0 rgba(255,250,236,.5); }
+.qm-pill:not(.qm-free):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: var(--tag-bg); color: var(--ink); text-shadow: none; border-radius: var(--tag-r); box-shadow: var(--tag-sh); }
+.qm-pill:not(.qm-free) .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--coin); filter: drop-shadow(0 0 .6px rgba(42,26,12,.9)); }
+.qm-pill:not(.qm-free) .f:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink2); }
+.qm-pill:not(.qm-free) .was:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink3); text-decoration-color: var(--wax); }
+.qm-pill.no:not(.qm-free):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--wax); box-shadow: var(--tag-no-sh); background: rgba(255,250,236,.22); }
+.qm-pill.no:not(.qm-free) .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #a8977a; filter: none; }
+.qm-pill.no .f:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink3); }
+.qm-pill.sale:not(.no):not(.qm-free):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: inset 0 0 0 2px var(--ink-forest-hi), 0 1px 0 rgba(255,250,236,.5); }
 /* the armed tag is the buy button (the seal, above) */
-.armed .qm-pill:not(.qm-free):where(:not(.qm *)) { background: var(--pri-bg); color: var(--pri-ink); text-shadow: var(--pri-ts); box-shadow: var(--pri-sh); border-radius: 8px; }
-.armed .qm-pill:not(.qm-free) .ic:where(:not(.qm *)) { color: var(--pri-coin); filter: none; }
-.armed .qm-pill:not(.qm-free) .was:where(:not(.qm *)) { color: var(--pri-ink); }
-.pnl .qm-g1 .qm-pill:where(:not(.qm *)) { height: 30px; }
+.armed .qm-pill:not(.qm-free):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: var(--pri-bg); color: var(--pri-ink); text-shadow: var(--pri-ts); box-shadow: var(--pri-sh); border-radius: 8px; }
+.armed .qm-pill:not(.qm-free) .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--pri-coin); filter: none; }
+.armed .qm-pill:not(.qm-free) .was:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--pri-ink); }
+.pnl .qm-g1 .qm-pill:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { height: 30px; }
 
 /* icons: engraved paper roundels on the sheets */
-.pnl :is(.qm-s .b, .qm-tb .b, .qm-g1 .gi):where(:not(.qm *)) { color: var(--ink-h);
+.pnl :is(.qm-s .b, .qm-tb .b, .qm-g1 .gi):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-h);
   background: radial-gradient(circle at 40% 32%, #f8edcf, #e3cd9c 78%);
   box-shadow: 0 0 0 1.5px var(--ink-h), inset 0 0 0 2px #f2e3bd, inset 0 0 0 3px rgba(154,106,28,.85), 0 2px 4px rgba(60,36,14,.3); }
-.pnl :is(.qm-s.off .b, .qm-tsv.off .b):where(:not(.qm *)) { opacity: .55; box-shadow: 0 0 0 1.5px rgba(58,36,16,.5), inset 0 0 0 3px rgba(154,106,28,.4); }
-.pnl .qm-g1.open .gi:where(:not(.qm *)) { background: transparent; box-shadow: 0 0 0 1.5px var(--ink-h); outline: 1.5px dashed rgba(58,36,16,.5); outline-offset: 2px; }
-.pnl .qm-g1.lock .gi:where(:not(.qm *)) { color: var(--ink3); background: rgba(58,36,16,.08); box-shadow: 0 0 0 1.5px rgba(58,36,16,.45); }
+.pnl :is(.qm-s.off .b, .qm-tsv.off .b):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { opacity: .55; box-shadow: 0 0 0 1.5px rgba(58,36,16,.5), inset 0 0 0 3px rgba(154,106,28,.4); }
+.pnl .qm-g1.open .gi:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: transparent; box-shadow: 0 0 0 1.5px var(--ink-h); outline: 1.5px dashed rgba(58,36,16,.5); outline-offset: 2px; }
+.pnl .qm-g1.lock .gi:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink3); background: rgba(58,36,16,.08); box-shadow: 0 0 0 1.5px rgba(58,36,16,.45); }
 /* the formation's roundel keeps its violet ring, on paper */
-.pnl .qm-ag:where(:not(.qm *)) { background: radial-gradient(circle at 45% 35%, #f6ead0, #e2d0ad 80%); box-shadow: 0 0 0 2px var(--ink-violet), inset 0 0 0 2px #f2e6cc, inset 0 0 0 3px rgba(78,47,122,.45), 0 2px 4px rgba(60,36,14,.3); }
-.pnl .qm-at .x:where(:not(.qm *)) { color: #3a1f60; text-shadow: none; font-weight: 700;
+.pnl .qm-ag:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: radial-gradient(circle at 45% 35%, #f6ead0, #e2d0ad 80%); box-shadow: 0 0 0 2px var(--ink-violet), inset 0 0 0 2px #f2e6cc, inset 0 0 0 3px rgba(78,47,122,.45), 0 2px 4px rgba(60,36,14,.3); }
+.pnl .qm-at .x:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #3a1f60; text-shadow: none; font-weight: 700;
   background: linear-gradient(180deg, rgba(232,220,240,.95), rgba(210,194,224,.95)); box-shadow: inset 0 0 0 1.5px var(--ink-violet), 0 1px 0 rgba(255,250,236,.5); }
 /* on the table: the map's umber nodes (the Royal Muster, Restock) */
-.qm-muster .b:where(:not(.qm *)), .qm-rs .b:where(:not(.qm *)) { background: var(--node-bg); color: #f0d48e; box-shadow: var(--node-sh); }
-.qm-muster .k:where(:not(.qm *)) { color: #f6e6c0; }
-.qm-muster .u:where(:not(.qm *)) { color: #d8bd84; }
+.qm-muster .b:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .qm-rs .b:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: var(--node-bg); color: #f0d48e; box-shadow: var(--node-sh); }
+.qm-muster .k:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #f6e6c0; }
+.qm-muster .u:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #d8bd84; }
 
 /* ribbons, tabs and bands */
-.qm-stall.sale:where(:not(.qm *)) { box-shadow: var(--burn), 0 0 0 2.5px var(--ink-forest-hi), 0 0 0 3.5px #0e1a0c, var(--lift); }
-.qm-ribbon b:where(:not(.qm *)) { background: linear-gradient(180deg, #4a7a44, #2c5129); color: #f6eed6; text-shadow: 0 1px 0 rgba(10,24,8,.6);
+.qm-stall.sale:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: var(--burn), 0 0 0 2.5px var(--ink-forest-hi), 0 0 0 3.5px #0e1a0c, var(--lift); }
+.qm-ribbon b:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: linear-gradient(180deg, #4a7a44, #2c5129); color: #f6eed6; text-shadow: 0 1px 0 rgba(10,24,8,.6);
   box-shadow: 0 0 0 1px #16290f, inset 0 1px 0 rgba(220,255,200,.25), 0 3px 6px rgba(20,12,2,.45); letter-spacing: 2px; }
-.qm-stall.spoils:where(:not(.qm *)), .qm-stall.spoils:not(.x):where(:not(.qm *)) { animation: none; box-shadow: var(--burn), 0 0 0 2.5px #b8863a, 0 0 0 3.5px #2a1a0c, var(--lift); }
-.qm-stall.spoils .qm-sb:where(:not(.qm *))::after { display: none; }
-.qm-stall.spoils .qm-sl .s:where(:not(.qm *)) { color: var(--ochre); }
-.qm-ribbon.rw b:where(:not(.qm *)) { background: linear-gradient(180deg, #d9b25c, #a87a2c); color: #2a1a0c; text-shadow: 0 1px 0 rgba(255,240,200,.45); box-shadow: 0 0 0 1px #4a2e08, 0 3px 6px rgba(20,12,2,.45); }
+.qm-stall.spoils:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .qm-stall.spoils:not(.x):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { animation: none; box-shadow: var(--burn), 0 0 0 2.5px #b8863a, 0 0 0 3.5px #2a1a0c, var(--lift); }
+.qm-stall.spoils .qm-sb:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *))::after { display: none; }
+.qm-stall.spoils .qm-sl .s:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ochre); }
+.qm-ribbon.rw b:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: linear-gradient(180deg, #d9b25c, #a87a2c); color: #2a1a0c; text-shadow: 0 1px 0 rgba(255,240,200,.45); box-shadow: 0 0 0 1px #4a2e08, 0 3px 6px rgba(20,12,2,.45); }
 /* "This visit": a paper label on the dashed brass frame */
-.qm-rot:where(:not(.qm *))::before { border-color: rgba(214,180,110,.5); background: rgba(214,180,110,.03); }
+.qm-rot:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *))::before { border-color: rgba(214,180,110,.5); background: rgba(214,180,110,.03); }
 /* (lifted 4 px clear of the stall's own heading: it sat on the Leader's label) */
-.qm-rtab:where(:not(.qm *)) { top: -21px; background: var(--slip); color: var(--ink); text-shadow: none; box-shadow: var(--burn-sm), 0 3px 6px rgba(0,0,0,.5); border-radius: 4px; padding: 1px 14px; }
+.qm-rtab:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { top: -21px; background: var(--slip); color: var(--ink); text-shadow: none; box-shadow: var(--burn-sm), 0 3px 6px rgba(0,0,0,.5); border-radius: 4px; padding: 1px 14px; }
 /* the size band on a pack (Jumbo): brass, an ink edge */
-.qm-band:where(:not(.qm *)) { background: linear-gradient(180deg, #ecd08e, #c49a48); color: #2a1a0c; box-shadow: 0 0 0 1px #3a2410, 0 3px 6px rgba(40,22,6,.45); }
+.qm-band:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: linear-gradient(180deg, #ecd08e, #c49a48); color: #2a1a0c; box-shadow: 0 0 0 1px #3a2410, 0 3px 6px rgba(40,22,6,.45); }
 /* the pack and the chest on paper: a lighter well, the object on an ink-drawn plinth (no dark box, no glow) */
-.pnl .qm-obj:where(:not(.qm *)) { position: relative; border-radius: 50%;
+.pnl .qm-obj:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { position: relative; border-radius: 50%;
   background: radial-gradient(ellipse 52% 46% at 50% 56%, rgba(255,250,234,.75), rgba(255,250,234,.35) 55%, rgba(255,250,234,0) 75%); }
-.pnl .qm-obj:where(:not(.qm *))::after { content: ''; position: absolute; left: 18%; right: 18%; bottom: 5px; height: 14px; border-radius: 50%; pointer-events: none;
+.pnl .qm-obj:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *))::after { content: ''; position: absolute; left: 18%; right: 18%; bottom: 5px; height: 14px; border-radius: 50%; pointer-events: none;
   border: 1px solid rgba(58,36,16,.42); border-top-color: transparent; }
-.pnl .qm-art:where(:not(.qm *)), .pnl .qm-chest .qm-art.chest:where(:not(.qm *)) { filter: drop-shadow(0 3px 4px rgba(60,34,10,.45)); }
+.pnl .qm-art:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .pnl .qm-chest .qm-art.chest:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { filter: drop-shadow(0 3px 4px rgba(60,34,10,.45)); }
 /* cards on paper: an ink keyline and a brown shadow */
-.pnl :is(.qm-med, .qm-it, .qm-in, .qm-ins) > .l1card:not(.m-leave):not(.m-pick):not(.sel):where(:not(.qm *)) {
+.pnl :is(.qm-med, .qm-it, .qm-in, .qm-ins) > .l1card:not(.m-leave):not(.m-pick):not(.sel):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) {
   box-shadow: inset 0 1px 0 rgba(255,255,255,.4), inset 0 -2px 0 rgba(0,0,0,.35), 0 0 0 1px #2a1a0c, 0 2px 0 rgba(42,26,12,.25), 0 14px 22px -10px rgba(50,28,8,.75); }
-.pnl .l1mini:where(:not(.qm *)) { box-shadow: 0 0 0 1px rgba(42,26,12,.85), 0 4px 8px -3px rgba(50,28,8,.6); }
+.pnl .l1mini:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: 0 0 0 1px rgba(42,26,12,.85), 0 4px 8px -3px rgba(50,28,8,.6); }
 /* the plaques in the store: armed (picked) ochre, joining forest, leaving wax */
-.qm-hrow.armed .l1plaque:where(:not(.qm *)), .qm-hrow.chip.armed .l1plaque:where(:not(.qm *)) {
+.qm-hrow.armed .l1plaque:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .qm-hrow.chip.armed .l1plaque:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) {
   box-shadow: var(--burn-sm), 0 0 0 3px #b8862a, 0 0 0 4px #2a1a0c, 0 0 0 7px rgba(236,208,142,.22), var(--lift-sm), 0 14px 22px -10px rgba(0,0,0,.6); }
-.qm-in .l1plaque:where(:not(.qm *)) { box-shadow: var(--burn-sm), 0 0 0 3px var(--ink-forest-hi), 0 0 0 4px #0e1a0c, var(--lift-sm), 0 14px 22px -10px rgba(0,0,0,.6); }
-.qm-in .l1card:where(:not(.qm *)) { box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 0 0 3px var(--ink-forest-hi), 0 0 0 4px #0e1a0c, 0 14px 22px -10px rgba(50,28,8,.75); }
-.qm-partner .qm-in .l1plaque:where(:not(.qm *)) { box-shadow: var(--burn-sm), 0 0 0 3px var(--wax-hi), 0 0 0 4px #2a0a04, var(--lift-sm); }
-.qm-want .l1plaque.s-chip:where(:not(.qm *)) { box-shadow: var(--burn-sm), 0 0 0 2px var(--ink-forest-hi), var(--lift-sm); }
-.l1card.m-leave:where(:not(.qm *)) { box-shadow: 0 0 0 3px var(--wax-hi), 0 0 0 4px #2a0a04, 0 14px 22px -10px rgba(50,28,8,.75); }
-.l1card.m-pick:where(:not(.qm *)), .l1card.m-train:where(:not(.qm *)) { box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 0 0 3px #b8862a, 0 0 0 4px #2a1a0c, 0 14px 22px -10px rgba(50,28,8,.75); }
+.qm-in .l1plaque:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: var(--burn-sm), 0 0 0 3px var(--ink-forest-hi), 0 0 0 4px #0e1a0c, var(--lift-sm), 0 14px 22px -10px rgba(0,0,0,.6); }
+.qm-in .l1card:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 0 0 3px var(--ink-forest-hi), 0 0 0 4px #0e1a0c, 0 14px 22px -10px rgba(50,28,8,.75); }
+.qm-partner .qm-in .l1plaque:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: var(--burn-sm), 0 0 0 3px var(--wax-hi), 0 0 0 4px #2a0a04, var(--lift-sm); }
+.qm-want .l1plaque.s-chip:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: var(--burn-sm), 0 0 0 2px var(--ink-forest-hi), var(--lift-sm); }
+.l1card.m-leave:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: 0 0 0 3px var(--wax-hi), 0 0 0 4px #2a0a04, 0 14px 22px -10px rgba(50,28,8,.75); }
+.l1card.m-pick:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .l1card.m-train:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 0 0 3px #b8862a, 0 0 0 4px #2a1a0c, 0 14px 22px -10px rgba(50,28,8,.75); }
 /* out of reach: faded into the paper, not greyed dark */
-.qm-ware.no .l1card:where(:not(.qm *)), .qm-hrow.no .l1plaque:where(:not(.qm *)), .qm-hrow.chip.no .l1plaque:where(:not(.qm *)), .qm-packw.no .qm-obj:where(:not(.qm *)) { filter: saturate(.45) sepia(.2) opacity(.62); }
+.qm-ware.no .l1card:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .qm-hrow.no .l1plaque:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .qm-hrow.chip.no .l1plaque:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .qm-packw.no .qm-obj:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { filter: saturate(.45) sepia(.2) opacity(.62); }
 /* the Academy's +1 slot: an ink-outlined tag plate (the lock, the price in ink and a brass coin); cannot afford, wax red */
-.qm-fsb:where(:not(.qm *)) { background: var(--tag-bg); color: var(--ink); text-shadow: none; border-radius: var(--tag-r); box-shadow: var(--tag-sh); }
-.qm-fsb .v .ic:where(:not(.qm *)) { color: var(--ink-h); }
-.qm-fsb .p .ic:where(:not(.qm *)) { color: var(--coin); filter: drop-shadow(0 0 .6px rgba(42,26,12,.9)); }
-.qm-fsb.no:where(:not(.qm *)) { color: var(--wax); background: rgba(255,250,236,.22); box-shadow: var(--tag-no-sh); }
-.qm-fsb.no .v:where(:not(.qm *)) { color: var(--ink3); }
-.qm-fsb.no .p .ic:where(:not(.qm *)) { color: #a8977a; filter: none; }
-.qm-fsb:active:where(:not(.qm *)) { filter: brightness(.92); }
-.qm-mb.qm-fsx:where(:not(.qm *)) { color: var(--ink); }
-.qm-mb.qm-fsx .qm-mp .ic:where(:not(.qm *)) { color: var(--coin); }
-.pnl .qm-fpay:where(:not(.qm *)) { color: var(--ink2); }
-.pnl .qm-fpay .ic:where(:not(.qm *)) { color: var(--coin); filter: drop-shadow(0 0 .6px rgba(42,26,12,.9)); }
+.qm-fsb:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: var(--tag-bg); color: var(--ink); text-shadow: none; border-radius: var(--tag-r); box-shadow: var(--tag-sh); }
+.qm-fsb .v .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-h); }
+.qm-fsb .p .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--coin); filter: drop-shadow(0 0 .6px rgba(42,26,12,.9)); }
+.qm-fsb.no:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--wax); background: rgba(255,250,236,.22); box-shadow: var(--tag-no-sh); }
+.qm-fsb.no .v:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink3); }
+.qm-fsb.no .p .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: #a8977a; filter: none; }
+.qm-fsb:active:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { filter: brightness(.92); }
+.qm-mb.qm-fsx:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink); }
+.qm-mb.qm-fsx .qm-mp .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--coin); }
+.pnl .qm-fpay:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink2); }
+.pnl .qm-fpay .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--coin); filter: drop-shadow(0 0 .6px rgba(42,26,12,.9)); }
 /* a pop-up's go before a pick (off): the ink outline, not the seal's ring */
-.qm-mbtns .qm-mb.ok.off:where(:not(.qm *)), .qm-mbtns .qm-mb.red.off:where(:not(.qm *)) { background: rgba(58,36,16,.06); color: rgba(42,26,12,.5); text-shadow: none; box-shadow: inset 0 0 0 1.5px rgba(58,36,16,.32); }
-.qm-mbtns .qm-mb.off .qm-mp:where(:not(.qm *)) { color: rgba(42,26,12,.5); border-left-color: rgba(58,36,16,.25); }
+.qm-mbtns .qm-mb.ok.off:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .qm-mbtns .qm-mb.red.off:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(58,36,16,.06); color: rgba(42,26,12,.5); text-shadow: none; box-shadow: inset 0 0 0 1.5px rgba(58,36,16,.32); }
+.qm-mbtns .qm-mb.off .qm-mp:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: rgba(42,26,12,.5); border-left-color: rgba(58,36,16,.25); }
 /* the Academy's formation name takes a second line rather than an ellipsis when the +1 slot button narrows the row
    ("Advance Guard", "Hammer and Anvil" at every size); its rule line stays one line beneath */
 .qm-at .n { white-space: normal; line-height: 1.05; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; text-wrap: balance; }
 .qm-at .nr { align-items: center; }
 .qm-at { gap: 1px; }
 /* the Chief of Staff's open extra seat in the store's lists: a plain Open seat, its roundel edged in his violet */
-.pnl .qm-g1.open.his .gi:where(:not(.qm *)) { color: var(--ink-violet); box-shadow: 0 0 0 1.5px var(--ink-violet); outline-color: rgba(78,47,122,.55); }
-.pnl .qm-g1.open.his .nm:where(:not(.qm *)) { color: var(--ink); }
+.pnl .qm-g1.open.his .gi:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-violet); box-shadow: 0 0 0 1.5px var(--ink-violet); outline-color: rgba(78,47,122,.55); }
+.pnl .qm-g1.open.his .nm:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink); }
 
 /* ---- after rules 16 (2026-11-19, owner, playing the parchment build) ------------------------------------------------
    March On: its words sat on the button's left edge with a wide gap before the arrow; "This visit" was hard to notice
@@ -3716,54 +3721,68 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .qm.fx .qm-stall.k-armoury .qm-sl { margin-bottom: 10px; }
 
 /* ======================================================================= After rules 16: the store keeps its dark look
-   (owner, 2026-11-19: the parchment store "all sort of blends together"). The store's own screen (.qm: its head,
-   stalls, tiles, Your deck, Your generals, March On) reads as it did before the parchment (c934051d); everything else,
-   the store's pop-ups too (.qm-pop, outside .qm), stays paper. How: tokens.css resets the text tokens and "go" on .qm;
-   the paper rules (this file's parchment block, cards.css, shell.css .pnl .lab) end in :where(:not(.qm *)); and the
-   parts the parchment build redrew in place get their earlier values back here, inside .qm only, at their own
-   specificity (:where(.qm) adds none). The layout fixes made since stay. */
+   (owner, 2026-11-19: the parchment store "all sort of blends together"; then "I want the store pop-ups to be dark too").
+   The store's scope reads as it did before the parchment (c934051d): its screen .qm-scr (the head, stalls, tiles, Your
+   deck, Your generals, March On, its pop-ups .qm-pop, the deck view from Your deck) and the views the stage opens over
+   it (.l1detail, .fdrawer, .l1deck; not help or the menu). The same pop-ups and views over any other screen stay paper.
+   How: tokens.css resets the text tokens and "go" in the scope; the paper rules (this file's parchment block, the
+   paper blocks of cards.css, battle.css and help.css, cards.css's paper chips, shell.css .pnl .lab) end in
+   :where(:not(:is(SCOPE) *)), no added specificity; and the parts the parchment build redrew in place get their
+   earlier values back here, in the scope only, at their own specificity (:where(SCOPE) adds none). The layout fixes
+   made since stay. */
 /* the panels: dark, framed in brass */
-:where(.qm) .pnl { color: inherit; background: linear-gradient(180deg, rgba(58,48,38,.96), rgba(31,26,21,.97));
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .pnl { color: inherit; background: linear-gradient(180deg, rgba(58,48,38,.96), rgba(31,26,21,.97));
   box-shadow: inset 0 0 0 1px rgba(255,226,160,.10), 0 0 0 1px #0c0a08, 0 0 0 3px #6e5532, 0 0 0 4px #1a140e, 0 16px 30px -10px rgba(0,0,0,.95); }
-:where(.qm) .lab { font-weight: normal; }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .lab { font-weight: normal; }
 /* go: brass (March On; Learn, Buy); March On before a boss red */
-:where(.qm) .btn-go { text-shadow: 0 1px 2px rgba(40,22,4,.75); background: linear-gradient(180deg, var(--go1), var(--go2) 55%, var(--go3));
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .btn-go { text-shadow: 0 1px 2px rgba(40,22,4,.75); background: linear-gradient(180deg, var(--go1), var(--go2) 55%, var(--go3));
   box-shadow: inset 0 1px 0 rgba(255,246,214,.5), inset 0 -2px 0 rgba(40,22,4,.35), 0 0 0 1px #0c0a08, 0 0 0 3px var(--go-rim), 0 0 0 4px #1a140e,
     0 0 24px 2px var(--go-glow), 0 16px 26px -8px rgba(0,0,0,.95); }
-:where(.qm) .btn-go.red { text-shadow: none; background: linear-gradient(180deg, var(--danger1), var(--danger2));
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .btn-go.red { text-shadow: none; background: linear-gradient(180deg, var(--danger1), var(--danger2));
   box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 0 0 1px #0c0a08, 0 0 0 3px var(--go-soft1), 0 0 0 4px #1a140e, 0 16px 26px -8px rgba(0,0,0,.95); }
-:where(.qm) .btn-go .ic { color: inherit; }
-:where(.qm) .qm-mb.ok { color: #fff1dc; text-shadow: none; background: linear-gradient(180deg, var(--go-soft1), var(--go-soft2));
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .btn-go .ic { color: inherit; }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .qm-mb.ok { color: #fff1dc; text-shadow: none; background: linear-gradient(180deg, var(--go-soft1), var(--go-soft2));
   box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 0 0 1px #0c0a08, 0 8px 16px -6px rgba(0,0,0,.9); }
-:where(.qm) .qm-mb.red { color: #fff1dc; text-shadow: none; background: linear-gradient(180deg, var(--danger1), var(--danger2));
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .qm-mb.red { color: #fff1dc; text-shadow: none; background: linear-gradient(180deg, var(--danger1), var(--danger2));
   box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 0 0 1px #0c0a08, 0 8px 16px -6px rgba(0,0,0,.9); }
+/* the pop-ups and views over the store: the inner brass rule; the formations drawer a dark sheet */
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) :is(.pnl.modal, .pnl.qm-modal, .l1ov > .pnl)::before { inset: 5px; border-radius: 8px; border: 1px solid rgba(214,177,104,.22); outline: none; }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .pnl.fdraw { background: linear-gradient(180deg, #3a3026, #1f1a15);
+  box-shadow: inset 0 0 0 1px rgba(255,226,160,.10), 0 0 0 1px #0c0a08, 0 0 0 3px #6e5532, 0 0 0 4px #1a140e, -24px 0 40px -8px rgba(0,0,0,.85); }
 /* the words whose earlier colour was not a token's */
-:where(.qm) .qm-muster .u { color: #e6c98a; }
-:where(.qm) .qm-pill .f { color: #c9b48a; }
-:where(.qm) .qm-ct .k { color: #b9a888; }
-:where(.qm) .l1fx { color: #fff4dc; }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .qm-mb.cancel { color: #c9b48a; }
+:where(.qm-scr ~ *).l1detail { color: #efe3c8; }
+:where(.qm-scr ~ *).l1detail p { color: #efe3c8; }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .scrim { background: rgba(6,5,4,.74); }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .pnl .h-x { color: #c9b48a; }   /* (help.css loads after this file) */
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .h-stack .h-n { color: #f1e6cc; }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) :is(.fcell.off .fn, .fcell.fslot.lock .fn, .seat.lock .st b) { color: #b9a988; }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .qm-muster .u { color: #e6c98a; }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .qm-pill .f { color: #c9b48a; }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .qm-ct .k { color: #b9a888; }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1fx { color: #fff4dc; }
 /* the generals' plaques and chips (generals for hire, the Royal Muster): dark, ringed in brass */
-:where(.qm) .l1plaque { background: linear-gradient(180deg, #3a3026, #221b15);
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque { background: linear-gradient(180deg, #3a3026, #221b15);
   box-shadow: inset 0 0 0 1px rgba(255,226,160,.12), 0 0 0 1px #0c0a08, 0 0 0 3px #8a6a3a, 0 0 0 4px #1a140e, 0 14px 26px -10px rgba(0,0,0,.95); }
-:where(.qm) .l1plaque .gp { box-shadow: 0 0 0 3px var(--gold2), 0 0 0 5px #2a1d0d, 0 6px 12px rgba(0,0,0,.6); }
-:where(.qm) .l1plaque.s-big .gp { box-shadow: 0 0 0 4px var(--gold2), 0 0 0 6px #2a1d0d, 0 8px 16px rgba(0,0,0,.6); }
-:where(.qm) .l1plaque.s-chip .gp { box-shadow: 0 0 0 2.5px var(--gold2), 0 0 0 4px #2a1d0d, 0 4px 8px rgba(0,0,0,.55); }
-:where(.qm) .l1plaque.s-chip.teach .gp { box-shadow: 0 0 0 2.5px var(--form1), 0 0 0 4px #2a1d0d, 0 4px 8px rgba(0,0,0,.55); }
-:where(.qm) .l1plaque.form .gp.gform { background: radial-gradient(circle at 50% 40%, #3b2f4e, #1d1726); box-shadow: 0 0 0 3px #9468dc, 0 0 0 5px #2a1d0d, 0 6px 12px rgba(0,0,0,.6); }
-:where(.qm) .l1plaque .ge .arr { color: #c9a764; }
-:where(.qm) .l1plaque .lvl { filter: drop-shadow(0 0 3px rgba(255,214,120,.45)); }
-:where(.qm) .l1plaque .lvl i { background: rgba(201,163,92,.28); }
-:where(.qm) .l1plaque .lvl i.on { background: linear-gradient(180deg, #fff1b8, var(--gold1, #e7bf5c) 55%, #b07f22); }
-:where(.qm) .l1plaque.s-chip .lvl { filter: none; background: rgba(20,14,8,.88); box-shadow: 0 0 0 1px rgba(201,163,92,.55); }
-:where(.qm) .l1plaque.lit { box-shadow: inset 0 0 0 1px rgba(255,226,160,.12), 0 0 0 1px #0c0a08, 0 0 0 3px #9468dc, 0 0 0 4px #1a140e, 0 0 26px rgba(148,104,220,.55), 0 14px 26px -10px rgba(0,0,0,.95); }
-:where(.qm) :is(.l1plaque.sel, .l1plaque.m-pick) { box-shadow: inset 0 0 0 1px rgba(255,226,160,.12), 0 0 0 3px #f3d58e, 0 0 26px rgba(243,213,142,.5), 0 14px 26px -10px rgba(0,0,0,.95); }
-:where(.qm) .l1plaque.m-leave { box-shadow: 0 0 0 3px #e0625a, 0 0 28px rgba(224,98,90,.55), 0 18px 30px -12px rgba(0,0,0,.95); }
-:where(.qm) .l1plaque.m-leave > * { opacity: .55; filter: grayscale(.6); }
-:where(.qm) .l1plaque.lg { background: linear-gradient(180deg, #4e2216, #23100a);
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque .gp { box-shadow: 0 0 0 3px var(--gold2), 0 0 0 5px #2a1d0d, 0 6px 12px rgba(0,0,0,.6); }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque.s-big .gp { box-shadow: 0 0 0 4px var(--gold2), 0 0 0 6px #2a1d0d, 0 8px 16px rgba(0,0,0,.6); }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque.s-chip .gp { box-shadow: 0 0 0 2.5px var(--gold2), 0 0 0 4px #2a1d0d, 0 4px 8px rgba(0,0,0,.55); }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque.s-chip.teach .gp { box-shadow: 0 0 0 2.5px var(--form1), 0 0 0 4px #2a1d0d, 0 4px 8px rgba(0,0,0,.55); }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque.form .gp.gform { background: radial-gradient(circle at 50% 40%, #3b2f4e, #1d1726); box-shadow: 0 0 0 3px #9468dc, 0 0 0 5px #2a1d0d, 0 6px 12px rgba(0,0,0,.6); }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque .ge .arr { color: #c9a764; }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque .lvl { filter: drop-shadow(0 0 3px rgba(255,214,120,.45)); }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque .lvl i { background: rgba(201,163,92,.28); }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque .lvl i.on { background: linear-gradient(180deg, #fff1b8, var(--gold1, #e7bf5c) 55%, #b07f22); }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque.s-chip .lvl { filter: none; background: rgba(20,14,8,.88); box-shadow: 0 0 0 1px rgba(201,163,92,.55); }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque.lit { box-shadow: inset 0 0 0 1px rgba(255,226,160,.12), 0 0 0 1px #0c0a08, 0 0 0 3px #9468dc, 0 0 0 4px #1a140e, 0 0 26px rgba(148,104,220,.55), 0 14px 26px -10px rgba(0,0,0,.95); }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) :is(.l1plaque.sel, .l1plaque.m-pick) { box-shadow: inset 0 0 0 1px rgba(255,226,160,.12), 0 0 0 3px #f3d58e, 0 0 26px rgba(243,213,142,.5), 0 14px 26px -10px rgba(0,0,0,.95); }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque.m-leave { box-shadow: 0 0 0 3px #e0625a, 0 0 28px rgba(224,98,90,.55), 0 18px 30px -12px rgba(0,0,0,.95); }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque.m-leave > * { opacity: .55; filter: grayscale(.6); }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque.lg { background: linear-gradient(180deg, #4e2216, #23100a);
   box-shadow: inset 0 0 0 1px rgba(255,226,160,.25), 0 0 0 1px #0c0a08, 0 0 0 3px #f0b543, 0 0 0 4px #2e0904, 0 0 22px 2px rgba(255,124,36,.45), 0 14px 26px -10px rgba(0,0,0,.95); }
-:where(.qm) .l1plaque.lg .gp { box-shadow: 0 0 0 3px #f3c95a, 0 0 0 5px #2e0904, 0 0 16px rgba(255,130,40,.8), 0 6px 12px rgba(0,0,0,.6); }
-:where(.qm) .l1plaque.lg .gn { color: #ffd98a; text-shadow: 0 0 8px rgba(255,140,40,.5); }
-:where(.qm) .l1plaque.s-chip.lg { box-shadow: inset 0 0 0 1px rgba(255,226,160,.25), 0 0 0 1px #0c0a08, 0 0 0 2px #f0b543, 0 0 14px rgba(255,124,36,.4), 0 10px 18px -8px rgba(0,0,0,.9); }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque.lg .gp { box-shadow: 0 0 0 3px #f3c95a, 0 0 0 5px #2e0904, 0 0 16px rgba(255,130,40,.8), 0 6px 12px rgba(0,0,0,.6); }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque.lg .gn { color: #ffd98a; text-shadow: 0 0 8px rgba(255,140,40,.5); }
+:where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque.s-chip.lg { box-shadow: inset 0 0 0 1px rgba(255,226,160,.25), 0 0 0 1px #0c0a08, 0 0 0 2px #f0b543, 0 0 14px rgba(255,124,36,.4), 0 10px 18px -8px rgba(0,0,0,.9); }
 </style>
 <style>
 /*
@@ -5016,36 +5035,37 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   background: radial-gradient(circle at 40% 30%, #ec7a6a, #b23a2e 56%, #5e1712); box-shadow: 0 0 0 2px #2a0d0a; }
 
 /* ======================================================================= after rules 15: the parchment look
+   (After rules 16: not in the store's scope, so each selector ends in :where(:not(:is(.qm-scr, ...) *)); tokens.css.)
    (docs/WMP001.md). The menu and the help are sheets (shell.css .pnl); their switches, arrows and dots are drawn in
    ink: the switch an ink track (on: forest green), the arrows engraved paper roundels, the page dots ink rings. */
-.h-set { color: var(--ink); }
-.h-set i { background: rgba(58,36,16,.18); box-shadow: inset 0 0 0 1.5px rgba(58,36,16,.55); }
-.h-set i::after { background: #8a7454; }
-.h-set.on i { background: var(--ink-forest-hi); box-shadow: inset 0 0 0 1.5px #1f3a1c; }
-.h-set.on i::after { background: #fbeed4; box-shadow: 0 0 0 1px rgba(20,40,16,.6); }
-.h-snd.dim .h-set.on i { background: rgba(58,36,16,.18); box-shadow: inset 0 0 0 1.5px rgba(58,36,16,.55); }
-.h-snd.dim .h-set.on i::after { background: #8a7454; }
-.h-val .ic { color: var(--ink-h); }
-.h-vol { color: var(--ink); }
-.h-seg { background: rgba(58,36,16,.1); box-shadow: inset 0 0 0 1.5px rgba(58,36,16,.45); }
-.h-seg button { color: var(--ink2); }
-.h-seg button.on { color: var(--pri-ink); text-shadow: var(--pri-ts); background: var(--pri-bg); box-shadow: var(--pri-sh); }
-.h-seg button:active:not(.on) { color: var(--ink); }
-.h-lines p { color: var(--ink); }
-.h-nav { color: var(--ink-h); background: radial-gradient(circle at 40% 32%, #f8edcf, #e3cd9c 78%);
+.h-set:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink); }
+.h-set i:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(58,36,16,.18); box-shadow: inset 0 0 0 1.5px rgba(58,36,16,.55); }
+.h-set i:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *))::after { background: #8a7454; }
+.h-set.on i:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: var(--ink-forest-hi); box-shadow: inset 0 0 0 1.5px #1f3a1c; }
+.h-set.on i:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *))::after { background: #fbeed4; box-shadow: 0 0 0 1px rgba(20,40,16,.6); }
+.h-snd.dim .h-set.on i:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(58,36,16,.18); box-shadow: inset 0 0 0 1.5px rgba(58,36,16,.55); }
+.h-snd.dim .h-set.on i:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *))::after { background: #8a7454; }
+.h-val .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-h); }
+.h-vol:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink); }
+.h-seg:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: rgba(58,36,16,.1); box-shadow: inset 0 0 0 1.5px rgba(58,36,16,.45); }
+.h-seg button:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink2); }
+.h-seg button.on:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--pri-ink); text-shadow: var(--pri-ts); background: var(--pri-bg); box-shadow: var(--pri-sh); }
+.h-seg button:active:not(.on):where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink); }
+.h-lines p:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink); }
+.h-nav:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ink-h); background: radial-gradient(circle at 40% 32%, #f8edcf, #e3cd9c 78%);
   box-shadow: 0 0 0 1.5px var(--ink-h), inset 0 0 0 2px #f2e3bd, inset 0 0 0 3px rgba(154,106,28,.85), 0 3px 6px rgba(60,36,14,.35); }
-.h-nav:active { filter: brightness(.92); }
-.h-dot i { border-color: rgba(42,26,12,.55); background: transparent; }
-.h-dot.on i { background: radial-gradient(circle at 40% 35%, #f6dfa0, #c9962e); border-color: #2a1a0c; box-shadow: none; }
-.h-step { box-shadow: 0 0 0 1.5px #2a1a0c, 0 2px 4px rgba(60,36,14,.35); }
-.h-sep { background: linear-gradient(180deg, transparent, rgba(58,36,16,.45), transparent); }
-.h-chip { border-color: rgba(58,36,16,.45); color: var(--ink2); }
-.h-chip.on { border-color: var(--ink-h); background: rgba(255,250,236,.6); color: var(--ink); box-shadow: 0 0 0 1px var(--ink-h) inset; }
-.h-chip[data-f="mac"] .ic, .h-tally .t-mac .ic { color: var(--mac2); }
-.h-chip[data-f="officer"] .ic, .h-chip[data-f="hero"] .ic { color: var(--ochre); }
-.h-ranked .l1card { box-shadow: 0 0 0 3px #b8862a, 0 0 0 4px #2a1a0c, 0 14px 22px -10px rgba(50,28,8,.75); }
-.h-gold .ic { filter: drop-shadow(0 0 .6px rgba(42,26,12,.9)); }
-.h-studs::before { background: rgba(58,36,16,.4); }
+.h-nav:active:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { filter: brightness(.92); }
+.h-dot i:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { border-color: rgba(42,26,12,.55); background: transparent; }
+.h-dot.on i:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: radial-gradient(circle at 40% 35%, #f6dfa0, #c9962e); border-color: #2a1a0c; box-shadow: none; }
+.h-step:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: 0 0 0 1.5px #2a1a0c, 0 2px 4px rgba(60,36,14,.35); }
+.h-sep:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { background: linear-gradient(180deg, transparent, rgba(58,36,16,.45), transparent); }
+.h-chip:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { border-color: rgba(58,36,16,.45); color: var(--ink2); }
+.h-chip.on:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { border-color: var(--ink-h); background: rgba(255,250,236,.6); color: var(--ink); box-shadow: 0 0 0 1px var(--ink-h) inset; }
+.h-chip[data-f="mac"] .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .h-tally .t-mac .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--mac2); }
+.h-chip[data-f="officer"] .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)), .h-chip[data-f="hero"] .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { color: var(--ochre); }
+.h-ranked .l1card:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { box-shadow: 0 0 0 3px #b8862a, 0 0 0 4px #2a1a0c, 0 14px 22px -10px rgba(50,28,8,.75); }
+.h-gold .ic:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *)) { filter: drop-shadow(0 0 .6px rgba(42,26,12,.9)); }
+.h-studs:where(:not(:is(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) *))::before { background: rgba(58,36,16,.4); }
 
 /* ---------- str001 r10 (2026-11-13): the help pages' own tall layout ----------
    On a portrait window help turns the stage 820 x 1180 over any screen (app.js TALL_OVER; over a
@@ -33799,6 +33819,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     const layer = document.createElement('div');
     layer.className = 'qm';
     root.appendChild(layer);
+    // after rules 16 (owner): the store's screen, its pop-ups and the views opened over it keep the dark look
+    // (css: tokens.css, store.css "After rules 16"); the mark is on the screen's layer, so it goes with the screen
+    root.classList.add('qm-scr');
 
     /** The run as the stalls show it: with a pack open the stalls are drawn as they stand behind it. */
     const shown = () => (run.store && run.store.open ? Object.assign({}, run, { store: Object.assign({}, run.store, { open: null }) }) : run);
