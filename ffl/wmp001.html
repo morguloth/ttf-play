@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="16">
-<script>(function(){var B="4ca03b9344";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=16;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-wmp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("wmp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="8468b88abe";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=16;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-wmp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("wmp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2782,6 +2782,13 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .l1plaque.martyr { background: var(--grain-dk), linear-gradient(178deg, #d6d0c2, #b9b2a3); box-shadow: var(--burn-sm), inset 0 0 0 1.5px #6f685c, var(--lift-sm); }
 .l1plaque.martyr .gn, .l1plaque.martyr b { color: #2e2a24; }
 .l1plaque.reprieve { box-shadow: var(--burn-sm), 0 0 0 2.5px #b8862a, 0 0 12px rgba(243,213,142,.3), var(--lift-sm); }
+
+/* after rules 16 (2026-11-19, owner: "that's not right"): Scattered Columns' row of deck pips ran past the plate's
+   edges (a 6 px minimum x 50-60 cards is wider than its 380 px): the pips share the row whatever the deck's size;
+   the cards still on the road read on paper */
+.mo-scat .mo-sc { width: 100%; max-width: 560px; gap: 3px; }
+.mo-scat .mo-sc i { flex: 1 1 0; min-width: 0; max-width: 14px; height: 26px; }
+.pnl .mo-scat .mo-sc i.road, .l1plaque .mo-scat .mo-sc i.road, .paper .mo-scat .mo-sc i.road { background: rgba(60,40,20,.2); box-shadow: inset 0 0 0 1px rgba(60,40,20,.5); }
 </style>
 <style>
 /*
@@ -3675,6 +3682,10 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .qm-rtab { top: -22px; padding: 2px 18px 3px; border-radius: 999px; background: var(--table1, #1f150a); color: #f3d58e;
   border: 1px solid rgba(214,180,110,.75); box-shadow: 0 2px 6px rgba(0,0,0,.55); font-size: 14px; letter-spacing: 2.2px; }
 .qm.fx .qm-stall .qm-sl:not(.msl) { justify-content: flex-start; }
+/* (owner: the Messenger Corps stall "is VERY crowded") its title row sat on the order cards' badges: the cards step down */
+.qm.fx .qm-stall.k-messenger .qm-sl.msl { margin-bottom: 12px; align-items: flex-start; }
+#stage:not([data-shape="tall"]) .qm.fx .qm-stall.k-messenger .qm-sl.msl .k { white-space: nowrap; letter-spacing: .8px; }
+#stage:not([data-shape="tall"]) .qm.fx .qm-stall.k-messenger .qm-sl.msl { align-items: center; min-height: 30px; }
 </style>
 <style>
 /*
