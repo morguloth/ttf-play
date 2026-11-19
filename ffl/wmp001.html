@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="9">
-<script>(function(){var B="6e269de674";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=9;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-wmp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("wmp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="6f1824d325";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=9;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-wmp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("wmp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -899,6 +899,9 @@
   background: linear-gradient(180deg, #3a3027, #1d1813); box-shadow: inset 0 0 0 1.5px rgba(180,147,234,.6), 0 4px 10px rgba(0,0,0,.6); }
 .fbtn .ic { font-size: var(--fs-lg, 20px); color: var(--form-hi, #b493ea); }
 .fbtn b { font-family: var(--body, 'Barlow Condensed', sans-serif); font-size: var(--fs-sm, 15px); letter-spacing: 0; color: #cdbf9f; }
+/* wmp001 after rules 9 (display): its tap reaches 5 px past the pill (54 stage px tall, 46 on-screen at 1024x768) */
+.fbtn { position: relative; }
+.fbtn::after { content: ''; position: absolute; left: -4px; right: -4px; top: -5px; bottom: -5px; }
 /* wmp001 rules 8 (Wave 6): The Rival Marshal (battle 60) - the learned formations that already count on the board */
 .fcell .fck { display: inline-flex; align-items: center; gap: 3px; margin-left: auto; margin-right: 6px; font-family: var(--label, 'Cinzel', serif); font-weight: 700;
   font-size: var(--fs-xs, 13px); letter-spacing: .5px; color: #9fd08a; white-space: nowrap; }
@@ -1005,6 +1008,9 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   background: linear-gradient(180deg, #3a3027, #1d1813); box-shadow: inset 0 0 0 1px rgba(214,177,104,.4), 0 4px 10px rgba(0,0,0,.6); white-space: nowrap; }
 .chip2 .ic { color: #e6b54a; font-size: 20px; }
 button.chip2:active, .btn-round:active { filter: brightness(1.25); }
+/* wmp001 after rules 9 (display): the battle's draw pile cannot deal a hand for every turn left (L1Battle.deckShort) */
+.chip2.short { color: #ffd08a; box-shadow: inset 0 0 0 2px #e08a2a, 0 0 10px rgba(224,138,42,.45); }
+.chip2.short .ic, .chip2.short .n { color: #f0a03a; }
 .btn-round { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-size: 24px; color: var(--brass1, #f3d58e);
   background: var(--hud, rgba(34,29,24,.92)); box-shadow: inset 0 0 0 1px var(--hud-edge, rgba(201,163,92,.38)), inset 0 1px 0 rgba(255,235,190,.08), 0 8px 18px -8px rgba(0,0,0,.8); }
 
@@ -1101,6 +1107,14 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
    when help closes. */
 #stage[data-over="help"] > .screen { inset: auto; left: 0; top: 0; width: 1180px; height: 820px; visibility: hidden; }
 #stage[data-over="help"] > .l1coach, #stage[data-over="help"] > .l1coach-ring { visibility: hidden; }
+
+/* wmp001 after rules 9 (display): the landscape stage letterboxed on a portrait window (app.js data-port: the title,
+   the run intro, the battle at 820 / 1180 = .695) - its taps grow to 64 stage px (44 on screen) and its smallest chrome
+   words to 16 (11 on screen). Landscape windows never carry data-port. */
+#stage[data-port] .top2 .btn-round { width: 64px; height: 64px; }
+#stage[data-port] .top2 .chip2 { height: 64px; }
+#stage[data-port] .top2 .where span { font-size: 16px; }
+#stage[data-port] .scorep .lab { font-size: 16px; }
 </style>
 <style>
 /*
@@ -1931,6 +1945,15 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .ftab.rv { box-shadow: inset 0 0 0 1px rgba(255,226,160,.12), 0 0 0 1px #0c0a08, 0 0 0 2.5px rgba(159,208,138,.7), 0 0 0 3.5px #1a140e; }
 .ftab .fgl.cnt { filter: drop-shadow(0 0 4px rgba(159,208,138,.9)); }
 .ftab .fgl.wait { opacity: .4; filter: grayscale(.6); }
+
+/* wmp001 after rules 9 (display): a portrait window's letterboxed battle (app.js data-port, x .695): Undo and the
+   action row 64 stage px tall (44 on screen), the panels' labels and the open / locked seats' words 16 (11 on screen) */
+#stage[data-port] .abtn { height: 64px; font-size: 16px; }
+#stage[data-port] .ftab .fth { height: 24px; }
+#stage[data-port] .ftab .fth .lab, #stage[data-port] .ftab .fcnt small { font-size: 16px; }
+#stage[data-port] .seat .st b, #stage[data-port] .seat .st span { font-size: 16px; }
+/* the generals' chips: name and line 16 (a long one-word name, .gn.w1, keeps its 13: "Cartographer" fills the chip) */
+#stage[data-port] .gens .l1plaque.s-chip .gn:not(.w1), #stage[data-port] .gens .l1plaque.s-chip .gw { font-size: 16px; }
 </style>
 <style>
 /*
@@ -2870,6 +2893,8 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   text-decoration: underline; text-decoration-color: rgba(200,180,236,.45); text-underline-offset: 3px; }
 .qm-flink b { font-weight: 700; color: #e6dcff; }
 .qm-flink::after { content: ''; position: absolute; left: -10px; right: -10px; top: -14px; bottom: -14px; }
+/* wmp001 after rules 9 (display): 52+ stage px tall (45 on-screen at 1024x768) */
+.qm-flink::after { top: -18px; bottom: -18px; }
 /* this visit's stalls: framed together, a "This visit" tab on the frame's top edge */
 .qm-rot { position: relative; flex: var(--grow, 2) 1 0; min-width: 0; display: flex; gap: 14px; }
 .qm-rot::before { content: ''; position: absolute; inset: -7px; border-radius: 16px; pointer-events: none;
@@ -3714,6 +3739,28 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .mo-3fd b { color: #fff4dc; }
 .mo-3fd .warn { flex-basis: 100%; text-align: center; color: #f29a8f; }
 .mo-3fb { margin-top: 14px; }
+
+/* ---------- wmp001 after rules 9 (display): the draft on a portrait window (app.js TALL_SCREENS: an 820 x 1180 stage at
+   scale 1, not the landscape stage letterboxed at .695 with its words at 8-10 px). The three choices in a row at .82,
+   the why line wrapping, the deck panel across the stage: the type meter two by two, the stacks in rows at full size.
+   Landscape is untouched (everything below is under #stage[data-shape="tall"]). ---------- */
+#stage[data-shape="tall"] .mo-draft { padding-top: 34px; }
+#stage[data-shape="tall"] .mo-draft .mo-title { font-size: 34px; padding: 0 20px; }
+#stage[data-shape="tall"] .mo-draft .mo-steps { margin-top: 14px; }
+#stage[data-shape="tall"] .mo-draft .mo-opts { gap: 16px; margin-top: 62px; zoom: .82; }
+#stage[data-shape="tall"] .mo-draft .mo-why { max-width: 760px; min-height: 44px; line-height: 22px; margin-top: 14px; padding: 0 12px; }
+#stage[data-shape="tall"] .mo-draft .mo-confirm { margin-top: 12px; }
+#stage[data-shape="tall"] .mo-draft .mo-rec { font-size: var(--fs-sm, 15px); }
+#stage[data-shape="tall"] .mo-draft .mo-ok { width: 300px; height: 56px; }
+#stage[data-shape="tall"] .mo .pnl.mo-deck { width: 788px; margin-top: 22px; padding: 12px 16px 16px; }
+#stage[data-shape="tall"] .mo-deck .lab { flex-wrap: wrap; row-gap: 8px; }
+#stage[data-shape="tall"] .mo-draft .mo-meter { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; margin-top: 10px; }
+#stage[data-shape="tall"] .mo-draft .mo-minis.stk { zoom: 1 !important; flex-wrap: wrap; justify-content: center; gap: 16px 10px !important; padding-top: 12px; }
+/* wmp001 after rules 9 (display): the run intro letterboxed on a portrait window (app.js data-port, x .695): its small
+   words 16 stage px (11 on screen) */
+#stage[data-port] .mo-kick, #stage[data-port] .mo-sb, #stage[data-port] .mo-fnt, #stage[data-port] .mo-fnr { font-size: 16px; }
+#stage[data-port] .mo-fnh, #stage[data-port] .mo-fnn { font-size: 16px; }
+#stage[data-port] .mo-fnh span { font-size: 16px; }
 </style>
 <style>
 /*
@@ -4125,6 +4172,10 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
    lays its dots in two rows of eight (below) */
 #stage:not([data-shape="tall"]) .h-foot:has(.h-dots > :nth-child(13)) { grid-template-columns: 120px 1fr 120px; }
 #stage:not([data-shape="tall"]) .h-dots:has(> :nth-child(13)) .h-dot { width: 46px; }
+/* wmp001 after rules 9 (display): fifteen dots at 51 wide (side columns 112: the arrows are 56, Done ~100)
+   so each dot's hit area is 44 on-screen px at 1024x768 (x .868); the dot itself unchanged */
+#stage:not([data-shape="tall"]) .h-foot:has(.h-dots > :nth-child(13)) { grid-template-columns: 112px 1fr 112px; }
+#stage:not([data-shape="tall"]) .h-dots:has(> :nth-child(13)):not(:has(> :nth-child(16))) .h-dot { width: 51px; }
 
 /* wmp001 rules 8 (Wave 6): the set pieces page also names 60 and 70, a crest and a line each */
 .h-spw { display: flex; flex-direction: column; align-items: center; gap: 12px; }
@@ -4352,6 +4403,12 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   .hm .hm-e, .hm .hm-rank { animation: none; }
   .mo.hm > .hm-bd { transition: none; }
 }
+
+/* wmp001 after rules 9 (display): a portrait window's letterboxed title (app.js data-port, x .695): the menu and the
+   small buttons 64 stage px tall (44 on screen), the records' and footer's words 16 */
+#stage[data-port] .mo.hm > .hm-menu { width: 64px; height: 64px; }
+#stage[data-port] .btn.hm-btn { min-height: 64px; }
+#stage[data-port] .hm-rec span, #stage[data-port] .mo.hm > .hm-foot { font-size: 16px; }
 </style>
 <style>
 /*
@@ -4483,6 +4540,10 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .l1coach.still, .calm-motion .l1coach { animation: none; }
 .calm-motion .l1coach-ring { display: none; }
 @media (prefers-reduced-motion: reduce) { .l1coach { animation: none; } .l1coach-ring { display: none; } }
+
+/* wmp001 after rules 9 (display): a tip on the battle's right side is put away while the formations drawer covers it
+   (it showed cut by the drawer's edge, battle 60) */
+#stage:has(.fdrawer) .l1coach, #stage:has(.fdrawer) .l1coach-ring { visibility: hidden; }
 </style>
 <!-- wmp001 rules 8 (Wave 6): the map screen -->
 <style>
@@ -4575,6 +4636,12 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .wm-back[hidden] { display: none; }
 .wm-card { position: absolute; width: 372px; padding: 16px 18px 16px; z-index: 3; animation: wm-card .18s ease-out both; }
 .wm-card[hidden] { display: none; }
+/* wmp001 after rules 9 (display): the ink leader from a card set off from its node (s-map.js leadOf) */
+.wm-lead { position: absolute; height: 3px; margin-top: -1.5px; background: #e2c070; border-radius: 2px; transform-origin: 0 50%; z-index: 2; pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(46,28,8,.75), 0 1px 3px rgba(0,0,0,.45); }
+.wm-lead::after { content: ''; position: absolute; right: -6px; top: -4.5px; width: 12px; height: 12px; border-radius: 50%; background: #e2c070;
+  box-shadow: 0 0 0 1px rgba(46,28,8,.75); }
+.wm-lead[hidden] { display: none; }
 @keyframes wm-card { from { opacity: 0; transform: translateY(6px); } }
 .wm-ck { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-family: var(--label, 'Cinzel', serif); font-size: var(--fs-xs, 13px); letter-spacing: 2px;
   text-transform: uppercase; color: #c9a764; }
@@ -4593,6 +4660,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .wm-adv.best { box-shadow: inset 0 0 0 1px rgba(243, 213, 142, .55); }
 .wm-go { width: 100%; margin-top: 12px; }
 .wm-gens { gap: 18px; justify-content: center; }
+/* wmp001 after rules 9 (display): the held plaques in a row, the open and locked seats stacked beside them */
+.wm-gens { display: flex; flex-wrap: wrap; align-items: center; }
+.wm-gens .wm-seats { display: flex; flex-direction: column; gap: 12px; }
 
 /* the opening's lettering */
 .wm-intro { position: absolute; left: 50%; top: 270px; transform: translateX(-50%); text-align: center; pointer-events: none; padding: 50px 110px 44px; white-space: nowrap;
@@ -25629,11 +25699,15 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   // ---- wmp001 rules 5 (2026-11-18): the general seats and the formations drawer ---------------------------
   /** A general seat with no general for the generals column (and the store's panel): 'open' (bought, empty) or
    *  'lock' (the one more seat the store sells). Today's chip size (.seat, 236 x 66), its outline only. */
-  function seatChip(kind) {
-    var open = kind === 'open';
-    return '<div class="seat ' + (open ? 'open' : 'lock') + '" aria-label="' + (open ? 'Open seat: hire a general in the store' : 'Locked seat: buy it in the store') + '">' +
+  function seatChip(kind, where) {
+    // wmp001 after rules 9 (display): inside the store (where 'store') the lines name the stall, not the store
+    var open = kind === 'open', inStore = where === 'store';
+    var aria = open ? (inStore ? 'Open seat: hire a general at a General for hire stall' : 'Open seat: hire a general in the store') :
+      (inStore ? 'Locked seat: buy it at the General seat' : 'Locked seat: buy it in the store');
+    var sub = open ? (inStore ? 'Hire at a stall' : 'Hire in the store') : (inStore ? 'Buy below' : 'Buy in the store');
+    return '<div class="seat ' + (open ? 'open' : 'lock') + '" aria-label="' + aria + '">' +
       '<span class="sr">' + I(open ? 'general' : 'lock') + '</span><span class="st"><b>' + (open ? 'Open seat' : 'Locked seat') + '</b><span>' +
-      (open ? 'Hire in the store' : 'Buy in the store') + '</span></span></div>';
+      sub + '</span></span></div>';
   }
   /** The seats of `run` beside its `held` generals (default run.generals): {open (bought, empty), locked (0 or 1:
    *  one more can be bought)}. */
@@ -27688,6 +27762,16 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
         t += 55;
       }
     }
+    /** wmp001 after rules 9 (display): the chip turns amber while the cards left cannot deal a hand for every turn
+     *  left (deckShort: a bigger hand, Mustering Officer, with no reshuffle); its tap's pile view says why. */
+    function markShort() {
+      const c = deckChip();
+      if (!c) return;
+      const on = deckShort(S.st);
+      c.classList.toggle('short', on);
+      c.setAttribute('aria-label', on ? 'Draw pile: ' + SHORT_LINE : 'Draw pile');
+      if (on) c.title = SHORT_LINE; else c.removeAttribute('title');
+    }
     /** The unplayed cards of the hand slide away (gone for this battle; wmp001 rules 3) as the placed
      *  one lands. */
     function flyOut(keep) {
@@ -28089,6 +28173,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       renderSiegeCall();
       const dealt = oo.deal && S.st.phase === 'draft' ? (S.st.offer || []).length : 0;
       tickDeck(drawCount() + dealt, drawCount(), oo.dd || 0);
+      markShort();
       idleCue();
       return sc;
     }
@@ -28596,7 +28681,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       const p = pileOf(S.st), d = p ? (p.discard || []).length : 0;
       const cards = p ? C.drawPileList(Object.assign({}, p, { phase: 'draft' })) : [];
       if (globalThis.L1Screens && L1Screens.deck) {
-        L1Screens.deck(app.stage, { run: S.run, T, app }, { cards, title: 'Draw pile', line: 'Left to draw this battle' + (d ? ' · ' + d + ' gone for this battle' : '') });
+        L1Screens.deck(app.stage, { run: S.run, T, app }, { cards, title: 'Draw pile', line: deckShort(S.st) ? SHORT_LINE : 'Left to draw this battle' + (d ? ' · ' + d + ' gone for this battle' : '') });
       }
     }
     /** After a long press opens a view, the release's click must not reach it (it would close it). */
@@ -29405,7 +29490,16 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     return K.seatChip('open').repeat(n.open) + (n.locked ? K.seatChip('lock') : '');
   }
 
-  globalThis.L1Battle = { mount, seatsHtml, siegeRows, frontRows, tierRows, skKindHtml, frontLine, hintsOf, objHtml, scenBanner, scenRefusal, lossLines, objMissHtml, seizeLine, SCEN_HINT, turnLabel, placeWeight, popDelays, changedOf, coinsFor, keyAct, pileOf, beatsOf, homePlace, routeOf,
+  /** wmp001 after rules 9 (display; no rule change): can the cards left (the pile and this hand) not deal a hand for
+   *  every turn left at the hand size now? (C.turnsCap under C.turnsOf: the battle would end when the deck runs dry.)
+   *  Never once the battle is over. */
+  function deckShort(st) {
+    if (!st || st.phase === 'done' || st.dry || !C.turnsCap || !C.turnsOf) return false;
+    try { return C.turnsCap(st) < C.turnsOf(st); } catch (e) { return false; }
+  }
+  const SHORT_LINE = 'Not enough cards for every turn: the battle ends when the deck runs dry';
+
+  globalThis.L1Battle = { deckShort, SHORT_LINE, mount, seatsHtml, siegeRows, frontRows, tierRows, skKindHtml, frontLine, hintsOf, objHtml, scenBanner, scenRefusal, lossLines, objMissHtml, seizeLine, SCEN_HINT, turnLabel, placeWeight, popDelays, changedOf, coinsFor, keyAct, pileOf, beatsOf, homePlace, routeOf,
     bandsOf, bandState, marginBasis, payLine, victoryTier, bestOf, bigUnit, chainHtml, tileTap, orderChips, orderBeats, isOrder, dynTag: dynTag0 };
 })();
 </script>
@@ -30683,7 +30777,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     const viewW = sz.w, html = artHtml(run.map), Gm = ART.G;
     const N = run.battles || 70, b = run.battle || 1, cs = R.mapChoices(run);
     root.innerHTML = (app.topbar ? app.topbar({ title: 'Battle ' + b + ' of ' + N, battle: b }) : '') +
-      '<div class="wm' + (tall ? ' tall' : '') + '" data-r="map"><div class="wm-view" data-r="view"><div class="wm-strip" style="width:' + Gm.W + 'px;height:' + Gm.H + 'px"><div class="wm-pulses"></div><div class="wm-card pnl" hidden></div></div>' +
+      '<div class="wm' + (tall ? ' tall' : '') + '" data-r="map"><div class="wm-view" data-r="view"><div class="wm-strip" style="width:' + Gm.W + 'px;height:' + Gm.H + 'px"><div class="wm-pulses"></div><div class="wm-lead" hidden></div><div class="wm-card pnl" hidden></div></div>' +
       '<div class="wm-burn"></div>' +
       '<div class="wm-ribbon"><b>Battle ' + b + '</b><span>' + (cs.length > 1 ? 'Choose your road' : 'One road leads on') + '</span></div>' +
       '<div class="wm-tools"><button class="wm-tool" data-a="forms" aria-label="Formations">' + icon('towers') + '<span>Formations</span></button>' +
@@ -30691,7 +30785,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       '<button class="wm-back" data-a="back" hidden>' + icon('march') + '<span>Back to the army</span></button>' +
       '<div class="wm-intro" hidden><div class="wm-it">The Road to the Throne</div><div class="wm-is">70 battles · 7 campaigns · every road the same length</div><div class="wm-skip">Tap to skip</div></div>' +
       '</div>' + (tall ? '<div class="wm-dock pnl">' + '<div class="wm-dk-h">Battle ' + b + ': ' + (cs.length > 1 ? 'choose your road' : 'one road leads on') + '<br>Tap a lit battle to see it</div>' + '</div>' : '') + '</div>';
-    const view = root.querySelector('.wm-view'), strip = root.querySelector('.wm-strip'), card = root.querySelector('.wm-card');
+    const view = root.querySelector('.wm-view'), strip = root.querySelector('.wm-strip'), card = root.querySelector('.wm-card'), lead = root.querySelector('.wm-lead');
     const back = root.querySelector('.wm-back'), intro = root.querySelector('.wm-intro'), dock = root.querySelector('.wm-dock');
     // the chart: the kept element, else built once
     let svg = ART.el;
@@ -30785,6 +30879,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       if (marching) return;
       sel = id;
       svg.querySelectorAll('.wm-n.is-sel').forEach((n) => n.classList.remove('is-sel'));
+      if (lead) lead.hidden = true;
       if (!id) { card.hidden = true; if (dock) dock.innerHTML = '<div class="wm-dk-h">Battle ' + b + ': ' + (cs.length > 1 ? 'choose your road' : 'one road leads on') + '<br>Tap a lit battle to see it</div>'; return; }
       const n = svg.querySelector('.wm-n[data-node="' + id + '"]');
       if (n) n.classList.add('is-sel');
@@ -30794,14 +30889,15 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       card.hidden = false;
       const p = Gm.nodes[id], h = card.offsetHeight || 260;
       // keep clear: the army's standard (pinHtml at .82: x +12..+60, y -103..-8 from its node) and the roads on to the choices
-      const keep = { boxes: [{ x0: at.x - 30, y0: at.y - 106, x1: at.x + 62, y1: at.y + 30, w: 9 }],
-        segs: cs.map((u) => Gm.nodes[u.id]).filter(Boolean).map((q) => ({ ax: at.x, ay: at.y, bx: q.x, by: q.y, w: 1.5 })) };
+      const keep = keepOf(Gm, at, cs, tx, viewW);
       const pos = cardSpot(Gm, sts, id, p, h, tx, viewW, keep);
-      const x = pos.x, y = pos.y;
-      card.style.left = r1(x) + 'px';
-      card.style.top = r1(y) + 'px';
-      // the card in view: pan just enough
-      if (x - tx < 10 || x + CARD_W - tx > viewW - 10) { const to = clampX(Gm, x + CARD_W / 2 - viewW / 2, viewW); if (calm) { stop(); setTx(to); } else animate(to, 300); }
+      card.style.left = r1(pos.x) + 'px';
+      card.style.top = r1(pos.y) + 'px';
+      // a card set off from its node (a boss beside it) gets an ink leader to the node, so it still reads as its card
+      const ld = leadOf(p, pos, CARD_W, h, /-boss$/.test(id) ? 64 : 44);
+      if (lead && ld) { lead.style.left = r1(ld.x) + 'px'; lead.style.top = r1(ld.y) + 'px'; lead.style.width = r1(ld.len) + 'px'; lead.style.transform = 'rotate(' + r1(ld.deg) + 'deg)'; lead.hidden = false; }
+      // the card in view: pan just enough (cardSpot's tx keeps the node and the army in view)
+      if (Math.abs(pos.tx - tx) > 0.5) { if (calm) { stop(); setTx(pos.tx); } else animate(pos.tx, 300); }
     }
     function march(id) {
       if (marching || !cs.some((u) => u.id === id)) return;
@@ -30810,6 +30906,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       const p = Gm.nodes[id], pin = armyG.querySelector('.wm-pin');
       const go = () => { if (!gone) app.mapPick(id); };
       if (calm || !pin || !p) { go(); return; }
+      if (lead) lead.hidden = true;
       pin.classList.add('go');
       pin.style.transform = 'translate(' + r1(p.x + 16) + 'px,' + r1(p.y - 12) + 'px)';
       card.hidden = true;
@@ -30870,9 +30967,12 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       const S = G.L1Screens, plaque = (g, o) => (Cards().plaque ? Cards().plaque(g, o) : '');
       if (!S || !S.modal) return;
       const seats = R.maxGeneralsOf ? R.maxGeneralsOf(run) : (run.generals || []).length;
-      const w = Math.min(viewW - 40, 300 + 150 * Math.max(1, (run.generals || []).length));
-      const m = S.modal(app.stage || root, { w, top: 120, title: 'Your generals', line: (run.generals || []).length + ' of ' + seats + ' seats',
-        body: '<div class="row wm-gens">' + (run.generals || []).map((g) => plaque(g, { T, run, size: 'col' })).join('') + '</div>', buttons: [{ a: 'cancel', label: 'Close', cls: 'ghost' }] });
+      // wmp001 after rules 9 (display): the open seats and the locked one beside the held, as the store's view shows them
+      const st = Cards().seatsOf ? Cards().seatsOf(run) : { open: 0, locked: 0 }, chip = (k) => (Cards().seatChip ? Cards().seatChip(k) : '');
+      const chips = Array.from({ length: st.open }, () => chip('open')).concat(st.locked ? [chip('lock')] : []);
+      const w = Math.min(viewW - 40, 300 + 150 * Math.max(1, (run.generals || []).length + (chips.length ? 1 : 0)));
+      const m = S.modal(app.stage || root, { w, top: 120, title: 'Your generals', line: (run.generals || []).length + ' of ' + seats + ' seats' + (st.open ? ': ' + st.open + ' open, hire in the store' : ''),
+        body: '<div class="row wm-gens">' + (run.generals || []).map((g) => plaque(g, { T, run, size: 'col' })).join('') + (chips.length ? '<div class="wm-seats">' + chips.join('') + '</div>' : '') + '</div>', buttons: [{ a: 'cancel', label: 'Close', cls: 'ghost' }] });
       const pnl = m && m.querySelector('.pnl.modal');
       if (pnl) pnl.style.left = Math.round((viewW - w) / 2) + 'px';
     }
@@ -30891,33 +30991,105 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       select, march, tx: () => tx, setTx, cards: () => cs.map((u) => u.id)
     };
   }
-  /** Where a node's card goes (world px): right or left of the node, level with it, above or below; the spot that
-   *  hides the fewest nodes still ahead (the boss most of all) and stays in the view wins. */
+  /** The leader from a card set off from its node (world px): from the card's edge nearest the node to the node's ring
+   *  (r - 18 from its centre); null while the card sits beside the node (the gap past the ring under 36 px).
+   *  wmp001 after rules 9 (display). */
+  function leadOf(p, pos, w, h, r) {
+    const ex = Math.max(pos.x, Math.min(pos.x + w, p.x)), ey = Math.max(pos.y, Math.min(pos.y + h, p.y));
+    const dx = p.x - ex, dy = p.y - ey, d = Math.hypot(dx, dy), ring = r - 18;
+    if (d - ring < 36) return null;
+    return { x: ex, y: ey, len: d - ring, deg: Math.atan2(dy, dx) * 180 / Math.PI };
+  }
+  /** What a node's card keeps clear of (cardSpot's keep): the army's standard (pinHtml at .82: x +12..+60, y -103..-8
+   *  from its node), the roads on to the choices, each boss's landmark and name in or near the view; and what stays in
+   *  the view: the army, a boss seal in it now. */
+  function keepOf(Gm, at, cs, tx, viewW) {
+    const keep = { boxes: [{ x0: at.x - 30, y0: at.y - 106, x1: at.x + 62, y1: at.y + 30, w: 9 }],
+      segs: (cs || []).map((u) => Gm.nodes[u.id]).filter(Boolean).map((q) => ({ ax: at.x, ay: at.y, bx: q.x, by: q.y, w: 1.5 })),
+      see: [{ x: at.x, y: at.y, w: 30 }] };
+    for (const c of Gm.camps || []) {
+      if (c.bx < tx - 400 || c.bx > tx + viewW + 400) continue;
+      const st = SITE[c.n] || SITE[1], lx = c.bx + siteDx(c.n), ly = c.by - st[2];
+      keep.boxes.push({ x0: lx - st[0] * 0.6, y0: ly - st[1], x1: lx + st[0] * 0.6, y1: ly + 10, w: 5 });
+      keep.boxes.push({ x0: c.bx - 60, y0: c.by - 50, x1: c.bx + 60, y1: c.by + 60, w: 4 });
+      if (c.bx > tx + 40 && c.bx < tx + viewW - 40) keep.see.push({ x: c.bx, y: c.by, w: 8 });
+    }
+    return keep;
+  }
+  /** Where a node's card goes (world px): beside, over or under the node, slid along and up and down the chart; the spot
+   *  that hides the least wins: the node itself and the army's standard (keep.boxes) most, then a boss seal and its
+   *  landmark, the choices, the nodes ahead, the roads on (keep.segs). Nearer the node is better; a spot out of the view
+   *  may pan it (a little cost a px), never so far that the node, the army or a point of keep.see leaves it.
+   *  The eight spots next to the node come first: the best of them stands unless it hides something that matters (the
+   *  node, the standard, a boss or its landmark, a choice); only then is the wider search made.
+   *  Returns {x, y, tx}: tx the view's offset to show it (tx itself when no pan is needed).
+   *  wmp001 after rules 9 (display): near a boss every spot beside the node hid the seal; the search now slides and pans. */
   function cardSpot(Gm, sts, id, p, h, tx, viewW, keep) {
-    const r = /-boss$/.test(id) ? 64 : 44, cands = [];
-    for (const x of [p.x + r, p.x - r - CARD_W]) for (const y of [p.y - h / 2, p.y - h + 30, p.y - 30]) cands.push({ x, y: Math.max(14, Math.min(GEO.H - h - 92, y)) });
-    // close-out: centred over or under the node too
-    for (const y of [p.y - r - h, p.y + r]) cands.push({ x: p.x - CARD_W / 2, y: Math.max(14, Math.min(GEO.H - h - 92, y)) });
-    const kp = keep || { boxes: [], segs: [] };
+    const r = /-boss$/.test(id) ? 64 : 44, cands = [], kp = keep || { boxes: [], segs: [] };
+    const yMin = 14, yMax = Math.max(yMin, GEO.H - h - 92), cy = (y) => Math.max(yMin, Math.min(yMax, y));
+    // the first ones are the old spots (right / left of the node: level, above, below; centred over / under)
+    for (const x of [p.x + r, p.x - r - CARD_W]) for (const y of [p.y - h / 2, p.y - h + 30, p.y - 30]) cands.push({ x, y: cy(y) });
+    for (const y of [p.y - r - h, p.y + r]) cands.push({ x: p.x - CARD_W / 2, y: cy(y) });
+    const ys = [];
+    for (let y = yMin; y < yMax; y += 24) ys.push(y);
+    ys.push(yMax);
+    for (let d = 0; d <= 480; d += 40) for (const y of ys) { cands.push({ x: p.x + r + d, y }); cands.push({ x: p.x - r - CARD_W - d, y }); }
+    for (let d = -160; d <= 160; d += 40) for (const y of ys) cands.push({ x: p.x - CARD_W / 2 + d, y });
+    // the nodes that can matter (near enough to any spot)
+    const near = Object.keys(Gm.nodes).filter((k) => k !== id && Math.abs(Gm.nodes[k].x - p.x) < CARD_W + 600);
     const inCard = (c, x, y) => x >= c.x && x <= c.x + CARD_W && y >= c.y && y <= c.y + h;
-    let best = null, bs = Infinity;
-    cands.forEach((c, i) => {
-      let sc = i * 0.01;
-      if (c.x - tx < 10) sc += 50 + (10 - (c.x - tx)) * 0.2;
-      if (c.x + CARD_W - tx > viewW - 10) sc += 50 + (c.x + CARD_W - tx - viewW + 10) * 0.2;
-      for (const k of Object.keys(Gm.nodes)) {
-        if (k === id) continue;
+    const see = [p].concat(kp.see || []);
+    const NEAR = 8;
+    const score = (c, i) => {
+      let sc = Math.min(i, NEAR) * 0.01, bad = 0, cross = 0;
+      // the node itself
+      if (!(p.x + r - 14 < c.x || p.x - r + 14 > c.x + CARD_W || p.y + r - 14 < c.y || p.y - r + 14 > c.y + h)) { sc += 40; bad++; }
+      for (const k of near) {
         const q = Gm.nodes[k], rr = /-boss$/.test(k) ? 44 : 26;
         if (q.x + rr < c.x || q.x - rr > c.x + CARD_W || q.y + rr < c.y || q.y - rr > c.y + h) continue;
         const s = sts[k];
         // close-out: where the army stands weighs as much as a choice (the player must see where they are)
-        sc += /-boss$/.test(k) ? 6 : s === 'open' || s === 'here' ? 4 : s === 'ahead' ? 1 : 0.3;
+        const w = /-boss$/.test(k) ? 6 : s === 'open' || s === 'here' ? 4 : s === 'ahead' ? 1 : 0.3;
+        sc += w;
+        if (w >= 4) bad++;
       }
-      for (const bx of kp.boxes || []) if (!(bx.x1 < c.x || bx.x0 > c.x + CARD_W || bx.y1 < c.y || bx.y0 > c.y + h)) sc += bx.w;
+      for (const bx of kp.boxes || []) if (!(bx.x1 < c.x || bx.x0 > c.x + CARD_W || bx.y1 < c.y || bx.y0 > c.y + h)) { sc += bx.w; if (bx.w >= 4) bad++; }
       for (const sg of kp.segs || []) for (let t = 0.15; t < 0.9; t += 0.15) if (inCard(c, sg.ax + (sg.bx - sg.ax) * t, sg.ay + (sg.by - sg.ay) * t)) sc += sg.w;
-      if (sc < bs) { bs = sc; best = c; }
-    });
-    return best;
+      // nearer the node reads as its card
+      const gx = Math.max(0, c.x - p.x, p.x - (c.x + CARD_W)), gy = Math.max(0, c.y - p.y, p.y - (c.y + h));
+      const gap = Math.max(0, Math.hypot(gx, gy) - r);
+      sc += 0.03 * gap;
+      // a card set off gets a leader to its node (leadOf): one that runs over another node would point at it instead
+      const ld = leadOf(p, c, CARD_W, h, r);
+      if (ld) {
+        const a = ld.deg * Math.PI / 180, ux = Math.cos(a), uy = Math.sin(a);
+        for (const k of near) {
+          const q = Gm.nodes[k], t = (q.x - ld.x) * ux + (q.y - ld.y) * uy;
+          if (t < 0 || t > ld.len) continue;
+          if (Math.abs((q.x - ld.x) * uy - (q.y - ld.y) * ux) < (/-boss$/.test(k) ? 50 : 32)) { sc += 6; cross++; }
+        }
+      }
+      // in the view: pan just enough, and only while the node, the army (keep.see) stay in it
+      let t2 = tx;
+      if (c.x - t2 < 10) t2 = c.x - 10;
+      if (c.x + CARD_W - t2 > viewW - 10) t2 = c.x + CARD_W - viewW + 10;
+      t2 = clampX(Gm, t2, viewW);
+      if (c.x - t2 < 0 || c.x + CARD_W - t2 > viewW) { sc += 50; bad++; }
+      sc += Math.abs(t2 - tx) * 0.03;
+      for (const q of see) if (q.x - t2 < 24 || q.x - t2 > viewW - 24) { sc += q.w || 30; bad++; }
+      return { sc, bad, cross, gap, x: c.x, y: c.y, tx: t2 };
+    };
+    // a clear spot (hiding nothing that matters) beats any that hides, and one whose leader runs over no other node
+    // beats one whose leader does; then one close to the node (within CLOSE px past r) beats a farther one, since a
+    // card parked far off stops reading as that node's card; then the score
+    const CLOSE = 70, rank = (o) => (o.bad ? 4 : 0) + (o.cross ? 2 : 0) + (o.gap > CLOSE ? 1 : 0);
+    let best = null;
+    for (let i = 0; i < cands.length; i++) {
+      if (i === NEAR && best && !best.bad && !best.cross) break;
+      const o = score(cands[i], i);
+      if (!best || rank(o) < rank(best) || (rank(o) === rank(best) && o.sc < best.sc)) best = o;
+    }
+    return { x: best.x, y: best.y, tx: best.tx };
   }
   /** The army's standard (art-map.js standardPinHtml): a brass pin, a gilt staff and our blue and gold pennant. */
   function pinHtml() {
@@ -30953,7 +31125,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     return { w: Math.ceil(Gm.W * s), h: Math.ceil(Gm.H * s) };
   }
 
-  G.L1Map = { GEO, REG, LANDMARKS: LANDMARKS.map((l) => ({ n: l.n, name: l.name })), geom, viewX, clampX, ease, states, cardInfo, cardSpot, panPlan, artHtml, defsHtml, mount: mapScreen, debugWhole, ARMY_AT, CARD_W };
+  G.L1Map = { GEO, REG, LANDMARKS: LANDMARKS.map((l) => ({ n: l.n, name: l.name })), geom, viewX, clampX, ease, states, cardInfo, cardSpot, panPlan, artHtml, defsHtml, mount: mapScreen, debugWhole, ARMY_AT, CARD_W, keepOf, leadOf };
   if (G.L1Screens) G.L1Screens.map = mapScreen;
   else G.L1Screens = { map: mapScreen };
 })();
@@ -32112,19 +32284,16 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       if (dead) return;
       closePop(true);
       hideTip();
-      const price = R.genSlotPrice(run), n = gs.length + (price !== null ? 1 : 0), w = Math.min(1120, Math.max(560, Math.min(3, Math.max(1, n)) * 222 + 60));
+      const gv = gensView(run), n = gs.length + gv.open + gv.locked, w = Math.min(1120, Math.max(560, Math.min(3, Math.max(1, n)) * 222 + 60));
       const sellHtml = (x) => {
         const p = R.sellPrice(run, x.id);
         return p === null ? '<span class="sub qm-nosell">Holds his place for good</span>'
           : '<button class="qm-mb cancel qm-sell" data-p="sell" data-k="' + esc(x.id) + '" data-sfx="none" aria-label="' + esc('Sell ' + gName(x) + ' for ' + p + ' gold') + '"><span class="v">Sell</span><span class="qm-mp">' + icon('gold') + '+' + p + '</span></button>';
       };
-      const seat = price === null ? '' : '<div class="qm-it qm-seatb">' + (Cards().seatChip ? Cards().seatChip('lock') : '') +
-        '<button class="qm-mb ok' + (R.canBuyGenSlot(run) ? '' : ' off') + '" data-p="seat" data-sfx="none"><span class="v">Buy a seat</span><span class="qm-mp">' + icon('gold') + price + '</span></button></div>';
       const el = document.createElement('div');
       el.className = 'qm-pop' + (calm() || again ? '' : ' anim');
       el.innerHTML = '<div class="qm-scrim" data-p="cancel"></div><div class="pnl qm-modal qm-full qm-gview" ' + mstyle(w) + '>' +
-        '<div class="qm-mh">Your generals</div><div class="qm-ms">' + gs.length + ' of ' + R.maxGeneralsOf(run) + ' seats. Sell one for half his hire price: his seat stays yours.</div>' +
-        '<div class="qm-mrow"><div class="qm-its">' + gs.map((x) => '<div class="qm-it" data-k="' + esc(x.id) + '">' + plaque(x, { T, run, size: 'm' }) + sellHtml(x) + '</div>').join('') + seat + '</div></div>' +
+        '<div class="qm-mh">Your generals</div>' + gensViewHtml(run, (x) => plaque(x, { T, run, size: 'm' }) + sellHtml(x)) +
         '<div class="qm-mbtns"><button class="qm-mb ok" data-p="cancel" data-sfx="none">Close</button></div></div>';
       root.appendChild(el);
       pop = { el, busy: false, sellAt: 0, sellId: null };
@@ -32727,7 +32896,35 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     };
   }
 
-  globalThis.L1Store = { shortName, services, serviceOn, promotePrice, promotePrices, hireTitle, upkeepNote, upkeepPaid, nextBoss, wareVerb, armTipIndex,
+  /** wmp001 after rules 9 (display): the Your generals view's seats and line. {held, seats, cap, open (bought, empty),
+   *  locked (0/1: one more for sale), price (that seat's, or null), sell (anyone can be sold), line}: the line fits the
+   *  state - none held, some held with open seats, every seat filled (a seat for sale, or all six). */
+  function gensView(run) {
+    const gs = (run && run.generals) || [], held = gs.length, seats = R.maxGeneralsOf(run), cap = R.seatCapOf ? R.seatCapOf(run) : 6;
+    const price = R.genSlotPrice(run), open = Math.max(0, seats - held), locked = price !== null ? 1 : 0;
+    const sell = gs.some((g) => { try { return R.sellPrice(run, g.id) !== null; } catch (e) { return false; } });
+    const pl = (k, w) => k + ' ' + w + (k === 1 ? '' : 's');
+    const sellLine = sell ? ' Sell one for half his hire price: his seat stays yours.' : '';
+    let line;
+    const most = locked ? '' : ', the most a run can hold';
+    if (!held) line = 'No generals yet: ' + pl(open, 'open seat') + most + '. Hire one at a General for hire stall.';
+    else if (open) line = held + ' of ' + pl(seats, 'seat') + ' filled' + most + ': ' + (open === 1 ? 'one is' : open + ' are') + ' open for a hire.' + sellLine;
+    else if (locked) line = 'Every seat is filled: buy a seat to hire another.' + sellLine;
+    else line = 'All ' + seats + ' seats are filled, the most a run can hold.' + sellLine;
+    return { held, seats, cap, open, locked, price, sell, line };
+  }
+  /** The view's line and its row: each held general (`heldHtml(g)`: his plaque and Sell), the open seats, the locked
+   *  seat with Buy and its price. */
+  function gensViewHtml(run, heldHtml) {
+    const gv = gensView(run), chip = (k) => (Cards().seatChip ? Cards().seatChip(k, 'store') : '');
+    const its = (run.generals || []).map((x) => '<div class="qm-it" data-k="' + esc(x.id) + '">' + heldHtml(x) + '</div>')
+      .concat(Array.from({ length: gv.open }, () => '<div class="qm-it qm-seatb qm-seato">' + chip('open') + '</div>'))
+      .concat(gv.locked ? ['<div class="qm-it qm-seatb">' + chip('lock') +
+        '<button class="qm-mb ok' + (R.canBuyGenSlot(run) ? '' : ' off') + '" data-p="seat" data-sfx="none"><span class="v">Buy a seat</span><span class="qm-mp">' + icon('gold') + gv.price + '</span></button></div>'] : []);
+    return '<div class="qm-ms">' + esc(gv.line) + '</div><div class="qm-mrow"><div class="qm-its">' + its.join('') + '</div></div>';
+  }
+
+  globalThis.L1Store = { gensView, gensViewHtml, shortName, services, serviceOn, promotePrice, promotePrices, hireTitle, upkeepNote, upkeepPaid, nextBoss, wareVerb, armTipIndex,
     armyRows, tipText, restockReady, RESTOCK_GAP, ENTER_ORDER, packInfo, priceShow, viewIndex, stallOf, stallsOf, stallGrid, pickToggle, pickState, takeList,
     packLine, orderText, packArt, fanRows, fixedOf, storeParts, rowGrid, academyOf, musterOf, TILE_KINDS };
   if (globalThis.L1Screens) Object.assign(globalThis.L1Screens, { store });
@@ -36627,9 +36824,13 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   // as it was when help closes.
   const LAND = { w: 1180, h: 820, name: '' }, TALL = { w: 820, h: 1180, name: 'tall' };
   // wmp001 rules 8 (Wave 6): the map too (ui/s-map.js: the chart on top, the card docked under it)
-  const TALL_SCREENS = { store: 1, map: 1 };
+  // wmp001 after rules 9 (display): the draft too (moments.css: its choices in a row, the deck's stacks at full size)
+  const TALL_SCREENS = { store: 1, map: 1, draft: 1 };
   const LAND_ONLY = '.mo-lv';
-  const TALL_OVER = '#stage > .l1help';
+  // wmp001 after rules 9 (display): the menu and the deck view (the draw pile) too: they have their tall layout (the
+  // store's), and letterboxed over the battle their buttons and chips were 36 px on screen
+  // and a card's or a general's long-press view (cards.css has its tall layout: the card over its text)
+  const TALL_OVER = '#stage > .l1help, #stage > .l1menu, #stage > .l1deck, #stage > .l1detail';
   let shape = LAND, watch = null;
   const has = (sel) => { try { return !!(stage.querySelector && stage.querySelector(sel)); } catch (e) { return false; } };
   /** The stage's shape for the screen up now (or `name`) and the window: TALL or LAND. */
@@ -36657,6 +36858,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     // str001 r10: help turned the stage tall over a landscape screen (that screen kept unseen, shell.css)
     const over = shape === TALL && !TALL_SCREENS[stage.dataset && stage.dataset.screen];
     if (over) stage.dataset.over = 'help'; else if (stage.dataset.over) delete stage.dataset.over;
+    // wmp001 after rules 9 (display): the landscape stage letterboxed on a portrait window (the title, the battle: at
+    // about .7) is marked data-port, so their smallest words can grow there (shell.css, home.css, battle.css)
+    if (shape === LAND && h > w) stage.dataset.port = '1'; else if (stage.dataset.port) delete stage.dataset.port;
     const k = Math.min(w / shape.w, h / shape.h);
     stage.style.transform = 'scale(' + k + ')';
     stage.style.left = (z.l + (w - shape.w * k) / 2) + 'px';
