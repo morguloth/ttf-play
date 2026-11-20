@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="21">
-<script>(function(){var B="d5f1fd6310";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=21;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-wmp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("wmp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="3dc65462b0";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=21;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-wmp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("wmp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2369,6 +2369,12 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 /* the end plate's line: a long number may take the plate wider, never past the stage */
 .pnl.endplate { max-width: 1100px; }
 .endplate .es { overflow-wrap: anywhere; }
+
+/* 2026-11-20 (owner): the hand's best card this turn wears the board's star (battle.js markBestCard), on the card's top edge, right of centre (a hero's crown and The Lady's mark hold the centre) */
+.hand .hc .hstar { position: absolute; left: 80%; top: -15px; width: 30px; height: 30px; margin-left: -15px; z-index: 5; pointer-events: none; padding: 3px; box-sizing: border-box;
+  border-radius: 50%; background: radial-gradient(circle at 40% 34%, #5a4322, #2a1d0c 72%); box-shadow: 0 0 0 1.5px #f3c95a, 0 2px 6px rgba(0,0,0,.6), 0 0 10px rgba(255,214,120,.45); }
+.hand .hc .hstar svg { display: block; width: 100%; height: 100%; fill: #ffe08a; stroke: #4a3414; stroke-width: 1.2; stroke-linejoin: round; }
+.hand .hc .l1card.sel ~ .hstar { top: -41px; }
 </style>
 <style>
 /*
@@ -29193,6 +29199,22 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     if (s2 === top) out.push(ks[1]);
     return out;
   }
+  /** The index of the offer's card whose best tile gives the highest total (hintsOf: C.predict per legal tile), or -1:
+   *  fewer than two cards that take a tile, the top shared by two cards, or no card ahead of another. Pure but for the
+   *  hints cache. */
+  function bestCardOf(st, offer) {
+    const tops = (offer || []).map((c, i) => {
+      if (!c || isOrder(c)) return null;
+      let sl = null;
+      try { sl = hintsOf(st, i).slots; } catch (e) { sl = null; }
+      const v = Object.keys(sl || {}).map((s) => sl[s] && sl[s].total).filter((x) => typeof x === 'number');
+      return v.length ? Math.max.apply(null, v) : null;
+    });
+    const vals = tops.filter((x) => x !== null);
+    if (vals.length < 2) return -1;
+    const mx = Math.max.apply(null, vals);
+    return vals.filter((x) => x === mx).length === 1 ? tops.indexOf(mx) : -1;
+  }
   /** A unit record's power (its first set: the rank's power, else its base step). */
   function unitPower(u) {
     const p = ((u && u.parts) || []).find((q) => q.op === 'set' && typeof q.v === 'number');
@@ -30116,9 +30138,23 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
           (Cards ? Cards.html(c, { T, sel: S.held === i, st: S.st }) : '') + (S.held === i && isOrder(c) ? takeHtml(i) : '') +
           (i === lady ? '<span class="ladym" title="The Lady of Arrows: every hand holds an Archers card">' + icon('arc') + 'The Lady</span>' : '') + '</div>';
       }).join('');
+      // 2026-11-20 (owner: "a little star symbol on the card in hand that produces the highest score that turn ... a companion
+      // to the greedy on the board star"): the hand's best card wears a star (markBestCard), worked out after the deal is drawn
+      clearTimeout(S.bestT);
+      const stNow = S.st;
+      S.bestT = n > 1 ? setTimeout(() => { if (!S.destroyed && S.st === stNow) markBestCard(); }, 0) : null;
       // the deal's end comes by animationend (onHandAnim); this is its safety net
       clearTimeout(S.settleT);
       S.settleT = anim ? setTimeout(settleHand, Math.max(0, dd || 0) + 300 + 50 * (n - 1) + 250) : null;
+    }
+    /** The star on the hand's best card: the one whose best tile gives the highest battle total this turn (bestCardOf);
+     *  none when the top is shared or every card comes to the same. Orders take no tile and are left out. */
+    function markBestCard() {
+      el.hand.querySelectorAll('.hstar').forEach((x) => x.remove());
+      const offer = S.ending || S.st.phase !== 'draft' ? [] : S.st.offer || [];
+      const k = bestCardOf(S.st, offer);
+      const hc = k >= 0 ? el.hand.querySelector('.hc[data-i="' + k + '"]') : null;
+      if (hc) hc.insertAdjacentHTML('beforeend', '<span class="hstar" title="The highest score this turn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 6 6.5.9-4.7 4.6 1.1 6.5L12 17.5l-5.8 3.1 1.1-6.5L2.6 9.5l6.5-.9z"/></svg></span>');
     }
     /** Fix wave (S3-01): the dealt hand has settled: every card loses .deal (a later bob, shake or
      *  hold must never replay the deal), and what waited for it (the b-hold tip) runs. */
@@ -31529,7 +31565,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
   /** wmp001 rules 15 (task D): the callout when the Rearguard Marshal's reshuffle fires (once a battle). */
   const RESHUFFLE_LINE = 'Rearguard Marshal: the cards you did not take are shuffled back into the pile';
 
-  globalThis.L1Battle = { deckShort, SHORT_LINE, RESHUFFLE_LINE, mount, seatsHtml, siegeRows, frontRows, tierRows, skKindHtml, frontLine, hintsOf, objHtml, scenBanner, scenRefusal, lossLines, objMissHtml, seizeLine, SCEN_HINT, turnLabel, placeWeight, popDelays, changedOf, coinsFor, keyAct, pileOf, beatsOf, homePlace, routeOf,
+  globalThis.L1Battle = { bestCardOf, deckShort, SHORT_LINE, RESHUFFLE_LINE, mount, seatsHtml, siegeRows, frontRows, tierRows, skKindHtml, frontLine, hintsOf, objHtml, scenBanner, scenRefusal, lossLines, objMissHtml, seizeLine, SCEN_HINT, turnLabel, placeWeight, popDelays, changedOf, coinsFor, keyAct, pileOf, beatsOf, homePlace, routeOf,
     bandsOf, bandState, marginBasis, payLine, victoryTier, bestOf, bigUnit, chainHtml, tileTap, orderChips, orderBeats, isOrder, dynTag: dynTag0 };
 })();
 </script>
