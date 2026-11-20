@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="18">
-<script>(function(){var B="b4f8962525";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=18;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-wmp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("wmp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="e1cb90926c";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=18;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-wmp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("wmp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2858,10 +2858,6 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .qm-sl { flex: none; min-height: 36px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 1px; }
 .qm-sl .k { font-family: var(--label); font-size: var(--fs-xs, 13px); font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: var(--lab, #c9a764); line-height: 1.15; }
 .qm-stall.sale .qm-sl { padding: 0 56px; } /* review 2026-11-13: the label clears the Sale ribbon */
-/* wmp001 rules 11 (the fullest store): in the fixed store's narrow rotating stalls the label keeps clear of the Sale
-   ribbon on its right only (a long pack name has room for its longest word) */
-.qm.fx .qm-rot .qm-stall.sale:not(.pwide) .qm-sl:not(.msl) { padding: 0 50px 0 0; }
-.qm.fx .qm-rot .qm-stall.sale:not(.pwide) .qm-sl:not(.msl) .k { letter-spacing: .6px; }
 .qm-sl .s { font-size: var(--fs-sm, 15px); color: var(--sub, #b9ab8f); line-height: 1.1; }
 .qm-sb { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
 .qm-med { zoom: var(--z, 1); flex: none; position: relative; }
@@ -3376,7 +3372,6 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 #stage[data-shape="tall"] .qm.fx .qm-stall, #stage[data-shape="tall"] .qm.fx .qm-rot { flex: var(--pgrow, 1) 1 0; }
 #stage[data-shape="tall"] .qm.fx .qm-stall.k-messenger .qm-sb { flex-direction: column; gap: 12px; }
 #stage[data-shape="tall"] .qm.fx .qm-hires { display: grid; grid-template-columns: repeat(2, auto); justify-content: center; gap: 12px; }
-#stage[data-shape="tall"] .qm.fx .qm-pr { height: 52px; }
 
 .qm-tn { margin-left: auto; font-size: var(--fs-sm, 15px); color: var(--ink-body, #e6d7b6); white-space: nowrap; }
 .qm-gn .sh { display: none; }
@@ -3454,7 +3449,6 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 #stage[data-shape="tall"] .qm.fx .qm-stalls { height: 548px; }
 /* the Messenger Corps (fixed store): Promote an order a compact button in the stall's head (its cards keep the height);
    in portrait its two cards one over the other when that leaves them larger (pstack) */
-.qm-sl.msl { flex-direction: row; justify-content: space-between; gap: 10px; padding: 0 2px; }
 .qm-po { position: relative; flex: none; display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-size: var(--fs-xs, 13px); color: var(--ink-body, #e6d7b6); white-space: nowrap; }
 .qm-po > .ic { font-size: 19px; color: var(--ink-brass, #f3d58e); }
 .qm-po .qm-pill { height: 30px; padding: 0 10px 0 7px; font-size: var(--fs-sm, 15px); }
@@ -3462,17 +3456,8 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .qm-po.off { color: #9d9079; }
 .qm-po.off > .ic { opacity: .45; }
 .qm-po:active { filter: brightness(1.2); }
-/* on Sale the ribbon holds the head's right corner: Promote an order steps left of it and reads "Promote" */
-.qm-stall.sale .qm-sl.msl { padding-right: 60px; }
-.qm-stall.sale .qm-sl.msl .k { letter-spacing: .3px; }
-.qm-stall.sale .qm-po .t2 { display: none; }
-#stage[data-shape="tall"] .qm.fx .qm-stall.sale .qm-sl.msl { padding: 0 64px 0 2px; }
-#stage[data-shape="tall"] .qm.fx .qm-stall.sale .qm-po .t2 { display: inline; }
 #stage[data-shape="tall"] .qm.fx .qm-stall.k-messenger .qm-sb { flex-direction: column; gap: 12px; }
 #stage[data-shape="tall"] .qm.fx .qm-stall.k-messenger.pstack .qm-msgc { flex-direction: column; align-items: center; gap: 10px; }
-#stage[data-shape="tall"] .qm.fx .qm-sl.msl { flex-direction: column; justify-content: flex-start; gap: 8px; min-height: 88px; }
-#stage[data-shape="tall"] .qm.fx .qm-sl.msl .k { letter-spacing: .6px; }
-#stage[data-shape="tall"] .qm.fx .qm-po .t { white-space: normal; max-width: 74px; line-height: 1.1; text-align: left; }
 #stage[data-shape="tall"] .qm.fx .qm-stalls.mu { flex-wrap: wrap; align-content: flex-start; row-gap: 28px; }
 #stage[data-shape="tall"] .qm.fx .qm-stalls.mu > .qm-stall.many { order: -1; flex: 0 0 100%; height: 196px; }
 #stage[data-shape="tall"] .qm.fx .qm-stalls.mu > .qm-stall:not(.many), #stage[data-shape="tall"] .qm.fx .qm-stalls.mu > .qm-rot { height: 324px; }
@@ -3704,22 +3689,10 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .qm-go:not(.has-next):not(.arm) { padding: 0 16px; }
 .qm-go:not(.has-next):not(.arm) .qm-gol { gap: 7px; font-size: .9em; letter-spacing: .04em; white-space: nowrap; }
 .qm-go .qm-gol .ic { margin: 0; }
-/* (the dark store, below: "This visit" a brass tab again, lifted clear of the stalls' labels and the Sale ribbon,
-   a size larger than before the parchment so it is noticed) */
-.qm-rtab { top: -22px; padding: 2px 18px 3px; border-radius: 999px; font-size: 14px; letter-spacing: 2.2px; color: #2b2219;
+/* (the dark store, below: "This visit" a brass tab again, a size larger than before the parchment so it is noticed;
+   after rules 17: centred on the frame's line, clear of the strip above it and the stalls' titles under it) */
+.qm-rtab { top: -16px; padding: 0 18px 2px; border-radius: 999px; font-size: 14px; letter-spacing: 2.2px; color: #2b2219;
   background: linear-gradient(180deg, #f6dc98, #c99a45); box-shadow: 0 0 0 1px #5a3e14, 0 0 0 3px rgba(243,213,142,.18), 0 3px 8px rgba(0,0,0,.65); }
-.qm.fx .qm-stall .qm-sl:not(.msl) { justify-content: flex-start; }
-/* (owner: the Messenger Corps stall "is VERY crowded") its title row sat on the order cards' badges: the cards step down */
-.qm.fx .qm-stall.k-messenger .qm-sl.msl { margin-bottom: 12px; align-items: flex-start; }
-#stage:not([data-shape="tall"]) .qm.fx .qm-stall.k-messenger .qm-sl.msl .k { white-space: nowrap; letter-spacing: .8px; }
-#stage:not([data-shape="tall"]) .qm.fx .qm-stall.k-messenger .qm-sl.msl { align-items: center; min-height: 30px; }
-/* (on Sale its one-line title kept the 56 px the Sale label clears on its left too, so Promote an order slid under the
-   ribbon: the title starts at the stall's edge, Promote stays left of the ribbon) */
-#stage:not([data-shape="tall"]) .qm.fx .qm-stall.k-messenger.sale .qm-sl.msl { padding-left: 2px; }
-#stage:not([data-shape="tall"]) .qm.fx .qm-stall.k-messenger.sale .qm-sl.msl .k { letter-spacing: .3px; }
-/* (the Royal Armoury's two-line label, "A legendary for sale", sat on its card's power badge: the card steps down) */
-.qm.fx .qm-stall.k-armoury .qm-sl { margin-bottom: 10px; }
-
 /* ======================================================================= After rules 16: the store keeps its dark look
    (owner, 2026-11-19: the parchment store "all sort of blends together"; then "I want the store pop-ups to be dark too").
    The store's scope reads as it did before the parchment (c934051d): its screen .qm-scr (the head, stalls, tiles, Your
@@ -3783,6 +3756,61 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 :where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque.lg .gp { box-shadow: 0 0 0 3px #f3c95a, 0 0 0 5px #2e0904, 0 0 16px rgba(255,130,40,.8), 0 6px 12px rgba(0,0,0,.6); }
 :where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque.lg .gn { color: #ffd98a; text-shadow: 0 0 8px rgba(255,140,40,.5); }
 :where(.qm-scr, .qm-scr ~ :is(.l1detail, .fdrawer, .l1deck)) .l1plaque.s-chip.lg { box-shadow: inset 0 0 0 1px rgba(255,226,160,.25), 0 0 0 1px #0c0a08, 0 0 0 2px #f0b543, 0 0 14px rgba(255,124,36,.4), 0 10px 18px -8px rgba(0,0,0,.9); }
+
+/* ======================================================================= after rules 17 (2026-11-20): the card row
+   (owner: "fonts/spacings are off ... details"; the visit after a boss: the Messenger Corps' Promote an order cut by the
+   stall's edge, the titles at three heights, Boss chest on two lines under its Reward ribbon, the orders' badges past the
+   stall's left edge, the cards and prices on different lines). Every stall's head is two lines, the same in every stall:
+   its title on the first (one line, clear of a Sale or Reward ribbon; a long pack name may take the second), its note
+   or Promote an order on the second; so the titles share one line. Under it each ware fills the stall: its card (plaque,
+   pack) centred in the room above its price, the prices on one line at the foot; a card keeps room for its power badge
+   above and left of it (the badge inside the stall). s-store.js rowGrid sizes the stalls for this (minOf: each at least
+   as wide as its head; a card 181 x 266 card px with its badge, 46 px for its price). Landscape: the row 264-608, the
+   "This visit" tab on the frame's line between the strip and the titles. */
+#stage:not([data-shape="tall"]) .qm.fx .qm-stalls { top: 264px; height: 344px; }
+.qm.fx .qm-stall { padding: 13px 10px 7px; }
+.qm.fx .qm-stall .qm-sl { height: 38px; min-height: 0; margin: 0; padding: 0; flex-direction: column; justify-content: flex-start; align-items: center; gap: 3px; }
+.qm.fx .qm-sl .k { white-space: nowrap; letter-spacing: 1.6px; }
+.qm.fx .qm-stall.k-pack:not(.chest) .qm-sl { height: auto; min-height: 38px; }
+.qm.fx .qm-stall.k-pack:not(.chest) .qm-sl .k { white-space: normal; text-wrap: balance; letter-spacing: .6px; }
+.qm.fx .qm-sl .s { white-space: nowrap; }
+/* portrait without the Royal Muster (room to spare above the cards): the head three lines, a title may take two */
+#stage[data-shape="tall"] .qm.fx .qm-stalls:not(.mu) .qm-stall .qm-sl { height: 55px; }
+#stage[data-shape="tall"] .qm.fx .qm-stalls:not(.mu) .qm-sl .k { white-space: normal; text-wrap: balance; }
+/* the ribbons hold the head's right corner: its words centre in the room left of them (the corner narrows downwards:
+   58 / 40 px beside the title's line, 42 / 28 beside the line under it; s-store.js minOf) */
+.qm.fx .qm-stall.sale:not(.spent) .qm-sl .k { padding-right: 58px; }
+.qm.fx .qm-stall.sale:not(.spent) .qm-sl > :is(.s, .qm-po) { margin-right: 42px; }
+.qm.fx .qm-stall.spoils:not(.spent) .qm-sl .k { padding-right: 40px; }
+.qm.fx .qm-stall.spoils:not(.spent) .qm-sl > :is(.s, .qm-po) { margin-right: 28px; }
+/* Promote an order: the head's second line, compact (its tap reaches past it) */
+.qm.fx .qm-po { height: 20px; gap: 6px; }
+.qm.fx .qm-po > .ic { font-size: 15px; }
+.qm.fx .qm-po .qm-pill { height: 20px; padding: 0 8px 0 5px; gap: 4px; font-size: var(--fs-xs, 13px); }
+.qm.fx .qm-po .qm-pill .ic { font-size: 15px; }
+.qm.fx .qm-po::after { top: -12px; bottom: -12px; }
+.qm.fx .qm-stall.sale:not(.spent) .qm-po .t2 { display: none; }
+/* the wares fill the stall under its head: the media centred above the price line */
+.qm.fx .qm-stall:not(.many) .qm-sb { align-items: stretch; justify-content: flex-start; gap: 0; }
+.qm.fx .qm-stall:not(.many) .qm-sb > :is(.qm-ware, .qm-hrow, .qm-msgc) { flex: 1 1 auto; }
+#stage .qm.fx .qm-stall.k-messenger .qm-sb { gap: 0; }
+.qm.fx .qm-msgc { align-items: stretch; }
+#stage[data-shape="tall"] .qm.fx .qm-stall.k-messenger.pstack .qm-msgc { align-items: center; }
+.qm.fx .qm-msgc { gap: 6px; }
+.qm.fx .qm-msgc > .qm-ware { gap: 4px; }
+#stage[data-shape="tall"] .qm.fx .qm-stall.k-messenger.pstack .qm-msgc > .qm-ware { flex: 1 1 0; }
+.qm.fx .qm-stall .qm-ware, .qm.fx .qm-stall .qm-hrow:not(.chip) { gap: 4px; }
+.qm.fx .qm-stall :is(.qm-ware, .qm-hrow:not(.chip)) > .qm-med { margin: auto 0; }
+#stage .qm.fx .qm-stall .qm-pr { height: 42px; min-height: 0; flex: none; }
+.qm.fx .qm-stall .qm-hrow:not(.chip) .qm-hside { padding-bottom: 4px; }
+/* (a general for hire's plaque stays with its line, "Your seats are full", over the price: the room above it) */
+.qm.fx .qm-stall .qm-hrow:not(.chip) > .qm-med { margin: auto 0 8px; }
+/* a chest's Open · Free a size smaller in the row (its stall stays narrow) */
+.qm.fx .qm-stall .qm-ware:not(.armed) .qm-pill.qm-free { gap: 6px; padding: 0 11px; font-size: var(--fs-sm, 15px); }
+.qm.fx .qm-stall .qm-ware:not(.armed) .qm-pill.qm-free .p { padding-left: 6px; }
+/* a card's power badge stands 16 card px over its top and left edge: room for it, so the card and badge centre as one */
+.qm.fx .qm-stall .qm-med:has(> .l1card) { padding: 16px 0 0 11px; }
+.qm-at .r::first-letter { text-transform: uppercase; }   /* (a formation line written lower-case, "wall, Cavalry at ends") */
 </style>
 <style>
 /*
@@ -4883,11 +4911,12 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .h-grp.g-cav .lab .ic { color: var(--cav1); }
 .h-grp.g-mac .lab .ic { color: var(--mac1); }
 .h-grp.g-officer .lab .ic, .h-grp.g-hero .lab .ic { color: var(--ink-brass, #f3d58e); }
-.h-cards { display: flex; flex-wrap: wrap; gap: 16px 10px; padding: 12px 0 4px 8px; }
+/* (after rules 17: 22 px between cards, so a power badge (14 px past its card's left) never lies on the card before it) */
+.h-cards { display: flex; flex-wrap: wrap; gap: 16px 22px; padding: 12px 0 4px 8px; }
 .h-cards .l1card { cursor: pointer; }
 /* identical cards stacked: two edges behind the top card and a xN badge; laid out: a dashed outline */
 .h-stack { position: relative; display: flex; flex-wrap: wrap; gap: 16px 10px; }
-.h-stack:not(.open) { margin: 4px 14px 0 0; cursor: pointer; }
+.h-stack:not(.open) { margin: 4px 18px 0 0; cursor: pointer; }   /* (its ×N stands 20 px past it: clear of the next card's badge) */
 .h-stack:not(.open)::before, .h-stack:not(.open)::after { content: ''; position: absolute; inset: 0; border-radius: 10px;
   background: linear-gradient(180deg, #e9dcbc, #c9b48a); box-shadow: 0 0 0 2px #2a1d0d, 0 4px 10px rgba(0,0,0,.45); z-index: 0; }
 .h-stack:not(.open)::before { transform: translate(14px, -10px); opacity: .75; }
@@ -27026,7 +27055,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     return '<div class="l1plaque s-' + size + ' teach form' + (o.glow ? ' lit' : '') + (o.sel ? ' sel' : '') + (o.mark ? ' m-' + o.mark : '') + '" data-fid="' + esc(fid) + '">' +
       '<div class="gp gform">' + formGlyph(fid) + '</div>' +
       '<div class="gn ' + nameCls(f.name) + '">' + esc(f.name) + '</div>' +
-      '<div class="ge"><span class="gw">' + esc(f.short.replace(/^(Any order|Exact shape): /, '')) + '</span>' + chip('×' + fmt(formX(T, fid)), true) + '</div></div>';
+      '<div class="ge"><span class="gw">' + esc(f.short.replace(/^(Any order|Exact shape): /, '').replace(/^[a-z]/, function (m) { return m.toUpperCase(); })) + '</span>' + chip('×' + fmt(formX(T, fid)), true) + '</div></div>';
   }
   /**
    * rules 15 (2026-11-10, review): a general as a one-row chip for the battle's generals column: the
@@ -27584,7 +27613,8 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     return (C.FORMATIONS || []).map(function (f) { var on = learned.indexOf(f.id) >= 0, it = { id: f.id, name: f.name, on: on, x: on && live[f.id] ? live[f.id] : formX(T, f.id) }; if (counted && on) it.cnt = counted.indexOf(f.id) >= 0; return it; })
       .sort(function (a, b) { return (b.on - a.on) || (a.x - b.x) || (a.name < b.name ? -1 : a.name > b.name ? 1 : 0); });
   }
-  var formShort = function (f) { return String(f.short || '').replace(/^(Any order|Exact shape): /, ''); };
+  // (after rules 17: a line written lower-case after its prefix, "wall, Cavalry at ends", starts with its capital)
+  var formShort = function (f) { return String(f.short || '').replace(/^(Any order|Exact shape): /, '').replace(/^[a-z]/, function (m) { return m.toUpperCase(); }); };
   /** One drawer cell: the shape, its ×N, its name, its one-line rule; learned in colour, the rest greyed. */
   function formCell(it) {
     var f = formDef(it.id), rv = it.cnt !== undefined;
@@ -33702,28 +33732,49 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
   }
   // the card row's room (stage px): landscape 1136 wide, each stall's media and price 290 tall (wmp001 rules 10: the
   // foot rose 12 px for Sell); portrait 776 wide, 490 tall in one row; the stalls' padding and gaps as stallGrid's
-  const FX = { W: 1136, PW: 776, H: 290, PH: 490 };
+  // (after rules 17: landscape the row 344 tall, a stall's padding 12 + 8 and its head 38: its media 286)
+  const FX = { W: 1136, PW: 776, H: 286, PH: 490 };
+  // after rules 17 (layout pass): a card in the row with room for its power badge (it stands 16 card px over the card's top
+  // and left edge: 11 px of room beside it, 16 over it), its price under it (a 4 px gap, the 42 px price line); a row
+  // stall's padding (10 + 10); a stall's head as wide as its words (minOf: a label letter LCH px, a
+  // note's letter NCH px, the ribbons' corners)
+  const CARD_A = 181, CARD_H = 266, WARE_FOOT = 46, RPAD = 20, LCH = 10.6, PCH = 9.6, NCH = 7.6, RIB = { sale: [58, 42], rw: [40, 28] };
+  /** The least width (stage px) a row stall's head needs: its title on one line (`wrap`, a portrait row without the Royal
+   *  Muster: on two; a pack's name wraps, PCH px a letter: its longest word), clear of its Sale or Reward ribbon; its
+   *  note; the Messenger Corps' Promote an order; a chest's Open · Free. 0 for a stall without a label (the tests' bare
+   *  stalls). */
+  function minOf(s, wrap) {
+    const lab = String((s && s.label) || '');
+    if (!lab) return 0;
+    const words = lab.split(/\s+/), two = s.kind === 'pack' && !s.chest;
+    // (two lines: the split whose longer line is shortest)
+    const half = () => words.reduce((m, w, i) => (i ? Math.min(m, Math.max(words.slice(0, i).join(' ').length, words.slice(i).join(' ').length)) : m), lab.length);
+    const title = two ? Math.max.apply(null, words.map((w) => w.length)) * PCH : (wrap ? half() : lab.length) * LCH;
+    // (a ribbon's corner: its room beside the title's line, then beside the line under it)
+    const rib = s.sale && !s.spent ? RIB.sale : s.spoils && !s.spent ? RIB.rw : [0, 0];
+    let w = title + rib[0];
+    if (s.sub) w = Math.max(w, s.sub.length * NCH + rib[1]);
+    if (s.kind === 'messenger') w = Math.max(w, (s.sale && !s.spent ? 124 : 180) + rib[1]);
+    if (s.chest) w = Math.max(w, 120);
+    return Math.ceil(w) + RPAD;
+  }
   // wmp001 rules 10: the Royal Muster's generals stand as chips (L1Cards.genChip, 236 x 66), each with its price: a
   // column in landscape (the stall MUSTER_W wide), a row on its own in portrait (MUSTER_PH tall), the rest under it
   const MUSTER_W = 374, MUSTER_PH = 196, PROW_GAP = 28;
-  /** Shares `W` px among stalls {a (px a unit of zoom), c (px fixed), cap (its zoom's most)}: every stall the same zoom
-   *  where it can (a stall at its cap leaves the rest to the others) -> [{w, z}]; room left over widens them all. */
+  /** Shares `W` px among stalls {a (px a unit of zoom), c (px fixed), cap (its zoom's most), min? (its least width)}:
+   *  every stall the same zoom where it can (a stall at its cap leaves the rest to the others) -> [{w, z}]; room left
+   *  over widens them all. After rules 17 (layout pass): a stall is never narrower than its head needs (min: its
+   *  one-line title clear of a ribbon, Promote an order, a chest's Open · Free); it keeps the row's zoom, the room over
+   *  stands around its ware. The row's zoom: the largest (bisected) whose widths fit W. */
   function shareRow(items, W) {
     const n = items.length, avail = W - GAP * Math.max(0, n - 1);
-    const capped = items.map((x) => !(x.a > 0));
-    let z = 0;
-    for (let round = 0; round <= n; round++) {
-      const fixed = items.reduce((s, x, k) => s + x.c + (capped[k] && x.a > 0 ? x.a * x.cap : 0), 0);
-      const free = items.reduce((s, x, k) => s + (capped[k] ? 0 : x.a), 0);
-      z = free > 0 ? (avail - fixed) / free : 0;
-      const over = items.map((x, k) => !capped[k] && x.cap < z);
-      if (!over.some(Boolean)) break;
-      over.forEach((o, k) => { if (o) capped[k] = true; });
-    }
-    const out = items.map((x, k) => {
-      const zk = x.a > 0 ? Math.max(0.5, capped[k] ? x.cap : z) : 1;
-      return { w: x.a * zk + x.c, z: zk };
-    });
+    const zOf = (x, z) => (x.a > 0 ? Math.max(0.5, Math.min(x.cap, z)) : 1);
+    const width = (x, z) => Math.max(x.a * zOf(x, z) + x.c, x.min || 0);
+    const total = (z) => items.reduce((s, x) => s + width(x, z), 0);
+    let lo = 0.5, hi = Math.max(0.5, ...items.map((x) => (x.a > 0 ? x.cap : 0.5)));
+    if (total(hi) <= avail) lo = hi;
+    else for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (total(m) <= avail) lo = m; else hi = m; }
+    const out = items.map((x) => ({ w: width(x, lo), z: zOf(x, lo) }));
     const used = out.reduce((s, x) => s + x.w, 0), extra = n ? (avail - used) / n : 0;
     if (extra > 0) out.forEach((x) => { x.w += extra; });
     return out;
@@ -33743,35 +33794,41 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
     const msg = (s) => s.kind === 'messenger';
     const gen = (s) => s.kind === 'hire' || (s.kind === 'armoury' && ((s.items || [])[0] || {}).kind === 'general');
     const mu = list.some(many);
-    // one stall's needs in a row whose media may stand `H` px tall: {a, c, cap} (shareRow); `beside`: a Messenger
-    // Corps with Promote an order beside its cards (else under them)
+    // after rules 17 (layout pass, owner: titles at different heights, clipped, under a ribbon; badges past the stall's
+    // edge): every stall's head is two lines (store.css: the title on the first, its note or Promote an order on the
+    // second), so the stall is at least as wide as its head (minOf); a card stands with room for its power badge above
+    // and beside it (CARD_A x CARD_H card px, store.css .qm.fx .qm-med:has(> .l1card)), its price under it (WARE_FOOT px)
     const need = (s, H, port, beside) => {
       if (many(s)) return port ? { a: 0, c: 0, cap: 1 } : { a: 0, c: MUSTER_W, cap: 1 };
+      const min = minOf(s, port && !mu);
       // (wmp001 rules 10: Promote an order sits in the stall's head; `beside` here: the two cards side by side, else - in
       // portrait, when that leaves them larger - one over the other)
-      // (portrait: Promote an order under the stall's name, 52 px more for the head)
-      if (msg(s)) return beside ? { a: 340, c: PAD + 12, cap: Math.min(port ? 1 : 0.95, (H - 60 - (port ? 52 : 0)) / 250) }
-        : { a: 170, c: PAD + 56, cap: Math.min(1, (H - 2 * 50 - 12 - 52) / 500) };   // (56: room for its head's name and button)
-      if (gen(s)) return { a: 196, c: PAD, cap: Math.min(port ? 1.15 : 1.1, (H - 70) / 162) };
-      if (s.kind === 'pack') return { a: 150, c: PAD, cap: Math.min(port ? 1.15 : 1, (H - 120) / 150) };
-      // (landscape: 60 px over the card for its price and the gem standing out of its top, so the label stays clear)
-      return { a: 170, c: PAD, cap: Math.min(port ? 1.2 : 0.95, (H - 60) / 250) };
+      if (msg(s)) return beside ? { a: 2 * CARD_A, c: RPAD + 6, cap: Math.min(port ? 1 : 0.95, (H - WARE_FOOT) / CARD_H), min }
+        : { a: CARD_A, c: RPAD, cap: Math.min(1, (H - 2 * WARE_FOOT - 10) / (2 * CARD_H)), min };
+      if (gen(s)) return { a: 196, c: RPAD, cap: Math.min(port ? 1.15 : 1.1, (H - 70) / 162), min };
+      // (a pack: its object 150 x 188, its words and price under it, its name up to three lines)
+      if (s.kind === 'pack') return { a: 150, c: RPAD, cap: Math.min(port ? 1.15 : 1, (H - 121) / 188), min };
+      // (the Royal Armoury's legendary card: its crown stands 10 card px over its badge, under the head's note)
+      return { a: CARD_A, c: RPAD, cap: Math.min(port ? 1.2 : 0.95, (H - WARE_FOOT - (s.kind === 'armoury' ? 12 : 0)) / CARD_H), min };
     };
     /** The row of stalls `idx` at width W, media height H: the Messenger Corps beside or below, whichever is larger. */
     const solve = (idx, W, H, port) => {
       const m = idx.find((k) => msg(list[k]));
       const run = (beside) => shareRow(idx.map((k) => need(list[k], H, port, beside)), W);
       if (m === undefined || !port) return { r: run(true), below: false };
-      // (one over the other unless that leaves the orders clearly smaller: the other stalls then stand much larger)
+      // (one over the other unless that leaves the orders clearly smaller: the other stalls then stand much larger;
+      // after rules 17: nor when the orders would stand far smaller than the row's other wares)
       const a = run(true), b = run(false), j = idx.indexOf(m);
-      return b[j].z >= a[j].z - 0.03 ? { r: b, below: true } : { r: a, below: false };
+      const near = Math.max.apply(null, b.map((x) => x.z)) - b[j].z < 0.2;
+      return b[j].z >= a[j].z - 0.03 && near ? { r: b, below: true } : { r: a, below: false };
     };
     const all = list.map((s, k) => k);
     const L = solve(all, FX.W, FX.H, false);
     // portrait: one row; under a Royal Muster the muster alone on top, the rest beneath it
     const prow = list.map((s) => (mu && !many(s) ? 1 : 0));
     const pIdx = mu ? all.filter((k) => prow[k] === 1) : all;
-    const PH = mu ? FX.PH + 58 - MUSTER_PH - PROW_GAP - 58 : FX.PH;
+    // (after rules 17: without the Royal Muster a portrait head is three lines, a title on two: 17 px more)
+    const PH = mu ? FX.PH + 58 - MUSTER_PH - PROW_GAP - 58 : FX.PH - 17;
     const P = solve(pIdx, FX.PW, PH, true);
     const r3 = (x) => Math.round(x * 1000) / 1000;
     return list.map((s, k) => {
@@ -35235,7 +35292,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 
   globalThis.L1Store = { chestOf, CHEST_LABEL, gensView, gensViewHtml, formsLine, shortName, services, serviceOn, promotePrice, promotePrices, hireTitle, upkeepNote, upkeepPaid, nextBoss, wareVerb, armTipIndex,
     armyRows, tipText, restockReady, RESTOCK_GAP, ENTER_ORDER, packInfo, priceShow, viewIndex, stallOf, stallsOf, stallGrid, pickToggle, pickState, takeList,
-    packLine, orderText, packArt, fanRows, fixedOf, storeParts, rowGrid, academyOf, musterOf, TILE_KINDS };
+    packLine, orderText, packArt, fanRows, fixedOf, storeParts, rowGrid, minOf, academyOf, musterOf, TILE_KINDS };
   if (globalThis.L1Screens) Object.assign(globalThis.L1Screens, { store });
 })();
 </script>
