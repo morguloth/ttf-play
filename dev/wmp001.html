@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="24">
-<script>(function(){var B="c13b925558";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=24;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-wmp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("wmp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="3084a8085d";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=24;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-wmp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("wmp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -25459,6 +25459,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
 
   // ---- state -------------------------------------------------------------------------------------
   let state = null;
+  const RESET = 24;   // the rules version of the last tips reset
   function load() {
     if (state) return state;
     let s = store.get(KEY), q = null;
@@ -25468,8 +25469,12 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     else if (fresh) s = { seen: {}, off: experienced(store.get('ttf-wmp001:records'), store.get('ttf-wmp001:run')) };
     if (!s.seen || typeof s.seen !== 'object') s.seen = {};
     s.off = !!s.off;
+    // 2026-11-20 (owner: "reset things so everyone gets the tips"; the map's new tips): once a browser, every tip is
+    // unseen again and coaching is on, an experienced player's too (s.reset: the reset this browser has had)
+    const reset = s.reset !== RESET;
+    if (reset) s = { seen: {}, off: false, reset: RESET };
     state = s;
-    if (fresh || (q && q.get('tips') === '1')) store.set(KEY, state);
+    if (fresh || reset || (q && q.get('tips') === '1')) store.set(KEY, state);
     return state;
   }
   const on = () => !load().off;
