@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="17">
-<script>(function(){var B="97a5ceadf8";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=17;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-wmp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("wmp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="be26e82f89";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=17;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-wmp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("wmp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -4622,6 +4622,10 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .mo-deck .lab .mo-mt.eng .mo-mn { font-size: var(--fs-md, 17px); line-height: 18px; }
 .mo-deck .lab .mo-mt.eng .mo-ms { font-size: var(--fs-xs, 13px); line-height: 18px; font-weight: 500; letter-spacing: .2px; opacity: 1; }
 .mo-deck .lab .mo-mt.eng .mo-ms::before { content: '·'; margin-right: 6px; opacity: .6; }
+/* 2026-11-20 (owner: "the power badge is very close to the top edge"): a card's power badge (and a stack's ×N) stands
+   above the card's top, so the rank-up panel centres on what is seen: the badge's top to the line under the card */
+.mo .pnl.mo-lvp { padding: 32px 30px 24px; }
+.mo .pnl.mo-lvp:has(.mo-lvc.full) { padding: 42px 34px 26px; }
 </style>
 <style>
 /*
