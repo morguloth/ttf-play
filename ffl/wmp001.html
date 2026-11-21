@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="26">
-<script>(function(){var B="d7e7566f8c";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=26;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-wmp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("wmp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="d358e36aa3";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=26;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-wmp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("wmp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -22240,9 +22240,13 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     syncViews(out.store);
     return out;
   }
-  /** wmp001 rules 5: can a seat be bought now (the store open, no pack open, a seat left, the gold covers it)? */
+  /** Does this visit hold the General seat stall (serviceOk 'genSlot', read as if no pack were open)? */
+  const seatStall = (run) => serviceOk(run && run.store && run.store.open ? Object.assign({}, run, { store: Object.assign({}, run.store, { open: null }) }) : run, 'genSlot');
+  /** wmp001 rules 5: can a seat be bought now (the store open, a seat left, the gold covers it)? */
   function canBuyGenSlot(run) {
-    if (!run || run.phase !== 'store' || !run.store || run.store.open || !serviceOk(run, 'genSlot')) return false;
+    // 2026-11-21 (a player: a general taken from a pack with every seat filled could not buy the seat): also while a pack
+    // is open (the one act beside take and skip a pack allows: the seat is for the general being taken)
+    if (!run || run.phase !== 'store' || !run.store || !seatStall(run)) return false;
     const p = genSlotPrice(run);
     return typeof p === 'number' && (run.gold || 0) >= p;
   }
@@ -22250,8 +22254,8 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
    *  cap or when short. Logged {what: 'genSlot', sig: 'seat:<n>'} (n the seats held after). Rules 6: from the
    *  General seat stall (serviceOk 'genSlot'), as often as the gold lasts. */
   function buyGenSlot(run) {
-    noPack(run);
-    if (!serviceOk(run, 'genSlot')) throw new Error('no General seat stall in this visit');
+    inStore(run);   // (also with a pack open: canBuyGenSlot)
+    if (!seatStall(run)) throw new Error('no General seat stall in this visit');
     const p = genSlotPrice(run);
     if (typeof p !== 'number') throw new Error('every general seat is bought (' + seatCapT(run) + ')');
     // wmp001 rules 15: the seats bought (a Chief of Staff's own two are not)
@@ -34799,9 +34803,9 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       coins(rectOf(n.querySelector('.qm-mp') || n));
       const g0 = run.gold || 0;
       sfx('buy');
-      const want = pop.want;
+      const want = pop.want, onSeat = pop.onSeat;
       set(R.buyGenSlot(run), { goldFrom: g0 });
-      if (want) seatFreed(want); else openGens(true);
+      if (onSeat) onSeat(); else if (want) seatFreed(want); else openGens(true);
     }
     /** wmp001 rules 6: Learn, the Military Academy's button: its formation joins the run (Run.buyFormation); the
      *  tile then reads "Learned" for the rest of the visit. */
@@ -35170,13 +35174,15 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
         // wmp001 rules 5: up to six held, three a row (.qm-rview)
         w: Math.min(1120, 360 + Math.min(3, run.generals.length) * 222 - 26), cls: 'qm-rview',
         title: 'Your generals are full', line: gName(g) + ' joins. Choose the general who leaves: you are paid his sell price, and the new general takes his level if it is higher.' + repGone(),
-        refuse: martyrStays,
+        refuse: martyrStays, extra: seatExtra(),
         pre: '<div class="qm-in">' + plaque(g, { T, run, size: 'm' }) + '<span class="sub">joins</span></div><span class="qm-swap">' + icon('swap') + '</span>',
         items: run.generals.map((x) => ({ key: x.id, html: (sel) => plaque(x, { T, run, size: 'm', mark: sel ? 'leave' : null }) })),
         verb: (sel) => (sel === null ? 'Replace' : 'Replace ' + leaveName(sel, g.id)), price: null,
         // wmp001 rules 15 (task D): a Chief of Staff or Headmaster leaving with his extra in use: who leaves with him
         ok: (id) => { closePop(true); if (R.leavesWith && R.leavesWith(run, id, true)) partnerPick(id, g, (w) => { closePop(true); then(id, w); }); else then(id); }
       });
+      // a seat bought here: the pop-up closes and the take goes on with the new seat (nobody leaves)
+      if (pop) pop.onSeat = () => { closePop(true); takePack(); };
     }
     function doTake(picks, leaves, withIds) {
       const op = run.store.open, wasFull = R.swapsOf(run);
@@ -35382,6 +35388,13 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     // str001 rules 11 (war050 rules 5): the Martyr never leaves; the Reprieve swapped out is gone for good
     const martyrStays = (k) => (k === 'martyr' ? 'The Martyr holds his place for good' : '');
     const repGone = () => (run.generals.some((x) => x.id === 'reprieve') ? ' The Reprieve sent away is gone for good.' : '');
+    /** 2026-11-21 (a player: "I don't have the option to buy a new general slot even if I have the money"): the
+     *  "Your generals are full" pop-ups offer the next seat too, when one is left to buy (dimmed without the gold):
+     *  Buy a seat and its price, left of Cancel. '' when every seat is owned. */
+    const seatExtra = () => {
+      const p = R.genSlotPrice(run);
+      return typeof p === 'number' ? '<button class="qm-mb ok qm-seatx' + (R.canBuyGenSlot(run) ? '' : ' off') + '" data-p="seat" data-sfx="none"><span class="v">Buy a seat</span><span class="qm-mp">' + icon('gold') + p + '</span></button>' : '';
+    };
     function openReplace(slot, pick) {
       const g = itemAt(slot, pick);
       if (!g) return;
@@ -35390,7 +35403,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
         // wmp001 rules 5: up to six held, three a row (.qm-rview)
         w: Math.min(1120, 360 + Math.min(3, run.generals.length) * 222 - 26), cls: 'qm-rview',
         title: 'Your generals are full', line: name + ' joins. Choose the general who leaves: you are paid his sell price, and the new general takes his level if it is higher.' + repGone(),
-        refuse: martyrStays,
+        refuse: martyrStays, extra: seatExtra(),
         pre: '<div class="qm-in">' + plaque(g, { T, run, size: 'm' }) + '<span class="sub">joins</span></div><span class="qm-swap">' + icon('swap') + '</span>',
         items: run.generals.map((x) => ({ key: x.id, html: (sel) => plaque(x, { T, run, size: 'm', mark: sel ? 'leave' : null }) })),
         verb: (sel) => (sel === null ? 'Replace' : 'Replace ' + leaveName(sel, g.id)), price,
@@ -35401,6 +35414,8 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
           settle(p, 'qm-out', 420);
         }
       });
+      // a seat bought here: the pop-up closes and his ware is armed, a tap more hires him (seatFreed)
+      if (pop) pop.want = { slot, pick };
     }
     // ---- state, taps ----
     function set(r, o) { run = r; app.setRun(r); draw(o); }
