@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="28">
-<script>(function(){var B="212efc7ff5";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=28;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-wmp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("wmp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="24a10ac77a";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=28;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-wmp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("wmp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -15747,11 +15747,24 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     .map((p) => maskOf(p.slots));
   const lexCmp = (a, b) => { for (let k = 0; k < Math.min(a.length, b.length); k++) if (a[k] !== b[k]) return a[k] - b[k]; return a.length - b.length; };
   /** The candidate instances of formation `id` on `cty`: [slot list], deduplicated, in slot order. */
+  // 2026-11-21 (the owner's iPad: a battle slowed as it filled - a Bannerman's five wildcards with the Strategist's and
+  // the Mirror Knight's copies made every preview score the same type layouts over and over): the answer is a pure
+  // function of the formation, the types on the board, the touching lists and the board, so it is kept (the lists
+  // are read, never changed; cleared when it grows large). The same results, several times sooner.
+  const CAND = new Map(), CAND_IDS = new WeakMap();
+  let candSeq = 0;
+  const candTag = (o) => { if (!o) return 0; let k = CAND_IDS.get(o); if (!k) { k = ++candSeq; CAND_IDS.set(o, k); } return k; };
   function candidates(id, cty, adj, G) {
     const needs = comboNeeds(id);
     if (!needs && !(formDef(id).shape || []).length) return [];
+    const key = id + '|' + candTag(adj) + '|' + candTag(G) + '|' + cty.join(',');
+    const hit = CAND.get(key);
+    if (hit) return hit;
     const masks = Array.from(new Set(needs ? [].concat.apply([], needs.map((nd) => combosOf(cty, nd, adj, G))) : shapeMatches(id, cty, G)));
-    return masks.map(slotsOf).sort(lexCmp);
+    const out = masks.map(slotsOf).sort(lexCmp);
+    if (CAND.size > 40000) CAND.clear();
+    CAND.set(key, out);
+    return out;
   }
   /** str001 rules 7 (The Juggernaut): the candidates of `id` with each omni slot counted as every type in
    *  turn (the union of candidates() over the 4^k type choices; k <= 2), deduplicated, in slot order. */
@@ -29380,6 +29393,8 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
   /** The index of the offer's card whose best tile gives the highest total (hintsOf: C.predict per legal tile), or -1:
    *  fewer than two cards that take a tile, the top shared by two cards, or no card ahead of another. Pure but for the
    *  hints cache. */
+  /** The most one card's previews may take (ms) before the hand goes without its star this turn (renderHand). */
+  const STAR_SLOW = 150;
   function bestCardOf(st, offer) {
     const tops = (offer || []).map((c, i) => {
       if (!c || isOrder(c)) return null;
@@ -30339,7 +30354,21 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       // to the greedy on the board star"): the hand's best card wears a star (markBestCard), worked out after the deal is drawn
       clearTimeout(S.bestT);
       const stNow = S.st;
-      S.bestT = n > 1 ? setTimeout(() => { if (!S.destroyed && S.st === stNow) markBestCard(); }, 0) : null;
+      // 2026-11-21 (the owner's iPad: "serious performance issues ... it gets worse as a battle progresses"): the star
+      // needs every card's preview on every tile, three times the work of the one card a player holds, and it ran in one
+      // piece right after each deal. Now a card a task (the screen answers a tap between them; hintsOf keeps each card's
+      // answer, so the card the player then holds costs nothing), and a turn whose first card takes over STAR_SLOW ms
+      // (a board of wildcards and copies) goes without its star rather than stall
+      const cardsToDo = n > 1 && !S.ending && stNow.phase === 'draft' ? (stNow.offer || []).map((c, i) => (c && !isOrder(c) ? i : -1)).filter((i) => i >= 0) : [];
+      const starStep = (j) => {
+        if (S.destroyed || S.st !== stNow) return;
+        if (j >= cardsToDo.length) { markBestCard(); return; }
+        const t0 = Date.now();
+        try { hintsOf(stNow, cardsToDo[j]); } catch (e) { /* that card has no preview */ }
+        if (Date.now() - t0 > STAR_SLOW) return;
+        S.bestT = setTimeout(() => starStep(j + 1), 0);
+      };
+      S.bestT = cardsToDo.length > 1 ? setTimeout(() => starStep(0), 60) : null;
       // the deal's end comes by animationend (onHandAnim); this is its safety net
       clearTimeout(S.settleT);
       S.settleT = anim ? setTimeout(settleHand, Math.max(0, dd || 0) + 300 + 50 * (n - 1) + 250) : null;
