@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="36">
-<script>(function(){var B="f16d840027";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=36;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-str001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("str001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="20b2809412";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=36;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-str001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("str001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -29066,7 +29066,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
       // str001 rules 7: the Legendary Pack
       legendary: 'Legendaries, one of each a run'
     }[d] || '';
-    const line = d === 'dispatch' ? 'One order, drawn at random' : take === 'all' ? 'Take both, or neither' : take > 1 ? 'Take up to ' + take + ' of ' + show : 'Take 1 of ' + show; // str001 rules 35
+    const line = d === 'dispatch' ? 'One of the two, at random' : take === 'all' ? 'Take both, or neither' : take > 1 ? 'Take up to ' + take + ' of ' + show : 'Take 1 of ' + show; // str001 rules 35
     return { id: row.id, name: row.name, family: row.family, art: FAMILY_ART[row.family] || 'crate', draw: d, type: row.type || null,
       band: row.size === 'jumbo' ? 'Jumbo' : row.size === 'mega' ? 'Mega' : null,
       tier: row.tier === 'fine' ? 'Fine' : row.tier === 'royal' ? 'Royal' : null,
