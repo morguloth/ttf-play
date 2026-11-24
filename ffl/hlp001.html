@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="12">
-<script>(function(){var B="5be55c68eb";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=12;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-hlp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("hlp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="572c02dfee";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=12;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-hlp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("hlp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1051,6 +1051,10 @@
 .fdraw .fdgrid.sl .fcell .fn, .fdraw .fdgrid.sl .fcell .fs { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fdraw .fdgrid.sl .fcell .fn { line-height: 1.3; }
 .fdraw .fdgrid.sl .fcell .fs { line-height: 1.25; }
+/* 2026-11-24 (iPad review: "Skirmishers between Infantry", "3 Skirmishers, 3 Cavalry, checker" cut with an ellipsis):
+   a rule wraps to its full text; the drawer grows with its rows (646 at least, up to 806: the stage's 820 less 7 a side) */
+.fdraw .fdgrid.sl .fcell .fs { white-space: normal; overflow: visible; text-overflow: clip; }
+.pnl.fdraw:has(> .fdgrid.sl) { height: auto; min-height: 646px; max-height: 806px; }
 
 /* wmp001 rules 15 (task D): the Headmaster's open slot in the drawer, in the violet of his glyph */
 .fcell.fslot.open.his { background: rgba(60,44,84,.35); box-shadow: inset 0 0 0 1.5px rgba(180,147,234,.55); outline-color: rgba(180,147,234,.65); }
@@ -2407,6 +2411,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 /* hlp001 rules 8 (Wave 7 play check): 2px of padding under the two-line clamp (descenders were cut by 2px) */
 .fcol .l1plaque.s-chip .gn, .fcol .l1plaque.s-chip .gn.n3, .fcol .l1plaque.s-chip .gn.n4 { font-size: var(--fs-xs, 13px); letter-spacing: 0; line-height: 1.12; padding-bottom: 2px; }
 .fcol .l1plaque.s-chip .gw { font-size: var(--fs-xs, 13px); line-height: 1.08; color: var(--ink2); }
+/* 2026-11-24 (iPad review: "3 Skirmishers, 3 Cavalry, checker" cut with an ellipsis): the recipe takes a second line in
+   the chip's 54 (the name one line, 16.5 px; two recipe lines 28) rather than an ellipsis; the chip keeps its size */
+.fcol .l1plaque.s-chip .gw { white-space: normal; text-overflow: clip; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 .fcol .l1plaque.s-chip > .l1fx { height: 26px; font-size: 16px; padding: 0 8px; border-radius: 13px; }
 .fcol .seat .st b { font-size: 14px; }
 .fcol .seat .st span { font-size: var(--fs-xs, 13px); }
@@ -2484,7 +2491,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .aidl { font-size: var(--fs-sm, 15px); line-height: 1.2; color: var(--ink2, #4a3420); font-style: italic; min-height: 36px; }
 .aidrow { display: flex; justify-content: center; min-height: 200px; margin-top: 12px; align-items: center; }
 .aidrow.none span { font-size: var(--fs-md, 17px); color: var(--ink3, #6a5238); text-align: center; padding: 0 12px; }
-.aidcw { zoom: .8; pointer-events: none; }
+/* 2026-11-24 (iPad review: the company cards' names 9 on-screen px at 1024x768): the card at full size (zoom .8 -> 1:
+   a long name 11.3 px at 1024); the pop-up grows 52 stage px and still fits the stage */
+.aidcw { zoom: 1; pointer-events: none; }
 .aidto { font-size: var(--fs-sm, 15px); line-height: 1.2; text-align: center; color: var(--ink2, #4a3420); min-height: 36px; }
 .aidto b { font-size: var(--fs-lg, 20px); color: var(--ink, #2a1a0c); }
 .aidto span { white-space: nowrap; }
@@ -2749,6 +2758,10 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .h-tile { display: flex; align-items: center; gap: 12px; text-align: left; }
 .h-tile b { display: block; font-family: var(--label, 'Cinzel', serif); font-size: var(--fs-md, 17px); color: #f6dc98; letter-spacing: .5px; }
 .h-tile span.d { display: block; font-size: 16px; line-height: 1.15; color: #e3d5b6; }
+/* 2026-11-24 (PC check: the Scenario tiles page's names and lines were pale brass on the help's parchment, hardly
+   legible): the parchment's inks */
+.h-pnl .h-tile b { color: var(--ink, #2a1a0c); }
+.h-pnl .h-tile span.d { color: var(--ink2, #4e3519); }
 .scsw { position: relative; flex: none; width: 72px; height: 72px; border-radius: 6px; overflow: hidden; box-shadow: 0 0 0 2px #2a1d0d, 0 3px 6px rgba(0,0,0,.6); }
 .scsw .g { position: absolute; inset: 0; background-position: center; }
 .scsw .p { position: absolute; left: 2px; right: 2px; bottom: 8px; height: 50px; display: flex; align-items: flex-end; justify-content: center; }
@@ -2904,6 +2917,11 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .kf-side.open .kf-tw { display: block; }
 .kf-side.met .kti { background: #8fe08a; color: #12300f; }
 .kf-side.met .kf-v { color: #c9f2c4; }
+/* 2026-11-24 (iPad review: the three fronts' rows, a tap opens a front's twist, were 36 on-screen px tall at 1024x768):
+   each row's tap reaches 5 px above and below it (52 stage px: 45 on-screen at 1024), the rows 10 apart so no two
+   overlap; what shows is unchanged */
+.kf-rows { gap: 10px; }
+.kf-side { padding: 5px 0; margin: -5px 0; }
 .kf-side.cross .sg-bar .p { background: #9fe39a; }
 .sk-kind { display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 6px 10px 6px 7px; border-radius: 18px; line-height: 1.1;
   background: var(--well, rgba(0,0,0,.25)); box-shadow: inset 0 0 0 1.5px rgba(240,138,74,.6); }
@@ -3714,6 +3732,20 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .qm-gl.many.sl, .qm-gl.many.sl.two { gap: 2px 14px; }
 .qm-gl.many.sl .qm-g1 { min-height: 30px; }
 .qm-gl.many .qm-gsell { height: 28px; }
+/* 2026-11-24 (iPad review: six generals' Sell buttons were 74 x 28 on-screen px at 1024x768, and a tap between two rows
+   or near the panel's middle armed one: each button's hit area reached 10 px past it, over the row above and below):
+   a Sell button's hit area keeps to its own row (2 px past it, the rows are 4 to 5 apart); in two columns (four rows
+   and more) the sell line goes (each Sell says its price, its first tap what a second does), the columns stand 26
+   apart and the rows and buttons are as tall as the panel allows (40: 35 on-screen px at 1024, 40 at 1180); in one
+   column 34 */
+.qm-gl.sl .qm-gsell::after { left: -4px; right: -4px; top: -2px; bottom: -2px; }
+#stage[data-shape="tall"] .qm-gl.sl .qm-gsell::after { top: -1px; bottom: -1px; }
+.qm-gl.sl:not(.two) .qm-g1 { min-height: 34px; }
+.qm-gl.sl:not(.two) .qm-gsell { height: 34px; }
+#stage:not([data-shape="tall"]) .qm-gens:has(.qm-gl.sl.two) .qm-gsl { display: none; }
+#stage:not([data-shape="tall"]) .qm-gl.sl.two:not(.many) { gap: 4px 26px; }
+#stage:not([data-shape="tall"]) .qm-gl.sl.two:not(.many) .qm-g1 { min-height: 40px; }
+#stage:not([data-shape="tall"]) .qm-gl.sl.two:not(.many) .qm-gsell { height: 40px; padding: 0 11px; }
 /* (Your generals past six: four a row) */
 .qm-gview.many .qm-its { max-width: 940px; }
 #stage[data-shape="tall"] .qm-gview.many .qm-its { max-width: 700px; }
@@ -4049,6 +4081,13 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 #stage[data-shape="tall"] .qm-qw .qn { grid-row: 1; white-space: normal; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; }
 #stage[data-shape="tall"] .qm-qw > .qm-pill, #stage[data-shape="tall"] .qm-qw > .qm-sold, #stage[data-shape="tall"] .qm-qw > .qm-qna { grid-column: 2; grid-row: 2; justify-self: start; }
 #stage[data-shape="tall"] .qm-qw > .qm-pill { height: 26px; }
+/* 2026-11-24 (iPad review, portrait: "Double effect" showed as "Double..." with its letters' feet under the price): the
+   name takes two lines at 13 px (line-height 1: 26) over a 24 px pill, inside the ware's 52; his tab sits 6 px higher,
+   off a two-line name */
+#stage[data-shape="tall"] .qm-qw { row-gap: 2px; align-content: center; }
+#stage[data-shape="tall"] .qm-qw .qn { font-size: var(--fs-xs, 13px); line-height: 1; letter-spacing: 0; -webkit-line-clamp: 2; align-self: end; padding-bottom: 1px; }
+#stage[data-shape="tall"] .qm-qw > .qm-pill { height: 24px; }
+#stage[data-shape="tall"] .qm-qtab { top: -18px; padding-top: 1px; padding-bottom: 1px; }
 #stage[data-shape="tall"] .qm-qw > .qm-sold { padding: 2px 8px; }
 
 /* the pick (openQm): its head, then the grid or the choice (left) beside the card(s) before -> after (right) */
@@ -4075,7 +4114,7 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .qm-qc.on .l1card.m-leave { outline-color: #e0625a; }
 .qm-qprev .qm-qz { zoom: .5; }
 .qm-qg .qm-fpay { font-size: var(--fs-xs, 13px); }
-.qm-qprev { flex: 0 0 300px; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 10px 12px; border-radius: 12px;
+.qm-qprev { flex: 0 0 330px; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 10px 12px; border-radius: 12px;
   background: var(--well, rgba(10,7,4,.45)); box-shadow: inset 0 0 0 1px rgba(214,177,104,.18); }
 .qm-qpl { font-family: var(--label); font-size: var(--fs-xs, 13px); font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: var(--lab, #c9a764); }
 .qm-qcs { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 8px 0 0 8px; min-height: 140px; }
@@ -4108,6 +4147,14 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 #stage[data-shape="tall"] .qm-qb { flex-direction: column-reverse; height: 800px; }
 #stage[data-shape="tall"] .qm-qprev { flex: none; flex-direction: row; flex-wrap: wrap; justify-content: center; }
 #stage[data-shape="tall"] .qm-qar { transform: none; }
+/* 2026-11-24 (iPad review: the pick's card names 8 px, the before / after's 5.5 to 6.5 px at 1024x768): the grid's cards
+   a step larger (zoom .62 -> .8: names 10.4 on-screen px at 1024, the grid scrolls), the before / after's one or two cards
+   .5 -> .74 (three .56) in a column 30 px wider, the pick 34 px taller (landscape) */
+.qm-qg .qm-qz { zoom: .8; }
+.qm-qprev .qm-qcs.n1 .qm-qz, .qm-qprev .qm-qcs.n2 .qm-qz { zoom: .74; }
+.qm-qprev .qm-qcs.n3 .qm-qz { zoom: .56; }
+.qm-qprev .qm-qcs { gap: 10px; padding: 6px 0 0 6px; min-height: 0; }
+#stage:not([data-shape="tall"]) .qm-qb { height: 504px; }
 </style>
 <style>
 /*
@@ -4223,6 +4270,10 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 /* the draft's starting deck as stacks (rules 5: 25 cards): identical cards as one mini with two
    edges behind it and a xN count (a plain neutral count, never the brass xN of a multiplier) */
 .mo-minis.stk { gap: 14px; flex-wrap: nowrap; padding-top: 8px; max-width: none; }
+/* 2026-11-24 (iPad review: the draft's deck row at zoom .6, 7 px names at 1024x768): a row that would zoom under .92
+   (s-moments.js STACK_ZMIN) keeps .92 and scrolls sideways (a swipe, the wheel, the thin bar); the stacks' edges and
+   counts keep their room above and on the right */
+.mo-minis.stk.scroll { justify-content: flex-start; overflow-x: auto; overflow-y: hidden; padding: 10px 12px 8px 6px; scrollbar-width: thin; scrollbar-color: rgba(201,163,92,.6) transparent; touch-action: pan-x; }
 .mo-stk { position: relative; flex: none; }
 .mo-stk:not(.one) { margin-right: 8px; }
 .mo-stk:not(.one)::before, .mo-stk:not(.one)::after { content: ''; position: absolute; inset: 0; border-radius: 7px; z-index: 0;
@@ -4825,6 +4876,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .mo-scene.marches { background: linear-gradient(180deg, #2a2f2c 0%, #46504a 30%, #3a4038 52%, #1f241e 100%); }
 .mo-scene.throne { background: linear-gradient(180deg, #4a3b34 0%, #8a6a4a 24%, #a88a5a 36%, #3a3426 100%); }
 .mo-boss .mo-emb.crest .ic { font-size: 60px; }
+/* 2026-11-24 (iPad review: on the Citadel's plate, battle 40, To battle ran 4 px past the stage's foot at 1180x820): the
+   tallest boss plates (40 and 50: three rule rows and a board) close the gap to their button and sit 16 px higher */
+.mo-boss.citadel .mo-center, .mo-boss.kings .mo-center { gap: 14px; padding-top: 24px; }
 /* battle 60: the formations the run knows, as their shapes */
 .mo-rv { width: 100%; margin-top: 14px; padding: 12px 14px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: 8px;
   background: var(--well, rgba(0,0,0,.3)); box-shadow: inset 0 0 0 1px rgba(148,104,220,.45); }
@@ -5139,6 +5193,9 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
 .h-piece { display: flex; flex-direction: column; align-items: center; width: 220px; }
 .h-piece b { margin-top: 20px; font-family: var(--label, 'Cinzel', serif); font-size: 19px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-hi, #f1dfb2); }
 .h-piece .h-cap { margin-top: 4px; font-size: 19px; color: var(--ink-mid, #cdbf9f); }
+/* 2026-11-24: the siege engines page (s-help.js art 'engines'): three engines, where each stands and what it scores */
+.h-engines { gap: 56px; }
+.h-engines .h-piece b { font-size: var(--fs-md, 17px); letter-spacing: 1px; text-align: center; }
 
 /* 6 the store */
 .h-store { gap: 16px; }   /* 40 before help's small cards grew to the deck view's .92 (PLAN 63 fix wave) */
@@ -5373,6 +5430,12 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
    so each dot's hit area is 44 on-screen px at 1024x768 (x .868); the dot itself unchanged */
 #stage:not([data-shape="tall"]) .h-foot:has(.h-dots > :nth-child(13)) { grid-template-columns: 112px 1fr 112px; }
 #stage:not([data-shape="tall"]) .h-dots:has(> :nth-child(13)):not(:has(> :nth-child(16))) .h-dot { width: 51px; }
+/* 2026-11-24 (iPad review: seventeen dots were 40 on-screen px wide at 1024x768): sixteen pages and more keep 51 (44 on
+   screen at 1024): the footer reaches 24 px into the panel's side padding and its side columns narrow to 86 (the arrows
+   are 56, Done is made narrower to fit) */
+#stage:not([data-shape="tall"]) .h-foot:has(.h-dots > :nth-child(16)) { grid-template-columns: 86px 1fr 86px; margin: 0 -24px; }
+#stage:not([data-shape="tall"]) .h-dots:has(> :nth-child(16)) .h-dot { width: 51px; }
+#stage:not([data-shape="tall"]) .h-foot:has(.h-dots > :nth-child(16)) .h-done { padding-left: 10px; padding-right: 10px; min-width: 0; max-width: 86px; }
 
 /* wmp001 rules 8 (Wave 6): the set pieces page also names 60 and 70, a crest and a line each */
 .h-spw { display: flex; flex-direction: column; align-items: center; gap: 12px; }
@@ -5778,16 +5841,18 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
  * hairline, 18 px Barlow Condensed, an icon in brass; a notch toward its anchor (p-above: the notch
  * on its bottom edge at --nx; p-left: on its right edge at --ny ...). Stage px, placed by coach.js.
  * It fades and rises in (180 ms); a brass ring pulses once around the anchor (transform and opacity
- * only). It never takes a tap. Above the screens' own layers (the hand 3, the prompt 6), under the
+ * only). A tap on it takes it down (coach.js swallows that tap: nothing under it is pressed); any other tap takes it
+ * down too and goes on (2026-11-24: a tip that never took a tap stayed up over a price). Above the screens' own layers (the hand 3, the prompt 6), under the
  * store's pop-ups (20), the end veil (25), the overlays (50) and the toasts (60).
  * Until coach.js has placed it (its anchor at rest) the plate waits hidden (.wait).
  * Reduced motion (.still, .calm-motion, the OS setting): no rise, no pulse.
  */
-.l1coach { position: absolute; z-index: 18; display: flex; align-items: center; gap: 9px; max-width: 400px; pointer-events: none;
+.l1coach { position: absolute; z-index: 18; display: flex; align-items: center; gap: 9px; max-width: 400px; pointer-events: auto; cursor: pointer;
   padding: 9px 16px 10px 13px; border-radius: 12px; font-family: var(--body, 'Barlow Condensed', sans-serif); font-size: 18px; font-weight: 600;
   line-height: 1.15; letter-spacing: .2px; color: var(--ink-top, #f6e6c0); background: var(--well, rgba(20,15,10,.9));
   box-shadow: inset 0 0 0 1px rgba(243,213,142,.5), 0 6px 16px rgba(0,0,0,.65);
   animation: l1-coach-in 180ms ease-out both; }
+.l1coach.wide { max-width: 700px; }   /* 2026-11-24: a one-line plate (the store's Quartermaster, over the top bar) */
 .l1coach .ci { display: grid; place-items: center; flex: none; font-size: 21px; color: var(--ink-brass, #f3d58e); }
 .l1coach .ct { min-width: 0; }
 /* the notch: a small square turned 45 deg, its two outer edges carrying the hairline */
@@ -28681,6 +28746,8 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
  *                               level-up moment); returns whether it showed. o = {anchor: Element,
  *                               text, icon? (an L1Icons name), place? 'above' | 'below' | 'left' |
  *                               'right' (default above), until? 'tap' | 'manual' (default manual),
+ *                               bar? (the plate may go over the top bar), wide? (a one-line plate, max 700 px),
+ *                               maxW? (the plate's widest, stage px: a narrow column),
  *                               ms? (auto-hide after ms), avoid? (a CSS selector: more the plate
  *                               keeps clear of, on top of AVOID)}. One tip at a time: a new one
  *                               replaces it.
@@ -28726,8 +28793,11 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
  * The look (css/coach.css): a small dark plate with a brass hairline and an icon, a notch toward the
  * anchor, kept on the stage and off its anchor (positioned in stage px from the anchor's
  * getBoundingClientRect through L1App.toStage); it fades and rises in, and a brass ring pulses once
- * around the anchor's box (not a board tile's). It never takes a tap (pointer-events: none). Reduced motion: no rise, no
- * pulse.
+ * around the anchor's box (not a board tile's). Reduced motion: no rise, no pulse.
+ * 2026-11-24 (a player's Quartermaster tip stayed up over a stall's price: a manual tip took no tap and went only by its
+ * action): every tip goes with the next tap. A tap on the plate takes it down and is swallowed (its click never reaches
+ * what lies under it); a tap anywhere else takes it down and goes on. Seen as above (an auto-hide or until 'tap'), a
+ * manual tip only hidden.
  */
 (function () {
   'use strict';
@@ -28928,6 +28998,29 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
   }
   const hide = () => drop(false);
   const clear = () => drop(true);
+  /** A tap took tip c down (place()'s onTap): seen when it counts (an auto-hide or until 'tap'), else only hidden. */
+  function tapped(c) {
+    if (cur !== c) return;
+    if (c.counts) done(c.id); else drop(false);
+  }
+  /** The click that follows a tap on the plate is swallowed (capture, once, within CLICK_MS): the plate is gone by
+   *  then and the click would land on whatever lay under it. */
+  const CLICK_MS = 700;
+  let swallowOff = null;
+  function swallowClick() {
+    if (typeof document === 'undefined' || !document.addEventListener) return;
+    if (swallowOff) swallowOff();
+    const until = Date.now() + CLICK_MS;
+    const eat = (e) => {
+      if (swallowOff) swallowOff();
+      if (Date.now() > until) return;
+      if (e.stopPropagation) e.stopPropagation();
+      if (e.preventDefault) e.preventDefault();
+    };
+    const t = setTimeout(() => { if (swallowOff) swallowOff(); }, CLICK_MS);
+    document.addEventListener('click', eat, true);
+    swallowOff = () => { swallowOff = null; clearTimeout(t); document.removeEventListener('click', eat, true); };
+  }
   function done(id) {
     mark(id);
     if (cur && cur.id === id) drop(false);
@@ -28941,7 +29034,8 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     const el = c.el;
     // a screen with a top bar keeps it clear, unless the anchor is in it
     const bar = stage.querySelector(':scope > .screen:not(.l1-out) .top2');
-    const L = layout(a, { w: el.offsetWidth, h: el.offsetHeight }, o.place, { W: stageWH().w, H: stageWH().h, top: bar ? TOPBAR : 0, avoid: numbers(an, stage, o.avoid) });
+    // o.bar (2026-11-24): the plate may go over the top bar (the store's Quartermaster: the stalls below hold prices)
+    const L = layout(a, { w: el.offsetWidth, h: el.offsetHeight }, o.place, { W: stageWH().w, H: stageWH().h, top: bar && !o.bar ? TOPBAR : 0, avoid: numbers(an, stage, o.avoid) });
     el.classList.add('p-' + L.place);
     el.style.left = L.x + 'px';
     el.style.top = L.y + 'px';
@@ -28963,15 +29057,21 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       c.ring = ring;
       c.timers.push(setTimeout(() => { if (ring.parentNode) ring.parentNode.removeChild(ring); c.ring = null; }, 1000));
     }
-    if (o.until === 'tap') {
-      // armed a beat later, so the gesture that led here never dismisses it; the tap goes on as usual
-      const onTap = () => { if (cur === c) done(id); };
-      c.timers.push(setTimeout(() => {
-        if (cur !== c) return;
-        document.addEventListener('pointerdown', onTap, true);
-        c.off = () => document.removeEventListener('pointerdown', onTap, true);
-      }, 60));
-    }
+    // 2026-11-24 (a player's Quartermaster tip stayed up over the Military Academy's price with no way to remove it):
+    // every tip goes with the next tap. A tap anywhere else (armed a beat later, so the gesture that led here never
+    // dismisses it) takes it down and goes on as usual; a tap on the plate itself takes it down and goes no further
+    // (its click is swallowed: what lies under the plate is not pressed blind). A tip with an auto-hide or until 'tap'
+    // is then seen; a manual one (done by its action: the store's s-arm) is only hidden.
+    const armedAt = Date.now() + 60;
+    const onTap = (e) => {
+      if (cur !== c) return;
+      const t = e && e.target, onPlate = !!(t && c.el.contains && c.el.contains(t));
+      if (!onPlate && Date.now() < armedAt) return;
+      if (onPlate) { if (e.stopPropagation) e.stopPropagation(); if (e.preventDefault) e.preventDefault(); swallowClick(); }
+      tapped(c);
+    };
+    document.addEventListener('pointerdown', onTap, true);
+    c.off = () => document.removeEventListener('pointerdown', onTap, true);
     if (o.ms > 0) c.timers.push(setTimeout(() => { if (cur === c) done(id); }, o.ms));
   }
   function tip(id, o) {
@@ -28987,7 +29087,8 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     drop(true);
     const still = calm();
     const el = document.createElement('div');
-    el.className = 'l1coach wait' + (still ? ' still' : '');
+    el.className = 'l1coach wait' + (still ? ' still' : '') + (o.wide ? ' wide' : '');
+    if (o.maxW > 0) el.style.maxWidth = Math.round(o.maxW) + 'px';
     el.setAttribute('role', 'status');
     const ic = icon(o.icon);
     el.innerHTML = (ic ? '<span class="ci">' + ic + '</span>' : '') + '<span class="ct">' + esc(o.text) + '</span>';
@@ -29852,7 +29953,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     var lv = levelText(x, T), stud = '';
     for (var i = 1; i <= nf.per; i++) stud += '<i class="' + (nf.max || i <= nf.pips ? 'on' : '') + '"></i>';
     if (lv) h += '<div class="blk"><div class="lab">Level · rank ' + rk + ' of ' + nf.top + '</div><div class="lvlrow">' + stud + '<span>' + esc(lv) + '</span></div></div>';
-    return h + '<div class="close">Tap anywhere to close</div></div>';
+    return h + '<div class="close">' + (globalThis.L1App && L1App.tapWord ? L1App.tapWord() : 'Tap') + ' anywhere to close</div></div>';
   }
 
   // ---- str001 rules 7 (2026-11-13): the Legendary look ------------------------------------------
@@ -31139,7 +31240,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
         h += '<div class="blk"><div class="lab">Level · rank ' + nf.rank + ' of ' + nf.top + '</div><div class="lvlrow">' + st + '<span>' + esc(lv) + '</span></div></div>';
       }
     }
-    return h + '<div class="close">Tap anywhere to close</div></div>';
+    return h + '<div class="close">' + (globalThis.L1App && L1App.tapWord ? L1App.tapWord() : 'Tap') + ' anywhere to close</div></div>';
   }
   /** wmp001 rules 5: a formation's view (the drawer's tap): its plaque, its rule in full, learned or not.
    *  x: {kind: 'formation', id, learned?, x? (its × now)}. */
@@ -31152,7 +31253,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     h += '<h1>' + esc(f.name) + '</h1><div class="kind">' + tag('l1form', 'Formation', 't-form') + tag(x.learned ? 'check' : null, x.learned ? 'Learned' : 'Not learned yet') + '</div>';
     h += '<div class="blk"><div class="lab">Each unit in it</div><div class="rulebig">' + formGlyph(x.id) + chip('×' + fmt(mx), true) + '</div><p>' + emph(desc) + '</p>' +
       (x.learned ? '' : '<p class="live">Learn it at the Military Academy in the store.</p>') + '</div>';
-    return h + '<div class="close">Tap anywhere to close</div></div>';
+    return h + '<div class="close">' + (globalThis.L1App && L1App.tapWord ? L1App.tapWord() : 'Tap') + ' anywhere to close</div></div>';
   }
   /** ×N / +N in a sentence, highlighted. */
   function emph(s) { return esc(s).replace(/(^|[^\d\w])([×+]\+?\d+(?:\.\d+)?)/g, '$1<em>$2</em>'); }
@@ -34756,7 +34857,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       let title, line, btns = '';
       if (S.mode.kind === 'survey') {
         title = 'Survey';
-        line = S.mode.first === null ? 'Tap a tile, then another: they swap terrain' : 'Now tap the tile to swap it with';
+        line = S.mode.first === null ? (globalThis.L1App && L1App.tapWord ? L1App.tapWord() : 'Tap') + ' a tile, then another: they swap terrain' : 'Now ' + (globalThis.L1App && L1App.tapWord ? L1App.tapWord(true) : 'tap') + ' the tile to swap it with';
         btns = '<button class="btn ghost" data-a="survey">Cancel</button>';
       } else if (S.st.choice && S.st.choice.kind === 'order') {
         // str001 rules 23: The King's Command: its options as order cards (their progress on the board now)
@@ -35204,7 +35305,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       // rules 15: the Victory plate (.vic-plate) carries its tier (t1..t3) and its second word over the head
       el.over.insertAdjacentHTML('beforeend', '<div class="pnl endplate' + cls + repCls + (cls === ' won' ? ' vic-plate' + (tier ? ' t' + tier : '') : '') + (crest ? ' crest' : '') + '" data-a="continue">' + (crest ? '<div class="ecrest">' + icon(crest) + '</div>' : '') +
         (vt && vt.word ? '<div class="ew">' + esc(vt.word) + '</div>' : '') + '<div class="eh">' + head + '</div>' +(sd.siege || kfs ? line : '<div class="es">' + line + '</div>') + fieldl + ordl + dry + gold +
-        '<div class="et">Tap to continue</div></div>');
+        '<div class="et">' + (globalThis.L1App && L1App.tapWord ? L1App.tapWord() : 'Tap') + ' to continue</div></div>');
       S.plateAt = Date.now();
       if (cls === ' lost') { el.board.classList.add('lost'); if (v) v.classList.add('lost'); }
       // rules 15 (2026-11-10, review D1): the defeat plate gets its one line of why (the battle's
@@ -35616,7 +35717,9 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       fxLater(() => {
         const K = coach(), chip = el.score.querySelector('[data-r="bobj"]');
         if (!K || !chip || S.st !== st0 || S.held !== null || (K.showing && K.showing())) return;
-        tip('b-objective', { anchor: proxy(chip), text: 'An optional objective: meet it and win the battle for its reward. The battle is still won on score alone.', icon: 'flag', place: 'left', until: 'tap', ms: 7000 });
+        // 2026-11-24 (iPad review: left of its chip the plate covered the board's lower right tiles): under its chip, as
+        // narrow as the score column, off the tiles (over Undo and Aid until a tap or 7 s)
+        tip('b-objective', { anchor: proxy(chip), text: 'An optional objective: meet it for its reward. The battle is still won on score alone.', icon: 'flag', place: 'below', maxW: 236, avoid: '.dio .dt[data-slot]', until: 'tap', ms: 7000 });
       }, ms || 1200);
     }
     /** rules 15 (2026-11-10, review) b-chain: the first time a unit's number is over twice its power
@@ -35848,7 +35951,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       '<div class="ss" style="letter-spacing:3px;text-transform:uppercase;color:#c9a764">Rank up</div>' +
       card(c, { T, size: 'l' }) +
       '<div class="sh">' + esc(globalThis.L1Moments && L1Moments.rankLine ? L1Moments.rankLine(name, rec) : name + ' reaches rank ' + rec.to) + '</div><div class="ss">Power ' + pw(rec.from) + ' → ' + pw(rec.to) + '</div>' +
-      '<div class="ss" style="font-size:16px;color:#8d8068">Tap to continue</div></div>';
+      '<div class="ss" style="font-size:16px;color:#8d8068">' + (globalThis.L1App && L1App.tapWord ? L1App.tapWord() : 'Tap') + ' to continue</div></div>';
     root.appendChild(wrap);
     wrap.addEventListener('click', () => { wrap.remove(); then(); });
   }
@@ -36908,6 +37011,22 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     return out;
   }
   const clampX = (Gm, tx, viewW) => Math.max(0, Math.min(Math.max(0, Gm.W - viewW), tx));
+  /**
+   * 2026-11-24: the home view's offset tx moved right just enough that a site name its right edge cuts (a box {x0, x1} in
+   * world px, starting inside the view, ending past it) ends `m` px inside, as long as the army (world x ax) stays at
+   * least `keep` px inside the view's left edge; else tx as it was. Pure (test/hlp001-ipadfix.test.js).
+   */
+  function homeFit(tx, viewW, boxes, ax, m, keep) {
+    const mm = m === undefined ? 12 : m, kk = keep === undefined ? 60 : keep;
+    let out = tx;
+    for (const b of boxes || []) {
+      const right = out + viewW;
+      if (!(b.x0 < right && b.x1 > right - mm)) continue;
+      const need = b.x1 + mm - viewW;
+      if (need > out && ax - need >= kk) out = need;
+    }
+    return out;
+  }
   /** The strip's offset with world x at the army's place in the view. */
   const viewX = (Gm, x, viewW) => clampX(Gm, x - viewW * ARMY_AT, viewW);
   const ease = (t) => { const tt = t < 0 ? 0 : (t > 1 ? 1 : t); return tt < 0.5 ? 4 * tt * tt * tt : 1 - Math.pow(-2 * tt + 2, 3) / 2; };
@@ -37051,7 +37170,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     const sz = app && app.stageSize ? app.stageSize() : { w: 1180, h: 820 }, tall = sz.h > sz.w;
     const viewW = sz.w, html = artHtml(run.map, run), Gm = ART.G;
     const N = run.battles || 70, b = run.battle || 1, cs = R.mapChoices(run);
-    const dockHead = () => '<div class="wm-dk-h">Battle ' + b + ': ' + (cs.length > 1 ? 'choose your road' : 'one road leads on') + '<br>Tap a lit battle to see it</div>';
+    const dockHead = () => '<div class="wm-dk-h">Battle ' + b + ': ' + (cs.length > 1 ? 'choose your road' : 'one road leads on') + '<br>' + (globalThis.L1App && L1App.tapWord ? L1App.tapWord() : 'Tap') + ' a lit battle to see it</div>';
     root.innerHTML = (app.topbar ? app.topbar({ title: 'Battle ' + b + ' of ' + N, battle: b }) : '') +
       '<div class="wm' + (tall ? ' tall' : '') + '" data-r="map"><div class="wm-view" data-r="view"><div class="wm-strip" style="width:' + Gm.W + 'px;height:' + Gm.H + 'px">' +
       '<div class="wm-paper"></div><div class="wm-glow" style="width:' + GLOW.w + 'px;height:' + GLOW.h + 'px"></div><div class="wm-pulses"></div></div>' +
@@ -37062,7 +37181,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       '<div class="wm-tools"><button class="wm-tool" data-a="forms" aria-label="Your formations">' + icon('towers') + '<span>Your formations</span></button>' +
       '<button class="wm-tool" data-a="gens" aria-label="Your generals">' + icon('general') + '<span>Your generals</span></button></div>' +
       '<button class="wm-back" data-a="back" hidden>' + icon('march') + '<span>Back to the army</span></button>' +
-      '<div class="wm-intro" hidden><div class="wm-it">The Road to the Throne</div><div class="wm-is">70 battles · 7 campaigns · every road the same length</div><div class="wm-skip">Tap to skip</div></div>' +
+      '<div class="wm-intro" hidden><div class="wm-it">The Road to the Throne</div><div class="wm-is">70 battles · 7 campaigns · every road the same length</div><div class="wm-skip">' + (globalThis.L1App && L1App.tapWord ? L1App.tapWord() : 'Tap') + ' to skip</div></div>' +
       '</div>' + (tall ? '<div class="wm-dock pnl">' + dockHead() + '</div>' : '') + '</div>';
     const view = root.querySelector('.wm-view'), strip = root.querySelector('.wm-strip'), card = root.querySelector('.wm-card');
     const back = root.querySelector('.wm-back'), intro = root.querySelector('.wm-intro'), dock = root.querySelector('.wm-dock');
@@ -37115,7 +37234,15 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
 
     // ---- the pan ----
     let tx = 0, anim = null, gone = false, sel = null, marching = false;
-    const home = () => viewX(Gm, at.x, viewW);
+    // 2026-11-24 (iPad review: the first view cut the Border Tower's name at the right edge): the home view takes in a
+    // site's name its right edge cuts, when the army still stands well inside (homeFit); the names' boxes once mounted
+    let siteBox = null;
+    const sites = () => {
+      if (siteBox) return siteBox;
+      try { siteBox = [...svg.querySelectorAll('text.wm-site')].map((e) => { const b = e.getBBox(); return { x0: b.x, x1: b.x + b.width }; }).filter((b) => b.x1 > b.x0); } catch (e) { siteBox = []; }
+      return siteBox;
+    };
+    const home = () => clampX(Gm, homeFit(viewX(Gm, at.x, viewW), viewW, sites(), at.x), viewW);
     const setTx = (x) => {
       tx = clampX(Gm, x, viewW);
       strip.style.transform = 'translate3d(' + (-Math.round(tx * 10) / 10) + 'px,0,0)';
@@ -37161,7 +37288,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       const u = cs.find((x) => x.id === id), k = u && (u.type === 'boss' || /-boss$/.test(u.id) ? 'boss' : u.type), text = k && MAP_TIPS[k];
       const el = text && svg.querySelector('.wm-n[data-node="' + id + '"] .wm-hit');
       if (!el || (k === 'boss' && !(G.L1Coach.seen && G.L1Coach.seen('map')))) return;
-      try { G.L1Coach.tip('map-' + k, { anchor: el, text, icon: 'march', place: 'above', until: 'tap' }); } catch (e) { /* tips only */ }
+      try { G.L1Coach.tip('map-' + k, { anchor: el, text: text.replace('{Tap}', G.L1App && G.L1App.tapWord ? G.L1App.tapWord() : 'Tap'), icon: 'march', place: 'above', until: 'tap' }); } catch (e) { /* tips only */ }
     };
     const settle = () => {
       intro.hidden = true; skip = null;
@@ -37311,7 +37438,8 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
    *  first battle of each kind the player taps. */
   const MAP_TIPS = {
     reward: 'Crossed swords and scrolls are harder battles with a reward. They are a choice: a plain battle is offered beside them.',
-    ordinary: 'A plain battle: the usual target and the usual pay. The safe road. Tap March On to fight it.',
+    // 2026-11-24 (PC check): the card's button is March; Tap or Click by the pointer (kindTip puts the word in)
+    ordinary: 'A plain battle: the usual target and the usual pay. The safe road. {Tap} March to fight it.',
     clash: 'A clash: a twist makes the battle harder. Win it for extra gold.',
     scenario: 'A scenario: its own board, rules and objective. Win it for a reward chest.',
     boss: 'The boss ends the campaign. Every road leads to it, and it must be fought.',
@@ -37343,7 +37471,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     return { w: Math.ceil(Gm.W * s), h: Math.ceil(Gm.H * s) };
   }
 
-  G.L1Map = { GEO, REG, LANDMARKS: LANDMARKS.map((l) => ({ n: l.n, name: l.name })), geom, viewX, clampX, ease, states, cardInfo, rewardRow, RW_MARK, bossFacts, dockSide, panPlan, artHtml, defsHtml, mount: mapScreen, debugWhole, ARMY_AT, CARD_W, DOCK, TIP_MAP, MAP_TIPS };
+  G.L1Map = { homeFit, GEO, REG, LANDMARKS: LANDMARKS.map((l) => ({ n: l.n, name: l.name })), geom, viewX, clampX, ease, states, cardInfo, rewardRow, RW_MARK, bossFacts, dockSide, panPlan, artHtml, defsHtml, mount: mapScreen, debugWhole, ARMY_AT, CARD_W, DOCK, TIP_MAP, MAP_TIPS };
   if (G.L1Screens) G.L1Screens.map = mapScreen;
   else G.L1Screens = { map: mapScreen };
 })();
@@ -37829,9 +37957,12 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     's-engine': ['A siege engine: it scores big where its conditions are met, and nothing anywhere else. Long-press it to read them.',
       'A siege engine: it scores big where its conditions are met, and nothing anywhere else. Press and hold it to read them.'],
     // hlp001 rules 10 (2026-11-23): the first Quartermaster
-    's-qm': ['The Quartermaster: every third visit, Remove and two deck tricks. Tap one to see what it does.',
-      'The Quartermaster: every third visit, Remove and two deck tricks. Click one to see what it does.']
+    // 2026-11-24: one line (it goes over the top bar, off the stalls' names and prices)
+    's-qm': ['The Quartermaster, every third visit: Remove and two deck tricks. Tap one to see it.',
+      'The Quartermaster, every third visit: Remove and two deck tricks. Click one to see it.']
   };
+  /** 2026-11-24: what a store tip's plate keeps clear of when it can: the stalls' names and prices (L1Coach avoid). */
+  const TIP_AVOID = '.qm .lab, .qm .qm-pill, .qm .qm-tn, .qm .qm-qn, .qm .qm-qtab, .qm .qm-at .n';
   function tipText(id, touch) {
     const t = TIP_TEXT[id];
     return t ? t[touch ? 0 : 1] : '';
@@ -38349,8 +38480,20 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
 
   // ---- the screen --------------------------------------------------------------------------------------
   // the last pointer, for the tips' copy (a finger or pen taps, a mouse clicks)
-  let lastPtr = null;
-  if (typeof addEventListener === 'function') addEventListener('pointerdown', (e) => { if (e.pointerType) lastPtr = e.pointerType; }, true);
+  let lastPtr = null, lastDown = null;
+  // 2026-11-24: and where it went down (a finger's click can land on a button near it: pressedOn)
+  if (typeof addEventListener === 'function') addEventListener('pointerdown', (e) => { if (e.pointerType) lastPtr = e.pointerType; lastDown = { x: e.clientX, y: e.clientY, at: Date.now() }; }, true);
+  /**
+   * 2026-11-24 (iPad review: a tap near the middle of Your generals armed a Sell): did the press that led to this click go
+   * down on box r (a client rect, `slack` px around it)? A browser moves a finger's click onto a button near it (touch
+   * adjustment); the press keeps where the finger was. No press known (a click from the keyboard or a script, or an old
+   * one): yes.
+   */
+  function pressedOn(r, down, slack, now) {
+    if (!r || !down || typeof down.x !== 'number' || (now !== undefined && down.at !== undefined && now - down.at > 1500)) return true;
+    const k = slack || 0;
+    return down.x >= r.left - k && down.x <= r.right + k && down.y >= r.top - k && down.y <= r.bottom + k;
+  }
   const touchy = () => (lastPtr ? lastPtr !== 'mouse' : !(globalThis.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches));
   /** The running animations on `el` (and under it: `deep`) that end. */
   const settling = (el, deep) => (el && el.getAnimations ? el.getAnimations({ subtree: !!deep }).filter((a) => {
@@ -38405,7 +38548,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       }
       const text = tipText('s-arm', touchy());
       try {
-        if (!K.tip('s-arm', { anchor: cd, text, icon: 'card', place: 'right' })) return;
+        if (!K.tip('s-arm', { anchor: cd, text, icon: 'card', place: 'right', avoid: TIP_AVOID })) return;
         tipUp = 's-arm';
         if (!rightFits(panel)) {
           layer.querySelectorAll('.qm-tipa').forEach((x) => x.remove());
@@ -38421,14 +38564,16 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       if (!K || (K.seen && K.seen('s-engine'))) return;
       const cd = layer.querySelector('.qm-ware .l1card.k-engine');
       if (!cd) return;
-      try { if (K.tip('s-engine', { anchor: cd, text: tipText('s-engine', touchy()), icon: 'engine', place: 'below' })) tipUp = 's-engine'; } catch (e) { /* tips only */ }
+      try { if (K.tip('s-engine', { anchor: cd, text: tipText('s-engine', touchy()), icon: 'engine', place: 'below', until: 'tap', avoid: TIP_AVOID })) tipUp = 's-engine'; } catch (e) { /* tips only */ }
     }
     /** hlp001 rules 10 (2026-11-23): the one-time tip the first time the Quartermaster's stall stands in the store (s-qm). */
     function qmTip(K) {
       if (!K || (K.seen && K.seen('s-qm'))) return false;
       const st = layer.querySelector('.qm-qhd');
       if (!st) return false;
-      try { if (K.tip('s-qm', { anchor: st, text: tipText('s-qm', touchy()), icon: 'qm-merge', place: 'below' })) { tipUp = 's-qm'; return true; } } catch (e) { /* tips only */ }
+      // 2026-11-24 (a player: it sat over the Military Academy's price and would not go): one line over the top bar above
+      // his stall (the track, no stall's name or price), gone with the next tap or click
+      try { if (K.tip('s-qm', { anchor: st, text: tipText('s-qm', touchy()), icon: 'qm-merge', place: 'above', bar: true, wide: true, until: 'tap', avoid: TIP_AVOID })) { tipUp = 's-qm'; return true; } } catch (e) { /* tips only */ }
       return false;
     }
     /** Did the s-arm plate land inside the stall `panel`? */
@@ -38440,8 +38585,13 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     }
     function hideTip() {
       const K = Coach();
-      if (tipUp && K && K.hide) { try { K.hide(); } catch (e) { /* tips only */ } }
+      if (tipUp && K && K.hide && tipLive()) { try { K.hide(); } catch (e) { /* tips only */ } }
       tipUp = null;
+    }
+    /** 2026-11-24: is the store's tip still up? (a tap anywhere takes a tip down: coach.js) */
+    function tipLive() {
+      const K = Coach();
+      return !!(tipUp && K && (!K.showing || K.showing() === tipUp));
     }
     function tipDone(id) {
       const K = Coach();
@@ -38506,7 +38656,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
         n.querySelector('.v').textContent = 'Sell?';
         sfx('pick');
         // rules 27: his level stays with the seat
-        app.toast('Tap again to sell ' + gName(g) + ' for ' + R.sellPrice(run, id) + ' gold' + ((g.level || 1) > 1 ? '. The seat keeps level ' + g.level : ''), n);
+        app.toast((touchy() ? 'Tap' : 'Click') + ' again to sell ' + gName(g) + ' for ' + R.sellPrice(run, id) + ' gold' + ((g.level || 1) > 1 ? '. The seat keeps level ' + g.level : ''), n);
         return;
       }
       if (now - gsArm.at < 250) return;
@@ -38861,7 +39011,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
         wait(calm() ? 0 : 170, () => {
           const pl = n.isConnected && n.classList.contains('armed') ? n.querySelector('.qm-pill') : null;
           if (!pl || pop || pk) return;
-          try { if (K.tip('s-buy', { anchor: pl, text: tipText('s-buy', touchy()), icon: 'gold', place: 'below' })) tipUp = 's-buy'; } catch (e) { /* tips only */ }
+          try { if (K.tip('s-buy', { anchor: pl, text: tipText('s-buy', touchy()), icon: 'gold', place: 'below', avoid: TIP_AVOID })) tipUp = 's-buy'; } catch (e) { /* tips only */ }
         });
       }
     }
@@ -38970,7 +39120,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       armedAt = Date.now();
       const pl = n.querySelector('.qm-pill');
       if (pl) pl.outerHTML = pill(wareVerb('hire'), priceShow(run, want.slot, want.pick), true);
-      app.toast('A seat is free. Tap again to hire.', n.querySelector('.qm-pill') || n);
+      app.toast('A seat is free. ' + (touchy() ? 'Tap' : 'Click') + ' again to hire.', n.querySelector('.qm-pill') || n);
     }
     /** wmp001 rules 5: Buy a seat (Run.buyGenSlot); the view opens again. */
     function seatTap(n) {
@@ -39100,7 +39250,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       sfx('buy');
       set(R.buyFormSlot(run), { goldFrom: g0 });
       if (from === 'view') openFormsView(true);
-      else if (from === 'full') { closePop(true); app.toast('A slot is free. Tap Learn to learn it.', layer.querySelector('.qm-tile.k-academy [data-a="academy"]') || undefined); bump(layer.querySelector('.qm-flink b')); }
+      else if (from === 'full') { closePop(true); app.toast('A slot is free. ' + (touchy() ? 'Tap' : 'Click') + ' Learn to learn it.', layer.querySelector('.qm-tile.k-academy [data-a="academy"]') || undefined); bump(layer.querySelector('.qm-flink b')); }
       else bump(layer.querySelector('.qm-flink b'));
     }
     /** The swap pick: the card arriving (small, green ring), then the deck cards one may replace
@@ -39808,7 +39958,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
         const cn = chestName(run.store.slots[ci]), b = n || layer.querySelector('.qm-go');
         if (b) { b.classList.add('arm'); const l = b.querySelector('.qm-gol'); if (l) l.innerHTML = '<span class="w"><small>Chest still closed</small>March on?</span>' + icon('march'); }
         sfx('refuse');
-        app.toast('Your ' + cn.toLowerCase() + ' is still closed. Tap again to leave it.');
+        app.toast('Your ' + cn.toLowerCase() + ' is still closed. ' + (touchy() ? 'Tap' : 'Click') + ' again to leave it.');
         bump(layer.querySelector('.qm-ware[data-slot="' + ci + '"]') || layer.querySelector('[data-slot="' + ci + '"]'));
         return;
       }
@@ -39849,6 +39999,8 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       if (a !== 'gsell') gsDisarm();
       if (a !== 'march' && marchArm) marchDisarm();
       if (a === 'ware') tapWare(n);
+      // 2026-11-24: only a press on the Sell button itself (not a finger's tap moved onto it) arms a sale
+      else if (a === 'gsell' && !pressedOn(n.getBoundingClientRect(), lastDown, 3, Date.now())) gsDisarm();
       else if (a === 'gsell') gsellTap(n);
       else if (a === 'svc') tapSvc(n.dataset.s, n);
       else if (a === 'qmw') tapQm(n);
@@ -39860,6 +40012,8 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       else if (a === 'deck') openDeck();
       else if (a === 'gens') openGens();
       else if (a === 'march') march(n);
+      // 2026-11-24: a tap took the tip down (coach.js): this tap does not put it back up; the next one on nothing does
+      else if (tipUp && !tipLive()) tipUp = null;
       else if (!tipUp && !t.closest('.top2')) armTip();
     };
     // the capture phase: this runs before cards.js closes its card view, so one Escape closes only the
@@ -39944,7 +40098,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     return '<div class="qm-ms">' + esc(x.line || gv.line) + '</div><div class="qm-mrow">' + (x.pre || '') + '<div class="qm-its">' + its.join('') + '</div></div>';
   }
 
-  globalThis.L1Store = { chestOf, chestName, CHEST_LABEL,gensView, gensViewHtml, formsLine, shortName, services, serviceOn, promotePrice, promotePrices, hireTitle, upkeepNote, upkeepPaid, nextBoss, wareVerb, armTipIndex,
+  globalThis.L1Store = { pressedOn, chestOf, chestName, CHEST_LABEL,gensView, gensViewHtml, formsLine, shortName, services, serviceOn, promotePrice, promotePrices, hireTitle, upkeepNote, upkeepPaid, nextBoss, wareVerb, armTipIndex,
     armyRows, tipText, restockReady, RESTOCK_GAP, ENTER_ORDER, packInfo, priceShow, viewIndex, stallOf, stallsOf, stallGrid, pickToggle, pickState, takeList,
     packLine, orderText, packArt, fanRows, fixedOf, storeParts, rowGrid, minOf, wareW, academyOf, musterOf, TILE_KINDS,
     // hlp001 rules 10 (2026-11-23): the Quartermaster
@@ -40467,6 +40621,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
    * stack's edges 8 more, the gap 14). Without L1Help, every card.
    */
   const STACK_W = 1000;   // the panel's 1020 inside, less a margin for the stacks' edges and counts
+  const STACK_ZMIN = 0.92;   // 2026-11-24: the smallest zoom of the draft's deck row (12.7 px names: 10.1 on screen at 1024)
   function stackZoom(n, multi) {
     const w = n * 84 - 14 + 8 * (multi == null ? n : multi);
     return n > 0 ? Math.min(1, Math.floor((STACK_W / w) * 100) / 100) : 1;
@@ -40483,13 +40638,24 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       z = Math.min(1, Math.floor((STACK_W / w8) * 100) / 100);
       gap = 'gap:8px;';
     }
-    return '<div class="mo-minis stk" data-r="deck"' + (z < 1 || gap ? ' style="' + gap + (z < 1 ? 'zoom:' + z : '') + '"' : '') + '>' + st.map((x) => {
+    // 2026-11-24 (iPad review: 50 cards' 20 stacks drew at zoom .6, names and powers 7 px at 1024x768): never under
+    // STACK_ZMIN (names 10 on-screen px at 1024); a row wider than the panel then scrolls sideways (.scroll)
+    const scroll = z < STACK_ZMIN;
+    if (scroll) z = STACK_ZMIN;
+    return '<div class="mo-minis stk' + (scroll ? ' scroll' : '') + '" data-r="deck"' + (z < 1 || gap ? ' style="' + gap + (z < 1 ? 'zoom:' + z : '') + '"' : '') + '>' + st.map((x) => {
       const n = x.cards.length, m = mini(x.cards[0], { T });
       return n === 1 ? '<span class="mo-stk one">' + m + '</span>' : '<span class="mo-stk" data-n="' + n + '">' + m + '<b class="mo-xn" aria-label="' + n + ' copies">×' + n + '</b></span>';
     }).join('') + '</div>';
   }
   function bindDeck(scope, run, T) {
     if (scope && Cards().bindLongPress) Cards().bindLongPress(scope, { ctx: () => ({ T, run }), tap: true });
+    // 2026-11-24: a mouse wheel turned on a sideways-scrolling deck row scrolls it sideways (.mo-minis.stk.scroll)
+    const row = !scope ? null : scope.matches && scope.matches('.mo-minis.stk.scroll') ? scope : scope.querySelector ? scope.querySelector('.mo-minis.stk.scroll') : null;
+    if (row && row.addEventListener) row.addEventListener('wheel', (e) => {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX) || row.scrollWidth <= row.clientWidth) return;
+      row.scrollLeft += e.deltaY;
+      e.preventDefault();
+    }, { passive: false });
   }
   /** The run's battles: a campaign group each (seal, 9 studs, the boss) on a road; rules 15: a
    *  skirmish (battles 5, 15, 25, 35, 45) a larger diamond stud, still smaller than a boss. war050
@@ -41509,7 +41675,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       (nn > 1 ? '<b class="mo-lvn" aria-label="' + nn + ' cards">×' + nn + '</b>' : '') +
       '<div class="mo-flash"></div><div class="mo-pts">' + pts + '</div></div>' +
       '<div class="mo-lv-line' + (line.length > 40 ? ' long' : '') + '">' + lvLine(ch, name, rec) + '</div>' +
-      '<div class="mo-lv-hint">' + dots + '<span>Tap to continue</span></div>';
+      '<div class="mo-lv-hint">' + dots + '<span>' + (globalThis.L1App && L1App.tapWord ? L1App.tapWord() : 'Tap') + ' to continue</span></div>';
     root.appendChild(el);
     el.querySelectorAll('.mo-c1 .studs:not(.max) i').forEach((st, k) => { if (k >= wasN) { st.classList.add('mo-grow'); st.style.setProperty('--gk', String(k - wasN)); } });
     const gem = el.querySelector('.mo-c1 .pow');
@@ -41629,7 +41795,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       '<div class="mo-kick mo-rise">Rank up</div>' +
       '<div class="mo-sub mo-rise" style="--d:40ms">' + count + ' card' + (count === 1 ? '' : 's') + ' ranked up</div>' +
       '<div class="pnl mo-lvp mo-rise" style="--d:80ms">' + stripHtml(run, T, items) + '</div>' +
-      '<div class="mo-sth"><span>Tap to continue</span></div></div>';
+      '<div class="mo-sth"><span>' + (globalThis.L1App && L1App.tapWord ? L1App.tapWord() : 'Tap') + ' to continue</span></div></div>';
     root.appendChild(el);
     let timers = [], settled = false, done = false, turned = false;
     const opened = Date.now();
@@ -42788,6 +42954,15 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     if (id === 'pieces') {
       const cs = [sergeant(51, 'inf', 'cross'), heroOf(52, 'vanguard', T), sappers(53)];
       return '<div class="h-row h-pieces">' + cs.map((c, i) => '<div class="h-piece">' + card(c) + '<b>' + esc((P.caps[i] || [])[0]) + '</b><span class="h-cap">' + esc((P.caps[i] || [])[1]) + '</span></div>').join('') + '</div>';
+    }
+    // 2026-11-24 (iPad review: the page's picture was empty): three engines as the store shows them, each with where it
+    // must stand and what it scores
+    if (id === 'engines') {
+      const ids = ['eng_mantlet', 'eng_ballista', 'eng_trebuchet'].filter((x) => C && C.engineDef && C.engineDef(x));
+      return '<div class="h-row h-pieces h-engines">' + ids.map((x, i) => {
+        const d = C.engineDef(x), c = Object.assign(C.engineCard(x, 1), { uid: UID + 91 + i });
+        return '<div class="h-piece">' + card(c) + '<b>' + esc(d.askShort) + '</b><span class="h-cap">' + esc(C.engineShort ? C.engineShort(T, x, 1) : d.payShort) + '</span></div>';
+      }).join('') + '</div>';
     }
     // str001 rules 6 (2026-11-13): an order card, its chip once taken and met, the total it multiplies
     if (id === 'orders') {
@@ -44040,6 +44215,13 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     setTimeout(() => { if (still) t.remove(); else t.classList.add('out'); }, still ? 1700 : 1520);
     if (!still) setTimeout(() => t.remove(), 1720);
   };
+  // 2026-11-24 (PC check: a mouse player read "Tap to continue", "Tap March On"): the word for a press, by the last
+  // pointer (a mouse clicks, a finger or pen taps); before any, by the device (a fine pointer that hovers: a mouse)
+  let lastPtr = null;
+  if (typeof addEventListener === 'function') addEventListener('pointerdown', (e) => { if (e && e.pointerType) lastPtr = e.pointerType; }, true);
+  A.mouse = () => (lastPtr ? lastPtr === 'mouse' : !!(globalThis.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches));
+  /** 'Tap' / 'Click' (lower: 'tap' / 'click') for the pointer in use. */
+  A.tapWord = (lower) => (A.mouse() ? (lower ? 'click' : 'Click') : (lower ? 'tap' : 'Tap'));
   A.reducedMotion = () => !!settings.calm || !!(globalThis.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
   A.setting = (k) => settings[k];
   A.setSetting = (k, v) => {
