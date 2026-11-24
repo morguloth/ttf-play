@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="17">
-<script>(function(){var B="79027cd0ca";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=17;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-hlp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("hlp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="305db3347c";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=17;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-hlp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("hlp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -4294,6 +4294,12 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .sa-hire.one.col { flex-direction: column; gap: 10px; }
 .sa-hire.one.col .sa-hs { max-width: none; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px 12px; }
 .sa-hire.one.col .sa-hs .k { max-width: 90px; }
+/* 2026-11-24 (owner: the armed Hire pill went behind the Deck counter): armed, the pill with its verb is wider than the
+   price alone. Over the words (.col) it takes the place of the line beside it, so the row keeps its width and height
+   and never grows past its block; beside the plaque it steps down to the 124 px column */
+.sa-hire.one.col .sa-hs { max-width: 100%; }
+.sa-hire.one.col .sa-hs:has(.qm-pill .v) .sub { display: none; }
+.sa-hire.one:not(.col) .sa-hs .qm-pill:has(.v) { zoom: .84; }
 .sa-hire.muster { flex: 1 0 auto; flex-direction: column; align-items: stretch; justify-content: center; gap: 10px; }
 /* (a full Command - the Royal Muster over six generals - in a short column: s-store.js fitHire closes the lines up and
    steps the chips down, never under x0.8) */
@@ -4305,6 +4311,11 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .sa-hire.muster .qm-hires.chips { gap: 8px; align-items: stretch; }
 .sa-hire.muster .qm-hrow.chip { justify-content: space-between; }
 .sa-hire.muster .l1plaque.s-chip { --gchip-w: 248px; }
+/* 2026-11-24 (owner: "Hire button goes behind panel to the right of it"): an armed chip's pill had its verb beside the
+   price, 60 px wider than the row holds, and ran under the Deck counter: here the verb sits over the price */
+.sa-hire.muster .armed .qm-pill { flex-direction: column; justify-content: center; gap: 2px; padding: 0 12px; line-height: 1; }
+.sa-hire.muster .armed .qm-pill .v { font-size: var(--fs-sm, 15px); }
+.sa-hire.muster .armed .qm-pill .p { padding-left: 0; border-left: 0; }
 /* your generals: one line each (portrait, name and level, Promote at his price, Sell at its gold), the seats */
 .sa-gl { flex: none; display: flex; flex-direction: column; }
 .sa-g { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto auto; align-items: center; column-gap: 6px; min-height: 52px; padding: 2px 0; cursor: pointer;
