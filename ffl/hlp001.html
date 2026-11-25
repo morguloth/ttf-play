@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="22">
-<script>(function(){var B="b38851dc20";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=22;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-hlp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("hlp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="f36afb84d5";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=22;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-hlp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("hlp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -4518,9 +4518,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .sa-yh { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 2px; font-family: var(--label); font-size: var(--fs-xs, 13px); letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-brass, #f3d58e); }
 .sa-yh .sa-fl { text-transform: none; letter-spacing: 0; display: inline-flex; align-items: center; gap: 5px; }
 .sa-fl2 { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
-.sa-fr { flex: 1 1 46px; max-height: 68px; min-height: 44px; display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; column-gap: 10px; padding: 2px 4px; cursor: pointer; border-top: 1px dashed rgba(243,213,142,.14); }
+.sa-fr { flex: 1 1 46px; max-height: 68px; min-height: 36px; display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: center; column-gap: 10px; padding: 2px 4px; cursor: pointer; border-top: 1px dashed rgba(243,213,142,.14); }
 .sa-fr:first-child { border-top: 0; }
-.sa-fr .sa-fg { width: 40px; height: 40px; }
+.sa-fr .sa-fg { width: 34px; height: 34px; }
 .sa-fr .sa-fg.e { display: grid; place-items: center; border-radius: 50%; font-size: 19px; /* off-step: a glyph box */ color: var(--ink-form, #c8b4ec); box-shadow: inset 0 0 0 1.5px rgba(180,147,234,.45); }
 .sa-fr .t { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .sa-fr .t .n { font-family: var(--label); font-size: var(--fs-sm, 15px); font-weight: 700; color: var(--ink-hi, #f1dfb2); line-height: 1.1; }
@@ -4534,10 +4534,30 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .sa-acad.v2.fc .sa-fl2 { display: none; }
 .sa-acad.v2.fc .sa-yh { flex: none; min-height: 0; margin-top: 0; }
 .sa-acad.v2.fc .sa-yh .l { display: none; }
-.sa-acad.v2.fc .sa-yh .sa-yc { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.sa-acad.v2.fc .sa-yh .sa-yc { display: flex; align-items: center; gap: 8px; flex: 1 1 auto; min-width: 0; padding: 3px 2px; }
+/* three formations as chips: the count keeps its place ("3 of 3", the word dropped) and the chips never run under it */
+.sa-acad.v2.fc .sa-yh .sa-fl { flex: none; }
+.sa-acad.v2.fc .sa-yh .sa-fl .sw { display: none; }
+.sa-yc .c { flex: none; }
 .sa-yc .c { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
-.sa-yc .c .g { width: 30px; height: 30px; }
+.sa-yc .c .g { width: 28px; height: 28px; }
+.sa-yc .c { gap: 4px; }
+.sa-yc .c .x { padding: 0 5px; }
 .sa-yc .c .x { padding: 0 6px; border-radius: 8px; font-family: var(--body); font-size: var(--fs-xs, 13px); font-weight: 700; letter-spacing: 0; color: #f4ecff; background: linear-gradient(180deg, #8b5fd0, #5a3896); box-shadow: 0 0 0 1px #2a1d0d; }
+/* 2026-11-25 (owner): an armed Promote shows what the level brings on the general's line: ×N now → ×N after */
+.sa-g .gw.up { color: var(--ink-hi, #f1dfb2); }
+.sa-g .gw.up .ar { flex: none; color: var(--ink-brass, #f3d58e); }
+.sa-g .gw.up .x.nx { background: linear-gradient(180deg, #e9bf5a, #b98a2c); color: #2a1d0d; }
+
+.sa-g .gw.up .w { display: none; }
+/* every slot bought (no slot line below): the chips take the free height - the heading and the count on one line, then
+   each formation's shape over its ×N, spread across the panel */
+.sa-acad.v2.fc:not(:has(.sa-line.slot)) .sa-yh { flex: 1 1 auto; flex-wrap: wrap; align-content: center; row-gap: 8px; }
+.sa-acad.v2.fc:not(:has(.sa-line.slot)) .sa-yh .l { display: block; order: 1; flex: 1 1 auto; }
+.sa-acad.v2.fc:not(:has(.sa-line.slot)) .sa-yh .sa-fl { order: 2; }
+.sa-acad.v2.fc:not(:has(.sa-line.slot)) .sa-yh .sa-yc { order: 3; flex: 0 0 100%; justify-content: space-around; overflow: visible; }
+.sa-acad.v2.fc:not(:has(.sa-line.slot)) .sa-yc .c { flex-direction: column; gap: 3px; }
+.sa-acad.v2.fc:not(:has(.sa-line.slot)) .sa-yc .c .g { width: 40px; height: 40px; }
 </style>
 <style>
 /*
@@ -4682,6 +4702,9 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .mo-split { margin-top: 14px; width: 100%; }
 .mo-sc { display: flex; justify-content: center; gap: 5px; max-width: 632px; margin: 0 auto; }
 .mo-sc i { flex: 0 1 22px; min-width: 6px; height: 30px; border-radius: 3px; }
+/* 2026-11-25 (owner: with a large deck the cards ran off the plate): past 40 cards they are small and wrap into rows */
+.mo-sc.many { flex-wrap: wrap; gap: 4px; }
+.mo-sc.many i { flex: 0 0 11px; min-width: 0; height: 20px; border-radius: 2px; }
 .mo-sc i.p1 { background: linear-gradient(180deg, #ecca7c, #a87a32); box-shadow: 0 0 0 1px #2a1d0d; }
 .mo-sc i.p2 { background: linear-gradient(180deg, #a9c9f2, #3f6aa8); box-shadow: 0 0 0 1px #0d1a2a, 0 0 9px rgba(120,170,240,.55); }
 .mo-sk { display: flex; justify-content: center; gap: 26px; margin-top: 8px; font-size: 18px; color: var(--ink-brass, #e6c98a); }
@@ -39984,8 +40007,20 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       if (w && !calm()) bump(w.querySelector('.qm-med'));
     }
     let gpArm = { id: null, at: 0 };
+    /** 2026-11-25 (owner: "I'd like to see the effect the upgrade will have before confirming"): what a promotion changes
+     *  for general g: {words, now, next} (his line's ×N or +N at this level and the next; Cards.generalLine), or null. */
+    function promoEffect(g) {
+      try {
+        const K = Cards(), a = K.generalLine(g, T), b = K.generalLine(Object.assign({}, g, { level: (g.level || 1) + 1 }), T);
+        const next = a.next || b.chip || '';
+        if (a.chip && next && next !== a.chip) return { words: a.words || '', now: a.chip, next };
+        if (b.words && b.words !== a.words) return { words: b.words, now: '', next: '' };
+      } catch (e) { /* words only */ }
+      return null;
+    }
     function gpDisarm() {
       layer.querySelectorAll('[data-a="gpro"].arm').forEach((b) => b.classList.remove('arm'));
+      layer.querySelectorAll('.sa-g .gw.up').forEach((w) => { w.classList.remove('up'); if (w.dataset.was !== undefined) { w.innerHTML = w.dataset.was; delete w.dataset.was; } });
       gpArm = { id: null, at: 0 };
     }
     function gproTap(n) {
@@ -39998,7 +40033,15 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
         gpArm = { id, at: now };
         n.classList.add('arm');
         sfx('pick');
-        app.toast((touchy() ? 'Tap' : 'Click') + ' again to promote ' + gName(g) + ' to level ' + ((g.level || 1) + 1) + ' for ' + price + ' gold', n);
+        // the change the promotion brings, on his line (while it shows) and in the toast (always)
+        const fx = promoEffect(g), row = n.closest('.sa-g'), gw = row && row.querySelector('.gw');
+        if (fx && fx.now && gw) {
+          gw.dataset.was = gw.innerHTML;
+          gw.classList.add('up');
+          gw.innerHTML = '<span class="w">' + esc(fx.words) + '</span><b class="x">' + esc(fx.now) + '</b><span class="ar">→</span><b class="x nx">' + esc(fx.next) + '</b>';
+        }
+        const what = fx ? (fx.now ? (fx.words ? fx.words + ' ' : '') + fx.now + ' → ' + fx.next : fx.words) : '';
+        app.toast(gName(g) + ' to level ' + ((g.level || 1) + 1) + (what ? ': ' + what : '') + '. ' + (touchy() ? 'Tap' : 'Click') + ' again to promote for ' + price + ' gold', n);
         return;
       }
       if (now - gpArm.at < 250) return;
@@ -40304,7 +40347,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       let openRows = '';
       for (let k = 0; sv && k < sv.open; k++) openRows += '<div class="sa-fr open"><span class="sa-fg e">' + icon('formation') + '</span><span class="t"><span class="n">Open slot</span><span class="r">Learn a formation above</span></span></div>';
       return '<div class="pnl sa-p sa-acad v2' + (a && a.state !== 'offer' ? ' shut' : '') + '"><div class="sa-ph"><span class="lab">Military Academy</span></div>' + offer +
-        '<div class="sa-yh"><span class="l">Your formations</span><span class="sa-yc">' + chips + '</span><button class="qm-flink sa-fl" data-a="forms" data-sfx="none" aria-label="' + esc('Your formations: ' + slots + ' slots') + '"><b>' + slots + '</b> slots' + icon('eye', 'eye') + '</button></div>' +
+        '<div class="sa-yh"><span class="l">Your formations</span><span class="sa-yc">' + chips + '</span><button class="qm-flink sa-fl" data-a="forms" data-sfx="none" aria-label="' + esc('Your formations: ' + slots + ' slots') + '"><b>' + slots + '</b><span class="sw"> slots</span>' + icon('eye', 'eye') + '</button></div>' +
         '<div class="sa-fl2">' + mine + openRows + '</div>' + slot + '</div>';
     }
     /** The screen in layout A (a rules-6 store). */
@@ -40411,7 +40454,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       if (!fl) return;
       ac.classList.remove('fc');
       const n = fl.children.length;
-      if (n && fl.clientHeight < n * 44 - 1) ac.classList.add('fc');
+      if (n && fl.clientHeight < n * 36 - 1) ac.classList.add('fc');
     }
     function fitA() {
       if (dead || !layer.classList.contains('sa')) return;
@@ -43024,7 +43067,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
         let sq = '';
         for (let i = 0; i < left; i++) sq += '<i class="p2"></i>';
         body = '<div class="mo-p2 mo-deal" style="--d:300ms"><div class="mo-p2l" style="justify-content:center"><span>' + icon('check') + 'Part 1 · ' + p1 + ' / ' + run.part1.target + '</span></div>' +
-          '<div class="mo-split"><div class="mo-sc">' + sq + '</div><div class="mo-sk"><span class="' + (left < turns ? 'warn' : '') + '">' +
+          '<div class="mo-split"><div class="mo-sc' + (left > 40 ? ' many' : '') + '">' + sq + '</div><div class="mo-sk"><span class="' + (left < turns ? 'warn' : '') + '">' +
             (left <= 0 ? 'No cards left to play' : left + ' card' + (left === 1 ? '' : 's') + ' left' + (left < turns ? ' · part 2 ends after ' + left + ' turn' + (left === 1 ? '' : 's')
               : left > turns ? ' · part 2 plays ' + turns : '')) + '</span></div></div></div>';
         tgt = t2;
@@ -43038,7 +43081,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
         body = '<div class="mo-p2 mo-deal" style="--d:300ms"><div class="mo-p2go"><b data-count="' + need + '">' + need + '</b> to go</div>' +
           '<div class="mo-p2bar"><i style="width:' + pct.toFixed(1) + '%"></i></div>' +
           '<div class="mo-p2l"><span>Part 1 · ' + p1 + '</span><span class="t">' + icon('target') + b.target + '</span></div>' +
-          '<div class="mo-split"><div class="mo-sc">' + sq + '</div><div class="mo-sk"><span class="' + (left < turns ? 'warn' : '') + '">' +
+          '<div class="mo-split"><div class="mo-sc' + (left > 40 ? ' many' : '') + '">' + sq + '</div><div class="mo-sk"><span class="' + (left < turns ? 'warn' : '') + '">' +
             (left <= 0 ? 'No cards left to play' : left + ' card' + (left === 1 ? '' : 's') + ' left' + (left < turns ? ' · part 2 ends after ' + left + ' turn' + (left === 1 ? '' : 's')
               : left > turns ? ' · part 2 plays ' + turns : '')) + '</span></div></div></div>';
         tl = '';
@@ -43049,7 +43092,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
         body = '<div class="mo-rows">' +
           '<div class="mo-row"><span class="mo-ico n">1</span><span class="mo-rt"><b>Part 1</b><span>' + (split ? 'A full battle; reach its target to go on' : 'A full battle; its score carries over') + '</span></span></div>' +
           '<div class="mo-row"><span class="mo-ico n">2</span><span class="mo-rt"><b>Part 2</b><span>' + (split ? 'A new board and its own target, with only the cards part 1 leaves' : 'A new board, with only the cards part 1 leaves') + '</span></span></div></div>' +
-          '<div class="mo-split"><div class="mo-sc">' + cards + '</div><div class="mo-sk"><span>Part 1 plays ' + sp.part1 + '</span><span class="' + (sp.left < 3 ? 'warn' : '') + '">' +
+          '<div class="mo-split"><div class="mo-sc' + (sp.deck > 40 ? ' many' : '') + '">' + cards + '</div><div class="mo-sk"><span>Part 1 plays ' + sp.part1 + '</span><span class="' + (sp.left < 3 ? 'warn' : '') + '">' +
             (sp.left ? sp.left + ' left for part 2' + (sp.left > sp.turns ? ' · it plays ' + sp.turns : '') : 'none left for part 2') + '</span></div></div>' +
           // rules 15 (2026-11-10, review): the rule in one plain line
           '<div class="mo-p2n mo-deal" style="--d:420ms">' + esc(P2_LINE) + '</div>';
