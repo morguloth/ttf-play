@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="22">
-<script>(function(){var B="f36afb84d5";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=22;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-hlp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("hlp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="17298722d0";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=22;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-hlp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("hlp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -4518,9 +4518,14 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .sa-yh { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 2px; font-family: var(--label); font-size: var(--fs-xs, 13px); letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-brass, #f3d58e); }
 .sa-yh .sa-fl { text-transform: none; letter-spacing: 0; display: inline-flex; align-items: center; gap: 5px; }
 .sa-fl2 { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
-.sa-fr { flex: 1 1 46px; max-height: 68px; min-height: 36px; display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: center; column-gap: 10px; padding: 2px 4px; cursor: pointer; border-top: 1px dashed rgba(243,213,142,.14); }
+.sa-fr { flex: 1 1 46px; max-height: 68px; min-height: 42px; display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; column-gap: 10px; padding: 2px 4px; cursor: pointer; border-top: 1px dashed rgba(243,213,142,.14); }
 .sa-fr:first-child { border-top: 0; }
-.sa-fr .sa-fg { width: 34px; height: 34px; }
+.sa-fr .sa-fg { width: 40px; height: 40px; }
+/* a formation's shape is drawn for the 52 px roundel (its widest, four tiles in a row, is 60 px): scaled to stand inside
+   the smaller roundels here (the list's 40 px, the chips' 28 px and 40 px) */
+.sa-fr .sa-fg > * { zoom: .62; }
+.sa-yc .c .g > * { zoom: .44; }
+.sa-acad.v2.fc:not(:has(.sa-line.slot)) .sa-yc .c .g > * { zoom: .62; }
 .sa-fr .sa-fg.e { display: grid; place-items: center; border-radius: 50%; font-size: 19px; /* off-step: a glyph box */ color: var(--ink-form, #c8b4ec); box-shadow: inset 0 0 0 1.5px rgba(180,147,234,.45); }
 .sa-fr .t { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .sa-fr .t .n { font-family: var(--label); font-size: var(--fs-sm, 15px); font-weight: 700; color: var(--ink-hi, #f1dfb2); line-height: 1.1; }
@@ -40454,7 +40459,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       if (!fl) return;
       ac.classList.remove('fc');
       const n = fl.children.length;
-      if (n && fl.clientHeight < n * 36 - 1) ac.classList.add('fc');
+      if (n && fl.clientHeight < n * 42 - 1) ac.classList.add('fc');
     }
     function fitA() {
       if (dead || !layer.classList.contains('sa')) return;
