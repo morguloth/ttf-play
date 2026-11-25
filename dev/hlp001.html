@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="26">
-<script>(function(){var B="49beba9eee";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=26;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-hlp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("hlp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="4a877d99fd";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=26;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-hlp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("hlp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -4563,6 +4563,11 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .sa-acad.v2.fc:not(:has(.sa-line.slot)) .sa-yh .sa-yc { order: 3; flex: 0 0 100%; justify-content: space-around; overflow: visible; }
 .sa-acad.v2.fc:not(:has(.sa-line.slot)) .sa-yc .c { flex-direction: column; gap: 3px; }
 .sa-acad.v2.fc:not(:has(.sa-line.slot)) .sa-yc .c .g { width: 40px; height: 40px; }
+/* 2026-11-25 (owner: "not quite right"): the Reprieve's "A rare find" tag took the room his line needs (it wrapped a word a
+ * line beside the price); the tag stands in for the stall's label there, and never shrinks */
+.sa-hire.one.cmp.rep .sa-hs .k { display: none; }
+.sa-hire.one.cmp .sa-hs .qm-rare { flex: none; }
+.sa-hire.one.cmp.rep .sa-hs .sub { text-align: left; }
 </style>
 <style>
 /*
