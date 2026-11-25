@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="22">
-<script>(function(){var B="cfbfbe3fdb";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=22;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-hlp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("hlp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="b38851dc20";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=22;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-hlp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("hlp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1896,6 +1896,15 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .sgcall.warn { color: #ffd2c4; box-shadow: inset 0 0 0 1px rgba(230,120,100,.7), 0 4px 10px rgba(0,0,0,.6); }
 .sgcall.warn .ic { color: #f08a72; }
 .sgcall.warnin { animation: l1-sgwarn .3s ease-out; }
+/* 2026-11-25 (js/counsel.js): a boss battle's counsel in the banner; 'urge' when the next piece is needed somewhere now;
+   the tiles it points at wear a brass ring */
+.sgcall.cns { font-size: var(--fs-sm, 16px); max-width: 900px; }
+.sgcall.urge { color: #ffe9b8; box-shadow: inset 0 0 0 2px rgba(243,190,90,.9), 0 4px 10px rgba(0,0,0,.6); }
+.sgcall.urge .ic { color: #ffc45c; }
+.dt.ccue::after { content: ''; position: absolute; inset: 0; border-radius: 6px; pointer-events: none; border: 3px solid rgba(255,206,110,.95); animation: l1-ccue 1.5s ease-in-out infinite; }
+@keyframes l1-ccue { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .dt.ccue::after { animation: none !important; } }
+.calm-motion .dt.ccue::after { animation: none !important; }
 @keyframes l1-sgwarn { 0%, 100% { transform: translateX(-50%); } 30% { transform: translateX(calc(-50% - 6px)); } 65% { transform: translateX(calc(-50% + 5px)); } }
 @keyframes l1-sgopen { from { opacity: 0; transform: translate(-50%, -6px); } to { opacity: 1; transform: translate(-50%, 0); } }
 .sg-lockl { margin-top: 3px; font-size: var(--fs-sm, 15px); line-height: 1; color: var(--lab, #c9a764); }
@@ -4484,6 +4493,51 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 #stage[data-shape="tall"] .sa-comp { gap: 2px; }
 #stage[data-shape="tall"] .sa-comp .qm-ct .gem { width: 24px; height: 24px; }
 .sa-af { min-height: 60px; }
+
+/* ---- 2026-11-25 (owner): Command and the Military Academy give their height to what you own -------------------- */
+/* the general for hire: his chip over one line (label, seats, price); it takes only the height it needs */
+.sa-hire.one.cmp { flex: none; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 8px; padding: 10px 12px; }
+.sa-hire.one.cmp .sa-hc { display: flex; justify-content: center; }
+.sa-hire.one.cmp .sa-hc .l1plaque.s-chip { --gchip-w: 100%; width: 100%; }
+.sa-hire.one.cmp .sa-hs { max-width: none; flex-direction: row; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 10px; }
+.sa-hire.one.cmp .sa-hs .k { max-width: 96px; text-align: left; }
+.sa-hire.one.cmp .sa-hs .sub { flex: 1; min-width: 0; text-align: right; }
+.sa-hire.one.cmp .sa-hs .qm-pill { flex: none; }
+/* your generals share the height the hire gave up; each line says what he does */
+.sa-cmd .sa-gl { flex: 1 1 auto; min-height: 0; }
+.sa-cmd .sa-gl .sa-g { flex: 1 1 52px; max-height: 84px; }
+.sa-g .nm { display: flex; flex-direction: column; justify-content: center; gap: 3px; }
+.sa-g .nm .n1 { display: block; }
+.sa-g .gw { display: flex; align-items: center; gap: 6px; min-width: 0; font-family: var(--body); font-size: var(--fs-xs, 13px); font-weight: 500; color: var(--sub, #b9ab8f); line-height: 1.1; }
+.sa-g .gw .w { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sa-g .gw .x { flex: none; padding: 0 6px; border-radius: 8px; font-size: var(--fs-xs, 13px); font-weight: 700; color: #f4ecff; background: linear-gradient(180deg, #8b5fd0, #5a3896); box-shadow: 0 0 0 1px #2a1d0d; }
+.sa-gl.tight .gw, .sa-gl.n7 .gw, .sa-gl.n8 .gw, .sa-gl.n9 .gw { display: none; }
+/* the Academy: the offer one row, then your formations */
+.sa-acad.v2 .sa-af { flex: none; container-type: normal; }
+.sa-acad.v2 .sa-afi { height: auto; }
+.sa-yh { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 2px; font-family: var(--label); font-size: var(--fs-xs, 13px); letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-brass, #f3d58e); }
+.sa-yh .sa-fl { text-transform: none; letter-spacing: 0; display: inline-flex; align-items: center; gap: 5px; }
+.sa-fl2 { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+.sa-fr { flex: 1 1 46px; max-height: 68px; min-height: 44px; display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; column-gap: 10px; padding: 2px 4px; cursor: pointer; border-top: 1px dashed rgba(243,213,142,.14); }
+.sa-fr:first-child { border-top: 0; }
+.sa-fr .sa-fg { width: 40px; height: 40px; }
+.sa-fr .sa-fg.e { display: grid; place-items: center; border-radius: 50%; font-size: 19px; /* off-step: a glyph box */ color: var(--ink-form, #c8b4ec); box-shadow: inset 0 0 0 1.5px rgba(180,147,234,.45); }
+.sa-fr .t { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.sa-fr .t .n { font-family: var(--label); font-size: var(--fs-sm, 15px); font-weight: 700; color: var(--ink-hi, #f1dfb2); line-height: 1.1; }
+.sa-fr .t .r { font-size: var(--fs-xs, 13px); color: var(--sub, #b9ab8f); line-height: 1.1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sa-fr .t .r::first-letter { text-transform: uppercase; }
+.sa-fr .x { flex: none; padding: 1px 8px; border-radius: 9px; font-size: var(--fs-sm, 15px); font-weight: 700; color: #f4ecff; background: linear-gradient(180deg, #8b5fd0, #5a3896); box-shadow: 0 0 0 1px #2a1d0d; }
+.sa-fr.open { cursor: default; }
+.sa-fr.open .t .n { color: var(--ink-form, #c8b4ec); font-weight: 400; }
+.sa-yh .l { white-space: nowrap; }
+.sa-yh .sa-yc { display: none; }
+.sa-acad.v2.fc .sa-fl2 { display: none; }
+.sa-acad.v2.fc .sa-yh { flex: none; min-height: 0; margin-top: 0; }
+.sa-acad.v2.fc .sa-yh .l { display: none; }
+.sa-acad.v2.fc .sa-yh .sa-yc { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.sa-yc .c { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+.sa-yc .c .g { width: 30px; height: 30px; }
+.sa-yc .c .x { padding: 0 6px; border-radius: 8px; font-family: var(--body); font-size: var(--fs-xs, 13px); font-weight: 700; letter-spacing: 0; color: #f4ecff; background: linear-gradient(180deg, #8b5fd0, #5a3896); box-shadow: 0 0 0 1px #2a1d0d; }
 </style>
 <style>
 /*
@@ -23922,6 +23976,8 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     // hlp001 rules 7 (Wave 6): the siege engines on the final board: res.eng [[id, met 1 | 0, value]] (the play data, the sim)
     { const es = C.enginesOf ? C.enginesOf(st) : []; if (es.length) res.eng = es.map((e) => [e.id, e.met ? 1 : 0, e.value]); }
     if (st.aid && st.aid.id) { res.aidRec ={ id: st.aid.id, price: st.aid.price || 0, aim: st.aid.aim || 0 }; if (typeof st.aid.add === 'number') res.aidRec.add = st.aid.add; if (typeof st.aid.at === 'number') res.aidRec.at = st.aid.at; if (st.aid.last) res.aidRec.last = true; }
+    // hlp001 (2026-11-25, play data): a last stand that was offered and refused: res.aidNo {id, price, add, gap}
+    if (st.aidNo && st.aidNo.id) res.aidNo = { id: st.aidNo.id, price: st.aidNo.price || 0, add: st.aidNo.add || 0, gap: st.aidNo.gap || 0 };
     // str001 rules 11: a dynamic battle's estimate (the play data's dyn rows; dynRec)
     if (st.dynamic) res.dyn = dynRec(st.dynamic);
     if (res.dyn && part >= 2 && run.part1 && run.part1.dyn) res.dyn.part1 = Object.assign({}, run.part1.dyn);
@@ -26013,15 +26069,15 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       short: 'A leader for a rarer one', text: 'Give up a hero or officer: a random one of the same kind and type, one rarity up, joins at the same rank.' },
     { id: 'muster_roll', name: 'Muster roll', rarity: 'uncommon', pick: { n: 0, choice: 'type' },
       short: 'A type\'s units +1 pip', text: 'Pick a unit type: every unit of it gains one pip.' },
-    { id: 'seal', name: "Veteran's seal", rarity: 'uncommon', mark: 'seal', pick: { n: 1, what: 'a unit, hero or officer without a seal' },
+    { id: 'seal', name: "Veteran's seal", rarity: 'uncommon', mark: 'seal', pick: { n: 1, what: 'a unit, hero or officer' },
       short: 'Mark: always in the opening hand', text: 'Mark a card: it is always in your opening hand (more seals than the hand holds: the first in deck order).' },
-    { id: 'homeland', name: 'Homeland', rarity: 'uncommon', mark: 'homeland', pick: { n: 1, what: 'a unit without Homeland', choice: 'terrain' },
+    { id: 'homeland', name: 'Homeland', rarity: 'uncommon', mark: 'homeland', pick: { n: 1, what: 'a unit', choice: 'terrain' },
       short: 'Mark: a second home terrain', text: 'Mark a unit and pick a terrain: it is at home there as well as on its own.' },
     { id: 'dup_leader', name: 'Duplicate (leader)', rarity: 'rare', plus: true, pick: { n: 1, what: 'a hero or officer' },
       short: 'Copy a hero or officer', text: 'A second copy of one hero or officer joins at the same rank, without its mark. At the deck cap it replaces a card.' },
     { id: 'commission', name: 'Commission', rarity: 'rare', pick: { n: 1, what: 'a unit of rank {commissionRank} or higher', choice: 'as', random: 'the hero' },
       short: 'A veteran unit becomes a leader', text: 'A unit of rank {commissionRank} or higher becomes a Sergeant of its type, or a random hero of its type, at that rank.' },
-    { id: 'banner', name: 'Banner', rarity: 'rare', mark: 'banner', pick: { n: 1, what: 'a unit without a Banner' },
+    { id: 'banner', name: 'Banner', rarity: 'rare', mark: 'banner', pick: { n: 1, what: 'a unit' },
       short: 'Mark: counts as two of its type', text: 'Mark a unit: it counts as two cards of its type wherever cards or pieces of a type are counted. It still takes one tile and scores once.' },
     { id: 'reach', name: 'Wider reach', rarity: 'rare', mark: 'reach', pick: { n: 1, what: 'an officer of a cross, ring, row or column' },
       short: 'Mark: an officer\'s area a step wider', text: 'Mark an officer: his area grows a step (cross to ring, row or column to row and column, ring to within 2 steps).' },
@@ -26469,7 +26525,8 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
  *                             {ok, gap, total, target, calls, need, last: true, view}; else null. aidOffers and hireAid take
  *                             such a state too: only the cheapest company that wins the battle can be hired (o.wins; the
  *                             others say why not), and hiring puts its piece on its tile at once (the battle stays over).
- *   Run.refuseAid(st)         the same state marked aidNo (defeat accepted: the last stand is not offered again)
+ *   Run.refuseAid(st, o?, gap?)  the same state marked aidNo (defeat accepted: the last stand is not offered again; with the
+ *                             company refused, aidNo is {id, price, add, gap} and the battle's result carries it)
  *   Run.aidStar(st)           the solved tile while it still holds (the hire's turn, the same board), else null
  *   Run.aidCard(offer, st)    the hand card an offer brings {kind 'unit', type, rank 1, pips 0, aid: captain id, power}
  */
@@ -26565,7 +26622,8 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     if (st.revealed && st.revealed.indexOf(o.slot) < 0) out.revealed = st.revealed.concat([o.slot]).sort((a, b) => a - b);
     return out;
   }
-  const refuseAid = (st) => Object.assign({}, st, { aidNo: true });
+  /** The state marked aidNo (defeat accepted). o: the company that was offered, kept for the play data {id, price, add, gap}. */
+  const refuseAid = (st, o, gap) => Object.assign({}, st, { aidNo: o && o.id ? { id: o.id, price: o.price || 0, add: o.add || 0, gap: gap || 0 } : true });
 
   /** The base win pay of battle st (Run.payOf's win, clash and war chest; no margin, no cards' gold). */
   function winPayOf(run, st) {
@@ -26779,6 +26837,139 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
   }
 
   Object.assign(R, { aidTun, aidFrom, aidState, aidOffers, aidPrice, hireAid, lastStand, refuseAid, aidCard, aidStar, aidWinPay: winPayOf });
+  if (typeof module !== 'undefined') module.exports = C;
+})();
+</script>
+<script>
+/*
+ * hlp001/js/counsel.js - the boss battles' counsel (2026-11-25). Pure and DOM-free.
+ *
+ * The owner, after the first night of play data on rules 22 (every run that reached the Siege lost it: one took the gate
+ * on turn 6 of 10 with the outside already won, one scored four times the city's target and 59% of the outside's): "what's
+ * missing is an explicit pointer"; then "go through all other bosses and do similar player help".
+ *
+ * One line over the board, worked out from the battle as it stands, every time (never a one-time tip: it reads the state,
+ * and a player who has seen the boss before needs it as much). No rule and no number changes: it only says what the
+ * battle already asks for and where the next piece is needed.
+ *
+ *   C.bossCounsel(run, st) -> null (not a boss battle, the battle is over, nothing to say) or
+ *     {kind, text, icon, tone: '' | 'urge' | 'ok', slots: [tiles to mark]}
+ *
+ *   siege        the gate while it is shut (urgent from turn 3, or once the outside is won); then the side still short
+ *   twoPart      part 1 with its target met: the cards played now are gone in part 2; part 2: the cards running out
+ *   citadel      the tiles the next tier still asks for; the Throne once the Keep is open
+ *   kings        the fronts still short, the fronts won; the Royal Standard
+ *   rival        the kinds of formation that count already, the kinds still to build
+ *   threeFields  what is still to go for the total, and the deck running dry
+ *   twist        nothing: battle 10's twist has its own line in the score panel
+ */
+(function () {
+  const C = globalThis.TTFCore4 = globalThis.TTFCore4 || {};
+  const num = (n) => String(Math.max(0, Math.round(n))).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const gapOf = (x) => Math.max(0, Math.ceil((x.target || 0) - (x.total || 0) - 1e-9));
+  const empty = (st, slots) => (slots || []).filter((s) => !(st.pieces || {})[s] && (st.forts || []).indexOf(s) < 0);
+  const plural = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
+  const formName = (id) => { const f = (C.FORMATIONS || []).find((x) => x.id === id); return f ? f.name : String(id); };
+  const out = (kind, text, icon, tone, slots) => ({ kind, text, icon: icon || 'flag', tone: tone || '', slots: slots || [] });
+
+  function siege(st, sd, left) {
+    const sg = sd.siege;
+    if (!sg || !sg.inside || !sg.outside) return null;
+    const gi = gapOf(sg.inside), go = gapOf(sg.outside);
+    if (!sg.breached) {
+      const late = (st.turn || 0) >= 2 || sg.outside.met;
+      return late
+        ? out('siege', 'Take the gate now: ' + plural(left, 'turn') + ' left and the city needs ' + num(sg.inside.target) + ' of its own', 'gate', 'urge', [sg.gate])
+        : out('siege', 'Take the gate early: the city behind it needs ' + num(sg.inside.target) + ' of its own', 'gate', '', [sg.gate]);
+    }
+    if (sg.inside.met && sg.outside.met) return null;
+    if (sg.outside.met) return out('siege', 'Outside the walls is won. Play inside the city: ' + num(gi) + ' to go', 'gate', 'urge', empty(st, sg.inside.slots));
+    if (sg.inside.met) return out('siege', 'The city is won. Play outside the walls: ' + num(go) + ' to go', 'gate', 'urge', empty(st, sg.outside.slots));
+    return out('siege', 'Both sides must reach their target: outside ' + num(go) + ' to go, the city ' + num(gi), 'target', '');
+  }
+
+  function twoPart(st, sd, left) {
+    if (st.part === 1) {
+      if (!st.split) return null;
+      if (sd.total >= sd.target - 1e-9) return left > 0 ? out('twoPart', 'Target met. Cards you play now are gone in part 2: spend your weakest', 'check', 'ok') : null;
+      return (st.turn || 0) === 0 ? out('twoPart', 'No card played here comes back in part 2: win this part with as little as you can', 'card', '') : null;
+    }
+    if (st.part === 2) {
+      const hand = Math.max(1, (st.offer || []).length), can = ((st.offer || []).length ? 1 : 0) + Math.ceil(((st.deck || []).length) / hand);
+      if (can < left) return out('twoPart', 'Cards for ' + plural(can, 'more turn') + ' only: this part ends when they run out', 'card', 'urge');
+    }
+    return null;
+  }
+
+  function citadel(st, sd, left) {
+    const tiers = sd.tiers || [], throne = (sd.objectives || []).find((o) => o.kind === 'hold');
+    const k = tiers.findIndex((z) => !z.open);
+    // the plays the Throne is still away: the tiles each shut tier asks of the one below, then the Throne itself
+    let plays = throne && !throne.met ? 1 : 0;
+    if (k > 0) plays += Math.max(0, (tiers[k - 1].need || 0) - (tiers[k - 1].count || 0)) + tiers.slice(k + 1).reduce((a, z) => a + (z.need || 0), 0);
+    const tight = plays > 0 && left <= plays + 1;
+    if (k > 0) {
+      const below = tiers[k - 1], z = tiers[k], more = Math.max(0, (below.need || 0) - (below.count || 0));
+      const text = (tight ? plural(left, 'turn') + ' left: ' : '') + plural(more, 'more tile') + ' in the ' + String(below.name).replace(/^The /, '') + ' open' + (more === 1 ? 's' : '') +
+        ' ' + (/^The /.test(z.name) ? z.name.replace(/^The /, 'the ') : 'the ' + z.name) + (z.mult > 1 ? ' (scores ×' + (Math.round(z.mult * 100) / 100) + ')' : '');
+      return out('citadel', text.charAt(0).toUpperCase() + text.slice(1), 'gate', tight ? 'urge' : '', empty(st, below.slots));
+    }
+    if (throne && !throne.met) {
+      const hero = !!(st.scenario && !st.scenario.noHero);
+      return out('citadel', (tight ? plural(left, 'turn') + ' left: put ' : 'Put ') + (hero ? 'a hero' : 'a piece') + ' on the Throne, or the battle is lost', 'crown', 'urge', empty(st, throne.slots));
+    }
+    return null;
+  }
+
+  function kings(st, sd, left) {
+    const fr = sd.fronts || [], std = (sd.objectives || []).find((o) => o.kind === 'hold');
+    const short = fr.filter((f) => !f.met), won = fr.filter((f) => f.met);
+    if (std && !std.met && (!short.length || left <= 3)) return out('kings', (left <= 3 ? plural(left, 'turn') + ' left: a' : 'A') + ' piece must hold the Royal Standard at the end', 'crown', 'urge', empty(st, std.slots));
+    if (!short.length) return null;
+    const nm = (f) => String(f.name).replace(/ Wing$/, '');
+    const list = short.map((f) => nm(f) + ' ' + num(gapOf(f))).join(' · ');
+    if (won.length) {
+      const slots = short.reduce((a, f) => a.concat(empty(st, f.slots)), []);
+      return out('kings', won.map((f) => f.name).join(' and ') + (won.length > 1 ? ' are' : ' is') + ' won. Still short: ' + list, 'target', 'urge', slots);
+    }
+    return out('kings', 'Three fronts, three targets. To go: ' + list, 'target', '');
+  }
+
+  function rival(st, sd, left, sc) {
+    const learned = (st.formations || []).slice(), built = [];
+    for (const f of (sc && sc.forms) || []) if (built.indexOf(f.id) < 0) built.push(f.id);
+    const todo = learned.filter((id) => built.indexOf(id) < 0);
+    if (!learned.length) return null;
+    if (!built.length) return out('rival', 'Each kind of formation counts once: build different kinds, never the same twice', 'flag', '');
+    if (!todo.length) return out('rival', 'Every kind you know is built: another formation adds nothing now', 'check', 'ok');
+    const names = todo.slice(0, 3).map(formName).join(', ') + (todo.length > 3 ? ' and ' + (todo.length - 3) + ' more' : '');
+    return out('rival', built.map(formName).join(', ') + ' count' + (built.length === 1 ? 's' : '') + '. A repeat adds nothing. Still to build: ' + names, 'flag', '');
+  }
+
+  function threeFields(st, sd, left) {
+    const f = sd.fields || st.fields;
+    if (!f) return null;
+    const gap = Math.max(0, Math.ceil(sd.target - sd.sum - 1e-9)), n = f.n || st.part || 1, of = f.of || 3;
+    if (gap <= 0) return out('threeFields', 'The target for all three fields is met', 'check', 'ok');
+    const hand = Math.max(1, (st.offer || []).length), can = ((st.offer || []).length ? 1 : 0) + Math.ceil(((st.deck || []).length) / hand);
+    if (can < left) return out('threeFields', 'Field ' + n + ' of ' + of + ': ' + num(gap) + ' to go, and cards for ' + plural(can, 'more turn') + ' only', 'card', 'urge');
+    return out('threeFields', 'Field ' + n + ' of ' + of + ': ' + num(gap) + ' still to go for the one target' + (n < of ? ', with ' + plural(of - n, 'field') + ' after this' : ''), 'target', n === of ? 'urge' : '');
+  }
+
+  const BY = { siege, twoPart, citadel, kings, rival, threeFields };
+
+  /** The boss battle's counsel as the battle stands (see the header). Never throws. */
+  function bossCounsel(run, st) {
+    try {
+      const R = C.Run, kind = st && st.bossBattle;
+      if (!R || !run || !kind || !BY[kind] || st.phase === 'done' || (R.battleOver && R.battleOver(st))) return null;
+      const view = C.playerView ? C.playerView(st) : st;
+      const sd = R.standing(run, view), left = Math.max(0, (C.turnsOf ? C.turnsOf(st) : 0) - (st.turn || 0));
+      return BY[kind](st, sd, left, kind === 'rival' ? C.score(view) : null) || null;
+    } catch (e) { return null; }
+  }
+
+  C.bossCounsel = bossCounsel;
   if (typeof module !== 'undefined') module.exports = C;
 })();
 </script>
@@ -35684,7 +35875,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     }
     /** hlp001 rules 22, the last stand (Run.lastStand): the battle is over and lost, and one company the gold can pay
      *  for would still win it. The pop-up opens in place of the end reveal: the one company that wins is chosen already;
-     *  Hire puts it on its tile and the battle ends won, "Accept defeat" (or a tap outside) ends it lost and the offer is
+     *  Hire puts it on its tile and the battle ends won, "Accept defeat" (the button only) ends it lost and the offer is
      *  not made again (Run.refuseAid). -> true when the pop-up is up (startEnd waits for the answer). */
     function lastStandOpen() {
       if (!R.lastStand || !globalThis.L1Screens || !L1Screens.modal) return false;
@@ -35698,7 +35889,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       const refuse = () => {
         if (m) m.remove();
         if (S.destroyed || S.st !== before) return;
-        S.st = R.refuseAid(S.st);
+        S.st = R.refuseAid(S.st, o, O.gap);
         app.saveBattle(S.st);
         startEnd();
       };
@@ -35709,7 +35900,9 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
         buttons: [{ a: 'cancel', label: 'Accept defeat', cls: 'ghost' }, { a: 'ok', label: 'Hire ' + esc(o.short || o.name) + ' <span class="mp">' + icon('gold') + o.price + '</span>', cls: '' }],
         on: {
           aidsel: (n) => { if (+n.dataset.k !== o.k) sfx('refuse'); },
-          cancel: refuse,
+          // (2026-11-25, play data: a one-point loss with the offer open) only the button accepts defeat: a tap outside the
+          // pop-up does nothing
+          cancel: (n) => { if (n && n.classList && n.classList.contains('scrim')) return; refuse(); },
           ok: () => {
             if (S.st !== before) return;
             m.remove();
@@ -35806,12 +35999,21 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       // Sappers); the open banner's moment is armed once, at the breach (commit), never on a render
       // war050 rules 5: a Citadel tier just opened: its call, for a moment
       const tc = !S.ending && !f && S.tierCall ? S.tierCall : null;
-      const txt = S.ending || !(sg || scn) ? '' : f ? icon(f.icon || 'lock') + esc(f.text) : tc ? icon(tc.id === 'keep' ? 'keep' : 'gate') + esc(tc.text) : scn ? scenBanner(S.st) : sealed ? icon('gate') + 'Take the gate to open the city' : S.opened ? icon('check') + 'The gate is yours: the city is open' : '';
+      // 2026-11-25 (js/counsel.js): a boss battle's counsel, worked out from the battle as it stands: it takes the banner's
+      // place whenever no moment (a refusal, a tier opening, the breach) is speaking; its tiles wear a mark
+      let cn = null;
+      if (!S.ending && !S.endPending && !f && !tc && !(sg && S.opened) && C.bossCounsel) { try { cn = C.bossCounsel(S.run, S.st); } catch (e) { cn = null; } }
+      const marks = cn && (cn.tone === 'urge' || cn.slots.length <= 2) ? cn.slots : [];
+      el.board.querySelectorAll('.dt.ccue').forEach((t) => { if (marks.indexOf(+t.dataset.slot) < 0) t.classList.remove('ccue'); });
+      marks.forEach((sl) => { const t = el.board.querySelector('.dt[data-slot="' + sl + '"]'); if (t) t.classList.add('ccue'); });
+      const txt = S.ending || !(sg || scn || cn) ? '' : f ? icon(f.icon || 'lock') + esc(f.text) : tc ? icon(tc.id === 'keep' ? 'keep' : 'gate') + esc(tc.text) : cn ? icon(cn.icon) + esc(cn.text) : scn ? scenBanner(S.st) : sealed ? icon('gate') + 'Take the gate to open the city' : S.opened ? icon('check') + 'The gate is yours: the city is open' : '';
       if (!txt) { if (n) n.remove(); return; }
       if (!n) { el.over.insertAdjacentHTML('beforeend', '<div class="sgcall"></div>'); n = el.over.querySelector('.sgcall'); }
-      n.classList.toggle('open', (!sealed && !f && !scn) || !!tc);
-      n.classList.toggle('scb', scn && !f && !tc);
+      n.classList.toggle('open', cn ? cn.tone === 'ok' : (!sealed && !f && !scn) || !!tc);
+      n.classList.toggle('scb', scn && !f && !tc && !cn);
       n.classList.toggle('warn', !!f);
+      n.classList.toggle('cns', !!cn);
+      n.classList.toggle('urge', !!cn && cn.tone === 'urge');
       // the refusal's shake is over: it must not hold back the open banner's entrance
       if (!f) n.classList.remove('warnin');
       n.innerHTML = txt;
@@ -40002,9 +40204,13 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       const ok = !x.spent && R.canBuySlot(v, x.i, it.pick);
       const rp = !!(it.item && (it.item.reprieve || it.item.id === 'reprieve'));
       const attrs = x.spent ? '' : ' data-a="ware" data-shelf="hire" data-i="' + it.vi + '" data-slot="' + x.i + '" data-pick="' + it.pick + '"';
-      return '<div class="sa-hire one qm-hrow' + (x.spent ? ' gone spent' : ok ? '' : ' no') + (rp ? ' rep' : '') + (x.spent ? '' : dl) + '" data-slot="' + x.i + '"' + attrs + '>' +
-        '<div class="qm-med sa-hp">' + plaque(it.item, { T, run, size: 'm', lucky: !!it.item.lucky }) + '</div>' +
-        '<div class="sa-hs"><span class="k">' + esc(x.label) + '</span>' + (x.sub ? '<span class="sub">' + esc(x.sub) + '</span>' : '') +
+      // 2026-11-25 (owner: "dedicates a lot of space to the general you can hire, and crams the ones you have below"): the
+      // general for hire as his chip (portrait, name, his words and ×N) over one line with the price; the height it gave
+      // up goes to your generals' lines (gensA)
+      const chip = Cards().genChip ? Cards().genChip(it.item, { T, run }) : plaque(it.item, { T, run, size: 'm', lucky: !!it.item.lucky });
+      return '<div class="sa-hire one cmp qm-hrow' + (x.spent ? ' gone spent' : ok ? '' : ' no') + (rp ? ' rep' : '') + (x.spent ? '' : dl) + '" data-slot="' + x.i + '"' + attrs + '>' +
+        '<div class="sa-hc">' + chip + '</div>' +
+        '<div class="sa-hs"><span class="k">' + esc(x.label) + '</span>' +
         (rp && !x.spent ? '<span class="qm-rare">' + icon('candle') + 'A rare find</span>' : '') +
         (x.spent ? '' : '<span class="sub">' + (rp ? 'One re-fight, then a Martyr' : full ? 'Your seats are full' : 'Joins your generals') + '</span>' + pill(wareVerb('hire', full), it.price, ok)) + '</div>' +
         (x.spent ? '<span class="qm-stamp">' + esc(x.mark) + '</span>' : '') + '</div>';
@@ -40020,7 +40226,11 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
           icon('promote') + '<span class="pp">' + icon('gold') + '<span class="n">' + g.promote.price + '</span></span></button>' : g.top ? '<span class="sa-tl">Top level</span>' : '<span></span>';
         const sell = g.sell === null ? '<span></span>' : '<button class="sa-rb sell" data-a="gsell" data-k="' + esc(g.id) + '" data-sfx="none" aria-label="' + esc('Sell ' + g.name + ' for ' + g.sell + ' gold') + '">' +
           '<span class="v">Sell</span><span class="pp">' + icon('gold') + '<span class="n">' + g.sell + '</span></span></button>';
-        return '<div class="sa-g" data-k="' + esc(g.id) + '" data-a="gens" role="button" aria-label="' + esc('Your generals: ' + g.name + ', level ' + g.level) + '"><span class="sa-gp">' + port(gg) + '</span><span class="nm">' + esc(g.name) + ' <span class="lv">Lv ' + g.level + '</span></span>' + pro + sell + '</div>';
+        // 2026-11-25: what he does and his ×N under his name (Cards.generalLine), dropped first when the panel is full
+        let ln = null;
+        try { ln = Cards().generalLine ? Cards().generalLine(gg, T) : null; } catch (e) { ln = null; }
+        const gw = ln && (ln.words || ln.chip) ? '<span class="gw"><span class="w">' + esc(ln.words || '') + '</span>' + (ln.chip ? '<b class="x">' + esc(ln.chip) + '</b>' : '') + '</span>' : '';
+        return '<div class="sa-g" data-k="' + esc(g.id) + '" data-a="gens" role="button" aria-label="' + esc('Your generals: ' + g.name + ', level ' + g.level) + '"><span class="sa-gp">' + port(gg) + '</span><span class="nm"><span class="n1">' + esc(g.name) + ' <span class="lv">Lv ' + g.level + '</span></span>' + gw + '</span>' + pro + sell + '</div>';
       });
       for (let k = 0; k < st.open; k++) rows.push('<div class="sa-g open' + (st.his && k === st.open - 1 ? ' his' : '') + '"><span class="sa-gp e">' + icon('general') + '</span><span class="nm">Open seat</span></div>');
       const p = R.genSlotPrice(v);
@@ -40078,8 +40288,24 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
         '<button class="qm-mb ok qm-tbtn' + (R.canBuyFormSlot(v) ? '' : ' no') + '" data-a="fslot" data-sfx="none" aria-label="' + esc('Buy formation slot ' + (sv.slots + 1) + ' for ' + sv.price + ' gold') + '"><span class="v">Buy</span><span class="qm-mp">' + icon('gold') + sv.price + '</span></button></div>' : '';
       const learned = (v.formations || []).length, all = (C.FORMATIONS || []).length || 15;
       const slots = sv ? (sv.over ? learned + ' in ' + sv.slots : learned + ' of ' + sv.slots) : learned + '/' + all;
-      return '<div class="pnl sa-p sa-acad' + (a && a.state !== 'offer' ? ' shut' : '') + '"><div class="sa-ph"><span class="lab">Military Academy</span></div>' + offer + slot +
-        '<div class="sa-yf"><button class="qm-flink sa-fl" data-a="forms" data-sfx="none" aria-label="' + esc('Your formations: ' + slots + ' slots') + '">Your formations <b>' + slots + '</b></button></div></div>';
+      // 2026-11-25 (owner: "uses a lot of space to show the one you can learn when it could dedicate some of it to showing
+      // the ones you already have"): the offer keeps one compact row; your formations stand in the panel, one line each
+      // (shape, name, ×N, recipe: a tap opens Your formations, where they are sold), then the open and locked slots
+      const TF = (T && T.formations) || {};
+      const mine = (v.formations || []).map((id) => {
+        const f = (C.FORMATIONS || []).find((y) => y.id === id);
+        if (!f) return '';
+        const x = '×' + (K.fmt ? K.fmt(1 + (TF[id] || 0)) : 1 + (TF[id] || 0)), rule = String(f.short || '').replace(/^(Any order|Exact shape): /, '');
+        return '<div class="sa-fr" data-a="forms" role="button" aria-label="' + esc(f.name + ', ' + x + ': ' + rule) + '"><span class="qm-ag sa-fg">' + (K.formGlyph ? K.formGlyph(id) : '') + '</span>' +
+          '<span class="t"><span class="n">' + esc(f.name) + '</span><span class="r">' + esc(rule) + '</span></span><span class="x">' + x + '</span></div>';
+      }).join('');
+      // (a full panel, the Quartermaster above: the same formations as chips in the heading's line: shape and ×N; fitA)
+      const chips = (v.formations || []).map((id) => '<span class="c" data-a="forms"><span class="qm-ag g">' + (K.formGlyph ? K.formGlyph(id) : '') + '</span><b class="x">×' + (K.fmt ? K.fmt(1 + (TF[id] || 0)) : 1 + (TF[id] || 0)) + '</b></span>').join('');
+      let openRows = '';
+      for (let k = 0; sv && k < sv.open; k++) openRows += '<div class="sa-fr open"><span class="sa-fg e">' + icon('formation') + '</span><span class="t"><span class="n">Open slot</span><span class="r">Learn a formation above</span></span></div>';
+      return '<div class="pnl sa-p sa-acad v2' + (a && a.state !== 'offer' ? ' shut' : '') + '"><div class="sa-ph"><span class="lab">Military Academy</span></div>' + offer +
+        '<div class="sa-yh"><span class="l">Your formations</span><span class="sa-yc">' + chips + '</span><button class="qm-flink sa-fl" data-a="forms" data-sfx="none" aria-label="' + esc('Your formations: ' + slots + ' slots') + '"><b>' + slots + '</b> slots' + icon('eye', 'eye') + '</button></div>' +
+        '<div class="sa-fl2">' + mine + openRows + '</div>' + slot + '</div>';
     }
     /** The screen in layout A (a rules-6 store). */
     function drawA(o, v, stalls) {
@@ -40179,9 +40405,17 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
       const z = Math.max(0.6, Math.min(Math.max(zr, zc), 1.6));
       m.style.setProperty('--z', z.toFixed(2)); m.style.setProperty('--pz', z.toFixed(2));
     }
+    /** 2026-11-25: the Academy's formations as lines while each has its height, else as chips in the heading's line. */
+    function fitAcad() {
+      const ac = layer.querySelector('.sa-acad.v2'), fl = ac && ac.querySelector('.sa-fl2');
+      if (!fl) return;
+      ac.classList.remove('fc');
+      const n = fl.children.length;
+      if (n && fl.clientHeight < n * 44 - 1) ac.classList.add('fc');
+    }
     function fitA() {
       if (dead || !layer.classList.contains('sa')) return;
-      try { fitCards(); fitHire(); } catch (e) { /* layout only */ }
+      try { fitCards(); fitHire(); fitAcad(); } catch (e) { /* layout only */ }
     }
     if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (!dead) fitA(); });
 
@@ -45255,7 +45489,9 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     // hlp001 rules 7 (Wave 6): the siege engines in the deck (ids) and those on this battle's board ([id, met, value])
     { const en = (run.deck || []).filter((c) => c && c.kind === 'engine').map((c) => c.id); if (en.length) row.engines = en; }
     if (Array.isArray(r.eng) && r.eng.length) row.eng = r.eng.map((x) => x.slice());
-    if (r.aidRec && r.aidRec.id) { row.aidId = r.aidRec.id; row.aidPrice = r.aidRec.price || 0; row.aidAim = r.aidRec.aim || 0; row.aidAdd = typeof r.aidRec.add === 'number' ? r.aidRec.add : null; }
+    if (r.aidRec && r.aidRec.id) { row.aidId = r.aidRec.id; row.aidPrice = r.aidRec.price || 0; row.aidAim = r.aidRec.aim || 0; row.aidAdd = typeof r.aidRec.add === 'number' ? r.aidRec.add : null; if (r.aidRec.last) row.aidLast = 1; }
+    // (2026-11-25) a last stand offered and refused: the company, its price and the gap it would have closed
+    if (r.aidNo && r.aidNo.id) row.aidNo = { id: r.aidNo.id, price: r.aidNo.price || 0, add: r.aidNo.add || 0, gap: r.aidNo.gap || 0 };
     // str001 rules 11 (2026-11-14): a dynamic run's rows say so (dyn: 1) with the battle's estimate
     // {target, est (the bot's median), k (its plays), ms, sides?, fronts?, part1?}, so they never mix with table runs
     // str001 rules 29: no run's targets rise any more (a saved run's run.dynamic is ignored)
