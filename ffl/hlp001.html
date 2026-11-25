@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="26">
-<script>(function(){var B="481ff73509";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=26;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-hlp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("hlp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="49c302a3ac";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=26;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-hlp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("hlp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -5888,6 +5888,9 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
 .h-wall .h-sort { flex: none; gap: 6px; }
 .h-wall .h-chip { padding: 0 12px; }   /* (its 44 px height and 52 px hit area kept: 45 px at the 1024x768 fit) */
 .h-wall .h-upb { margin-left: 10px; }
+/* (the type chips, a rule, the kind chips: a type and a kind together narrow each other) */
+.h-wall .h-sep { align-self: center; width: 2px; height: 28px; margin: 0 4px; border-radius: 1px; background: currentColor; opacity: .3; }
+.h-chip[data-f="unit"] .ic { color: var(--ink-brass, #f3d58e); }
 .h-wall .h-grid { flex: 1 1 auto; margin-top: 10px; padding: 24px 10px 100px; display: grid; grid-template-columns: repeat(auto-fill, 170px); gap: 28px 16px; justify-content: center; align-content: start; }
 .h-wall .h-grp, .h-wall .h-cards { display: contents; }
 .h-wall .h-grp .lab { display: none; }
@@ -44027,13 +44030,25 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     const n = C.pipsNeeded(T, c);
     return n > 0 ? Math.max(0, n - Math.floor(c.pips || 0)) : Infinity;
   }
-  /** The groups the deck view draws for filter (a GROUPS key, 'all', or - 2026-11-25, owner: "select multiple filters at
-   *  the same time" - a list of keys: the cards of any of them; an empty list is 'all') and sort (a SORTS key). */
+  /** A card's type for the deck view's type chips (a unit's, an officer's, a hero's), '' for a card with none. */
+  const filterType = (c) => (c && (c.kind === 'unit' || c.kind === 'officer' || c.kind === 'hero') ? (C && C.cardTypeOf ? C.cardTypeOf(c) : c.type) || '' : '');
+  /** The deck view's kind chips, in the deck's order: plain units first. */
+  const KIND_CHIPS = [{ key: 'unit', label: 'Units', icon: 'card' }].concat(GROUPS.filter((g) => TYPES.indexOf(g.key) < 0).map((g) => ({ key: g.key, label: g.many, icon: g.icon })));
+  /** 2026-11-25 (owner: "I want the filters to be additive, as in, if I select archer and officer, I only see officers
+   *  that are also archers"): the cards a list of chip keys keeps. The type keys (C.TYPES) and the kind keys (unit,
+   *  officer, hero, engineer, order, engine) narrow each other: a card must be of one of the chosen types (when any is
+   *  chosen) AND of one of the chosen kinds (when any is). Two types together are either; so are two kinds. */
+  function filterDeck(cards, keys) {
+    const ks = keys || [], ts = ks.filter((k) => TYPES.indexOf(k) >= 0), kd = ks.filter((k) => TYPES.indexOf(k) < 0);
+    if (!ts.length && !kd.length) return (cards || []).slice();
+    return (cards || []).filter((c) => !!c && (!ts.length || ts.indexOf(filterType(c)) >= 0) && (!kd.length || kd.indexOf(c.kind) >= 0));
+  }
+  /** The groups the deck view draws for filter (a GROUPS key or 'all': that one group; or a list of chip keys: the cards
+   *  filterDeck keeps, an empty list is all) and sort (a SORTS key). */
   function arrangeDeck(cards, filter, sort, T0) {
     const T = T0 || (C && C.TUN_DEFAULT) || {};
-    let groups = groupDeck(cards);
-    const fl = Array.isArray(filter) ? filter : filter && filter !== 'all' ? [filter] : [];
-    if (fl.length) groups = groups.filter((g) => fl.indexOf(g.key) >= 0);
+    let groups = groupDeck(Array.isArray(filter) ? filterDeck(cards, filter) : cards);
+    if (!Array.isArray(filter) && filter && filter !== 'all') groups = groups.filter((g) => g.key === filter);
     if (sort !== 'power' && sort !== 'next') return groups;
     const order = new Map();
     groups.forEach((g, gi) => g.cards.forEach((c, i) => order.set(c, gi * 1000 + i)));
@@ -44990,11 +45005,16 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     // screen, a wall of full-size cards (stacks kept); the filter chips add up (All clears them); Show upgrades draws
     // every card at its next rank
     if (!Array.isArray(deckView.filter)) deckView.filter = deckView.filter && deckView.filter !== 'all' ? [deckView.filter] : [];
-    deckView.filter = deckView.filter.filter((k) => all.some((g) => g.key === k));
+    // the chips: All, the types the deck holds (every card of the type: units, officers and heroes), then the kinds it
+    // holds. A type and a kind together narrow each other (filterDeck)
+    const tchips = typeTally(cards).filter((t) => t.n > 0).map((t) => ({ key: t.key, label: t.label, icon: t.key, n: t.n }));
+    const kchips = KIND_CHIPS.map((k) => Object.assign({ n: cards.filter((c) => c && c.kind === k.key).length }, k)).filter((k) => k.n > 0);
+    deckView.filter = deckView.filter.filter((k) => tchips.concat(kchips).some((x) => x.key === k));
     const isOn = (key) => (key === 'all' ? !deckView.filter.length : deckView.filter.indexOf(key) >= 0);
     const chip = (key, inner, n) => '<button class="h-chip' + (isOn(key) ? ' on' : '') + '" data-f="' + key + '" aria-pressed="' + isOn(key) + '">' + inner + '<b>' + n + '</b></button>';
+    const chipOf = (x) => chip(x.key, icon(x.icon) + '<span>' + esc(x.label) + '</span>', x.n);
     const bar = () => '<div class="h-bar"><div class="h-chips">' + chip('all', '<span>All</span>', cards.length) +
-      (all.length > 1 ? all.map((g) => chip(g.key, icon(g.icon) + '<span>' + esc(g.label) + '</span>', g.cards.length)).join('') : '') + '</div>' +
+      tchips.map(chipOf).join('') + (tchips.length && kchips.length ? '<i class="h-sep" aria-hidden="true"></i>' : '') + kchips.map(chipOf).join('') + '</div>' +
       '<div class="h-sort">' + SORTS.map((x) => '<button class="h-chip' + (deckView.sort === x.key ? ' on' : '') + '" data-s="' + x.key + '">' + esc(x.label) + '</button>').join('') +
       '<button class="h-chip h-upb' + (deckView.up ? ' on' : '') + '" data-u="1" aria-pressed="' + !!deckView.up + '">' + icon('train') + '<span>Show upgrades</span></button></div></div>';
     const body = () => arrangeDeck(cards, deckView.filter, deckView.sort, T).map((g) => '<section class="h-grp g-' + g.key + '">' +
@@ -45030,7 +45050,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     const fb = forms ? '<button class="fbtn" data-h="forms" aria-label="Formations: ' + (fsv ? K.formSlotsLine(fsv) : forms.length + ' of ' + fall + ' learned') + '">' + icon('l1form') + 'Formations<b>' + forms.length + '/' + fall + (fsv ? ' slots' : '') + '</b></button>' : '';
     const ov = overlay(root, 'l1deck', '<div class="pnl h-deck h-wall">' +
       '<button class="h-x" data-h="close" aria-label="Close"' + NOSFX + '>' + X_SVG + '</button>' +
-      '<div class="mh">' + esc(o.title || 'Your deck') + '<span class="h-count">' + cards.length + '</span>' + fb + (cards.length ? tallyHtml(cards) : '') + '</div>' +
+      '<div class="mh">' + esc(o.title || 'Your deck') + '<span class="h-count">' + cards.length + '</span>' + fb + '</div>' +
       (o.line ? '<div class="ms">' + esc(o.line) + '</div>' : '') +
       (cards.length ? '<div data-r="bar">' + bar() + '</div>' : '') +
       '<div class="h-grid" data-r="grid">' + body() + '</div>' +
@@ -45082,7 +45102,7 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     return ov.el;
   }
 
-  globalThis.L1Help = { qmPage, qmRows, scenPages, scenArtState, groupDeck, arrangeDeck, stackCards, typeTally, SORTS, pages, orderRows, orderSpan, legendRows, motionState, soundState, withSfxOff, artState, mountArt, chainOf, pageIndex, pageFor, ART, PAGE_IDS, GROUPS,
+  globalThis.L1Help = { qmPage, qmRows, scenPages, scenArtState, groupDeck, filterDeck, arrangeDeck, stackCards, typeTally, SORTS, pages, orderRows, orderSpan, legendRows, motionState, soundState, withSfxOff, artState, mountArt, chainOf, pageIndex, pageFor, ART, PAGE_IDS, GROUPS,
     SOUND_GROUPS, VOLUMES, runLive, menuRows, moreBelow, art };
   globalThis.L1Screens = Object.assign(globalThis.L1Screens || {}, { menu, help, deck, askNewRun });
 })();
