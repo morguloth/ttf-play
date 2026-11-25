@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="26">
-<script>(function(){var B="4a877d99fd";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=26;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-hlp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("hlp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="481ff73509";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=26;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-hlp001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("hlp001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -5875,6 +5875,41 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
 .h-qrow .op { display: inline-flex; align-items: center; gap: 4px; }
 .h-qrow .op .ic { color: #e6b54a; }
 
+/* ---------- the deck view as a wall of cards (2026-11-25, owner: "redesign the deck viewer"; s-help.js deck()): the whole
+   stage, one slim head (title, count, Formations, the type counts), the filter chips (they add up) beside the sorts and
+   Show upgrades, then full-size cards in a grid, stacks kept; Return at the bottom left ---------- */
+.h-deck.h-wall { left: 0; top: 0; width: 1180px; height: 820px; max-height: none; padding: 14px 22px 0; border-radius: 0; animation: none; }
+.h-wall > .mh { justify-content: flex-start; gap: 14px; padding-right: 60px; font-size: var(--fs-xl, 24px); text-align: left; }
+.h-wall > .ms { text-align: left; margin-top: 2px; }
+.h-wall .h-tally { margin: 0 0 0 auto; gap: 4px 18px; font-size: var(--fs-md, 17px); font-weight: 400; letter-spacing: 0; }
+.h-wall .h-tally > span > span, .h-wall .h-tally i { display: none; }
+.h-wall .h-bar { flex-wrap: nowrap; align-items: flex-start; margin-top: 10px; padding: 0; gap: 10px 18px; }
+.h-wall .h-chips { flex: 1 1 auto; gap: 6px; }
+.h-wall .h-sort { flex: none; gap: 6px; }
+.h-wall .h-chip { padding: 0 12px; }   /* (its 44 px height and 52 px hit area kept: 45 px at the 1024x768 fit) */
+.h-wall .h-upb { margin-left: 10px; }
+.h-wall .h-grid { flex: 1 1 auto; margin-top: 10px; padding: 24px 10px 100px; display: grid; grid-template-columns: repeat(auto-fill, 170px); gap: 28px 16px; justify-content: center; align-content: start; }
+.h-wall .h-grp, .h-wall .h-cards { display: contents; }
+.h-wall .h-grp .lab { display: none; }
+.h-wall .h-empty { grid-column: 1 / -1; }
+.h-wall .h-stack:not(.open) { margin: 0; }
+/* a stack laid out: its copies take their own cells in the wall (no row of their own), each ringed; the xN that stacks
+   them again stands in the cell after the last */
+.h-wall .h-stack.open { display: contents; }
+.h-wall .h-stack.open > :is(.l1card, .h-up) { outline: 2px dashed rgba(243,213,142,.6); outline-offset: 6px; border-radius: 12px; }
+.h-wall .h-stack.open > .h-n { align-self: center; justify-self: start; min-width: 52px; height: 52px; border-radius: 26px; font-size: var(--fs-lg, 20px); }
+/* (its xN reads on the paper look too: light on its dark disc) */
+.h-wall .h-n { right: -12px; top: -14px; color: #f8ecd0; }
+.h-wall .h-stack > .h-up { position: relative; z-index: 1; }
+.h-wall .h-cards .l1card .l1if { font-size: inherit; }
+.h-up { position: relative; }
+.h-upt { position: absolute; left: 50%; bottom: -13px; z-index: 3; translate: -50% 0; padding: 2px 12px; border-radius: 12px; white-space: nowrap;
+  font-family: var(--label, 'Cinzel', serif); font-size: var(--fs-xs, 13px); font-weight: 700; letter-spacing: 1px; color: #10240f; background: linear-gradient(#b7e08a, #7fb957); box-shadow: 0 2px 6px rgba(0,0,0,.5); }
+.h-up.top > .l1card { opacity: .55; filter: saturate(.6); }
+.h-up.top .h-upt { color: #2a1d0d; background: linear-gradient(#d8ccb0, #b3a585); }
+.h-ret { position: absolute; left: 0; bottom: 22px; z-index: 4; display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 30px 0 20px; border: 0; border-radius: 0 14px 14px 0; cursor: pointer;
+  font-family: var(--label, 'Cinzel', serif); font-size: var(--fs-lg, 20px); font-weight: 700; letter-spacing: 1.5px; color: #2a1d0d; background: linear-gradient(#e2c378, #b08a3a); box-shadow: 0 6px 18px rgba(0,0,0,.55); }
+.h-ret .ic { transform: rotate(180deg); }
 /* ======================================================================= after rules 15: the parchment look
    (After rules 16: not in the store's scope, so each selector ends in :where(:not(:is(.qm-scr, ...) *)); tokens.css.)
    (docs/HLP001.md). The menu and the help are sheets (shell.css .pnl); their switches, arrows and dots are drawn in
@@ -6012,6 +6047,8 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
 #stage[data-shape="tall"] .h-qrow .ot b { flex: none; width: 190px; font-size: var(--fs-sm, 15px); }
 #stage[data-shape="tall"] .h-qrow .ot span { font-size: var(--fs-sm, 15px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #stage[data-shape="tall"] .h-in[data-page="quartermaster"] .h-lines p { font-size: var(--fs-md, 17px); }
+#stage[data-shape="tall"] .h-deck.h-wall { left: 0; width: 820px; top: 0 !important; height: 1180px; max-height: none; }
+#stage[data-shape="tall"] .h-wall .h-bar { flex-wrap: wrap; }
 </style>
 <style>
 /*
@@ -43990,11 +44027,13 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     const n = C.pipsNeeded(T, c);
     return n > 0 ? Math.max(0, n - Math.floor(c.pips || 0)) : Infinity;
   }
-  /** The groups the deck view draws for filter (a GROUPS key, or 'all') and sort (a SORTS key). */
+  /** The groups the deck view draws for filter (a GROUPS key, 'all', or - 2026-11-25, owner: "select multiple filters at
+   *  the same time" - a list of keys: the cards of any of them; an empty list is 'all') and sort (a SORTS key). */
   function arrangeDeck(cards, filter, sort, T0) {
     const T = T0 || (C && C.TUN_DEFAULT) || {};
     let groups = groupDeck(cards);
-    if (filter && filter !== 'all') groups = groups.filter((g) => g.key === filter);
+    const fl = Array.isArray(filter) ? filter : filter && filter !== 'all' ? [filter] : [];
+    if (fl.length) groups = groups.filter((g) => fl.indexOf(g.key) >= 0);
     if (sort !== 'power' && sort !== 'next') return groups;
     const order = new Map();
     groups.forEach((g, gi) => g.cards.forEach((c, i) => order.set(c, gi * 1000 + i)));
@@ -44030,7 +44069,8 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
   const tallyHtml = (cards) => '<div class="h-tally">' + typeTally(cards).map((t) =>
     '<span class="t-' + t.key + '">' + icon(t.key) + '<span>' + esc(t.label) + '</span><b>' + t.n + '</b></span>').join('') +
     '<i>Officers and heroes included</i></div>';
-  let deckView = { filter: 'all', sort: 'kind' };   // this session's choice, kept between openings
+  // this session's choice, kept between openings (filter: the group keys shown, none = all; up: every card drawn at its next rank)
+  let deckView = { filter: [], sort: 'kind', up: false };
 
   // ---- the Sound panel (PLAN 63 S7) ------------------------------------------------------------------
   // the components, in the contract's order (their sounds: L1Sfx.groups)
@@ -44945,17 +44985,37 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     const o = opts || {}, app = ctx.app, run = (app && app.run) || ctx.run || {}, T = tunOf(ctx);
     const cards = o.cards || run.deck || [];
     const K = Cards(), all = groupDeck(cards);
-    if (deckView.filter !== 'all' && !all.some((g) => g.key === deckView.filter)) deckView.filter = 'all';
-    const chip = (key, inner, n) => '<button class="h-chip' + (deckView.filter === key ? ' on' : '') + '" data-f="' + key + '">' + inner + '<b>' + n + '</b></button>';
+    // 2026-11-25 (owner: "redesign the deck viewer ... I want stacks and filter chips. In fact, I want to be able to select
+    // multiple filters at the same time. It would also be great to see a card's upgrades"): the viewer is the whole
+    // screen, a wall of full-size cards (stacks kept); the filter chips add up (All clears them); Show upgrades draws
+    // every card at its next rank
+    if (!Array.isArray(deckView.filter)) deckView.filter = deckView.filter && deckView.filter !== 'all' ? [deckView.filter] : [];
+    deckView.filter = deckView.filter.filter((k) => all.some((g) => g.key === k));
+    const isOn = (key) => (key === 'all' ? !deckView.filter.length : deckView.filter.indexOf(key) >= 0);
+    const chip = (key, inner, n) => '<button class="h-chip' + (isOn(key) ? ' on' : '') + '" data-f="' + key + '" aria-pressed="' + isOn(key) + '">' + inner + '<b>' + n + '</b></button>';
     const bar = () => '<div class="h-bar"><div class="h-chips">' + chip('all', '<span>All</span>', cards.length) +
       (all.length > 1 ? all.map((g) => chip(g.key, icon(g.icon) + '<span>' + esc(g.label) + '</span>', g.cards.length)).join('') : '') + '</div>' +
-      '<div class="h-sort">' + SORTS.map((x) => '<button class="h-chip' + (deckView.sort === x.key ? ' on' : '') + '" data-s="' + x.key + '">' + esc(x.label) + '</button>').join('') + '</div></div>';
+      '<div class="h-sort">' + SORTS.map((x) => '<button class="h-chip' + (deckView.sort === x.key ? ' on' : '') + '" data-s="' + x.key + '">' + esc(x.label) + '</button>').join('') +
+      '<button class="h-chip h-upb' + (deckView.up ? ' on' : '') + '" data-u="1" aria-pressed="' + !!deckView.up + '">' + icon('train') + '<span>Show upgrades</span></button></div></div>';
     const body = () => arrangeDeck(cards, deckView.filter, deckView.sort, T).map((g) => '<section class="h-grp g-' + g.key + '">' +
       (g.label ? '<div class="lab">' + icon(g.icon) + '<span>' + esc(g.label) + '</span><b>' + g.cards.length + '</b></div>' : '') +
       '<div class="h-cards">' + stackCards(g.cards, T).map(stackHtml).join('') + '</div></section>').join('') || '<div class="h-empty">No cards</div>';
     const open = new Set();   // the stacks laid out (by signature), for this opening
     // rules 15 (2026-11-10, review D2): the run's deck gives deck-reading pieces their live number
-    const card = (c) => (K.html ? K.html(c, { T, size: 's', run }) : '');
+    const face = (c) => (K.html ? K.html(c, { T, run }) : '');
+    /** Card c at its next rank (an order: its next level), or null at the top and for a card that never ranks. */
+    const upOf = (c) => {
+      if (!C || !C.pipsNeeded || !(C.pipsNeeded(T, c) > 0)) return null;
+      if (C.isOrderCard && C.isOrderCard(c)) return Object.assign({}, c, { level: Math.max(1, Math.floor(c.level || 1)) + 1, pips: 0 });
+      const r = rankOf(c, T);
+      return r ? Object.assign({}, c, { rank: r + 1, pips: 0 }) : null;
+    };
+    const card = (c) => {
+      if (!deckView.up) return face(c);
+      const u = upOf(c), ord = !!(C && C.isOrderCard && C.isOrderCard(c));
+      const tag = u ? (ord ? 'Level ' + u.level : 'Rank ' + u.rank) : (rankOf(c, T) || ord ? 'Top ' + (ord ? 'level' : 'rank') : 'No ranks');
+      return '<div class="h-up' + (u ? '' : ' top') + '">' + face(u || c) + '<span class="h-upt">' + esc(tag) + '</span></div>';
+    };
     const stackHtml = (st) => {
       const n = st.cards.length, sig = esc(st.sig);
       if (n === 1) return card(st.cards[0]);
@@ -44968,32 +45028,32 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
     // wmp001 rules 14: the count is of the run's formation slots (2/3), as the battle's Formations tab
     const fsv = forms && K.formSlotsView ? K.formSlotsView(run) : null, fall = fsv ? fsv.slots : (C.FORMATION_IDS || []).length;
     const fb = forms ? '<button class="fbtn" data-h="forms" aria-label="Formations: ' + (fsv ? K.formSlotsLine(fsv) : forms.length + ' of ' + fall + ' learned') + '">' + icon('l1form') + 'Formations<b>' + forms.length + '/' + fall + (fsv ? ' slots' : '') + '</b></button>' : '';
-    const ov = overlay(root, 'l1deck', '<div class="pnl h-deck h-mid">' +
+    const ov = overlay(root, 'l1deck', '<div class="pnl h-deck h-wall">' +
       '<button class="h-x" data-h="close" aria-label="Close"' + NOSFX + '>' + X_SVG + '</button>' +
-      '<div class="mh">' + esc(o.title || 'Your deck') + '<span class="h-count">' + cards.length + '</span>' + fb + '</div>' +
+      '<div class="mh">' + esc(o.title || 'Your deck') + '<span class="h-count">' + cards.length + '</span>' + fb + (cards.length ? tallyHtml(cards) : '') + '</div>' +
       (o.line ? '<div class="ms">' + esc(o.line) + '</div>' : '') +
-      (cards.length ? tallyHtml(cards) + '<div data-r="bar">' + bar() + '</div>' : '') +
+      (cards.length ? '<div data-r="bar">' + bar() + '</div>' : '') +
       '<div class="h-grid" data-r="grid">' + body() + '</div>' +
+      '<button class="h-ret" data-h="close"' + NOSFX + '>' + icon('chev') + '<span>Return</span></button>' +
       '<button class="h-more" data-r="more" aria-label="More below" tabindex="-1">' + icon('chev') + '</button></div>');
     const grid = ov.el.querySelector('[data-r="grid"]'), barEl = ov.el.querySelector('[data-r="bar"]');
     // more below (iPad draws no scrollbar): while the grid can scroll further down, its bottom fades
     // and a chevron shows; at the bottom both go (PLAN 63 fix wave). A tap on it scrolls a page.
     const pnlEl = ov.el.querySelector('.h-deck'), more = ov.el.querySelector('[data-r="more"]');
     const cue = () => { pnlEl.classList.toggle('h-can-more', moreBelow(grid.scrollTop, grid.clientHeight, grid.scrollHeight)); };
-    // a short deck: the panel fits it, centred on the stage. PLAN 63 P2 (PERF-07): while it opens the
-    // CSS centres it (.h-mid), so nothing reads the layout as it is built; before its contents first
-    // change (a filter, a sort, a stack laid out) its top is set in px, where the layout is clean
-    // anyway, so the panel stays where it opened, as before.
-    const keep = () => { if (pnlEl.classList.contains('h-mid')) { centre(pnlEl, 34); pnlEl.classList.remove('h-mid'); } };
+    // (the wall is the whole stage: nothing to centre)
+    const keep = () => {};
     grid.addEventListener('scroll', cue, { passive: true });
     more.addEventListener('click', () => {
       const calm = !!(app && app.reducedMotion && app.reducedMotion());
       grid.scrollBy({ top: Math.round(grid.clientHeight * 0.75), behavior: calm ? 'auto' : 'smooth' });
     });
     if (barEl) barEl.addEventListener('click', (e) => {
-      const b = e.target.closest('[data-f],[data-s]');
+      const b = e.target.closest('[data-f],[data-s],[data-u]');
       if (!b) return;
-      if (b.dataset.f) deckView.filter = b.dataset.f === deckView.filter ? 'all' : b.dataset.f;
+      if (b.dataset.u) deckView.up = !deckView.up;
+      else if (b.dataset.f === 'all') deckView.filter = [];
+      else if (b.dataset.f) { const k = b.dataset.f, at = deckView.filter.indexOf(k); if (at >= 0) deckView.filter.splice(at, 1); else deckView.filter.push(k); }
       else deckView.sort = b.dataset.s;
       keep();
       barEl.innerHTML = bar();
