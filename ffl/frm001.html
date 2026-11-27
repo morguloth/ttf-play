@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="ttf-rules" content="13">
-<script>(function(){var B="a8a0be09af";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=13;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-frm001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("frm001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
+<script>(function(){var B="26da4c3c14";window.TTF_L1_BUILD=B;window.TTF_L1_RULES=13;if(location.protocol==="file:")return;var last=0,want=null,obs=null;function fight(){var s=document.getElementById("stage");return !!(s&&s.dataset.screen==="battle")}function go(b){var u=new URL(location.href),k="ttf-frm001:upd";if(u.searchParams.get("v")===b)return;try{if(sessionStorage.getItem(k)===b)return;sessionStorage.setItem(k,b)}catch(e){return}u.searchParams.set("v",b);location.replace(u.toString())}function wait(b){want=b;var s=document.getElementById("stage");if(obs||!s||typeof MutationObserver!=="function")return;obs=new MutationObserver(function(){if(want&&!fight())go(want)});obs.observe(s,{attributes:true,attributeFilter:["data-screen"]})}function chk(){if(Date.now()-last<60000)return;last=Date.now();try{fetch("frm001-version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(v){if(!v||!v.build||v.build===B)return;if(fight())wait(v.build);else go(v.build)}).catch(function(){})}catch(e){}}chk();document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")chk()})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -6055,18 +6055,12 @@ button.chip2:active, .btn-round:active { filter: brightness(1.25); }
 .mo-pw { display: inline-flex; align-items: center; gap: 2px; margin-right: 7px; white-space: nowrap; }
 .mo-pw i { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 3px; border-radius: 9px; box-sizing: border-box; font: 700 var(--fs-xs, 13px)/1 var(--label, 'Cinzel', serif); font-style: normal; color: #fff4e4; background: #6b5a43; box-shadow: 0 0 0 1px rgba(21,17,13,.6); }
 .t-inf .mo-pw i { background: var(--inf-dot); } .t-arc .mo-pw i { background: var(--arc-dot); } .t-cav .mo-pw i { background: var(--cav-dot); } .t-mac .mo-pw i { background: var(--mac-dot); color: var(--mac-ink); }
-.mo-lds { column-count: 4; column-gap: 10px; margin-top: 8px; text-align: left; }
-.mo-ld { break-inside: avoid; display: flow-root; margin: 0 0 6px; padding: 4px 8px 5px 6px; border-radius: 8px; transition: opacity .18s ease, filter .18s ease;
-  background: rgba(58,36,16,.07); box-shadow: inset 3px 0 0 var(--ld, #8a7a5a), inset 0 0 0 1px rgba(58,36,16,.18); }
-.mo-ld.t-inf { --ld: var(--inf1); background: rgba(196,87,63,.10); } .mo-ld.t-arc { --ld: var(--arc1); background: rgba(102,160,75,.11); }
-.mo-ld.t-cav { --ld: var(--cav1); background: rgba(79,127,194,.11); } .mo-ld.t-mac { --ld: var(--mac2); background: rgba(183,150,107,.16); }
-.mo-ldm { float: left; margin: 5px 8px 2px 4px; zoom: .5; }
-.mo-ldm .l1mini { cursor: pointer; }
-.mo-ld .lt { font-family: var(--label, 'Cinzel', serif); font-size: var(--fs-sm, 15px); line-height: 1.1; letter-spacing: .3px; color: var(--ink-hi, #f1dfb2); }
-.mo-ld .lk { margin-left: 6px; font-size: var(--fs-xs, 13px); line-height: 1.1; font-weight: 600; color: var(--sub, #b9ab8f); }
-.mo-ld p { margin: 1px 0 0; font-size: var(--fs-xs, 13px); line-height: 1.06; color: var(--ink-body, #e6d7b6); }
-.mo-lds.lit .mo-ld:not(.hit) { opacity: .5; filter: saturate(.5); }
-.mo-lds.lit .mo-ld.hit { box-shadow: inset 3px 0 0 var(--ld, #8a7a5a), inset 0 0 0 1.5px rgba(138,98,38,.8); }
+.mo-lds { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
+.mo-ldc { display: flex; justify-content: center; gap: 6px; }
+.mo-ld { flex: none; transition: opacity .18s ease, filter .18s ease; }
+.mo-ld > .l1card { zoom: .71; cursor: pointer; }   /* (two cards and their power discs inside their type cell's width) */
+.mo-lds.lit .mo-ld:not(.hit) { opacity: .45; filter: saturate(.5); }
+.mo-lds.lit .mo-ld.hit > .l1card { box-shadow: 0 0 0 3px #f3d58e, 0 0 16px rgba(243,213,142,.55); }
 .mo-draft.nohint .mo-rec, .mo-draft.nohint .mo-why { display: none; }
 
 /* rules 15 (2026-11-10, review): the skirmishes (battles 5, 15, 25). On the run track a brass diamond
@@ -6885,15 +6879,15 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
 /* the name by its wall step (cards.js cardNameCls): wn1 one line at 20 px, wn2 one line at 18 px, wn3 two lines at 18 px in
    a ribbon grown 14 px up over the picture (the kind tab rises with it, clear of the first line), wn4 two lines at 17 px, tighter: 14.4 / 13 / 12.2
    stage px, 12.5 / 11.3 / 10.6 px at the 1024x768 fit. The type's word a step up (10.8 stage px). */
-.h-wall .h-cards .l1card .name.wn1 { font-size: var(--fs-lg, 20px); letter-spacing: .6px; white-space: nowrap; }
-.h-wall .h-cards .l1card .name:is(.wn2, .wn3) { font-size: var(--fs-wall, 18px); letter-spacing: .3px; }
-.h-wall .h-cards .l1card .name.wn2 { white-space: nowrap; }
-.h-wall .h-cards .l1card .name:is(.wn1, .wn2) + .kt { top: 121px; }
-.h-wall .h-cards .l1card .name:is(.wn3, .wn4) { top: 122px; height: 44px; white-space: normal; line-height: 1; text-wrap: balance; }
-.h-wall .h-cards .l1card .name.wn4 { padding: 0 2px; font-size: var(--fs-md, 17px); letter-spacing: 0; }
-.h-wall .h-cards .l1card .name:is(.wn3, .wn4) + .kt { top: 103px; }
+:is(.h-wall .h-cards, .mo-lds) .l1card .name.wn1 { font-size: var(--fs-lg, 20px); letter-spacing: .6px; white-space: nowrap; }
+:is(.h-wall .h-cards, .mo-lds) .l1card .name:is(.wn2, .wn3) { font-size: var(--fs-wall, 18px); letter-spacing: .3px; }
+:is(.h-wall .h-cards, .mo-lds) .l1card .name.wn2 { white-space: nowrap; }
+:is(.h-wall .h-cards, .mo-lds) .l1card .name:is(.wn1, .wn2) + .kt { top: 121px; }
+:is(.h-wall .h-cards, .mo-lds) .l1card .name:is(.wn3, .wn4) { top: 122px; height: 44px; white-space: normal; line-height: 1; text-wrap: balance; }
+:is(.h-wall .h-cards, .mo-lds) .l1card .name.wn4 { padding: 0 2px; font-size: var(--fs-md, 17px); letter-spacing: 0; }
+:is(.h-wall .h-cards, .mo-lds) .l1card .name:is(.wn3, .wn4) + .kt { top: 103px; }
 /* (and a mark's seals, on the picture's bottom left, rise as far, clear of the raised tab and the taller ribbon) */
-.h-wall .h-cards .l1card:has(.name:is(.wn3, .wn4)) :is(.wseals, .wseal:not(.wseals > .wseal)) { translate: 0 -16px; }
+:is(.h-wall .h-cards, .mo-lds) .l1card:has(.name:is(.wn3, .wn4)) :is(.wseals, .wseal:not(.wseals > .wseal)) { translate: 0 -16px; }
 .h-wall .h-cards .l1card .typemark .tword { font-size: var(--fs-sm, 15px); letter-spacing: 1.6px; }
 /* the rarity gem tucked inside the card's corner (it hung over the edge, into the gutter) */
 .h-wall .h-cards .l1card .gemr { right: 7px; bottom: 7px; }
@@ -47314,26 +47308,20 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
    * 2026-11-27 (owner: "starting draft deck is always the same, so why show every card? show a summarised version of the
    * part that's the same, and a large highlighted view of the officers/heros"): the start deck's plain units are the same
    * every run (tun.run.start perType: ten of each type, power 1 x7, 2 x2, 3 x1), summed up in the type cells (deckMeter);
-   * what a run draws (an officer and a hero of each type) stands below them, each a tile tinted by its type: its mini (the
-   * long-press view, the pick's light), its name, its kind and its whole rule (L1Cards.sentence: the long-press view's
-   * text), in four balanced columns (moments.css .mo-lds). Every card that is not a plain unit, a Sapper or an order.
+   * what a run draws (an officer and a hero of each type) stands under its type's cell as real cards, side by side (owner,
+   * of a first try with text tiles: "just show the two cards per type side by side"): four columns under the four cells,
+   * the cards at x.75 (moments.css .mo-lds), their names by the deck wall's steps; the whole rule on a long-press as on any
+   * card. Every card that is not a plain unit, a Sapper or an order; one of no type goes in the last column.
    */
   const isPlainUnit = (c) => !!c && c.kind === 'unit' && !c.aid && !(C.legendIdOf && C.legendIdOf(c));
   const isLeader = (c) => !!c && !isPlainUnit(c) && c.kind !== 'engineer' && !(C.isOrderCard && C.isOrderCard(c));
-  const KIND_WORD = { officer: 'Officer', hero: 'Hero', unit: 'Unit', artillery: 'Artillery' };
   function deckLeaders(run, T) {
-    const K = Cards(), mini = K.mini, ord = (c) => Math.max(0, TYPES.indexOf(c.type)) * 4 + (c.kind === 'officer' ? 0 : c.kind === 'hero' ? 1 : 2);
-    const ls = R.deckList(run).filter(isLeader).sort((a, b) => ord(a) - ord(b));
+    const K = Cards(), ord = (c) => (c.kind === 'officer' ? 0 : c.kind === 'hero' ? 1 : 2);
+    const ls = R.deckList(run).filter(isLeader);
     if (!ls.length) return '';
-    return '<div class="mo-lds" data-r="deck">' + ls.map((c) => {
-      const nf = K.info ? K.info(c, T) : { name: c.id || c.kind }, t = TYPES.indexOf(c.type) >= 0 ? c.type : 'neutral';
-      let line = '';
-      try { line = K.sentence ? K.sentence(c, T) : ''; } catch (e) { line = ''; }
-      const light = c.kind === 'hero' && C.isLightHero && C.isLightHero(c) ? 'Light hero' : KIND_WORD[c.kind] || c.kind;
-      return '<div class="mo-ld t-' + t + '">' + (mini ? '<span class="mo-ldm">' + mini(c, { T, run }) + '</span>' : '') +
-        '<b class="lt">' + esc(nf.name) + '</b><span class="lk">' + esc(light) + '</span>' +
-        '<p>' + esc(line) + '</p></div>';
-    }).join('') + '</div>';
+    const col = (t) => ls.filter((c) => (TYPES.indexOf(c.type) >= 0 ? c.type : TYPES[TYPES.length - 1]) === t).sort((a, b) => ord(a) - ord(b));
+    return '<div class="mo-lds" data-r="deck">' + TYPES.map((t) => '<div class="mo-ldc t-' + t + '">' +
+      col(t).map((c) => '<div class="mo-ld">' + (K.html ? K.html(c, { T, run }) : esc(c.id || c.kind)) + '</div>').join('') + '</div>').join('') + '</div>';
   }
   function bindDeck(scope, run, T) {
     if (scope && Cards().bindLongPress) Cards().bindLongPress(scope, { ctx: () => ({ T, run }), tap: true });
@@ -47591,8 +47579,8 @@ html:has(.mo-lv) body::before, html:has(.mo-strip) body::before { display: none;
         const hit = generalCards(sel, run.deck, T), minis = root.querySelector('[data-r="deck"]'), chip = root.querySelector('[data-r="hit"]');
         if (minis) {
           minis.classList.toggle('lit', !!hit);
-          minis.querySelectorAll('.l1mini').forEach((m) => m.classList.toggle('hit', !!hit && hit.some((u) => String(u) === m.dataset.uid)));
-          minis.querySelectorAll('.mo-ld').forEach((k) => k.classList.toggle('hit', !!k.querySelector('.l1mini.hit')));
+          minis.querySelectorAll('.l1mini, .l1card').forEach((m) => m.classList.toggle('hit', !!hit && hit.some((u) => String(u) === m.dataset.uid)));
+          minis.querySelectorAll('.mo-ld').forEach((k) => k.classList.toggle('hit', !!k.querySelector('.l1mini.hit, .l1card.hit')));
         }
         if (chip) {
           chip.innerHTML = hit ? icon('deck') + '<b>' + hit.length + '</b>' : '';
